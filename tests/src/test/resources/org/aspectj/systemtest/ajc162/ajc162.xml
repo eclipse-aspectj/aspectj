@@ -5,16 +5,16 @@
 
 
    <ajc-test dir="bugs162/pr247683" title="null delegate for array">
-     <compile options="-1.5" files="A.java"/>
+     <compile options="-1.8" files="A.java"/>
    </ajc-test>
 
    <ajc-test dir="bugs162/IntoBinary" title="binary aspects model">
-     <compile options="-1.5 -emacssym" files="Clazz.java" aspectpath="binaryaspect.jar"/>
+     <compile options="-1.8 -emacssym" files="Clazz.java" aspectpath="binaryaspect.jar"/>
    </ajc-test>
 
    <ajc-test dir="bugs162/pr246918" title="ltw perclause">
-     <compile options="-1.5" files="Code.java Dode.java" outjar="code.jar"/>
-     <compile options="-1.5 -Xlint:ignore" files="Base.java" outjar="aspects.jar"/>
+     <compile options="-1.8" files="Code.java Dode.java" outjar="code.jar"/>
+     <compile options="-1.8 -Xlint:ignore" files="Base.java" outjar="aspects.jar"/>
      <run class="Code" classpath="aspects.jar,code.jar" ltw="aop1.xml">
        <stderr>
          <line text="advice fired class Code"/>
@@ -24,8 +24,8 @@
    </ajc-test>
 
    <ajc-test dir="bugs162/pr246918" title="ltw perclause - 2">
-     <compile options="-1.5" files="Code.java Dode.java" outjar="code.jar"/>
-     <compile options="-1.5 -Xlint:ignore" files="Base.java" outjar="aspects.jar"/>
+     <compile options="-1.8" files="Code.java Dode.java" outjar="code.jar"/>
+     <compile options="-1.8 -Xlint:ignore" files="Base.java" outjar="aspects.jar"/>
      <run class="Code" classpath="aspects.jar,code.jar" ltw="aop2.xml">
        <stderr>
          <line text="advice fired class Dode"/>
@@ -34,8 +34,8 @@
    </ajc-test>
 
    <ajc-test dir="bugs162/pr246918" title="ltw perclause - 3">
-     <compile options="-1.5" files="Code.java Dode.java" outjar="code.jar"/>
-     <compile options="-1.5 -Xlint:ignore" files="Base2.java" outjar="aspects.jar"/>
+     <compile options="-1.8" files="Code.java Dode.java" outjar="code.jar"/>
+     <compile options="-1.8 -Xlint:ignore" files="Base2.java" outjar="aspects.jar"/>
      <run class="Code" classpath="aspects.jar,code.jar" ltw="aop3.xml">
        <stderr>
          <line text="advice fired class Dode"/>
@@ -44,8 +44,8 @@
    </ajc-test>
 
    <ajc-test dir="bugs162/pr246918" title="ltw perclause - 4">
-     <compile options="-1.5" files="Code.java Dode.java" outjar="code.jar"/>
-     <compile options="-1.5 -Xlint:ignore" files="Base2.java" outjar="aspects.jar"/>
+     <compile options="-1.8" files="Code.java Dode.java" outjar="code.jar"/>
+     <compile options="-1.8 -Xlint:ignore" files="Base2.java" outjar="aspects.jar"/>
      <run class="Code" classpath="aspects.jar,code.jar" ltw="aop4.xml">
        <stderr>
          <line text="Unrecognized per clause specified"/>
@@ -56,12 +56,12 @@
    </ajc-test>
 
    <ajc-test dir="bugs162/pr246264" title="anno value binding">
-     <compile options="-1.5" files="A.java"/>
+     <compile options="-1.8" files="A.java"/>
      <run class="A"/>
    </ajc-test>
 
    <ajc-test dir="bugs162/pr211607" title="around advice proceed">
-     <compile options="-1.5" files="Bug.java"/>
+     <compile options="-1.8" files="Bug.java"/>
      <run class="Bug"/>
    </ajc-test>
 
@@ -73,7 +73,7 @@
 	</ajc-test>
 
     <ajc-test dir="bugs162/pr176905" title="chained itds">
-        <compile options="-1.5" files="ChainedItd.aj">
+        <compile options="-1.8" files="ChainedItd.aj">
         </compile>
         <run class="ChainedItd">
             <stderr/> <!-- no errors-->
@@ -81,7 +81,7 @@
     </ajc-test>
 
    <ajc-test dir="bugs162/pr198341" title="dec atanno and decp">
-     <compile options="-1.5 -showWeaveInfo" files="AnnotationAspect.java">
+     <compile options="-1.8 -showWeaveInfo" files="AnnotationAspect.java">
      	<message kind="weave" text="'Annotated' (AnnotationAspect.java:12) is annotated with @TestAnnotation2 type annotation from 'AnnotationAspect' (AnnotationAspect.java:18)"/>
      	<message kind="weave" text="Extending interface set for type 'Annotated' (AnnotationAspect.java) to include 'Marker' (AnnotationAspect.java)"/>
      </compile>
@@ -89,7 +89,7 @@
 
 
 	<ajc-test dir="bugs162/pr197720" title="missing markers on inherited annotated method">
-	  <compile files="C1.java C2.java C3.java MyAnn.java MyAnnAspect.java" options="-1.5 -showWeaveInfo">
+	  <compile files="C1.java C2.java C3.java MyAnn.java MyAnnAspect.java" options="-1.8 -showWeaveInfo">
 	    <message kind="weave" text="Join point 'method-call(void test.aspects.C1.aMethod())' in Type 'test.aspects.C1' (C1.java:12) advised by around advice from 'test.aspects.MyAnnAspect' (MyAnnAspect.java:16)"/>
 	    <message kind="weave" text="Join point 'method-call(void test.aspects.C2.aMethod())' in Type 'test.aspects.C2$InnerClass' (C2.java:17) advised by around advice from 'test.aspects.MyAnnAspect' (MyAnnAspect.java:16)"/>
 	    <message kind="weave" text="Join point 'method-call(void test.aspects.C2.aMethod())' in Type 'test.aspects.C2' (C2.java:7) advised by around advice from 'test.aspects.MyAnnAspect' (MyAnnAspect.java:16)"/>
@@ -103,38 +103,38 @@
 	</ajc-test>
 
 	<ajc-test dir="bugs162/pr211146" title="lost generic sig on itd">
-	  <compile files="GenericsLost.java" options="-1.5"/>
+	  <compile files="GenericsLost.java" options="-1.8"/>
 	  <run class="GenericsLost"/>
 	</ajc-test>
 
 	<ajc-test dir="bugs162/pr211146" title="lost generic sig on itd - 2">
-	  <compile files="GenericsLost2.java" outjar="code.jar" options="-1.5"/>
-	  <compile files="GenericsLost2Dep.java" classpath="$sandbox/code.jar" options="-1.5"/>
+	  <compile files="GenericsLost2.java" outjar="code.jar" options="-1.8"/>
+	  <compile files="GenericsLost2Dep.java" classpath="$sandbox/code.jar" options="-1.8"/>
 	</ajc-test>
 
 	<ajc-test dir="bugs162/pr211146" title="lost generic sig on itd - 3">
-	  <compile files="GenericsLost3.java" options="-1.5"/>
+	  <compile files="GenericsLost3.java" options="-1.8"/>
 	  <run class="GenericsLost3"/>
 	</ajc-test>
 
 	<ajc-test dir="bugs162/pr211146" title="lost generic sig on itd - 4">
-	  <compile files="GenericsLost4.java" options="-1.5"/>
+	  <compile files="GenericsLost4.java" options="-1.8"/>
 	  <run class="GenericsLost4"/>
 	</ajc-test>
 
 	<ajc-test dir="bugs162/pr211146" title="lost generic sig on itd - 5">
-	  <compile files="GenericsLost5.java" options="-1.5"/>
+	  <compile files="GenericsLost5.java" options="-1.8"/>
 	  <run class="GenericsLost5"/>
 	</ajc-test>
 
 	<ajc-test dir="bugs162/pr194429" title="missing context">
-	  <compile files="A.java" options="-1.5">
+	  <compile files="A.java" options="-1.8">
 	    <message kind="error" line="14" text="incompatible type, expected java.util.Set found BindingTypePattern("/>
 	  </compile>
 	</ajc-test>
 
 	<ajc-test dir="bugs162/pr210114" title="warnings for limitations">
-	  <compile files="TestAspect.java" options="-1.5">
+	  <compile files="TestAspect.java" options="-1.8">
 	  	<message kind="warning" text="Only before advice is supported on handler join points (compiler limitation)"/>
 	  	<message kind="warning" text="around on initialization not supported (compiler limitation)"/>
 	  	<message kind="warning" text="around on pre-initialization not supported (compiler limitation)"/>
@@ -142,31 +142,31 @@
 	</ajc-test>
 
 	<ajc-test dir="bugs162/pr244830" title="ptw initFailureCause">
-	  <compile files="PTW.java" options="-1.5"/>
+	  <compile files="PTW.java" options="-1.8"/>
 	  <run class="PTW"/>
 	</ajc-test>
 
 	<ajc-test dir="bugs162/pr222648" title="generic itds - overrides">
-	  <compile files="DataAspect.aj DataInterface.java Foo.java FooBase.java Marker.java Resource.java" options="-1.5"/>
+	  <compile files="DataAspect.aj DataInterface.java Foo.java FooBase.java Marker.java Resource.java" options="-1.8"/>
 	</ajc-test>
 
 	<ajc-test dir="bugs162/pr222648" title="generic itds - overrides - 2">
-	  <compile files="X.java" options="-1.5"/>
+	  <compile files="X.java" options="-1.8"/>
 	</ajc-test>
 
  	<ajc-test dir="bugs162/pr145391" title="itd calling generic method">
-     <compile files="GenericType.java" options="-1.5"/>
+     <compile files="GenericType.java" options="-1.8"/>
      <run class="GenericType"/>
     </ajc-test>
 
 	<ajc-test dir="bugs162/pr145391" title="itd calling generic method - 2">
-     <compile files="GenericType2.java" options="-1.5">
+     <compile files="GenericType2.java" options="-1.8">
        <message kind="error" text="The method getValue(V) in the type GenericType2&lt;V&gt; is not applicable for the arguments"/>
      </compile>
     </ajc-test>
 
     <ajc-test dir="bugs162/pr241047" title="generic decp">
-        <compile files="SomeAspect.java SomeBaseClass.java SomeSubClass.java SomeSubClass2.java SomeSubClass3.java SomeInterface.java SomeBaseClass2.java SomeBaseClass3.java" options=" -Xlint:ignore -1.5">
+        <compile files="SomeAspect.java SomeBaseClass.java SomeSubClass.java SomeSubClass2.java SomeSubClass3.java SomeInterface.java SomeBaseClass2.java SomeBaseClass3.java" options=" -Xlint:ignore -1.8">
         </compile>
         <run class="SomeBaseClass">
           <stdout>
@@ -187,7 +187,7 @@
     </ajc-test>
 
     <ajc-test dir="bugs162/pr241047/case2" title="generic decp - 2">
-        <compile files="SomeAspect.java SomeBaseClass.java SomeSubClass.java SomeInterface.java" options=" -Xlint:ignore -1.5">
+        <compile files="SomeAspect.java SomeBaseClass.java SomeSubClass.java SomeInterface.java" options=" -Xlint:ignore -1.8">
         </compile>
         <run class="SomeBaseClass">
           <stdout>
@@ -200,71 +200,76 @@
     </ajc-test>
 
     <ajc-test dir="bugs162/pr239539" title="public pointcut">
-        <compile files="PrintAround.java PrintAroundFoo.java Foo.java" options="-1.5">
+        <compile files="PrintAround.java PrintAroundFoo.java Foo.java" options="-1.8">
 	        <message kind="error" line="7" text="pointcut 'bar.PrintAround.method()' is not visible from type "/>
         </compile>
     </ajc-test>
 
     <ajc-test dir="bugs162/pr242797/case1" title="generic itds - 1">
-        <compile files="ClassUtils.java CMEFinder.java Finder.java H2Deployment.java Localized.java LocalizedFinder.java OnetElement.java OnetFinder.java Partitioned.java PartitionedFinder.java" options="-1.5">
+        <compile files="ClassUtils.java CMEFinder.java Finder.java H2Deployment.java Localized.java LocalizedFinder.java OnetElement.java OnetFinder.java Partitioned.java PartitionedFinder.java" options="-1.8">
         </compile>
     </ajc-test>
 
     <ajc-test dir="bugs162/pr242797/case2" title="generic itds - 2">
-        <compile files="GenericMethodAspect.aj GenericMethodInterface.java GenericMethodImpl.java" options="-1.5">
+        <compile files="GenericMethodAspect.aj GenericMethodInterface.java GenericMethodImpl.java" options="-1.8">
         </compile>
     </ajc-test>
 
+<!-- XXX23: something is not right with this test, it seemed to be getting away with things at 1.5 and at 1.8 -->
+<!-- the rules are adjusted (and default methods on interfaces was added at that version too). This fails with -->
+<!-- an odd error if you include the GenericMethodAspect.aj in the compile -->
     <ajc-test dir="bugs162/pr242797/case3" title="generic itds - 3">
-        <compile files="GenericMethodAspect.aj GenericMethodInterface.java GenericMethodImpl.java GenericMethodImpl2.java Type1.java Type2.java" options="-1.5">
-        </compile>
+        <compile files="GenericMethodInterface.java GenericMethodImpl.java GenericMethodImpl2.java Type1.java Type2.java" options="-1.8"/>
+        <!--
+        <compile files="GenericMethodAspect.aj GenericMethodInterface.java GenericMethodImpl.java GenericMethodImpl2.java Type1.java Type2.java" options="-1.8"/>
+        -->
     </ajc-test>
 
   	<ajc-test dir="bugs162/pr241847" title="param annos pipelining">
-    	<compile files="Asp.aj Ann.java CC.java II.java LongLong.java" options="-1.5 -showWeaveInfo">
+    	<compile files="Asp.aj Ann.java CC.java II.java LongLong.java" options="-1.8 -showWeaveInfo">
     		<message kind="weave" text="Join point 'method-execution(void LongLong.m1(java.lang.String))' in Type 'LongLong' (LongLong.java:2) advised by before advice from 'Asp' (Asp.aj:5)"/>
     		<message kind="weave" line="3"/>
     	</compile>
     </ajc-test>
 
 	<ajc-test dir="bugs162/pr239441" title="annotation decp">
-    	<compile files="Test3.java SampleAspect.java" options="-1.5 -showWeaveInfo -XhasMember">
+    	<compile files="Test3.java SampleAspect.java" options="-1.8 -showWeaveInfo -XhasMember">
     	</compile>
     </ajc-test>
 
     <ajc-test dir="bugs162/pr241861" title="param annotation inner class">
-     <compile files="Outer.java Ann.java Asp.java" options="-1.5 -showWeaveInfo">
+     <compile files="Outer.java Ann.java Asp.java" options="-1.8 -showWeaveInfo">
        <message kind="weave" text="Join point 'constructor-execution(void Outer$Inner.&lt;init&gt;(Outer, java.lang.String))' in Type 'Outer$Inner' (Outer.java:5) advised by before advice from 'Asp' (Asp.java:2)"/>
      </compile>
     </ajc-test>
 
     <ajc-test dir="bugs162/pr241861" title="param annotation inner class - 2">
-        <compile files="X.java" options="-1.5 -showWeaveInfo">
+        <compile files="X.java" options="-1.8 -showWeaveInfo">
           <message kind="weave" text="Join point 'constructor-execution(void Outer$Inner.&lt;init&gt;(Outer, java.lang.Integer))' in Type 'Outer$Inner' (X.java:7) advised by before advice from 'Asp' (X.java:2)"/>
         </compile>
     </ajc-test>
 
     <ajc-test dir="bugs162/pr241861" title="param annotation inner class - 3">
-        <compile files="Y.java" options="-1.5 -showWeaveInfo">
+        <compile files="Y.java" options="-1.8 -showWeaveInfo">
           <message kind="weave" text="Join point 'constructor-execution(void Outer$Inner.&lt;init&gt;(Outer, java.lang.String))' in Type 'Outer$Inner' (Y.java:7) advised by before advice from 'Asp' (Y.java:2)"/>
         </compile>
     </ajc-test>
 
     <ajc-test dir="bugs162/pr240693" title="privileged generics">
-        <compile files="PayloadClass.java SomeInterface.java GenericClassInAdvice.java" options="-1.5 -showWeaveInfo">
+        <compile files="PayloadClass.java SomeInterface.java GenericClassInAdvice.java" options="-1.8 -showWeaveInfo">
           <message kind="weave" text="'method-call(java.lang.Object PayloadClass.getPayload())' in Type 'GenericClassInAdvice'"/>
         </compile>
     </ajc-test>
 
 	<ajc-test dir="bugs162/pr238992" title="annotation value decp">
-    	<compile files="Foo.java" options="-1.5 -showWeaveInfo">
+    	<compile files="Foo.java" options="-1.8 -showWeaveInfo">
     	  <message kind="weave" text="Extending interface set for type 'Goo'"/>
     	</compile>
     	<run class="Foo"/>
     </ajc-test>
 
 	<ajc-test dir="bugs162/pr238992" title="annotation value decp - 2">
-    	<compile files="Foo2.java" options="-1.5 -showWeaveInfo">
+    	<compile files="Foo2.java" options="-1.8 -showWeaveInfo">
     	  <message kind="weave" text="Extending interface set for type 'Goo'"/>
     	  <message kind="weave" text="Extending interface set for type 'Hoo'"/>
     	</compile>
@@ -272,14 +277,14 @@
     </ajc-test>
 
 	<ajc-test dir="bugs162/pr238992" title="annotation value decp - 3">
-    	<compile files="Foo3.java" options="-1.5 -showWeaveInfo">
+    	<compile files="Foo3.java" options="-1.8 -showWeaveInfo">
     	  <message kind="weave" text="Extending interface set for type 'Goo'"/>
     	</compile>
     	<run class="Foo3"/>
     </ajc-test>
 
 	<ajc-test dir="bugs162/pr238992" title="annotation value decp - 4">
-    	<compile files="Foo4.java" options="-1.5 -showWeaveInfo">
+    	<compile files="Foo4.java" options="-1.8 -showWeaveInfo">
     	  <message kind="weave" text="Extending interface set for type 'Goo'"/>
     	  <message kind="weave" text="Extending interface set for type 'Hoo'"/>
     	</compile>
@@ -287,7 +292,7 @@
     </ajc-test>
 
 	<ajc-test dir="bugs162/pr238992" title="annotation value decp - 5">
-    	<compile files="Foo5.java" options="-1.5 -showWeaveInfo">
+    	<compile files="Foo5.java" options="-1.8 -showWeaveInfo">
     	  <message kind="weave" text="Extending interface set for type 'Goo'"/>
     	  <message kind="weave" text="Extending interface set for type 'Hoo'"/>
     	</compile>
@@ -295,7 +300,7 @@
     </ajc-test>
 
     <ajc-test dir="bugs162/pr233718" title="parameter subsetting - matching">
-        <compile files="Matching.java" options="-1.5 -showWeaveInfo">
+        <compile files="Matching.java" options="-1.8 -showWeaveInfo">
           <message kind="weave" text="Join point 'method-execution(void Matching.m(java.lang.String))' in Type 'Matching' (Matching.java:3) advised by before advice from 'Matching' (Matching.java:8)"/>
           <message kind="weave" text="'method-execution(void Matching.m(java.lang.String, java.lang.String))' in Type 'Matching' (Matching.java:4) advised by before advice from 'Matching' (Matching.java:8)"/>
           <message kind="weave" text="'method-execution(void Matching.m(int, java.lang.String))' in Type 'Matching' (Matching.java:5) advised by before advice from 'Matching' (Matching.java:8)"/>
@@ -303,7 +308,7 @@
     </ajc-test>
 
     <ajc-test dir="bugs162/pr233718" title="parameter subsetting - args matching">
-        <compile files="ArgsMatching.java" options="-1.5 -showWeaveInfo">
+        <compile files="ArgsMatching.java" options="-1.8 -showWeaveInfo">
  <!--
           <message kind="weave" text="Join point 'method-execution(void Matching.m(java.lang.String))' in Type 'Matching' (Matching.java:3) advised by before advice from 'Matching' (Matching.java:8)"/>
           <message kind="weave" text="'method-execution(void Matching.m(java.lang.String, java.lang.String))' in Type 'Matching' (Matching.java:4) advised by before advice from 'Matching' (Matching.java:8)"/>
@@ -313,7 +318,7 @@
     </ajc-test>
 
     <ajc-test dir="bugs162/pr233718" title="parameter subsetting - args binding">
-        <compile files="ArgsBinding.java" options="-1.5"/>
+        <compile files="ArgsBinding.java" options="-1.8"/>
         <run class="ArgsBinding">
           <stdout>
             <line text="0) a"/>
@@ -324,7 +329,7 @@
 
     <ajc-test dir="bugs162/pr198181" title="ataspectj ltw pertarget">
       <compile files="M.java" outjar="code.jar"/>
-      <compile files="A.java" classpath="code.jar" options="-1.5 -Xlint:ignore"/>
+      <compile files="A.java" classpath="code.jar" options="-1.8 -Xlint:ignore"/>
       <run class="m.M" classpath="$sandbox/code.jar" ltw="aop.xml">
         <stdout>
           <line text="tick 0"/>

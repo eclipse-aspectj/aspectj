@@ -11,7 +11,7 @@ public class AfterReturningParamMatching {
 		Tester.checkAndClearEvents(new String[] { "byte", "int", "long", "Object"});
 		
 		goInt(2);
-		Tester.checkAndClearEvents(new String[] { "int", "long", "Object" });
+		Tester.checkAndClearEvents(new String[] { "int", "long", "Object", "Integer" }); // Integer added as now being compiled > 1.4
 
 		goLong(3);
 		Tester.checkAndClearEvents(new String[] { "long", "Object" });
@@ -35,10 +35,10 @@ public class AfterReturningParamMatching {
 		Tester.checkAndClearEvents(new String[] { "Object", "Number" });
 
 		goInteger(new Integer(7));
-		Tester.checkAndClearEvents(new String[] { "Object", "Number", "Integer" });
+		Tester.checkAndClearEvents(new String[] { "Object", "Number", "Integer", "int" }); // int added as now being compiled > 1.4
 
         goInteger(null);
-        Tester.checkAndClearEvents(new String[] { "Object", "Number", "Integer" });
+        Tester.checkAndClearEvents(new String[] { "Object", "Number", "Integer", "int" }); // int added as now being compiled > 1.4
 
 	}
 	static boolean goBoolean(boolean b) { return b; }

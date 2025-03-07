@@ -73,42 +73,42 @@
 <!-- AspectJ 5 specific tests -->
 
 	<ajc-test dir="model/pr115607" title="declare at type appears correctly in structure model">
-        <compile files="pr115607.java" options="-1.5,-emacssym,-Xset:minimalModel=false"/>
+        <compile files="pr115607.java" options="-1.8,-emacssym,-Xset:minimalModel=false"/>
     </ajc-test>
 
     <ajc-test dir="model/pr131932" title="structure model for generic itd">
-        <compile files="pr131932.aj" options="-1.5 -emacssym"/>
+        <compile files="pr131932.aj" options="-1.8 -emacssym"/>
     </ajc-test>
 
     <ajc-test dir="model/pr132130" title="declare annotation appears in structure model when in same file">
-        <compile files="pr132130.aj" options="-1.5 -emacssym -Xset:minimalModel=false"/>
+        <compile files="pr132130.aj" options="-1.8 -emacssym -Xset:minimalModel=false"/>
     </ajc-test>
     
     <ajc-test dir="model/pr120356" title="@AJ deow appear correctly when structure model is generated">
-        <compile files="C.java, A.java" options="-1.5, -emacssym -Xset:minimalModel=false">
+        <compile files="C.java, A.java" options="-1.8, -emacssym -Xset:minimalModel=false">
          <message kind="error" line="8" text="error"/>
          <message kind="warning" line="5" text="warning"/>
         </compile>
     </ajc-test>
 
     <ajc-test dir="model/pr143924" title="declare @method relationship">
-     <compile files="pr143924.aj" options="-1.5 -showWeaveInfo -emacssym -Xset:minimalModel=false">
+     <compile files="pr143924.aj" options="-1.8 -showWeaveInfo -emacssym -Xset:minimalModel=false">
         <message kind="weave" text="'public void BankAccount.debit(String,long)' (pr143924.aj:7) is annotated with @Secured"/>
      </compile>
     </ajc-test>
     
     <ajc-test dir="model/pr141730_2" title="new iprogramelement methods for generics">
-      <compile files="pr141730.aj" options="-1.5 -emacssym"/>
+      <compile files="pr141730.aj" options="-1.8 -emacssym"/>
     </ajc-test>
 
 	<ajc-test dir="model/pr141730_4" title="ensure inpath injar relationships are correct when not filling in model">
-      <compile files="MyBar.aj, MyAnnotation.java, NewClass.java" inpath="inpath.jar" options="-1.5 -emacssym -Xset:minimalModel=false">
+      <compile files="MyBar.aj, MyAnnotation.java, NewClass.java" inpath="inpath.jar" options="-1.8 -emacssym -Xset:minimalModel=false">
 			<message kind="warning" line="20" text="System.out should not be called"/>
 	  </compile>
     </ajc-test>
     
     <ajc-test dir="model/prX" title="inpath advised elements">
-      <compile files="X.java" inpath="inpath.jar" options="-1.5 -emacssym"/>
+      <compile files="X.java" inpath="inpath.jar" options="-1.8 -emacssym"/>
     </ajc-test>
 
 

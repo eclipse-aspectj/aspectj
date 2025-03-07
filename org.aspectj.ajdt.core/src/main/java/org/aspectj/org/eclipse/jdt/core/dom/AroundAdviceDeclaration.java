@@ -141,6 +141,9 @@ public class AroundAdviceDeclaration extends AdviceDeclaration {
 		return this.typeParameters;
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public Type getReturnType() {
 		return internalGetReturnType();
 	}

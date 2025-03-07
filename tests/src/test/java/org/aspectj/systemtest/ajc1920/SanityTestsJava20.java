@@ -76,8 +76,7 @@ public class SanityTestsJava20 extends JavaVersionSpecificXMLBasedAjcTestCase {
 
 	public void testVersionCorrect4() {
 		runTest("simple - m");
-		// Must be 49.0 when -1.5 is specified
-		checkVersion("A", Constants.ClassFileVersion.of(5).MAJOR, 0);
+		checkVersion("A", Constants.ClassFileVersion.of(8).MAJOR, 0);
 	}
 
 	public static Test suite() {

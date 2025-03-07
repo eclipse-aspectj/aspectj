@@ -36,12 +36,12 @@ class C {
     public double _double() { s("_double"); return (double)0;}
     public Object _Object() { s("_Object"); return this; }
 }
-
+// XXX23: this test is messed up and clearly not doing what it is intended
 aspect A {
-
+    // This isn't going to match anything because the _ methods run in C anyway, not NotCharInPointcut
     pointcut pcut1(NotCharInPointcut t):
         this(t) && execution(!* _*());
-    
+    // Same thing, it won't match anything - what was it trying to achieve?    
     pointcut pcut2(NotCharInPointcut t):
         this(t) && !this(NotCharInPointcut) && execution(!* _*());
 

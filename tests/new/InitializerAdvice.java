@@ -8,7 +8,7 @@ public aspect InitializerAdvice {
 
     public static void main(String[] args) { test(); }
 
-    /*static*/ before(): call(* *(..)) && this(Foo) {
+    before(): set(* *) && this(Foo) {
 	    System.out.println("entering");
     }
 }

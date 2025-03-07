@@ -1,0 +1,51 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<!--
+	JDK 23 (https://openjdk.org/projects/jdk/23/):
+		455:	Primitive Types in Patterns, instanceof, and switch (Preview)
+		466:	Class-File API (Second Preview)
+		467:	Markdown Documentation Comments
+		469:	Vector API (Eighth Incubator)
+		473:	Stream Gatherers (Second Preview)
+		471:	Deprecate the Memory-Access Methods in sun.misc.Unsafe for Removal
+		474:	ZGC: Generational Mode by Default
+		476:	Module Import Declarations (Preview)
+		477:	Implicitly Declared Classes and Instance Main Methods (Third Preview)
+		480:	Structured Concurrency (Third Preview)
+		481:	Scoped Values (Third Preview)
+		482:	Flexible Constructor Bodies (Second Preview)
+-->
+<suite>
+
+	<!-- https://openjdk.org/jeps/455 -->
+	<ajc-test dir="features1923/java23" vm="23" title="primitive types patterns - switch">
+		<compile files="PrimitivePatternsSwitch1.java" options="--enable-preview -23"/>
+		<run class="PrimitivePatternsSwitch1" vmargs="--enable-preview">
+			<stdout>
+			<line text="one"/>
+			<line text="two"/>
+			<line text="many"/>
+			<line text="lots"/>
+			</stdout>
+		</run>
+	</ajc-test>
+	
+	<!-- https://openjdk.org/jeps/455 -->
+	<ajc-test dir="features1923/java23" vm="23" title="primitive types patterns - switch - with advice">
+		<compile files="PrimitivePatternsSwitch2.java" options="--enable-preview -23 -showWeaveInfo">
+		<message kind="weave" line="12" text="Join point 'method-call(boolean PrimitivePatternsSwitch2.isOdd(int))' in Type 'PrimitivePatternsSwitch2' (PrimitivePatternsSwitch2.java:12) advised by around advice from 'X'"/>>
+		</compile>
+		<run class="PrimitivePatternsSwitch2" vmargs="--enable-preview">
+			<stdout>
+			<!-- advice forces all the isOdd() calls to return false -->
+			<line text="no"/>
+			<line text="no"/>
+			<line text="no"/>
+			<line text="no"/>
+			</stdout>
+		</run>
+	</ajc-test>
+	
+	
+
+</suite>

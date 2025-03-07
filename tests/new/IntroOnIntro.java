@@ -25,8 +25,8 @@ class Class1 {
 aspect Aspect1 /**of eachobject (instanceof(Class1))*/ {
     public String Class1.getName() { return this.name; } 
   
-  void f() {}
-  before(): call(* getName(..)) && this(Class1) {
+  void f() {System.out.println("advice running");}
+  before(): call(* getName(..)) && target(Class1) {
     f();
   }  
 }

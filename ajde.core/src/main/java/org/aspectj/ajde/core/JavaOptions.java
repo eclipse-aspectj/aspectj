@@ -28,6 +28,8 @@ public final class JavaOptions {
 	public static final String VERSION_14 = CompilerOptions.VERSION_1_4;
 	public static final String VERSION_15 = CompilerOptions.VERSION_1_5;
 	public static final String VERSION_16 = CompilerOptions.VERSION_1_6;
+	public static final String VERSION_17 = CompilerOptions.VERSION_1_7;
+	public static final String VERSION_18 = CompilerOptions.VERSION_1_8;
 
 	// by default will use the platform default encoding
 	public static final String CHARACTER_ENCODING = CompilerOptions.OPTION_Encoding;

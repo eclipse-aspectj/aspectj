@@ -30,7 +30,7 @@
 	<!-- Java 17 final, Java 16, 15 preview -->
 	<ajc-test dir="features197/java15" vm="17" title="sealed class with illegal subclass">
 		<compile files="Person.java  Employee.java Manager.java PersonaNonGrata.java" options="-17">
-			<message kind="error" file="PersonaNonGrata.java" text="should be a permitted subtype of Person"/>
+			<message kind="error" file="PersonaNonGrata.java" text="The class PersonaNonGrata cannot extend the class Person as it is not a permitted subtype of Person"/>
 		</compile>
 	</ajc-test>
 

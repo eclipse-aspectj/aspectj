@@ -768,14 +768,14 @@ public class CommonPrinter {
 		printIndent(indent);
 		if (statement.constantExpressions == null) {
 			output.append("default "); //$NON-NLS-1$
-			output.append(statement.isExpr ? "->" : ":"); //$NON-NLS-1$ //$NON-NLS-2$
+			output.append(statement.isSwitchRule ? "->" : ":"); //$NON-NLS-1$ //$NON-NLS-2$
 		} else {
 			output.append("case "); //$NON-NLS-1$
 			for (int i = 0, l = statement.constantExpressions.length; i < l; ++i) {
 				printExpression(statement.constantExpressions[i]);
 				if (i < l -1) output.append(',');
 			}
-			output.append(statement.isExpr ? " ->" : " :"); //$NON-NLS-1$ //$NON-NLS-2$
+			output.append(statement.isSwitchRule ? " ->" : " :"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		return output;
 	}

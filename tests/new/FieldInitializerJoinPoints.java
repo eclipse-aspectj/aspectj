@@ -1,5 +1,6 @@
 // This test verifies that join points exist in the execution of field initializers. 
 
+import org.aspectj.lang.annotation.SuppressAjWarnings;
 import org.aspectj.testing.Tester;
 
 //class Tester {
@@ -77,8 +78,10 @@ aspect A {
 		System.err.println(fp.l);
 	}
 	
+	@SuppressAjWarnings("adviceDidNotMatch")
     before(): set(int FieldInitializerJoinPoints.j) { FieldInitializerJoinPoints.jcount++; }
     before(): set(int FieldInitializerJoinPoints.k) { FieldInitializerJoinPoints.kcount++; }
+	@SuppressAjWarnings("adviceDidNotMatch")
     before(): set(int FieldInitializerJoinPoints.l) { FieldInitializerJoinPoints.lcount++; }
     before(): set(int FieldInitializerJoinPoints.m) { FieldInitializerJoinPoints.mcount++; }
 

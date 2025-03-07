@@ -1,5 +1,5 @@
 public aspect pr91381_2 {
-  public abstract Object A.foo();
+  public abstract Integer A.foo();
 
   public static void main(String[] args) {
     A a = new B();
@@ -8,9 +8,9 @@ public aspect pr91381_2 {
 }
 
 abstract class A {
-//  abstract Object foo();
+//  abstract Integer foo();
 }
 
 class B extends A {
-  public Integer foo() { return new Integer(42); }
+  public Object foo() { return new Integer(42); }
 }

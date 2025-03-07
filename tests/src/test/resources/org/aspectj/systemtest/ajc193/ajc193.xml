@@ -309,7 +309,7 @@ Method call
     </ajc-test>
 
     <ajc-test dir="bugs193/542682" vm="1.5" title="wildcard enum match in itd">
-        <compile files="SimpleEnum.java,SimpleEnum2.java,EnumAspect04.aj" options="-1.5">
+        <compile files="SimpleEnum.java,SimpleEnum2.java,EnumAspect04.aj" options="-1.8">
             <message kind="warning" line="8" text="enum type SimpleEnum2 matches a declare parents type pattern but is being ignored"/>
             <message kind="warning" line="8" text="enum type SimpleEnum matches a declare parents type pattern but is being ignored"/>
         </compile>

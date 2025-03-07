@@ -179,9 +179,9 @@ aspect JoinPoints extends Helper {
         Throwable t = null;
         try {
             t = (Throwable)jp.getArgs()[0];
-        } catch (ArrayIndexOutOfBoundsException _) {
+        } catch (ArrayIndexOutOfBoundsException _x) {
             a("handlers out of bounds");
-        } catch (ClassCastException __) {
+        } catch (ClassCastException __x) {
             a(ni(jp.getArgs()[0], Throwable.class, "handlers"));
         }
         a(t.getMessage(), "test");

@@ -35,10 +35,6 @@ public class AtAjAnnotationGenTests extends XMLBasedAjcTestCase {
 		runTest("annotation gen for simple aspect");
 	}
 
-	public void testSimpleAspectIn14Mode() {
-		runTest("annotation gen for simple aspect pre 1.5");
-	}
-
 	public void testAspectAlreadyAnnotated() {
 		runTest("annotation gen for simple annotated aspect");
 	}

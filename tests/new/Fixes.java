@@ -14,10 +14,19 @@ class TheObject {
 
 privileged aspect TheAspect pertarget(target(TheObject)) {
     private TheObject theObject;
-     after() returning(TheObject obj): call(new()) {
-          theObject = obj;
-     }
-     after() returning(): call(* realMain(..)) {
+
+    /*
+	after() returning(TheObject obj): execution(new()) {
+		theObject = obj;
+	}
+	*/
+
+    // XXX23: alternative to above advice which won't match
+    before(TheObject o): execution(* go(..)) && target(o) {
+    	theObject = o;
+    }
+
+    after() returning(): execution(* go(..)){//XXX23: changed from call(* realMain(..)) because I can't see how that could match with pertarget!
          start();
          postinc();
          preinc();
@@ -62,6 +71,7 @@ privileged aspect TheAspect pertarget(target(TheObject)) {
          this.msg = msg;
      }
      void a(int a, int b) {
+//    	 System.out.println("Checking... "+a+"="+b);
          Tester.checkEqual(a,b,msg);
      }
 }

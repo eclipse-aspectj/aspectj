@@ -1,3 +1,5 @@
+import org.aspectj.lang.annotation.SuppressAjWarnings;
+
 public class AroundReturnType {
      public static void main(String[] args){
          new AroundReturnType().go();
@@ -13,14 +15,15 @@ public class AroundReturnType {
 }
 
 aspect A {
-    void around(): within(AroundReturnType) && call(Integer AroundReturnType.s()){
-	System.out.println("s - advice");  
-	proceed();
+	@SuppressAjWarnings("adviceDidNotMatch")
+	void around(): within(AroundReturnType) && call(Integer AroundReturnType.s()){
+    	System.out.println("s - advice");  
+    	proceed();
     }
-    
+
     Integer around(): within(AroundReturnType) && execution(* *(..)) {
-	proceed();
-	return new Integer(3);
+    	proceed();
+    	return new Integer(3);
     }
   
 }

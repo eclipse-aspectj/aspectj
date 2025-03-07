@@ -1,3 +1,4 @@
+import org.aspectj.lang.annotation.SuppressAjWarnings;
 import org.aspectj.testing.Tester;
 
 public class WithinInners {
@@ -53,6 +54,7 @@ aspect A {
 	//System.out.println("about to call Runnable.run in " + c + " on " + runnable);
         notes += "before-within:";
     }
+    @SuppressAjWarnings("adviceDidNotMatch")
     before(): execution(void run()) && withincode(Runnable C.getRunnable()) {
 	//System.out.println("about to call Runnable.run in C");
         notes += "before-withincode:";

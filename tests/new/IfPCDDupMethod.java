@@ -1,3 +1,4 @@
+import org.aspectj.lang.annotation.SuppressAjWarnings;
 
 /**
  * Ajc produces duplicated methods, and javac complains:
@@ -6,7 +7,7 @@
  *   private void signal$method_call10(final String msg) </pre>
  */
 public class IfPCDDupMethod {
-    public static void main(String[] args) { }
+    public static void main(String[] args) { System.out.println(""); }
 }
 
 aspect AlreadyDefined {

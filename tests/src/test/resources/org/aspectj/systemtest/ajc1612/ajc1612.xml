@@ -3,7 +3,7 @@
 <suite>
 
  <ajc-test dir="bugs1612/pr327141" title="classcast">
-     <compile files="AspectWithConstant.aj" options="-1.5"/>
+     <compile files="AspectWithConstant.aj" options="-1.8"/>
      <run class="AspectWithConstant">
      <stdout>
      <line text="MAX=9"/>
@@ -180,7 +180,7 @@
    </ajc-test>
 
 <ajc-test dir="bugs1612/pr354470" title="perthis too pervasive">
-<compile files="Code.java" options="-1.5"/>
+<compile files="Code.java" options="-1.8"/>
 <run class="Code">
 <stdout>
 	<line text="AAA"/>
@@ -192,7 +192,7 @@
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr354470" title="perthis too pervasive 2">
-<compile files="Code2.java" options="-1.5"/>
+<compile files="Code2.java" options="-1.8"/>
 <run class="Code2">
 <stdout>
 	<line text="execution(void CCC.m())"/>
@@ -200,7 +200,7 @@
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr354470" title="perthis too pervasive 3">
-<compile files="Code3.java" options="-1.5"/>
+<compile files="Code3.java" options="-1.8"/>
 <run class="Code3">
 <stdout>
 	<line text="execution(void CCC.m())"/>
@@ -208,7 +208,7 @@
 </ajc-test>
 
 <ajc-test dir="bugs1612/prx" title="class reference in annotation value">
-<compile files="C.java" options="-1.5 -showWeaveInfo">
+<compile files="C.java" options="-1.8 -showWeaveInfo">
 <message kind="weave" text="Join point 'field-get(int C.i)' in Type 'C' (C.java:17) advised by before advice from 'X' (C.java:22)"/>
 </compile>
 <run class="C">
@@ -216,7 +216,7 @@
 </ajc-test>
 
 <ajc-test dir="bugs1612/prx" title="annotation values not equal">
-<compile files="D.java" options="-1.5 -showWeaveInfo">
+<compile files="D.java" options="-1.8 -showWeaveInfo">
 <message kind="weave" text="Join point 'field-get(int D.i)' in Type 'D' (D.java:20) advised by before advice from 'X' (D.java:26)"/>
 <message kind="weave" text="Join point 'field-get(int D.j)' in Type 'D' (D.java:21) advised by before advice from 'X' (D.java:26)"/>
 </compile>
@@ -225,7 +225,7 @@
 </ajc-test>
 
 <ajc-test dir="bugs1612/prx" title="class reference in annotation value 3">
-<compile files="E.java" options="-1.5 -showWeaveInfo">
+<compile files="E.java" options="-1.8 -showWeaveInfo">
 <message kind="weave" text="Join point 'field-get(int E.i)' in Type 'E' (E.java:17) advised by before advice from 'X' (E.java:22)"/>
 </compile>
 <run class="E">
@@ -233,7 +233,7 @@
 </ajc-test>
 
 <ajc-test dir="bugs1612/prx" title="annotation values not equal 2">
-<compile files="F.java" options="-1.5 -showWeaveInfo">
+<compile files="F.java" options="-1.8 -showWeaveInfo">
 <message kind="weave" text="Join point 'field-get(int F.i)' in Type 'F' (F.java:20) advised by before advice from 'X' (F.java:26)"/>
 <message kind="weave" text="Join point 'field-get(int F.j)' in Type 'F' (F.java:21) advised by before advice from 'X' (F.java:26)"/>
 </compile>
@@ -243,19 +243,19 @@
 
 
 <ajc-test dir="bugs1612/prx" title="class reference in annotation value - invalid typename">
-<compile files="G.java" options="-1.5">
+<compile files="G.java" options="-1.8">
 <message kind="error" text="Unable to resolve type 'Foo.class' specified for value 'value'"/>
 </compile>
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr356612" title="annotation field binding optimization">
-<compile files="AnnoBinding.java" options="-1.5"/>
+<compile files="AnnoBinding.java" options="-1.8"/>
 <run class="AnnoBinding">
 </run>
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr356612" title="annotation field binding optimization - 2">
-<compile files="AnnoBinding2.java" options="-1.5"/>
+<compile files="AnnoBinding2.java" options="-1.8"/>
 <run class="AnnoBinding2">
 <stdout>
 <line text="get(int AnnoBinding2.field1) @Marker(message=foo)" vm="-1.8"/>
@@ -268,12 +268,12 @@
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr354683" title="itd split compilation">
-<compile files="util/CommonData.java util/CommonDataImpl.java util/CommonDataImplementation.aj util/DerivedCommonDataInterface.java util/DerivedCommonDataInterfaceImpl.java util/DerivedCommonDataInterfaceImplementation.aj" options="-1.5" outjar="code.jar"/>
-<compile files="main/AbstractBaseClass.java main/DerivedClass.java main/Whatever.java " options="-1.5" aspectpath="code.jar"/>
+<compile files="util/CommonData.java util/CommonDataImpl.java util/CommonDataImplementation.aj util/DerivedCommonDataInterface.java util/DerivedCommonDataInterfaceImpl.java util/DerivedCommonDataInterfaceImplementation.aj" options="-1.8" outjar="code.jar"/>
+<compile files="main/AbstractBaseClass.java main/DerivedClass.java main/Whatever.java " options="-1.8" aspectpath="code.jar"/>
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr239649" title="thisAspectInstance - 1">
-<compile files="One.java" options="-1.5"/>
+<compile files="One.java" options="-1.8"/>
 <run class="One">
   <stdout>
   <line text="In instance check method doit()"/>
@@ -284,7 +284,7 @@
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr239649" title="thisAspectInstance - 2">
-<compile files="Two.java" options="-1.5"/>
+<compile files="Two.java" options="-1.8"/>
 <run class="Two">
   <stdout>
   <line text="In instance check method, count=1 so doit returns false"/>
@@ -302,7 +302,7 @@
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr239649" title="thisAspectInstance - 3">
-<compile files="Three.java" options="-1.5"/>
+<compile files="Three.java" options="-1.8"/>
 <run class="Three">
   <stdout>
   <line text="Method m() running"/>
@@ -320,7 +320,7 @@
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr239649" title="thisAspectInstance - 4">
-<compile files="Four.java" options="-1.5"/>
+<compile files="Four.java" options="-1.8"/>
 <run class="Four">
   <stdout>
   <line text="In instance check method doit()"/>
@@ -331,7 +331,7 @@
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr239649" title="thisAspectInstance - 5">
-<compile files="Five.java" options="-1.5"/>
+<compile files="Five.java" options="-1.8"/>
 <run class="Five">
   <stdout>
   <line text="In instance check method doit()"/>
@@ -342,7 +342,7 @@
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr239649" title="thisAspectInstance - 6">
-<compile files="Six.java" options="-1.5"/>
+<compile files="Six.java" options="-1.8"/>
 <run class="Six">
   <stdout>
   <line text="In instance check method doit()"/>
@@ -353,7 +353,7 @@
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr239649" title="thisAspectInstance - 7">
-<compile files="Seven.java" options="-1.5"/>
+<compile files="Seven.java" options="-1.8"/>
 <run class="Seven">
   <stdout>
   <line text="In instance check method doit()"/>
@@ -364,7 +364,7 @@
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr239649" title="thisAspectInstance - 8">
-<compile files="Eight.java" options="-1.5"/>
+<compile files="Eight.java" options="-1.8"/>
 <run class="Eight">
   <stdout>
   <line text="in doit(): class=X"/>
@@ -375,7 +375,7 @@
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr239649" title="thisAspectInstance - 9">
-<compile files="Nine.java" options="-1.5"/>
+<compile files="Nine.java" options="-1.8"/>
 <run class="Nine">
   <stdout>
   <line text="in doit(): class=X"/>
@@ -386,7 +386,7 @@
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr239649" title="thisAspectInstance - 10">
-<compile files="Ten.java" options="-1.5"/>
+<compile files="Ten.java" options="-1.8"/>
 <run class="com.foo.bar.Ten">
   <stdout>
   <line text="In instance check method doit() class=com.foo.bar.X"/>
@@ -397,13 +397,13 @@
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr239649" title="thisAspectInstance - 11">
-<compile files="Eleven.java" options="-1.5">
+<compile files="Eleven.java" options="-1.8">
 <message kind="error" text="thisAspectInstance can only be used inside an if() clause for singleton aspects (compiler limitation)"/>
 </compile>
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr239649" title="thisAspectInstance - 12">
-<compile files="Twelve.java" options="-1.5"/>
+<compile files="Twelve.java" options="-1.8"/>
 <run class="Twelve">
   <stdout>
   <line text="In instance check method doit()"/>
@@ -414,7 +414,7 @@
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr239649" title="thisAspectInstance - 13">
-<compile files="Thirteen.java" options="-1.5"/>
+<compile files="Thirteen.java" options="-1.8"/>
 <run class="Thirteen">
   <stdout>
   <line text="instance is X"/>
@@ -425,7 +425,7 @@
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr239649" title="thisAspectInstance - 14">
-<compile files="Fourteen.java" options="-1.5"/>
+<compile files="Fourteen.java" options="-1.8"/>
 <run class="Fourteen">
   <stdout>
   <line text="instance is X"/>
@@ -436,7 +436,7 @@
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr239649" title="thisAspectInstance - 15">
-<compile files="Fifteen.java" options="-1.5"/>
+<compile files="Fifteen.java" options="-1.8"/>
 <run class="Fifteen">
   <stdout>
   <line text="in doit(): class=X"/>
@@ -465,38 +465,38 @@
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr353936" title="local variable tables">
-<compile files="Code.java" options="-1.5"/>
+<compile files="Code.java" options="-1.8"/>
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr352363" title="empty pattern">
-<compile files="Code.java" options="-1.5">
+<compile files="Code.java" options="-1.8">
   <message line="12" kind="warning" text="name is empty1"/>
   <message line="13" kind="warning" text="name is empty2"/>
 </compile>
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr351592" title="generics issue">
-<compile files="Test.java Fib.java FibCaching.aj Caching.aj" options="-1.5"/>
+<compile files="Test.java Fib.java FibCaching.aj Caching.aj" options="-1.8"/>
 <run class="caching.Test"/>
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr351592" title="generics issue - 2">
-<compile files="Test.java Fib.java FibCaching.aj Caching.aj" options="-1.5"/>
+<compile files="Test.java Fib.java FibCaching.aj Caching.aj" options="-1.8"/>
 <run class="caching.Test"/>
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr350800" title="generics npe">
-<compile files="AbstractAdapter.java AbstractProbingAspect.java Adapter.java ProbingAspect.java" options="-1.5"/>
+<compile files="AbstractAdapter.java AbstractProbingAspect.java Adapter.java ProbingAspect.java" options="-1.8"/>
 <!--  run class="com.example.MyAspectTest" -->
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr350800_2" title="generics npe - code">
-<compile files="AbstractAdapter.java AbstractProbingAspect.java Adapter.java ProbingAspect.java" options="-1.5"/>
+<compile files="AbstractAdapter.java AbstractProbingAspect.java Adapter.java ProbingAspect.java" options="-1.8"/>
 <!--  run class="com.example.MyAspectTest" -->
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr350800_3" title="generics npe - 3">
-<compile files="AbstractAdapter.java AbstractProbingAspect.java Adapter.java ProbingAspect.java" options="-1.5"/>
+<compile files="AbstractAdapter.java AbstractProbingAspect.java Adapter.java ProbingAspect.java" options="-1.8"/>
 <run class="test.aop.Adapter">
 <stdout>
 <line text="&gt;hello"/>
@@ -505,32 +505,32 @@
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr349961" title="ordering">
-<compile files="MyParameterAnnotation.java MyAspect.java MyAspectTest.java A.java ABean.java" options="-1.5"/>
+<compile files="MyParameterAnnotation.java MyAspect.java MyAspectTest.java A.java ABean.java" options="-1.8"/>
 <run class="com.example.MyAspectTest">
 </run>
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr349961" title="ordering - 2">
-<compile files="MyParameterAnnotation.java MyAspect.java MyAspectTest.java ABean.java A.java" options="-1.5"/>
+<compile files="MyParameterAnnotation.java MyAspect.java MyAspectTest.java ABean.java A.java" options="-1.8"/>
 <run class="com.example.MyAspectTest">
 </run>
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr347395" title="verifyerror - inline">
-<compile files="Target.java Task.java TaskHistoryAspect.aj TaskModification.java" options="-1.5"/>
+<compile files="Target.java Task.java TaskHistoryAspect.aj TaskModification.java" options="-1.8"/>
 <run class="xxx.util.Target">
 </run>
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr349398" title="duplicate methods">
-<compile files="DataGenerator.java CacheAspect.java DataGeneratorCacheAspect.java DataGeneratorTest.java" options="-1.5"/>
+<compile files="DataGenerator.java CacheAspect.java DataGeneratorCacheAspect.java DataGeneratorTest.java" options="-1.8"/>
 <run class="DataGeneratorTest">
 </run>
 </ajc-test>
 
 
 <ajc-test dir="bugs1612/pr347684" title="binding ints">
-<compile files="BindingInts.java" options="-1.5"/>
+<compile files="BindingInts.java" options="-1.8"/>
 <run class="BindingInts">
   <stdout>
   <line text="execution(void BindingInts.a()) 37"/>
@@ -539,7 +539,7 @@
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr347684" title="binding ints - 2">
-<compile files="BindingInts2.java" options="-1.5"/>
+<compile files="BindingInts2.java" options="-1.8"/>
 <run class="BindingInts2">
   <stdout>
   <line text="execution(void BindingInts2.a()) 99"/>
@@ -548,7 +548,7 @@
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr347684" title="binding ints - 3">
-<compile files="BindingInts3.java" options="-1.5"/>
+<compile files="BindingInts3.java" options="-1.8"/>
 <run class="BindingInts3">
   <stdout>
   <line text="execution(void BindingInts3.a()) abc"/>
@@ -557,7 +557,7 @@
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr347684" title="binding ints - 4">
-<compile files="BindingInts4.java" options="-1.5"/>
+<compile files="BindingInts4.java" options="-1.8"/>
 <run class="BindingInts4">
   <stdout>
   <line text="execution(void BindingInts4.a()) 37 48"/>
@@ -566,7 +566,7 @@
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr347684" title="binding ints - 5">
-<compile files="BindingInts5.java" options="-1.5"/>
+<compile files="BindingInts5.java" options="-1.8"/>
 <run class="BindingInts5">
   <stdout>
   <line text="execution(void BindingInts5.a()) 37"/>
@@ -576,7 +576,7 @@
 
 
 <ajc-test dir="bugs1612/pr347684" title="binding ints - 6">
-<compile files="BindingInts6.java" options="-1.5"/>
+<compile files="BindingInts6.java" options="-1.8"/>
 <run class="BindingInts6">
   <stdout>
   <line text="execution(void BindingInts6.a()) 37 1 99"/>
@@ -585,12 +585,12 @@
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr345515" title="anno copying">
-<compile files="Code.java" options="-1.5"/>
+<compile files="Code.java" options="-1.8"/>
   <run class="Code"/>
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr327867" title="synthetic methods">
-<compile files="Foo.java" options="-1.5 -showWeaveInfo">
+<compile files="Foo.java" options="-1.8 -showWeaveInfo">
 <message kind="weave" text="Join point 'method-execution(void Foo.main(java.lang.String[]))' in Type 'Foo' (Foo.java:3) advised by before advice from 'X' (Foo.java:17)"/>
 <message kind="weave" text="Join point 'method-execution(void Foo.m())' in Type 'Foo' (Foo.java:7) advised by before advice from 'X' (Foo.java:17)"/>
 </compile>
@@ -598,7 +598,7 @@
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr345172" title="incorrect annos">
-<compile files="InterType.java" options="-1.5 -showWeaveInfo">
+<compile files="InterType.java" options="-1.8 -showWeaveInfo">
 <message kind="weave" text="Join point 'method-execution(void InterType$InterTypeIfc.m1(int))' in Type 'InterType' (InterType.java:21) advised by around advice from 'InterType$AroundMethod' (InterType.java:12)"/>
 <!--
 <message kind="weave" text="Join point 'method-execution(void InterType$InterTypeIfc.m1(int, int))' in Type 'InterType' (InterType.java:24) advised by around advice from 'InterType$AroundMethod' (InterType.java:12)"/>
@@ -611,7 +611,7 @@
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr345172" title="incorrect annos 2">
-<compile files="InterType2.java" options="-1.5">
+<compile files="InterType2.java" options="-1.8">
 </compile>
 <run class="InterType2">
 <stdout>
@@ -620,7 +620,7 @@
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr345172" title="incorrect annos 3">
-<compile files="InterType3.java" options="-1.5">
+<compile files="InterType3.java" options="-1.8">
 </compile>
 <run class="InterType3">
 <stdout>
@@ -641,7 +641,7 @@
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr315398" title="verifyerror">
-<compile files="Code.java" options="-1.5">
+<compile files="Code.java" options="-1.8">
 </compile>
 <run class="Code">
 <stdout>
@@ -652,29 +652,29 @@
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr315398" title="verifyerror - 2">
-<compile files="Code2.java" options="-1.5">
+<compile files="Code2.java" options="-1.8">
 </compile>
   <run class="Code2"/>
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr335810" title="rawtype warning">
-<compile files="One.java" options="-1.5 -warn:+raw -warn:+unchecked -warn:+warningToken">
+<compile files="One.java" options="-1.8 -warn:+raw -warn:+unchecked -warn:+warningToken">
 </compile>
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr327134" title="rawtype pointcut">
-<compile files="Code.java" options="-1.5 -warn:+raw -warn:+warningToken">
+<compile files="Code.java" options="-1.8 -warn:+raw -warn:+warningToken">
 </compile>
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr344005" title="decp generics">
-<compile files="Anno.java Types.java Azpect.java" options="-1.5 -showWeaveInfo">
+<compile files="Anno.java Types.java Azpect.java" options="-1.8 -showWeaveInfo">
 <message kind="weave" text="XX"/>
 </compile>
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr343051" title="illegalaccesserror">
-<compile files="Code.java Code2.java Azpect.java" options="-1.5"/>
+<compile files="Code.java Code2.java Azpect.java" options="-1.8"/>
 <run class="p.Code">
 <stdout>
 <line text="abc"/>
@@ -683,18 +683,18 @@
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr339974" title="itit npe">
-<compile files="City.java TrafficCalculator.java" options="-1.5">
+<compile files="City.java TrafficCalculator.java" options="-1.8">
 <message kind="error" text="The nested type TrafficCalculator cannot hide an enclosing type"/>
 </compile>
 </ajc-test>
 
 <ajc-test dir="bugs1612/pr342605" title="noimporterror">
-<compile files="Code.java" options="-1.5 -noImportError"/>
+<compile files="Code.java" options="-1.8 -noImportError"/>
 <run class="Code"/>
 </ajc-test>
 
   <ajc-test dir="bugs1612/pr342323" title="clashing local types">
-  	<compile files="Runner.java Bean.java Azpect.java" options="-1.5"/>
+  	<compile files="Runner.java Bean.java Azpect.java" options="-1.8"/>
   	<run class="ppp.Runner">
   	<stdout>
 	  	<line text="Calling regular method"/>
@@ -706,14 +706,14 @@
   </ajc-test>
 
 <ajc-test dir="bugs1612/pr338175" title="itit">
-<compile files="pack1/Aspect.java pack2/Java.java pack2/Java2.java" options="-1.5">
+<compile files="pack1/Aspect.java pack2/Java.java pack2/Java2.java" options="-1.8">
 	<message kind="error" text="Duplicate nested type ITIT"/>
 	<message kind="error" text="can't determine modifiers"/>
 </compile>
 </ajc-test>
 
   <ajc-test dir="bugs1612/pr292239" title="throws clause">
-  	<compile files="Code.java" options="-1.5 -showWeaveInfo">
+  	<compile files="Code.java" options="-1.8 -showWeaveInfo">
   	  <message kind="weave" text="Join point 'method-execution(void mypackage.Code.n())' in Type 'mypackage.Code' (Code.java:19) advised by afterThrowing advice from 'mypackage.Azpect' (Code.java:9)"/>
   	</compile>
   	<run class="mypackage.Code">
@@ -725,7 +725,7 @@
   </ajc-test>
 
   <ajc-test dir="bugs1612/pr292239" title="throws clause - 2">
-  	<compile files="Code2.java" options="-1.5 -showWeaveInfo">
+  	<compile files="Code2.java" options="-1.8 -showWeaveInfo">
   	  <message kind="weave" text="Join point 'method-execution(void mypackage.Code2.n2())' in Type 'mypackage.Code2' (Code2.java:17) advised by afterThrowing advice from 'mypackage.Azpect' (Code2.java:7)"/>
   	</compile>
   	<run class="mypackage.Code2">

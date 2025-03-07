@@ -1,21 +1,21 @@
+import org.aspectj.lang.annotation.SuppressAjWarnings;
 import org.aspectj.testing.Tester;
-
 class C {
     public void a() {
 	T.add("a");
     }
 }
-
+@SuppressAjWarnings("adviceDidNotMatch")
 aspect A1 { declare precedence: A1, A2;
     pointcut cut(): target(C) && execution(void a());
 
     before(): A1.cut() { T.add("A1"); }
 }
-
+@SuppressAjWarnings("adviceDidNotMatch")
 aspect A2 { declare precedence: A2, A3;
     before(): A1.cut() { T.add("A2"); }
 }
-
+@SuppressAjWarnings("adviceDidNotMatch")
 aspect A3 { declare precedence: A3, A1;
     before(): A1.cut() { T.add("A3"); }
 }

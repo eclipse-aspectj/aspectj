@@ -66,9 +66,8 @@ public class BuildArgParserTestCase extends TestCase {
     		assertTrue(
     			config.getClasspath().toString(),
     			config.getClasspath().contains("2.jar"));
-
-    		config = genBuildConfig(new String[] { "-1.3" }, messageWriter);
-    		// these errors are deffered to the compiler now
+    		config = genBuildConfig(new String[] { "-1.8" }, messageWriter);
+    		// these errors are defered to the compiler now
             //err = parser.getOtherMessages(true);
             //!!!assertTrue(err, null == err);
     		assertTrue(
@@ -79,7 +78,7 @@ public class BuildArgParserTestCase extends TestCase {
     			config.getClasspath().contains("2.jar"));
 
 			parser = new BuildArgParser(messageWriter);
-    		config = parser.genBuildConfig(new String[] { "-1.3" });
+    		config = parser.genBuildConfig(new String[] { "-1.8" });
             /*err = */parser.getOtherMessages(true);
             //!!!assertTrue(err, null == err);
     		assertTrue(
@@ -89,12 +88,11 @@ public class BuildArgParserTestCase extends TestCase {
     			config.getClasspath().toString(),
     			config.getClasspath().contains("2.jar"));
 
-    		config = genBuildConfig(new String[] {
-    			"-classpath", ENTRY, "-1.4" }, messageWriter);
-			//			these errors are deffered to the compiler now
+    		config = genBuildConfig(new String[] {"-classpath", ENTRY, "-1.8" }, messageWriter);
+			// these errors are defered to the compiler now
             //err = parser.getOtherMessages(true);
             //assertTrue("expected errors for missing jars", null != err);
-    		List cp = config.getClasspath();
+    		List<String> cp = config.getClasspath();
     		boolean jar1Found = false;
     		boolean jar2Found = false;
 			for (Object o : cp) {
@@ -102,13 +100,8 @@ public class BuildArgParserTestCase extends TestCase {
 				if (element.contains("1.jar")) jar1Found = true;
 				if (element.contains("2.jar")) jar2Found = true;
 			}
-    		assertTrue(
-    			config.getClasspath().toString(),
-    			jar1Found);
-    		assertTrue(
-    			config.getClasspath().toString(),
-    			jar2Found);
-
+    		assertTrue(config.getClasspath().toString(),jar1Found);
+    		assertTrue(config.getClasspath().toString(),jar2Found);
         } finally {
             // do finally to avoid messing up classpath for other tests
             System.setProperty("java.class.path", classpath);
@@ -287,7 +280,7 @@ public class BuildArgParserTestCase extends TestCase {
 
 		assertEquals(getCanonicalPath(new File(SRCROOT)), config.getSourceRoots().get(0).getAbsolutePath());
 
-		Collection expectedFiles = Arrays.asList(new File[] {
+		Collection<File> expectedFiles = Arrays.asList(new File[] {
 			new File(SRCROOT+File.separator+"Hello.java").getCanonicalFile(),
 			new File(Constants.TESTDATA_PATH +File.separator+"src1"+File.separator+"A.java").getCanonicalFile(),
 		});
@@ -347,10 +340,10 @@ public class BuildArgParserTestCase extends TestCase {
 
 	//XXX shouldn't need -1.4 to get this to pass
 	public void testCombinedOptions() throws InvalidInputException {
-		AjBuildConfig config = genBuildConfig(new String[] {  "-Xlint:error", "-target", "1.4"}, messageWriter);
+		AjBuildConfig config = genBuildConfig(new String[] {  "-Xlint:error", "-target", "1.8"}, messageWriter);
 		assertTrue(
 				"target set",
-				config.getOptions().targetJDK == ClassFileConstants.JDK1_4);
+				config.getOptions().targetJDK == ClassFileConstants.JDK1_8);
 
 		assertTrue(
 			"Xlint option set",
@@ -434,38 +427,11 @@ public class BuildArgParserTestCase extends TestCase {
 		assertEquals(getCanonicalPath(new File(lintFile)),config.getLintSpecFile().getAbsolutePath());
 	}
 
-	/**
-	 * The option '-1.5' are currently eaten by the AspectJ argument parser - since
-	 * the JDT compiler upon which we are based doesn't understand them - *this should change* when we
-	 * switch to a 1.5 compiler base.  They are currently used to determine whether the weaver should
-	 * behave in a '1.5' way - for example autoboxing behaves differently when the 1.5 flag is specified.
-	 * Under 1.4 Integer != int
-	 * Under 1.5 Integer == int
-	 * (this applies to all primitive types)
-	 */
-	public void testSource15() throws InvalidInputException {
-//		AjBuildConfig config = genBuildConfig(new String[]{"-source","1.5"},messageWriter);
-//		assertTrue("should be in 1.5 mode",config.getJave5Behaviour());
-		AjBuildConfig config = genBuildConfig(new String[]{"-1.5"},messageWriter);
-		assertTrue("should be in 1.5 mode",config.getBehaveInJava5Way());
-		config = genBuildConfig(new String[]{"-source","1.4"},messageWriter);
-		assertTrue("should not be in 1.5 mode",!config.getBehaveInJava5Way());
-		assertTrue("should be in 1.4 mode",config.getOptions().sourceLevel == ClassFileConstants.JDK1_4);
-		config = genBuildConfig(new String[]{"-source","1.3"},messageWriter);
-		assertTrue("should not be in 1.5 mode",!config.getBehaveInJava5Way());
-		assertTrue("should be in 1.3 mode",config.getOptions().sourceLevel == ClassFileConstants.JDK1_3);
-	}
-
 	public void testOptions() throws InvalidInputException {
-//		AjdtCommand command = new AjdtCommand();
-		String TARGET = "1.4";
+		String TARGET = "1.8";
 		AjBuildConfig config = genBuildConfig(new String[] {"-target", TARGET, "-source", TARGET}, messageWriter);
-		assertTrue(
-			"target set",
-			config.getOptions().targetJDK == ClassFileConstants.JDK1_4);
-		assertTrue(
-			"source set",
-			config.getOptions().sourceLevel == ClassFileConstants.JDK1_4);
+		assertTrue("target set",config.getOptions().targetJDK == ClassFileConstants.JDK1_8);
+		assertTrue("source set",config.getOptions().sourceLevel == ClassFileConstants.JDK1_8);
 	}
 
 	public void testLstFileExpansion() throws IOException, FileNotFoundException, InvalidInputException {
@@ -473,10 +439,8 @@ public class BuildArgParserTestCase extends TestCase {
 		String SOURCE_PATH_1 = "A.java";
 		String SOURCE_PATH_2 = "B.java";
 
-//        File f = new File(FILE_PATH);
-
 		AjBuildConfig config = genBuildConfig(new String[] { "@" + FILE_PATH }, messageWriter);
-		List resultList = config.getFiles();
+		List<File> resultList = config.getFiles();
 
 		assertTrue("correct number of files", resultList.size() == 2);
 		assertTrue(resultList.toString() + new File(TEST_DIR + SOURCE_PATH_1).getCanonicalFile(),

@@ -733,7 +733,7 @@ public class AjcTaskTest extends TestCase {
     task.setPreserveAllLocals(true);
     task.setProceedOnError(true);
     task.setReferenceInfo(true);
-    task.setSource("1.3");
+    task.setSource("1.8");
     task.setTarget("1.1");
     task.setTime(true);
     task.setVerbose(true);

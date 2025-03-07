@@ -1,4 +1,5 @@
 
+import org.aspectj.lang.annotation.SuppressAjWarnings;
 import org.aspectj.testing.Tester; 
 import org.aspectj.testing.Tester;
 
@@ -92,6 +93,7 @@ aspect TestSignals {
 	/** identify methods that should never be called */
 	pointcut errorIfCalled () : call(boolean *..executedNamedIfNever(..));
 	/** signal failure if method that wasn't supposed to be called is in fact invoked */
+	@SuppressAjWarnings("adviceDidNotMatch")
 	after () : errorIfCalled() {
 		// todo: will StaticPart will always have null for source ?
 		StringBuffer sb = new StringBuffer();

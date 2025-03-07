@@ -529,7 +529,10 @@ public class GenericsTests extends XMLBasedAjcTestCase {
 
 
 	public void testGenericITDsBridgeMethodsPR91381()  {runTest("abstract intertype methods and covariant returns");}
-	public void testGenericITDsBridgeMethodsPR91381_2()  {runTest("abstract intertype methods and covariant returns - error");}
+	
+	// Changed with Java23 because can no longer compile with -1.4 flag so the only way to get the expected error is
+	// to violate covariant returns more explicitly
+	public void testGenericITDsBridgeMethodsPR91381_2()  {runTest("abstract intertype methods and covariant returns - 2");}
 
 	// ----------------------------------------------------------------------------------------
 	// generic declare parents tests

@@ -26,6 +26,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ArrayAllocationExpressi
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ArrayInitializer;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.LocalDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ReturnStatement;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Statement;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
@@ -34,6 +35,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.Opcodes;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ArrayBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LocalVariableBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope;
@@ -354,6 +356,20 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 				munger.getTypeVariableAliases());
 
 		codeStream.initializeMaxLocals(binding);
+		
+		Argument[] itdArgs = this.arguments;
+		if (itdArgs != null) {
+			for (Argument itdArg : itdArgs) {
+				LocalVariableBinding lvb = itdArg.binding;
+				LocalVariableBinding lvbCopy = new LocalVariableBinding(lvb.name, lvb.type, lvb.modifiers, true);
+				lvbCopy.declaration = new LocalDeclaration(itdArg.name, 0, 0);
+				lvbCopy.declaringScope = scope;
+				codeStream.record(lvbCopy);
+				lvbCopy.recordInitializationStartPC(0);
+				lvbCopy.resolvedPosition = lvb.resolvedPosition;
+			}
+		}
+		
 		if (isGetter) {
 			if (onTypeBinding.isInterface()) {
 				UnresolvedType declaringTX = sig.getDeclaringType();
@@ -377,6 +393,15 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 		}
 		AstUtil.generateReturn(binding.returnType, codeStream);
 
+		// tag the local variables as used throughout the method
+		if (itdArgs != null && codeStream.locals != null) {
+			for (int a = 0; a < itdArgs.length; a++) {
+				if (codeStream.locals[a] != null) {
+					codeStream.locals[a].recordInitializationEndPC(codeStream.position);
+				}
+			}
+		}
+		
 		classFile.completeCodeAttribute(codeAttributeOffset,scope);
 		attributeNumber++;
 		classFile.completeMethodInfo(binding,methodAttributeOffset, attributeNumber);
@@ -432,9 +457,22 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 				codeStream.load(field.type, 0);
 				codeStream.invoke(Opcodes.OPC_invokestatic,fBinding.writer,null);
 			} else {
+				// Example: 
+				// We are generating: public static void ajc$interFieldSetDispatch$PersonAspect$Manager$jobTitle(Manager, java.lang.String) 
+				// And it is calling: public static void ajc$set$jobTitle(Manager, java.lang.String) 
+				LocalVariableBinding instanceVar = new LocalVariableBinding("instance".toCharArray(),this.onTypeBinding,Modifier.PUBLIC,true);
+				codeStream.record(instanceVar);
+				instanceVar.recordInitializationStartPC(codeStream.position);
+				instanceVar.resolvedPosition = 0;
 				codeStream.aload_0();
+				LocalVariableBinding valueVar = new LocalVariableBinding("value".toCharArray(),this.realFieldType,Modifier.PUBLIC,true);
+				codeStream.record(valueVar);
+				valueVar.recordInitializationStartPC(codeStream.position);
+				valueVar.resolvedPosition = 1;
 				codeStream.load(field.type, 1);
 				codeStream.invoke(Opcodes.OPC_invokestatic,fBinding.writer,null);
+				instanceVar.recordInitializationEndPC(codeStream.position);
+				valueVar.recordInitializationEndPC(codeStream.position);
 			}
 			return;
 		}

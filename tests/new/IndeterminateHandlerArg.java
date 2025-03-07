@@ -1,6 +1,7 @@
 
 import org.aspectj.testing.Tester;
 import org.aspectj.lang.*;
+import org.aspectj.lang.annotation.SuppressAjWarnings;
 import org.aspectj.lang.reflect.*;
 
 /** @testcase PR#764 binding handler args with indeterminate prefix and suffix */
@@ -59,13 +60,21 @@ aspect A {
     before (Throwable t) : hd() && args(..,t)         { e("before ..,Throwable", thisJoinPoint, t); }
     before (Error t)     : hd() && args(..,t)         { e("before ..,Error", thisJoinPoint, t); }
 
+    @SuppressAjWarnings("adviceDidNotMatch")
     before ()            : hd() && args(Throwable,*) { Tester.check(false, "args(Throwable,*)"); }
+    @SuppressAjWarnings("adviceDidNotMatch")
     before ()            : hd() && args(*,Throwable) { Tester.check(false, "args(*,Throwable)"); }
+    @SuppressAjWarnings("adviceDidNotMatch")
     before ()            : hd() && args(Error,*)     { Tester.check(false, "args(Error,*)"); }
+    @SuppressAjWarnings("adviceDidNotMatch")
     before ()            : hd() && args(*,Error)     { Tester.check(false, "args(*,Error)"); }
+    @SuppressAjWarnings("adviceDidNotMatch")
     before (Throwable t) : hd() && args(t,*)         { Tester.check(false, "args((Throwable)t,*)"); }
+    @SuppressAjWarnings("adviceDidNotMatch")
     before (Error t)     : hd() && args(t,*)         { Tester.check(false, "args((Error)t,*)"); }
+    @SuppressAjWarnings("adviceDidNotMatch")
     before (Throwable t) : hd() && args(*,t)         { Tester.check(false, "args(*,(Throwable)t)"); }
+    @SuppressAjWarnings("adviceDidNotMatch")
     before (Error t)     : hd() && args(*,t)         { Tester.check(false, "args(*,(Error)t)"); }
 }
 

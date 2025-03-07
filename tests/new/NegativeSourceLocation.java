@@ -102,7 +102,7 @@ aspect Aspect {
     // 1.1 includes StringBuffer calls that weren't in 1.0
     pointcut allTargetJoinPoints() 
         : within(TargetClass) && 
-        	!call(* StringBuffer.*(..)) && !call(StringBuffer.new(..))
+        	!call(* StringBuilder.*(..)) && !call(StringBuilder.new(..))
         	&& !call(* String.valueOf(Object));
 
     /** these have no enclosing join point */

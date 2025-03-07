@@ -75,9 +75,10 @@ public class DeclarationFactory implements IDeclarationFactory {
 	public void setPerClauseFrom(TypeDeclaration aspectDecl, ASTNode pseudoTokens, Parser parser) {
 		AspectDeclaration aspect = (AspectDeclaration) aspectDecl;
 		PseudoTokens tok = (PseudoTokens) pseudoTokens;
+		int start = parser.getCurrentTokenStart();
 		aspect.perClause = tok.parsePerClause(parser);
 		// For the ast support: currently the below line is not finished! The start is set incorrectly
-		((AspectDeclaration) aspectDecl).perClause.setLocation(null, 1, parser.getCurrentTokenStart() + 1);
+		((AspectDeclaration) aspectDecl).perClause.setLocation(null, start, parser.getCurrentTokenStart() + 1);
 	}
 
 	public void setDominatesPatternFrom(TypeDeclaration aspectDecl, ASTNode pseudoTokens, Parser parser) {

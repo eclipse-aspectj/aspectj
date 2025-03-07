@@ -4,7 +4,7 @@
 <suite>
     
     <ajc-test dir="features151/newarrayjoinpoint" title="basics">
-        <compile files="One.java" options="-1.5 -showWeaveInfo -Xjoinpoints:arrayconstruction">
+        <compile files="One.java" options="-1.8 -showWeaveInfo -Xjoinpoints:arrayconstruction">
           <message kind="weave" text="Join point 'constructor-call(void java.lang.Integer[].&lt;init&gt;(int))' in Type 'One' (One.java:4) advised by before advice from 'X' (One.java:9)"/>
         </compile>
         <run class="One">
@@ -16,7 +16,7 @@
     
     
     <ajc-test dir="features151/newarrayjoinpoint" title="basics - 2">
-        <compile files="Two.java" options="-1.5 -showWeaveInfo -Xjoinpoints:arrayconstruction">
+        <compile files="Two.java" options="-1.8 -showWeaveInfo -Xjoinpoints:arrayconstruction">
           <message kind="weave" text="Join point 'constructor-call(void java.lang.Integer[].&lt;init&gt;(int))' in Type 'Two' (Two.java:4) advised by before advice from 'X' (Two.java:9)"/>
         </compile>
         <run class="Two">
@@ -27,7 +27,7 @@
     </ajc-test>
     
     <ajc-test dir="features151/newarrayjoinpoint" title="shouldnt match">
-        <compile files="Three.java" options="-1.5 -showWeaveInfo -Xjoinpoints:arrayconstruction">
+        <compile files="Three.java" options="-1.8 -showWeaveInfo -Xjoinpoints:arrayconstruction">
           <message kind="warning" line="9" text="advice defined in X has not been applied [Xlint:adviceDidNotMatch]"/>
           <message kind="warning" line="10" text="advice defined in X has not been applied [Xlint:adviceDidNotMatch]"/>
           <message kind="warning" line="11" text="advice defined in X has not been applied [Xlint:adviceDidNotMatch]"/>
@@ -36,7 +36,7 @@
     </ajc-test>
     
     <ajc-test dir="features151/newarrayjoinpoint" title="thisjoinpoint">
-        <compile files="Four.java" options="-1.5 -showWeaveInfo -Xjoinpoints:arrayconstruction">
+        <compile files="Four.java" options="-1.8 -showWeaveInfo -Xjoinpoints:arrayconstruction">
           <message kind="weave" text="Join point 'constructor-call(void java.lang.Integer[].&lt;init&gt;(int))' in Type 'Four' (Four.java:4) advised by before advice from 'X' (Four.java:10)"/>
 		  <message kind="weave" text="Join point 'constructor-call(void Foo.&lt;init&gt;(int))' in Type 'Four' (Four.java:5) advised by before advice from 'X' (Four.java:13)"/>
         </compile>
@@ -49,7 +49,7 @@
     </ajc-test>
     
      <ajc-test dir="features151/newarrayjoinpoint" title="different advice kinds">
-        <compile files="Five.java" options="-1.5 -showWeaveInfo -Xjoinpoints:arrayconstruction">
+        <compile files="Five.java" options="-1.8 -showWeaveInfo -Xjoinpoints:arrayconstruction">
           <message kind="weave" text="Join point 'constructor-call(void java.lang.Integer[].&lt;init&gt;(int))' in Type 'Five' (Five.java:4) advised by around advice from 'Z' (Five.java:16)"/>
 		  <message kind="weave" text="Join point 'constructor-call(void java.lang.Integer[].&lt;init&gt;(int))' in Type 'Five' (Five.java:4) advised by after advice from 'Y' (Five.java:12)"/>
 		  <message kind="weave" text="Join point 'constructor-call(void java.lang.Integer[].&lt;init&gt;(int))' in Type 'Five' (Five.java:4) advised by afterReturning advice from 'Y' (Five.java:13)"/>
@@ -66,7 +66,7 @@
     </ajc-test>
     
     <ajc-test dir="features151/newarrayjoinpoint" title="args">
-        <compile files="Six.java" options="-1.5 -Xjoinpoints:arrayconstruction"/>
+        <compile files="Six.java" options="-1.8 -Xjoinpoints:arrayconstruction"/>
         <run class="Six">
           <stderr>
              <line text="Array size = 5"/>
@@ -75,7 +75,7 @@
     </ajc-test>
     
     <ajc-test dir="features151/newarrayjoinpoint" title="basic primitive array creation">
-        <compile files="Seven.java" options="-1.5 -Xjoinpoints:arrayconstruction"/>
+        <compile files="Seven.java" options="-1.8 -Xjoinpoints:arrayconstruction"/>
         <run class="Seven">
           <stderr>
              <line text="advice running"/>
@@ -84,7 +84,7 @@
     </ajc-test>
     
     <ajc-test dir="features151/newarrayjoinpoint" title="multi dimensional array creation">
-        <compile files="Eight.java" options="-1.5 -Xjoinpoints:arrayconstruction"/>
+        <compile files="Eight.java" options="-1.8 -Xjoinpoints:arrayconstruction"/>
         <run class="Eight">
           <stderr>
              <line text="advice running 2"/>
@@ -94,7 +94,7 @@
     </ajc-test>
     
     <ajc-test dir="features151/newarrayjoinpoint" title="multi dimensional array args">
-        <compile files="Nine.java" options="-1.5 -Xjoinpoints:arrayconstruction"/>
+        <compile files="Nine.java" options="-1.8 -Xjoinpoints:arrayconstruction"/>
         <run class="Nine">
           <stderr>
              <line text="advice running 2 (5,6)"/>
@@ -104,7 +104,7 @@
     </ajc-test>
     
     <ajc-test dir="features151/newarrayjoinpoint" title="using target and after returning">
-        <compile files="Ten.java" options="-1.5 -showWeaveInfo -Xjoinpoints:arrayconstruction">
+        <compile files="Ten.java" options="-1.8 -showWeaveInfo -Xjoinpoints:arrayconstruction">
           <message kind="warning" line="13" text="advice defined in X has not been applied [Xlint:adviceDidNotMatch]"/>
           <message kind="warning" line="17" text="advice defined in X has not been applied [Xlint:adviceDidNotMatch]"/>
           <message kind="weave" text="Join point 'constructor-call(void Ten.&lt;init&gt;())' in Type 'Ten' (Ten.java:4) advised by afterReturning advice from 'X' (Ten.java:21)"/>
@@ -119,7 +119,7 @@
     </ajc-test>
     
     <ajc-test dir="features151/newarrayjoinpoint" title="using it for real">
-        <compile files="Eleven.java" options="-1.5 -Xjoinpoints:arrayconstruction">
+        <compile files="Eleven.java" options="-1.8 -Xjoinpoints:arrayconstruction">
           <!--message kind="weave" text="Join point 'constructor-call(void Ten.&lt;init&gt;())' in Type 'Ten' (Ten.java:4) advised by afterReturning advice from 'X' (Ten.java:21)"/>
           <message kind="weave" text="Join point 'constructor-call(void int[].&lt;init&gt;(int))' in Type 'Ten' (Ten.java:5) advised by afterReturning advice from 'X' (Ten.java:21)"/-->
         </compile>
@@ -131,7 +131,7 @@
     </ajc-test>
     
     <ajc-test dir="features151/newarrayjoinpoint" title="differentiating array types">
-        <compile files="Twelve.java" options="-1.5 -Xjoinpoints:arrayconstruction"/>
+        <compile files="Twelve.java" options="-1.8 -Xjoinpoints:arrayconstruction"/>
         <run class="Twelve">
           <stderr>
              <line text="It is class [I"/>
@@ -151,11 +151,11 @@
     </ajc-test>
     
     <ajc-test dir="features151/newarrayjoinpoint" title="structure model">
-        <compile files="Five.java" options="-1.5 -emacssym -Xjoinpoints:arrayconstruction"/>
+        <compile files="Five.java" options="-1.8 -emacssym -Xjoinpoints:arrayconstruction"/>
     </ajc-test>
     
      <ajc-test dir="features151/newarrayjoinpoint" title="option deactivated - no match expected">
-        <compile files="One.java" options="-1.5 -showWeaveInfo">
+        <compile files="One.java" options="-1.8 -showWeaveInfo">
            <message kind="warning" line="9" text="advice defined in X has not been applied [Xlint:adviceDidNotMatch]"/>
            <message kind="warning" line="9" text="There are no join points for array construction unless -Xjoinpoints:arrayconstruction is specified"/>
         </compile>

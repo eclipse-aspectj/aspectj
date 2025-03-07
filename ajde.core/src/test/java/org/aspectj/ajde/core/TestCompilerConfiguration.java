@@ -77,8 +77,8 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 	public Map<String, String> getJavaOptionsMap() {
 		if (javaOptions == null) {
 			javaOptions = new Hashtable<>();
-			javaOptions.put(JavaOptions.COMPLIANCE_LEVEL, JavaOptions.VERSION_13);
-			javaOptions.put(JavaOptions.SOURCE_COMPATIBILITY_LEVEL, JavaOptions.VERSION_13);
+			javaOptions.put(JavaOptions.COMPLIANCE_LEVEL, JavaOptions.VERSION_18);
+			javaOptions.put(JavaOptions.SOURCE_COMPATIBILITY_LEVEL, JavaOptions.VERSION_18);
 		}
 		return javaOptions;
 	}

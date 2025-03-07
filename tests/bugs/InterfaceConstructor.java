@@ -1,3 +1,5 @@
+import org.aspectj.lang.annotation.SuppressAjWarnings;
+
 interface I { }
 
 public class InterfaceConstructor implements I {
@@ -7,7 +9,7 @@ public class InterfaceConstructor implements I {
 }
 
 aspect NoSuchJP {
-	before(): execution(I.new(..)) { // error expected
+	@SuppressAjWarnings("adviceDidNotMatch") before(): execution(I.new(..)) { // error expected
 		// No constructor-execution on interface type
 	}
 	

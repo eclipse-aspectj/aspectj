@@ -3,7 +3,7 @@
 <suite>
 
     <ajc-test dir="bugs196/558995" title="early resolution of supporting interfaces">
-    	<compile options="-14" files="foo/SynchronizedStaticAspect.aj foo/SynchronizedAspect.aj foo/SynchronizedTest.java foo/Synchronized.java"/>
+    	<compile options="-18" files="foo/SynchronizedStaticAspect.aj foo/SynchronizedAspect.aj foo/SynchronizedTest.java foo/Synchronized.java"/>
     </ajc-test>
 
 	<!-- switch now in Java14 and doesn't need -enable-preview flag -->

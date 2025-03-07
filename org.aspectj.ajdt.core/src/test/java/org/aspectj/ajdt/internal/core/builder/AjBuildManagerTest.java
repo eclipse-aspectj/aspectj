@@ -16,7 +16,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import org.aspectj.ajdt.StreamPrintWriter;
 import org.aspectj.ajdt.ajc.BuildArgParser;
 import org.aspectj.ajdt.ajc.Constants;
 import org.aspectj.bridge.IMessage;
@@ -24,12 +23,12 @@ import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.MessageWriter;
 import org.aspectj.testing.util.TestUtil;
 
+import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 public class AjBuildManagerTest extends TestCase {
 
-	private final StreamPrintWriter outputWriter = new StreamPrintWriter(new PrintWriter(System.out));
-	private final MessageWriter messageWriter = new MessageWriter(outputWriter, false);
+	private final MessageWriter messageWriter = new MessageWriter(new PrintWriter(System.out), false);
 	public static File source1 = new File(Constants.TESTDATA_DIR, "src1/A.java");
 	public static File source2 = new File(Constants.TESTDATA_DIR, "src1/Hello.java");
 	public static File source3 = new File(Constants.TESTDATA_DIR, "src1/X.java");
@@ -44,10 +43,17 @@ public class AjBuildManagerTest extends TestCase {
 		if (1 == numMessages) { // permit aspectjrt.jar warning
 			IMessage m = handler.getMessages(IMessage.WARNING, true)[0];
 			if (!(m.isWarning() && (m.getMessage().contains("aspectjrt.jar")))) {
-				assertTrue(handler.toString(), false);
+				fail("Unexpected warning: "+m);
 			}
 		} else if (0 != numMessages) {
-			assertTrue(handler.toString(), false);
+			// Unexpected warnings
+			IMessage[] warningMessages = handler.getMessages(IMessage.WARNING, false);
+			System.out.println("There are "+warningMessages.length+" unexpected warnings:");
+			int m = 1;
+			for (IMessage warningMessage: warningMessages) {
+				System.out.println((m++)+") "+warningMessage);
+			}
+			fail();
 		}
 	}
 
@@ -60,10 +66,8 @@ public class AjBuildManagerTest extends TestCase {
 		BuildArgParser parser = new BuildArgParser(messageWriter);
 		String javaClassPath = System.getProperty("java.class.path");
 		String sandboxName = TestUtil.createEmptySandbox().getAbsolutePath();
-		AjBuildConfig buildConfig = parser.genBuildConfig(new String[] { "-d", sandboxName, "-1.4", "-classpath", javaClassPath,
-				Constants.TESTDATA_PATH + "/src1/A.java",
-		// EajcModuleTests.TESTDATA_PATH + "/src1/Hello.java",
-				});
+		AjBuildConfig buildConfig = parser.genBuildConfig(new String[] { "-d", sandboxName, "-1.8", "-Xlint:ignore", "-classpath", javaClassPath,
+				Constants.TESTDATA_PATH + "/src1/A.java"});
 		String err = parser.getOtherMessages(true);
 		assertTrue(err, null == err || err.startsWith("incorrect classpath"));
 		// manager.setStructureModel(AsmManager.getDefault().getHierarchy());

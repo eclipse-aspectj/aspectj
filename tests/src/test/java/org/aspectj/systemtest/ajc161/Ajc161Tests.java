@@ -80,9 +80,10 @@ public class Ajc161Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("duplicate method signature - 2");
 	}
 
-	public void testDuplicateMethodSignature_pr223226() {
-		runTest("duplicate method signature");
-	}
+	// XXX23 removing test because it checks something that can only happen if <1.5 compile possible
+//	public void testDuplicateMethodSignature_pr223226() {
+//		runTest("duplicate method signature");
+//	}
 
 	public void testProtectedMethodsAroundAdvice_pr197719_2() {
 		runTest("protected methods and around advice - again - 2");

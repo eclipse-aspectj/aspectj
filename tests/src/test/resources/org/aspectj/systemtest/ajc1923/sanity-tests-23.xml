@@ -1,0 +1,68 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+<suite>
+
+    <!-- empty class -->
+    <ajc-test dir="bugs160/simplejava" title="simple - a">
+      <compile files="SimpleA.java" options="-23"/>
+    </ajc-test>
+
+    <!-- class with one method -->
+    <ajc-test dir="bugs160/simplejava" title="simple - b">
+      <compile files="SimpleB.java" options="-23"/>
+      <run class="SimpleB"/>
+    </ajc-test>
+
+    <!-- empty aspect -->
+    <ajc-test dir="bugs160/simplejava" title="simple - c">
+      <compile files="SimpleC.java" options="-23"/>
+    </ajc-test>
+
+    <!-- simple before -->
+    <ajc-test dir="bugs160/simplejava" title="simple - d">
+      <compile files="SimpleD.java" options="-23"/>
+    </ajc-test>
+
+    <!-- simple itd field -->
+    <ajc-test dir="bugs160/simplejava" title="simple - e">
+      <compile files="SimpleE.java" options="-23"/>
+    </ajc-test>
+
+    <!-- aspect with main calling a static method -->
+    <ajc-test dir="bugs160/simplejava" title="simple - f">
+      <compile files="SimpleF.java" options="-23"/>
+    </ajc-test>
+
+    <!-- pertarget -->
+    <ajc-test dir="bugs160/simplejava" title="simple - g">
+      <compile files="SimpleG.java" options="-23"/>
+    </ajc-test>
+
+    <!-- generic ctor itds -->
+    <ajc-test dir="bugs160/simplejava" title="simple - h">
+      <compile files="SimpleH.java" options="-23"/>
+    </ajc-test>
+
+    <!-- overriding generic itd methods -->
+    <ajc-test dir="bugs160/simplejava" title="simple - i">
+      <compile files="SimpleI.java" options="-23"/>
+    </ajc-test>
+
+    <!-- check class file version is 67.0 (Java 23) -->
+    <ajc-test dir="bugs160/simplejava" title="simple - j">
+      <compile files="SimpleJ.java" options="-23"/>
+    </ajc-test>
+
+    <!-- check class file version is 67.0 (Java 23) -->
+    <ajc-test dir="bugs160/simplejava" title="simple - k">
+      <compile files="SimpleJ.java" options="-source 23"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs160/simplejava" title="simple - m">
+      <compile files="SimpleJ.java" options="-1.8"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs160/simplejava" title="simple - n">
+      <compile files="SimpleN.java" options="-23"/>
+    </ajc-test>
+
+</suite>

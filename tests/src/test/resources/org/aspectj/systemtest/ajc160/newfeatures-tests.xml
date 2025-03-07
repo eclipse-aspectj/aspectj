@@ -1,11 +1,10 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
 
-<!-- AspectJ v1.6.0 Tests -->
 <suite>
 
     <ajc-test dir="features160/weavingJavaxPackage" title="weave javax classes - no">
       <compile files="A.java B.java" />
-      <compile files="X.aj" outjar="code.jar" options="-1.4"/>
+      <compile files="X.aj" outjar="code.jar" options="-1.8 -Xlint:ignore"/>
       <run class="javax.foo.A" classpath="code.jar" ltw="aop1.xml">
       <stderr>
       <line text="AspectJ Weaver Version"/>
@@ -23,7 +22,7 @@
     
     <ajc-test dir="features160/weavingJavaxPackage" title="weave javax classes - yes">
       <compile files="A.java B.java" />
-      <compile files="X.aj" outjar="code.jar" options="-1.4"/>
+      <compile files="X.aj" outjar="code.jar" options="-1.8 -Xlint:ignore"/>
       <run class="javax.foo.A" classpath="code.jar" ltw="aop2.xml">
         <stdout>
            <line text="advised"/>

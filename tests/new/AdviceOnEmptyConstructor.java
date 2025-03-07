@@ -1,5 +1,5 @@
 import org.aspectj.testing.Tester;
-
+import org.aspectj.lang.annotation.SuppressAjWarnings;
 public aspect AdviceOnEmptyConstructor {
     public static void main(String[] args) { test(); }
 
@@ -16,7 +16,7 @@ public aspect AdviceOnEmptyConstructor {
         call(C.new()) {
         c.value = "afterInit:" + c.value;
     }
-    /*static*/ after() returning(C1 c1):
+    @SuppressAjWarnings("adviceDidNotMatch") /*static*/ after() returning(C1 c1):
         //this(c1) &&
         call(C1.new()) {
         c1.value = "afterInit:" + c1.value;

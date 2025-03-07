@@ -59,9 +59,13 @@
 		pr="41181">
 		<compile files="ClinitTest.java, Util.java"/>
         <run class="ClinitTest"/>
-		<compile files="ClinitTest.java, Util.java, TJP.aj" options="-Xlint:warning -1.4">
+		<compile files="ClinitTest.java, Util.java, TJP.aj" options="-Xlint:warning -1.8">
 		  <message kind="warning" line="24" text="can not build"/>
 		  <message kind="warning" line="31" text="can not build"/>
+		  <message kind="warning" line="13" text="advice defined in TJP has not been applied [Xlint:adviceDidNotMatch]"/>
+		  <message kind="warning" line="17" text="advice defined in TJP has not been applied [Xlint:adviceDidNotMatch]"/>
+		  <message kind="warning" line="24" text="advice defined in TJP has not been applied [Xlint:adviceDidNotMatch]"/>
+		  <message kind="warning" line="31" text="advice defined in TJP has not been applied [Xlint:adviceDidNotMatch]"/>
 		</compile>
         <run class="Util" options="-read"/>
 	</ajc-test>

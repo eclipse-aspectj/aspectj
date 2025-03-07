@@ -37,13 +37,13 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 
 	private String projectPath;
 
-	private Set aspectpath;
-	private Set inpath;
+	private Set<File> aspectpath;
+	private Set<File> inpath;
 	private String outjar;
 	private Map<String,String> javaOptions;
 	private String nonStandardOptions;
-	private List projectSourceFiles = new ArrayList();
-	private Map sourcePathResources;
+	private List<String> projectSourceFiles = new ArrayList<>();
+	private Map<String,File> sourcePathResources;
 
 	private String srcDirName = "src";
 
@@ -56,11 +56,11 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 	public void configurationRead() {
 	}
 
-	public List getProjectXmlConfigFiles() {
-		return Collections.EMPTY_LIST;
+	public List<String> getProjectXmlConfigFiles() {
+		return Collections.emptyList();
 	}
 
-	public Set getAspectPath() {
+	public Set<File> getAspectPath() {
 		return aspectpath;
 	}
 
@@ -73,15 +73,15 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 		return cp;
 	}
 
-	public Set getInpath() {
+	public Set<File> getInpath() {
 		return inpath;
 	}
 
 	public Map<String,String> getJavaOptionsMap() {
 		if (javaOptions == null) {
 			javaOptions = new Hashtable<>();
-			javaOptions.put(JavaOptions.COMPLIANCE_LEVEL, JavaOptions.VERSION_13);
-			javaOptions.put(JavaOptions.SOURCE_COMPATIBILITY_LEVEL, JavaOptions.VERSION_13);
+			javaOptions.put(JavaOptions.COMPLIANCE_LEVEL, JavaOptions.VERSION_18);
+			javaOptions.put(JavaOptions.SOURCE_COMPATIBILITY_LEVEL, JavaOptions.VERSION_18);
 		}
 		return javaOptions;
 	}
@@ -101,17 +101,17 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 		return outputLoc;
 	}
 
-	public List getProjectSourceFiles() {
+	public List<String> getProjectSourceFiles() {
 		return projectSourceFiles;
 	}
 
-	public List getProjectSourceFilesChanged() {
+	public List<File> getProjectSourceFilesChanged() {
 		return null;
 	}
 
-	public Map getSourcePathResources() {
+	public Map<String,File> getSourcePathResources() {
 		if (sourcePathResources == null) {
-			sourcePathResources = new HashMap();
+			sourcePathResources = new HashMap<>();
 
 			/* Allow the user to override the testProjectPath by using sourceRoots */
 			File[] srcBase = new File[] { new File(projectPath + File.separator + srcDirName) };
@@ -127,7 +127,6 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 				for (File fromResource : fromResources) {
 					String normPath = FileUtil.normalizedPath(fromResource, file);
 					sourcePathResources.put(normPath, fromResource);
-
 				}
 			}
 		}
@@ -135,11 +134,11 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 	}
 
 	// -------------------- setter methods useful for testing ---------------
-	public void setAspectPath(Set aspectPath) {
+	public void setAspectPath(Set<File> aspectPath) {
 		this.aspectpath = aspectPath;
 	}
 
-	public void setInpath(Set inpath) {
+	public void setInpath(Set<File> inpath) {
 		this.inpath = inpath;
 	}
 
@@ -147,7 +146,7 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 		this.outjar = outjar;
 	}
 
-	public void setJavaOptions(Map javaOptions) {
+	public void setJavaOptions(Map<String,String> javaOptions) {
 		this.javaOptions = javaOptions;
 	}
 
@@ -155,11 +154,11 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 		this.nonStandardOptions = options;
 	}
 
-	public void setProjectSourceFiles(List projectSourceFiles) {
+	public void setProjectSourceFiles(List<String> projectSourceFiles) {
 		this.projectSourceFiles = projectSourceFiles;
 	}
 
-	public void setSourcePathResources(Map sourcePathResources) {
+	public void setSourcePathResources(Map<String,File> sourcePathResources) {
 		this.sourcePathResources = sourcePathResources;
 	}
 
@@ -171,7 +170,7 @@ public class TestCompilerConfiguration implements ICompilerConfiguration {
 		return ICompilerConfiguration.EVERYTHING;
 	}
 
-	public List getClasspathElementsWithModifiedContents() {
+	public List<String> getClasspathElementsWithModifiedContents() {
 		return null;
 	}
 

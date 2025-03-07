@@ -10,7 +10,7 @@ public class TypeDeclInAdvice {
 }
 
 aspect A {
-    void around(): this(Foo) && call(void m(..)) {
+    void around(): target(Foo) && call(void m(..)) {
 	class Internal {
 	    int val() { return 1; }
 	}
@@ -20,6 +20,7 @@ aspect A {
 	i = 1;
 	j = new Internal();
 	
+	System.out.println("Advice running");
 	proceed();
 
 	//System.out.println("j: " + j);

@@ -37,7 +37,7 @@ public class BugTest extends AjdocTestCase {
 		initialiseProject("pr148906");
 		File[] files = {new File(getAbsoluteProjectDir() + "/AdviceDidNotMatch.aj")};
 		String[] ajOptions = {new String("-Xlint:error")};
-		runAjdoc(files,"1.5",ajOptions);
+		runAjdoc(files,"1.8",ajOptions);
 		assertTrue("expected ajc to fail but it did not", Main.hasAborted());
 		assertEquals("expected ajc to fail with an adviceDidNotMatch error but it" +
 				" failed instead with " + Main.getErrors()[0].getMessage(),
@@ -53,7 +53,7 @@ public class BugTest extends AjdocTestCase {
 		initialiseProject("pr148906");
 		File[] files = {new File(getAbsoluteProjectDir() + "/AdviceDidNotMatch.aj")};
 		String[] ajOptions = {new String("-Xlintfile"), new String(getAbsoluteProjectDir() + File.separator + "Xlint.properties")};
-		runAjdoc(files,"1.5",ajOptions);
+		runAjdoc(files,"1.8",ajOptions);
 		assertTrue("expected ajc to fail but it did not", Main.hasAborted());
 		assertEquals("expected ajc to fail with an adviceDidNotMatch error but it" +
 				" failed instead with " + Main.getErrors()[0].getMessage(),

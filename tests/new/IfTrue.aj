@@ -1,3 +1,4 @@
+import org.aspectj.lang.annotation.SuppressAjWarnings;
 import org.aspectj.testing.Tester;
 
 public aspect  IfTrue {
@@ -12,12 +13,13 @@ public aspect  IfTrue {
 	
 	pointcut p4() : within(IfTrue) && !if(true);
 	
-	
+	@SuppressAjWarnings("adviceDidNotMatch")
 	after() returning : p1() {
 		// should never get here
 		Tester.checkFailed("!if(true) matched!");
 	}
 
+	@SuppressAjWarnings("adviceDidNotMatch")
 	after() returning : p2() {
 		// should never get here
 		Tester.checkFailed("!if(   true   ) matched!");
@@ -28,6 +30,7 @@ public aspect  IfTrue {
 		Tester.checkFailed("!if(x) matched!");
 	}
 
+	@SuppressAjWarnings("adviceDidNotMatch")
 	after() returning : p4() {
 		// should never get here
 		Tester.checkFailed("!if(true) matched!");

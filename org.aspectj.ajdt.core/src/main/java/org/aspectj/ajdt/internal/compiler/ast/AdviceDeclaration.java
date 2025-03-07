@@ -27,6 +27,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument;
+import org.aspectj.org.eclipse.jdt.internal.compiler.ast.LocalDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.SingleTypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
@@ -36,6 +37,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.Opcodes;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ArrayBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ExtraCompilerModifiers;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LocalVariableBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
@@ -209,6 +211,18 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 		for (int i = 0; i < nargs - 1; i++) {
 			closureIndex += AstUtil.slotsNeeded(binding.parameters[i]);
 		}
+		
+		Argument[] arguments = this.arguments;
+		if (arguments != null) {
+			for (Argument argument: arguments) {
+				LocalVariableBinding lvb = argument.binding;
+				LocalVariableBinding lvbCopy = new LocalVariableBinding(lvb.name, lvb.type, lvb.modifiers, true);
+				lvbCopy.declaration = new LocalDeclaration(argument.name, 0, 0);
+				codeStream.record(lvbCopy);
+				lvbCopy.recordInitializationStartPC(0);
+				lvbCopy.resolvedPosition = lvb.resolvedPosition;
+			}
+		}
 
 		codeStream.aload(closureIndex);
 
@@ -245,6 +259,16 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 		}
 		AstUtil.generateReturn(returnType, codeStream);
 		codeStream.recordPositionsFrom(0, 1);
+		
+		// tag the local variables as used throughout the method
+		if (arguments != null && codeStream.locals != null) {
+			for (int a = 0; a < arguments.length; a++) {
+				if (codeStream.locals[a] != null) {
+					codeStream.locals[a].recordInitializationEndPC(codeStream.position);
+				}
+			}
+		}
+		
 		classFile.completeCodeAttribute(codeAttributeOffset,scope);
 		attributeNumber++;
 		classFile.completeMethodInfo(binding,methodAttributeOffset, attributeNumber);

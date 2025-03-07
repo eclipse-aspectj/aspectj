@@ -216,10 +216,11 @@ public class Ajc170Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("pertypewithin");
 	}
 
-	// not specifying -1.7
-	public void testDiamond1() {
-		runTest("diamond 1");
-	}
+
+	// With Java23 marking anything < 1.8 as obsolete, test no longer valid, I think.
+//	public void testDiamond1() {
+//		runTest("diamond 1");
+//	}
 
 	public void testDiamond2() {
 		runTest("diamond 2");
@@ -229,9 +230,10 @@ public class Ajc170Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("diamond itd 1");
 	}
 
-	public void testLiterals1() {
-		runTest("literals 1");
-	}
+	// With Java23 marking anything < 1.8 as obsolete, test no longer valid, I think.
+//	public void testLiterals1() {
+//		runTest("literals 1");
+//	}
 
 	public void testLiterals2() {
 		runTest("literals 2");
@@ -241,17 +243,19 @@ public class Ajc170Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("literals itd 1");
 	}
 
-	public void testStringSwitch1() {
-		runTest("string switch 1");
-	}
+	// With Java23 marking anything < 1.8 as obsolete, test no longer valid, I think.
+//	public void testStringSwitch1() {
+//		runTest("string switch 1");
+//	}
 
 	public void testStringSwitch2() {
 		runTest("string switch 2");
 	}
 
-	public void testMultiCatch1() {
-		runTest("multi catch 1");
-	}
+	// With Java23 marking anything < 1.8 as obsolete, test no longer valid, I think.
+//	public void testMultiCatch1() {
+//		runTest("multi catch 1");
+//	}
 
 	public void testMultiCatch2() {
 		runTest("multi catch 2");

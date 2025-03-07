@@ -405,9 +405,10 @@ public class ASTVisitorTest extends TestCase {
 	}
 
 	private void check(String source, String expectedOutput){
-		ASTParser parser = ASTParser.newParser(AST.JLS3);//JLS2); // ajh02: need to use 2 for returnType - in 3 it has "returnType2"
+		// AC: 8-Feb-2025: Trying 20 as the first none deprecated one right now
+		ASTParser parser = ASTParser.newParser(AST.JLS20);//JLS2); // ajh02: need to use 2 for returnType - in 3 it has "returnType2"
 		Map<String, String> options = new HashMap<>();
-		options.put(CompilerOptions.OPTION_Source, "1.5");
+		options.put(CompilerOptions.OPTION_Source, "1.8");
 		parser.setCompilerOptions(options);//JavaCore.getOptions());
 		parser.setSource(source.toCharArray());
 		CompilationUnit cu2 = (CompilationUnit) parser.createAST(null);
@@ -422,7 +423,7 @@ public class ASTVisitorTest extends TestCase {
 	private void checkJLS3(String source, String expectedOutput) {
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		Map<String,String> options = new HashMap<>();
-		options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_5);
+		options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_8);
 		parser.setCompilerOptions(options);
 		parser.setSource(source.toCharArray());
 		CompilationUnit cu2 = (CompilationUnit) parser.createAST(null);

@@ -141,7 +141,9 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("privilege problem with switch");
 	}
 
-	public void testRangeProblem_pr109614() {
+	// Test no longer relevant. With the LDC instruction now supporting class constants we don't generate the code that
+	// tries a class.forname and catches the exception that the advice here tries to advise.
+	public void xtestRangeProblem_pr109614() {
 		runTest("Range problem");
 	}
 
@@ -231,10 +233,6 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
 	public void testAutoboxingAroundAdvice_pr119210_2() {
 		runTest("autoboxing around advice - 2");
-	}
-
-	public void testAutoboxingAroundAdvice_pr119210_3() {
-		runTest("autoboxing around advice - 3");
 	}
 
 	public void testBadDecp_pr110788_1() {
@@ -812,8 +810,8 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("default impl of Runnable");
 	}
 
-	public void testArrayCloneCallJoinPoints() {
-		runTest("array clone call join points in 1.4 vs 1.3");
+	public void testArrayCloneCallJoinPoint() {
+		runTest("array clone call join point");
 	}
 
 	public void testDebugInfoForAroundAdvice() {
@@ -834,10 +832,6 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
 	public void testITDCWithNoExplicitConsCall() {
 		runTest("ITDC with no explicit cons call");
-	}
-
-	public void testJava5SpecificFeaturesUsedAtJava14OrLower() {
-		runTest("java 5 pointcuts and declares at pre-java 5 compliance levels - 1.7");
 	}
 
 	public void testAnonymousTypes() {

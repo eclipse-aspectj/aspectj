@@ -166,8 +166,8 @@ public class ShowWeaveMessagesTest extends AjdeCoreTestCase {
 		if (debugTests)
 			System.out.println("\ntestWeaveMessagesDeclareAnnotation: Building with Six.lst");
 		compilerConfig.setProjectSourceFiles(getSourceFileList(six));
-		setRunIn15Mode();
-		compilerConfig.setNonStandardOptions("-showWeaveInfo -1.5");
+		setRunIn18Mode();
+		compilerConfig.setNonStandardOptions("-showWeaveInfo -1.8");
 		doBuild();
 		assertTrue("Expected no compiler errors but found " + handler.getErrors(), handler.getErrors().isEmpty());
 		verifyWeavingMessages("declare.annotation", true);
@@ -182,7 +182,7 @@ public class ShowWeaveMessagesTest extends AjdeCoreTestCase {
 			System.out.println("\ntestWeaveMessagesDeclareAnnotation: Building with Seven.lst");
 		compilerConfig.setProjectSourceFiles(getSourceFileList(seven));
 		compilerConfig.setNonStandardOptions("");
-		setRunIn15Mode();
+		setRunIn18Mode();
 		doBuild();
 		assertTrue("Expected no compiler errors but found " + handler.getErrors(), handler.getErrors().isEmpty());
 		verifyWeavingMessages("declare.annotationNoWeaveInfo", true);
@@ -423,11 +423,11 @@ public class ShowWeaveMessagesTest extends AjdeCoreTestCase {
 		}
 	}
 
-	private void setRunIn15Mode() {
+	private void setRunIn18Mode() {
 		Map<String, String> m = new Hashtable<>();
-		m.put(JavaOptions.COMPLIANCE_LEVEL, JavaOptions.VERSION_15);
-		m.put(JavaOptions.SOURCE_COMPATIBILITY_LEVEL, JavaOptions.VERSION_15);
-		m.put(JavaOptions.TARGET_COMPATIBILITY_LEVEL, JavaOptions.VERSION_15);
+		m.put(JavaOptions.COMPLIANCE_LEVEL, JavaOptions.VERSION_18);
+		m.put(JavaOptions.SOURCE_COMPATIBILITY_LEVEL, JavaOptions.VERSION_18);
+		m.put(JavaOptions.TARGET_COMPATIBILITY_LEVEL, JavaOptions.VERSION_18);
 		compilerConfig.setJavaOptions(m);
 	}
 

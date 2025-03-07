@@ -1,15 +1,11 @@
 import java.util.List;
 
-
-/*
- * Created on Aug 19, 2008
- */
-
-public class GenericMethodImpl2 extends GenericMethodImpl<Type2> {
+public class GenericMethodImpl2 extends GenericMethodImpl {
 
 	@Override
-    public <T extends Type2> List<T> getStuff() {
-	    return super.getStuff();
+    public <T extends Type1> List<T> getStuff() {
+	   return super.getStuff();
     }
 
 }
+

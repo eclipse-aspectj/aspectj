@@ -144,8 +144,8 @@ public class AjNaiveASTFlattenerTest extends TestCase {
 	}
 
 	private void check(String source, String expectedOutput) {
-		ASTParser parser = ASTParser.newParser(AST.JLS2);
-		parser.setCompilerOptions(new HashMap());
+		ASTParser parser = ASTParser.newParser(AST.JLS20);
+		parser.setCompilerOptions(new HashMap<>());
 		parser.setSource(source.toCharArray());
 		CompilationUnit cu2 = (CompilationUnit) parser.createAST(null);
 		AjNaiveASTFlattener visitor = new AjNaiveASTFlattener();

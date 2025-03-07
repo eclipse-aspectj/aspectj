@@ -4,7 +4,7 @@
 
 
    <ajc-test dir="bugs188/485055" title="classcast">
-     <compile files="AspectWithConstant.aj" options="-1.5"/>
+     <compile files="AspectWithConstant.aj" options="-1.8"/>
      <run class="AspectWithConstant">
      <stdout>
      <line text="MAXS=hello"/>

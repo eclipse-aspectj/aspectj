@@ -96,7 +96,12 @@ public class InterTypeMethodDeclaration extends MethodDeclaration {
 				// n.b. visit return type even for constructors
 				acceptChild(ajvis, getName());
 				acceptChildren(ajvis, this.parameters);
-				acceptChildren(ajvis, (NodeList)this.thrownExceptions());
+				if (this.ast.apiLevel() >= AST.JLS8_INTERNAL) {
+					acceptChildren(visitor, (NodeList)this.extraDimensions());
+					acceptChildren(visitor, (NodeList)this.thrownExceptionTypes());
+				} else {
+					acceptChildren(visitor, (NodeList)this.thrownExceptions());
+				}
 				acceptChild(ajvis, getBody());
 			}
 			ajvis.endVisit(this);

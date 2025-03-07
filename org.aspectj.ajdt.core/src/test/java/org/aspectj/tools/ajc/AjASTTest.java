@@ -656,17 +656,17 @@ public class AjASTTest extends AjASTTestCase {
 	 * implementation for JLS2 and JLS3)
 	 */
 	public void testGetAndSetReturnTypeJLS2() {
-		AjAST ajast = createAjAST(AST.JLS2);
+		AjAST ajast = createAjAST(AST.JLS20);
 		AroundAdviceDeclaration d = ajast.newAroundAdviceDeclaration();
-		Type t = d.getReturnType();
+		Type t = d.getReturnType2();
 		assertTrue("by default the return type associated with the" + " AroundAdviceDeclaration should be a PrimitiveType",
 				t instanceof PrimitiveType);
 		assertEquals("by default there should be the PrimitiveType.VOID return "
 				+ "type associated with the AroundAdviceDeclaration", PrimitiveType.VOID.toString(), ((PrimitiveType) t).toString());
 		SimpleType s = ajast.newSimpleType(ajast.newSimpleName("name"));
-		d.setReturnType(s);
+		d.setReturnType2(s);
 		assertEquals("there should now be a SimpleType return type associated with" + " the AroundAdviceDeclaration", s, d
-				.getReturnType());
+				.getReturnType2());
 	}
 
 	/**
@@ -1631,23 +1631,23 @@ public class AjASTTest extends AjASTTestCase {
 	// --------- testing that the source ranges have been set correctly ---------
 
 	public void testDeclareAnnotationType() {
-		checkJLS3("@interface MyAnnotation{}class C{}aspect A{declare @type: C : @MyAnnotation;}", 43, 33);
+		checkJLS20("@interface MyAnnotation{}class C{}aspect A{declare @type: C : @MyAnnotation;}", 43, 33);
 	}
 
 	public void testDeclareAnnotationMethod() {
-		checkJLS3("@interface MyAnnotation{}class C{}aspect A{declare @method:public * C.*(..) : @MyAnnotation;}", 43, 49);
+		checkJLS20("@interface MyAnnotation{}class C{}aspect A{declare @method:public * C.*(..) : @MyAnnotation;}", 43, 49);
 	}
 
 	public void testDeclareAnnotationField() {
-		checkJLS3("@interface MyAnnotation{}class C{}aspect A{declare @field: * C+.* : @MyAnnotation;}", 43, 39);
+		checkJLS20("@interface MyAnnotation{}class C{}aspect A{declare @field: * C+.* : @MyAnnotation;}", 43, 39);
 	}
 
 	public void testDeclareAnnotationConstructor() {
-		checkJLS3("@interface MyAnnotation{}class C{}aspect A{declare @constructor: C+.new(..) : @MyAnnotation;}", 43, 49);
+		checkJLS20("@interface MyAnnotation{}class C{}aspect A{declare @constructor: C+.new(..) : @MyAnnotation;}", 43, 49);
 	}
 
 	public void testDeclareParents() {
-		checkJLS3("class A{}class B{}aspect C {declare parents : A extends B;}", 28, 29);
+		checkJLS20("class A{}class B{}aspect C {declare parents : A extends B;}", 28, 29);
 	}
 
 
@@ -1660,16 +1660,15 @@ public class AjASTTest extends AjASTTestCase {
 	 */
 
 	public void testDeclareParentsTypePatternNodeSource() {
-		checkTypePatternSourceRangesJLS3("class A{}class B{}aspect C {declare parents : A extends B;}", new int[][] {{46, 1} , {56, 1 }});
+		checkTypePatternSourceRangesJLS20("class A{}class B{}aspect C {declare parents : A extends B;}", new int[][] {{46, 1} , {56, 1 }});
 	}
 
 	public void testDeclareParentsAnySource() {
-		checkTypePatternSourceRangesJLS3("class A{}class B{}aspect C {declare parents : * extends B;}", new int[][] {{46, 1} , {56, 1 }});
+		checkTypePatternSourceRangesJLS20("class A{}class B{}aspect C {declare parents : * extends B;}", new int[][] {{46, 1} , {56, 1 }});
 	}
 
 	public void testDeclareParentsAndSource() {
-
-		checkTypePatternSourceRangesJLS3(
+		checkTypePatternSourceRangesJLS20(
 				"class A{}class B{}class D{}class E{}aspect C {declare parents : A && B && D extends E;}",
 				new int[][] { { 64, 11 },// A && B && D,
 						{ 64, 1 }, // A
@@ -1681,8 +1680,7 @@ public class AjASTTest extends AjASTTestCase {
 	}
 
 	public void testDeclareParentsNotSource() {
-
-		checkTypePatternSourceRangesJLS3(
+		checkTypePatternSourceRangesJLS20(
 				"class A{}class B{}class D{}class E{}aspect C {declare parents : A && !B extends E;}",
 				new int[][] { { 64, 7 },// A && !B
 						{ 64, 1 }, // A
@@ -1693,7 +1691,7 @@ public class AjASTTest extends AjASTTestCase {
 	}
 
 	public void testDeclareParentsOrSource() {
-		checkTypePatternSourceRangesJLS3(
+		checkTypePatternSourceRangesJLS20(
 				"class A{}class B{}class D{}class E{}aspect C {declare parents : A || B || D extends E;}",
 				new int[][] { { 64, 11 },// A || B || D,
 						{ 64, 1 }, // A
@@ -1705,7 +1703,7 @@ public class AjASTTest extends AjASTTestCase {
 	}
 
 	public void testDeclareParentsAnyWithAnnotationSource() {
-		checkTypePatternSourceRangesJLS3(
+		checkTypePatternSourceRangesJLS20(
 				"@interface AnnotationT {}class E{}aspect C {declare parents : (@AnnotationT *) extends E;}",
 				new int[][] { { 62, 16 },// (@AnnotationT *)
 						{ 87, 1 } // E
@@ -1714,7 +1712,7 @@ public class AjASTTest extends AjASTTestCase {
 	}
 
 	public void testDeclareParentsTypeCategorySource() {
-		checkTypePatternSourceRangesJLS3(
+		checkTypePatternSourceRangesJLS20(
 				"class A{}class E{}aspect C {declare parents : A && is(ClassType) extends E;}",
 				new int[][] { { 46, 18 },// A && !is(InnerType)
 						{ 46, 1 }, // A
@@ -1724,7 +1722,7 @@ public class AjASTTest extends AjASTTestCase {
 	}
 
 	public void testDeclareParentsTypeCategoryNotSource() {
-		checkTypePatternSourceRangesJLS3(
+		checkTypePatternSourceRangesJLS20(
 				"class A{}class E{}aspect C {declare parents : A && !is(InnerType) extends E;}",
 				new int[][] { { 46, 19 },// A && !is(InnerType)
 						{ 46, 1 }, // A
@@ -1744,37 +1742,37 @@ public class AjASTTest extends AjASTTestCase {
 	// }
 
 	public void testDeclareParentsTypeCategoryInner() {
-		checkCategoryTypePatternJLS3(
+		checkCategoryTypePatternJLS20(
 				"class A{class B{}}class E{}aspect C {declare parents : B && is(InnerType) extends E;}",
 				TypeCategoryTypePattern.INNER, "is(InnerType)");
 	}
 
 	public void testDeclareParentsTypeCategoryInterface() {
-		checkCategoryTypePatternJLS3(
+		checkCategoryTypePatternJLS20(
 				"interface B{}interface E{}aspect C {declare parents : B && is(InterfaceType) extends E;}",
 				TypeCategoryTypePattern.INTERFACE, "is(InterfaceType)");
 	}
 
 	public void testDeclareParentsTypeCategoryClass() {
-		checkCategoryTypePatternJLS3(
+		checkCategoryTypePatternJLS20(
 				"class B{}class E{}aspect C {declare parents : B && is(ClassType) extends E;}",
 				TypeCategoryTypePattern.CLASS, "is(ClassType)");
 	}
 
 	public void testDeclareParentsTypeCategoryAnnotation() {
-		checkCategoryTypePatternJLS3(
+		checkCategoryTypePatternJLS20(
 				"@interface B{}class E{}aspect C {declare parents : B && is(AnnotationType) extends E;}",
 				TypeCategoryTypePattern.ANNOTATION, "is(AnnotationType)");
 	}
 
 	public void testDeclareParentsTypeCategoryAnonymous() {
-		checkCategoryTypePatternJLS3(
+		checkCategoryTypePatternJLS20(
 				"class A{B annonymousB = new B() {};}class B{}class E{}aspect C {declare parents : B && is(AnonymousType) extends E;}",
 				TypeCategoryTypePattern.ANONYMOUS, "is(AnonymousType)");
 	}
 
 	public void testDeclareParentsTypeCategoryEnum() {
-		checkCategoryTypePatternJLS3(
+		checkCategoryTypePatternJLS20(
 				"class B{}class E{}aspect C {declare parents : B && !is(EnumType) extends E;}",
 				TypeCategoryTypePattern.ENUM, "is(EnumType)");
 	}
@@ -1789,19 +1787,19 @@ public class AjASTTest extends AjASTTestCase {
 
 
 	public void testDeclareWarning() {
-		checkJLS3("aspect A {pointcut a();declare warning: a(): \"error\";}", 23, 30);
+		checkJLS20("aspect A {pointcut a();declare warning: a(): \"error\";}", 23, 30);
 	}
 
 	public void testDeclareError() {
-		checkJLS3("aspect A {pointcut a();declare error: a(): \"error\";}", 23, 28);
+		checkJLS20("aspect A {pointcut a();declare error: a(): \"error\";}", 23, 28);
 	}
 
 	public void testDeclareSoft() {
-		checkJLS3("aspect A {pointcut a();declare soft: Exception+: a();}", 23, 29);
+		checkJLS20("aspect A {pointcut a();declare soft: Exception+: a();}", 23, 29);
 	}
 
 	public void testDeclarePrecedence() {
-		checkJLS3("aspect A{}aspect B{declare precedence: B,A;}", 19, 23);
+		checkJLS20("aspect A{}aspect B{declare precedence: B,A;}", 19, 23);
 	}
 
 	// --------- tests for bugs ----------

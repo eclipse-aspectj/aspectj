@@ -305,8 +305,13 @@ public class AjASTConverter extends ASTConverter {
 					Type returnType = convertType(typeReference);
 					// get the positions of the right parenthesis
 					int rightParenthesisPosition = retrieveEndOfRightParenthesisPosition(end, method.bodyEnd);
-					int extraDimensions = retrieveExtraDimension(rightParenthesisPosition, method.bodyEnd);
-					methodDecl.setExtraDimensions(extraDimensions);
+					int extraDimensions = typeReference.extraDimensions();
+					if (this.ast.apiLevel >= AST.JLS8_INTERNAL) {
+						setExtraAnnotatedDimensions(rightParenthesisPosition, method.bodyEnd, typeReference,
+													methodDecl.extraDimensions(), extraDimensions);
+					} else {
+						internalSetExtraDimensions(methodDecl, extraDimensions);
+					}
 					setTypeForMethodDeclaration(methodDecl, returnType, extraDimensions);
 				} else {
 					// no return type for a method that is not a constructor
@@ -1029,8 +1034,15 @@ public class AjASTConverter extends ASTConverter {
 		name.setSourceRange(start, nameEnd - start + 1);
 		variableDecl.setName(name);
 		final int typeSourceEnd = argument.type.sourceEnd;
-		final int extraDimensions = retrieveExtraDimension(nameEnd + 1, typeSourceEnd);
-		variableDecl.setExtraDimensions(extraDimensions);
+		TypeReference typeReference = argument.type;
+		final int extraDimensions = typeReference.extraDimensions();
+		if (this.ast.apiLevel >= AST.JLS8_INTERNAL) {
+			setExtraAnnotatedDimensions(nameEnd + 1, typeSourceEnd, typeReference,
+										variableDecl.extraDimensions(), extraDimensions);
+		} else {
+			internalSetExtraDimensions(variableDecl, extraDimensions);
+		}
+	
 		final boolean isVarArgs = argument.isVarArgs();
 		if (isVarArgs && extraDimensions == 0) {
 			// remove the ellipsis from the type source end
@@ -1067,6 +1079,33 @@ public class AjASTConverter extends ASTConverter {
 			variableDecl.resolveBinding();
 		}
 		return variableDecl;
+	}
+	
+	/**
+	 * Internal access method to SingleVariableDeclaration#setExtraDimensions() for avoiding deprecated warnings
+	 *
+	 * @deprecated
+	 */
+	private static void internalSetExtraDimensions(SingleVariableDeclaration node, int dimensions) {
+		node.setExtraDimensions(dimensions);
+	}
+
+	/**
+	 * Internal access method to MethodDeclaration#setExtraDimension() for avoiding deprecated warnings
+	 *
+	 * @deprecated
+	 */
+	private static void internalSetExtraDimensions(MethodDeclaration node, int dimensions) {
+		node.setExtraDimensions(dimensions);
+	}
+
+	/**
+	 * Internal access method to VariableDeclarationFragment#setExtraDimensions() for avoiding deprecated warnings
+	 *
+	 * @deprecated
+	 */
+	private static void internalSetExtraDimensions(VariableDeclarationFragment node, int dimensions) {
+		node.setExtraDimensions(dimensions);
 	}
 
 	// public Annotation convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation annotation) {
@@ -2741,8 +2780,19 @@ public class AjASTConverter extends ASTConverter {
 		} else {
 			variableDeclarationFragment.setSourceRange(fieldDeclaration.sourceStart, end - fieldDeclaration.sourceStart + 1);
 		}
-		variableDeclarationFragment.setExtraDimensions(retrieveExtraDimension(fieldDeclaration.sourceEnd + 1,
-				fieldDeclaration.declarationSourceEnd));
+		
+		TypeReference typeReference = fieldDeclaration.returnType;
+		int extraDimensions = typeReference.extraDimensions();
+		if (this.ast.apiLevel >= AST.JLS8_INTERNAL) {
+			setExtraAnnotatedDimensions(fieldDeclaration.sourceEnd + 1, fieldDeclaration.declarationSourceEnd,
+					typeReference, variableDeclarationFragment.extraDimensions(), extraDimensions);
+		} else {
+			internalSetExtraDimensions(variableDeclarationFragment, extraDimensions);
+		}
+//		variableDeclarationFragment.setExtraDimensions(retrieveExtraDimension(fieldDeclaration.sourceEnd + 1,
+//				fieldDeclaration.declarationSourceEnd));
+		
+		
 		if (this.resolveBindings) {
 			recordNodes(name, fieldDeclaration);
 			recordNodes(variableDeclarationFragment, fieldDeclaration);
@@ -2772,8 +2822,14 @@ public class AjASTConverter extends ASTConverter {
 		} else {
 			variableDeclarationFragment.setSourceRange(fieldDeclaration.sourceStart, end - fieldDeclaration.sourceStart + 1);
 		}
-		variableDeclarationFragment.setExtraDimensions(retrieveExtraDimension(fieldDeclaration.sourceEnd + 1,
-				fieldDeclaration.declarationSourceEnd));
+		TypeReference typeReference = fieldDeclaration.type;
+		int extraDimensions = typeReference.extraDimensions();
+		if (this.ast.apiLevel >= AST.JLS8_INTERNAL) {
+			setExtraAnnotatedDimensions(fieldDeclaration.sourceEnd + 1, fieldDeclaration.declarationSourceEnd,
+					typeReference, variableDeclarationFragment.extraDimensions(), extraDimensions);
+		} else {
+			internalSetExtraDimensions(variableDeclarationFragment, extraDimensions);
+		}
 		if (this.resolveBindings) {
 			recordNodes(name, fieldDeclaration);
 			recordNodes(variableDeclarationFragment, fieldDeclaration);
@@ -2807,8 +2863,25 @@ public class AjASTConverter extends ASTConverter {
 		} else {
 			variableDeclarationFragment.setSourceRange(localDeclaration.sourceStart, end - localDeclaration.sourceStart + 1);
 		}
-		variableDeclarationFragment.setExtraDimensions(retrieveExtraDimension(localDeclaration.sourceEnd + 1,
-				this.compilationUnitSourceLength));
+
+		TypeReference typeReference;
+		int extraDimension;
+		if(localDeclaration.type != null) {
+			typeReference = localDeclaration.type;
+			extraDimension = typeReference.extraDimensions();
+		} else {
+			typeReference = null;
+			extraDimension = 0;
+		}
+		if (this.ast.apiLevel >= AST.JLS8_INTERNAL) {
+			setExtraAnnotatedDimensions(localDeclaration.sourceEnd + 1, this.compilationUnitSourceLength,
+					typeReference, variableDeclarationFragment.extraDimensions(), extraDimension);
+		} else {
+			internalSetExtraDimensions(variableDeclarationFragment, extraDimension);
+		}
+
+//		variableDeclarationFragment.setExtraDimensions(retrieveExtraDimension(localDeclaration.sourceEnd + 1,
+//				this.compilationUnitSourceLength));
 		if (this.resolveBindings) {
 			recordNodes(variableDeclarationFragment, localDeclaration);
 			recordNodes(name, localDeclaration);
@@ -4055,7 +4128,7 @@ public class AjASTConverter extends ASTConverter {
 				enumConstantDeclaration.setFlags(enumConstantDeclaration.getFlags() | ASTNode.MALFORMED);
 			}
 			break;
-		case AST.JLS3:
+		default:
 			this.scanner.resetTo(fieldDeclaration.declarationSourceStart, fieldDeclaration.sourceStart);
 			this.setModifiers(enumConstantDeclaration, fieldDeclaration.annotations);
 		}
@@ -4074,7 +4147,7 @@ public class AjASTConverter extends ASTConverter {
 				fieldDeclaration.setFlags(fieldDeclaration.getFlags() | ASTNode.MALFORMED);
 			}
 			break;
-		case AST.JLS3:
+		default:
 			this.scanner.resetTo(fieldDecl.declarationSourceStart, fieldDecl.sourceStart);
 			this.setModifiers(fieldDeclaration, fieldDecl.annotations);
 		}
@@ -4090,7 +4163,7 @@ public class AjASTConverter extends ASTConverter {
 				fieldDeclaration.setFlags(fieldDeclaration.getFlags() | ASTNode.MALFORMED);
 			}
 			break;
-		case AST.JLS3:
+		default:
 			this.scanner.resetTo(fieldDecl.declarationSourceStart, fieldDecl.sourceStart);
 			this.setModifiers(fieldDeclaration, fieldDecl.annotations);
 		}
@@ -4109,7 +4182,7 @@ public class AjASTConverter extends ASTConverter {
 				initializer.setFlags(initializer.getFlags() | ASTNode.MALFORMED);
 			}
 			break;
-		case AST.JLS3:
+		default:
 			this.scanner.resetTo(oldInitializer.declarationSourceStart, oldInitializer.bodyStart);
 			this.setModifiers(initializer, oldInitializer.annotations);
 		}
@@ -4132,7 +4205,7 @@ public class AjASTConverter extends ASTConverter {
 				methodDecl.setFlags(methodDecl.getFlags() | ASTNode.MALFORMED);
 			}
 			break;
-		case AST.JLS3:
+		default:
 			this.scanner.resetTo(methodDeclaration.declarationSourceStart, methodDeclaration.sourceStart);
 			this.setModifiers(methodDecl, methodDeclaration.annotations);
 		}
@@ -4148,7 +4221,7 @@ public class AjASTConverter extends ASTConverter {
 				pointcutDecl.setFlags(pointcutDecl.getFlags() | ASTNode.MALFORMED);
 			}
 			break;
-		case AST.JLS3:
+		default:
 			this.scanner.resetTo(pointcutDeclaration.declarationSourceStart, pointcutDeclaration.sourceStart);
 			this.setModifiers(pointcutDecl, pointcutDeclaration.annotations);
 		}
@@ -4166,7 +4239,7 @@ public class AjASTConverter extends ASTConverter {
 				variableDecl.setFlags(variableDecl.getFlags() | ASTNode.MALFORMED);
 			}
 			break;
-		case AST.JLS3:
+		default:
 			this.scanner.resetTo(argument.declarationSourceStart, argument.sourceStart);
 			org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation[] annotations = argument.annotations;
 			int indexInAnnotations = 0;
@@ -4241,7 +4314,7 @@ public class AjASTConverter extends ASTConverter {
 				variableDecl.setFlags(variableDecl.getFlags() | ASTNode.MALFORMED);
 			}
 			break;
-		case AST.JLS3:
+		default:
 			this.scanner.resetTo(localDeclaration.declarationSourceStart, localDeclaration.sourceStart);
 			org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation[] annotations = localDeclaration.annotations;
 			int indexInAnnotations = 0;
@@ -4324,7 +4397,7 @@ public class AjASTConverter extends ASTConverter {
 				typeDecl.setFlags(typeDecl.getFlags() | ASTNode.MALFORMED);
 			}
 			break;
-		case AST.JLS3:
+		default:
 			this.scanner.resetTo(typeDeclaration.declarationSourceStart, typeDeclaration.sourceStart);
 			this.setModifiers(typeDecl, typeDeclaration.annotations);
 		}
@@ -4344,7 +4417,7 @@ public class AjASTConverter extends ASTConverter {
 				variableDeclarationExpression.setFlags(variableDeclarationExpression.getFlags() | ASTNode.MALFORMED);
 			}
 			break;
-		case AST.JLS3:
+		default:
 			this.scanner.resetTo(localDeclaration.declarationSourceStart, localDeclaration.sourceStart);
 			org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation[] annotations = localDeclaration.annotations;
 			int indexInAnnotations = 0;
@@ -4425,7 +4498,7 @@ public class AjASTConverter extends ASTConverter {
 				variableDeclarationStatement.setFlags(variableDeclarationStatement.getFlags() | ASTNode.MALFORMED);
 			}
 			break;
-		case AST.JLS3:
+		default:
 			this.scanner.resetTo(localDeclaration.declarationSourceStart, localDeclaration.sourceStart);
 			org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation[] annotations = localDeclaration.annotations;
 			int indexInAnnotations = 0;

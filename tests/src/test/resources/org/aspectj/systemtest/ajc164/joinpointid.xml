@@ -3,7 +3,7 @@
 <suite>
    
    <ajc-test dir="features164/joinpointid" title="casea">
-     <compile files="Driver.java" options="-1.5"/>
+     <compile files="Driver.java" options="-1.8"/>
      <run class="Driver">
        <stdout>
          <line text="At void A.mone() id=0 state=0"/>

@@ -12,10 +12,8 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 /**
- * @author colyer
+ * @author Adrian Colyer
  *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 public class AllTests14 {
 

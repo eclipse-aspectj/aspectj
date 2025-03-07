@@ -46,8 +46,8 @@ public class ASTitdTest extends TestCase {
 	}
 
 	private void checkNameAndModifiers(String source, String expectedOutput){
-		ASTParser parser = ASTParser.newParser(AST.JLS2); // ajh02: need to use 2 for returnType - in 3 it has "returnType2"
-		parser.setCompilerOptions(new HashMap());//JavaCore.getOptions());
+		ASTParser parser = ASTParser.newParser(AST.JLS20); // ajh02: need to use 2 for returnType - in 3 it has "returnType2"
+		parser.setCompilerOptions(new HashMap<>());//JavaCore.getOptions());
 		parser.setSource(source.toCharArray());
 		CompilationUnit cu2 = (CompilationUnit) parser.createAST(null);
 		ITDTestVisitor visitor = new ITDTestVisitor();

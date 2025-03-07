@@ -1,7 +1,8 @@
+import org.aspectj.lang.annotation.SuppressAjWarnings;
+
 public aspect H pertypewithin(G) {
-
-
-  after(): call(* *(..)) {
-    System.err.println("advice running");
-  }
+	@SuppressAjWarnings("adviceDidNotMatch")
+	after(): call(* *(..)) {
+		System.err.println("advice running");
+	}
 }

@@ -8,7 +8,7 @@
   
   
       <ajc-test dir="features1610/makeSJPOptimization" title="makeSJP optimization - LDC - No">
-      <compile files="B.java Azpect.aj" options="-1.4"/>
+      <compile files="B.java Azpect.aj" options="-1.8"/>
       <run class="B">
  	   	<stdout>
    		 <line text="execution(public static void B.main(java.lang.String[]))"/>
@@ -21,7 +21,7 @@
     </ajc-test>
  
       <ajc-test dir="features1610/makeSJPOptimization" title="makeSJP optimization - LDC - Yes">
-      <compile files="B.java Azpect.aj" options="-1.5"/>
+      <compile files="B.java Azpect.aj" options="-1.8"/>
       <run class="B">
  	   	<stdout>
    		 <line text="execution(public static void B.main(java.lang.String[]))"/>
@@ -34,7 +34,7 @@
     </ajc-test>
  
      <ajc-test dir="features1610/makeSJPOptimization" title="makeSJP optimization - Collapsed SJP - Yes">
-      <compile files="B.java Azpect.aj" options="-1.5 -Xset:targetRuntime1_6_10=true"/>
+      <compile files="B.java Azpect.aj" options="-1.8 -Xset:targetRuntime1_6_10=true"/>
       <run class="B">
 	   	<stdout>
    		 <line text="execution(public static void B.main(java.lang.String[]))"/>
@@ -47,7 +47,7 @@
     </ajc-test>  
  
       <ajc-test dir="features1610/makeSJPOptimization" title="makeSJP optimization - Collapsed SJP - Yes 1.4">
-      <compile files="B.java Azpect.aj" options="-1.4 -Xset:targetRuntime1_6_10=true"/>
+      <compile files="B.java Azpect.aj" options="-1.8 -Xset:targetRuntime1_6_10=true"/>
       <run class="B">
 	   	<stdout>
    		 <line text="execution(public static void B.main(java.lang.String[]))"/>
@@ -60,7 +60,7 @@
     </ajc-test>  
  
     <ajc-test dir="features1610/makeSJPOptimization" title="makeSJP optimization - Collapsed SJP - No">
-      <compile files="B.java Azpect.aj" options="-1.5 -Xset:targetRuntime1_6_10=false"/>
+      <compile files="B.java Azpect.aj" options="-1.8 -Xset:targetRuntime1_6_10=false"/>
       <run class="B">
  	   	<stdout>
    		 <line text="execution(public static void B.main(java.lang.String[]))"/>
@@ -73,7 +73,7 @@
     </ajc-test>
     
     <ajc-test dir="features1610/makeSJPOptimization" title="makeSJP optimization - No Exception - No">
-      <compile files="B.java Azpect.aj" options="-1.5 -Xset:targetRuntime1_6_10=false"/>
+      <compile files="B.java Azpect.aj" options="-1.8 -Xset:targetRuntime1_6_10=false"/>
       <run class="B">
  	   	<stdout>
    		 <line text="execution(public static void B.main(java.lang.String[]))"/>
@@ -86,7 +86,7 @@
     </ajc-test>
     
       <ajc-test dir="features1610/makeSJPOptimization" title="makeSJP optimization - No Exception - Yes">
-      <compile files="B.java Azpect.aj" options="-1.5 -Xset:targetRuntime1_6_10=true"/>
+      <compile files="B.java Azpect.aj" options="-1.8 -Xset:targetRuntime1_6_10=true"/>
       <run class="B">
  	   	<stdout>
    		 <line text="execution(public static void B.main(java.lang.String[]))"/>
@@ -99,7 +99,7 @@
     </ajc-test>
   
         <ajc-test dir="features1610/makeSJPOptimization" title="makeSJP optimization - Remove Colon">
-      <compile files="B.java Azpect.aj" options="-1.5"/>
+      <compile files="B.java Azpect.aj" options="-1.8"/>
       <run class="B">
  	   	<stdout>
    		 <line text="execution(public static void B.main(java.lang.String[]))"/>

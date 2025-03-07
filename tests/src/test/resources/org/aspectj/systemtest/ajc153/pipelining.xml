@@ -48,22 +48,22 @@
     
     <!-- testing eclipse to aspectj annotation transformation -->
     <ajc-test dir="features153/pipelining/annotations" title="annotation transformation">
-      <compile files="AnAspect.java,Foo.java,DecoratedClass.java" options="-1.5 -verbose"/>
+      <compile files="AnAspect.java,Foo.java,DecoratedClass.java" options="-1.8 -verbose"/>
     </ajc-test>
 
     <!-- does the aspect sorter recognize annotation style aspects, pass the aspects last  -->
     <ajc-test dir="features153/pipelining" title="recognizing annotation style aspects - 1">
-      <compile files="ClassOne.java,AtAJAspect.java" options="-1.5 -verbose"/>
+      <compile files="ClassOne.java,AtAJAspect.java" options="-1.8 -verbose"/>
     </ajc-test>
     
     <!-- does the aspect sorter recognize annotation style aspects (inner type), pass the aspects last -->
     <ajc-test dir="features153/pipelining" title="recognizing annotation style aspects - 2">
-      <compile files="ClassOne.java,AtInnerAJAspect.java" options="-1.5 -verbose"/>
+      <compile files="ClassOne.java,AtInnerAJAspect.java" options="-1.8 -verbose"/>
     </ajc-test>
     
     <!-- the aspect is multiple layers down in the class... -->
     <ajc-test dir="features153/pipelining" title="build one class and deeply nested aspect">
-      <compile files="ClassOne.java,DeepAspect.java" options="-1.5 -verbose -showWeaveInfo">
+      <compile files="ClassOne.java,DeepAspect.java" options="-1.8 -verbose -showWeaveInfo">
         <message kind="weave" text="Join point 'staticinitialization(void ClassOne.&lt;clinit&gt;())' in Type 'ClassOne' (ClassOne.java:1) advised by before advice from 'DeepAspect$Inner$SimpleAspect' (DeepAspect.java:4)"/>
       </compile>
     </ajc-test>

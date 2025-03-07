@@ -48,7 +48,7 @@ public class BrowserViewManager {
     private final GlobalViewProperties INHERITANCE_VIEW_PROPERTIES;
 
     public BrowserViewManager() {
-		java.util.List views = new ArrayList();
+		java.util.List<GlobalStructureView> views = new ArrayList<>();
 		views.add(DECLARATION_VIEW);
 		views.add(CROSSCUTTING_VIEW);
 		views.add(INHERITANCE_VIEW);

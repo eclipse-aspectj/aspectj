@@ -1,6 +1,6 @@
-
 package driver;
 
+import org.aspectj.lang.annotation.SuppressAjWarnings;
 // import pack.DefaultTarget; // does not work - ok 
 import pack.PublicTarget; 
 
@@ -122,5 +122,5 @@ public privileged aspect PrivilegedAspect {
     public static void foo(pack.DefaultTarget t) {
     }
     
-    before(pack.DefaultTarget t): call(void mumble()) && this(t) {}
+    @SuppressAjWarnings("adviceDidNotMatch") before(pack.DefaultTarget t): call(void mumble()) && this(t) {}
 }

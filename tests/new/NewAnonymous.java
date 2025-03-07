@@ -2,6 +2,7 @@ import org.aspectj.testing.Tester;
 
 public class NewAnonymous {
     public static void main(String[] args) {
+    	new C().m("foo");
     }
 }
 
@@ -18,7 +19,7 @@ class C {
 }
 
 aspect A {
-    before(): call(*.new()) {
+    before(): call(Runnable+.new(..)) {
         System.out.println("new Runnable");
     }
 }

@@ -230,7 +230,7 @@ public class DeclareParentsTest extends AjcTestCase {
 		String[] sourceCompileCommandLine = new String[classes.length + aspects.length + 2];
 		System.arraycopy(classes, 0, sourceCompileCommandLine, 0, classes.length);
 		System.arraycopy(aspects, 0, sourceCompileCommandLine, classes.length, aspects.length);
-		String[] extraOption = new String[] { "-showWeaveInfo", "-1.4"};
+		String[] extraOption = new String[] { "-showWeaveInfo", "-1.8"};
 		System.arraycopy(extraOption, 0, sourceCompileCommandLine, classes.length + aspects.length, 2);
 		result = ajc(testBase, sourceCompileCommandLine);
 		if (!expectErrors)
@@ -258,7 +258,7 @@ public class DeclareParentsTest extends AjcTestCase {
 		assertTrue("Should get no errors for this compile, but got: " + result.getErrorMessages().size(), result.getErrorMessages()
 				.size() == 0);
 		// Execute: "ajc -inpath classes -showWeaveInfo -d classes2 -aspectpath aspects.jar"
-		result = ajc(testBase, new String[] { "-inpath", "classes", "-showWeaveInfo", "-1.4", "-d", "classes2", "-aspectpath",
+		result = ajc(testBase, new String[] { "-inpath", "classes", "-showWeaveInfo", "-1.8", "-d", "classes2", "-aspectpath",
 				"aspects.jar" });
 
 		if (!expectErrors)
@@ -270,6 +270,14 @@ public class DeclareParentsTest extends AjcTestCase {
 		int binaryErrorMessagesCount = binaryErrorMessages.size();
 
 		if (verbose) {
+			System.err.println("Binary Compilation: Error count = " + binaryErrorMessagesCount + "\n" + binaryErrorMessages);
+			System.err.println("Binary Compilation: Weaving count = " + binaryWeaveMessagesCount + "\n" + binaryWeaveMessages);
+			System.err.println("StandardError from final binary compile stage: " + result.getStandardError());
+		}
+		
+		if (sourceErrorMessagesCount!=binaryErrorMessagesCount) {
+			System.err.println("Source Compilation: Error count = " + sourceErrorMessagesCount + "\n" + sourceErrorMessages);
+			System.err.println("Source Compilation: Weaving count = " + sourceWeaveMessagesCount + "\n" + sourceWeaveMessages);
 			System.err.println("Binary Compilation: Error count = " + binaryErrorMessagesCount + "\n" + binaryErrorMessages);
 			System.err.println("Binary Compilation: Weaving count = " + binaryWeaveMessagesCount + "\n" + binaryWeaveMessages);
 			System.err.println("StandardError from final binary compile stage: " + result.getStandardError());

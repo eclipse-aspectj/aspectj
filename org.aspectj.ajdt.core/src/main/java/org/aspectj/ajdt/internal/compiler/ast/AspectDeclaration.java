@@ -717,7 +717,9 @@ public class AspectDeclaration extends TypeDeclaration {
 						.makeTypeBinding(UnresolvedType.JL_CLASS), Modifier.PUBLIC, true);
 				codeStream.record(classVariable);
 				classVariable.recordInitializationStartPC(codeStream.position);
-				ExceptionLabel goneBang = new ExceptionLabel(codeStream, world.makeTypeBinding(UnresolvedType.JL_EXCEPTION));
+
+				TypeBinding exceptionTypeBinding = world.makeTypeBinding(UnresolvedType.JL_EXCEPTION);
+				ExceptionLabel goneBang = new ExceptionLabel(codeStream, exceptionTypeBinding);
 				BranchLabel noInstanceExists = new BranchLabel(codeStream);
 				BranchLabel leave = new BranchLabel(codeStream);
 				goneBang.placeStart();
@@ -735,6 +737,7 @@ public class AspectDeclaration extends TypeDeclaration {
 				codeStream.ireturn();
 				goneBang.place();
 				//codeStream.astore_1();
+				codeStream.pushExceptionOnStack(exceptionTypeBinding);
 				codeStream.pop();
 				codeStream.iconst_0();
 				codeStream.ireturn();
@@ -869,18 +872,31 @@ public class AspectDeclaration extends TypeDeclaration {
 		generateMethod(classFile, AjcMemberMaker.perTypeWithinCreateAspectInstance(world.fromBinding(binding)),
 				new BodyGenerator() {
 					public void generate(CodeStream codeStream) {
+						TypeBinding aspectType = world.makeTypeBinding(typeX);
+						LocalVariableBinding perTypeName = new LocalVariableBinding("perTypeName".toCharArray(), world
+								.makeTypeBinding(UnresolvedType.JL_STRING), Modifier.PUBLIC, true);
+						codeStream.record(perTypeName);
+						perTypeName.resolvedPosition = 0;
+						perTypeName.recordInitializationStartPC(codeStream.position);
 
-						codeStream.new_(world.makeTypeBinding(typeX));
+						codeStream.new_(aspectType);
 						codeStream.dup();
 						codeStream.invoke(Opcodes.OPC_invokespecial, new MethodBinding(0, "<init>".toCharArray(), TypeBinding.VOID,
 								new TypeBinding[0], new ReferenceBinding[0], binding), null);
-						codeStream.astore_1();
+						codeStream.astore_1(); // This is a local variable at this point
+						LocalVariableBinding aspectInstanceVariable = new LocalVariableBinding("aspectInstance".toCharArray(), aspectType, Modifier.PUBLIC, true);
+						codeStream.record(aspectInstanceVariable);
+						aspectInstanceVariable.resolvedPosition = 1;
+						aspectInstanceVariable.recordInitializationStartPC(codeStream.position);
+						
 						codeStream.aload_1();
 						codeStream.aload_0();
 						codeStream.fieldAccess(Opcodes.OPC_putfield,
 								world.makeFieldBinding(AjcMemberMaker.perTypeWithinWithinTypeField(typeX, typeX)), null);
 						codeStream.aload_1();
 						codeStream.areturn();
+						aspectInstanceVariable.recordInitializationEndPC(codeStream.position);
+						perTypeName.recordInitializationEndPC(codeStream.position);
 					}
 				});
 	}
@@ -1001,37 +1017,59 @@ public class AspectDeclaration extends TypeDeclaration {
 		generateMethod(classFile, accessField.reader, makeEffectiveSignatureAttribute(field, Shadow.FieldGet, false),
 				new BodyGenerator() {
 					public void generate(CodeStream codeStream) {
-						// body starts here
 						if (Modifier.isStatic(field.getModifiers())) {
 							codeStream.fieldAccess(Opcodes.OPC_getstatic, fieldBinding, null);
+							AstUtil.generateReturn(accessField.reader.returnType, codeStream);
 						} else {
+							LocalVariableBinding declaringTypeVar =
+									new LocalVariableBinding("declaringType".toCharArray(), accessField.declaringClass,
+									Modifier.PUBLIC, true);
+							codeStream.record(declaringTypeVar);
+							declaringTypeVar.recordInitializationStartPC(codeStream.position);
 							codeStream.aload_0();
 							codeStream.fieldAccess(Opcodes.OPC_getfield, fieldBinding, null);
+							AstUtil.generateReturn(accessField.reader.returnType, codeStream);
+							declaringTypeVar.recordInitializationEndPC(codeStream.position);
 						}
-
-						AstUtil.generateReturn(accessField.reader.returnType, codeStream);
-						// body ends here
 					}
 				});
 
 		generateMethod(classFile, accessField.writer, makeEffectiveSignatureAttribute(field, Shadow.FieldSet, false),
 				new BodyGenerator() {
 					public void generate(CodeStream codeStream) {
-						// body starts here
 						if (Modifier.isStatic(field.getModifiers())) {
+							LocalVariableBinding fieldValueVar =
+									new LocalVariableBinding("fieldValue".toCharArray(), accessField.type,
+									Modifier.PUBLIC, true);
+							codeStream.record(fieldValueVar);
+							fieldValueVar.resolvedPosition = 0;
+							fieldValueVar.recordInitializationStartPC(codeStream.position);
 							codeStream.load(fieldBinding.type, 0);
 							codeStream.fieldAccess(Opcodes.OPC_putstatic, fieldBinding, null);
+							codeStream.return_();
+							fieldValueVar.recordInitializationEndPC(codeStream.position);
 						} else {
+							LocalVariableBinding declaringTypeVar =
+									new LocalVariableBinding("instance".toCharArray(), accessField.declaringClass,
+									Modifier.PUBLIC, true);
+							codeStream.record(declaringTypeVar);
+							declaringTypeVar.recordInitializationStartPC(codeStream.position);
+							declaringTypeVar.resolvedPosition = 0;
+							LocalVariableBinding fieldValueVar =
+									new LocalVariableBinding("value".toCharArray(), accessField.type,
+									Modifier.PUBLIC, true);
+							codeStream.record(fieldValueVar);
+							fieldValueVar.recordInitializationStartPC(codeStream.position);
+							fieldValueVar.resolvedPosition = 1;
 							codeStream.aload_0();
 							codeStream.load(fieldBinding.type, 1);
 							codeStream.fieldAccess(Opcodes.OPC_putfield, fieldBinding, null);
+							fieldValueVar.recordInitializationEndPC(codeStream.position);
+							codeStream.return_();
+							declaringTypeVar.recordInitializationEndPC(codeStream.position);
 						}
-
-						codeStream.return_();
-						// body ends here
 					}
 				});
-
 	}
 
 	private void generateInlineAccessMethod(ClassFile classFile, final MethodBinding accessMethod, final ResolvedMember method) {

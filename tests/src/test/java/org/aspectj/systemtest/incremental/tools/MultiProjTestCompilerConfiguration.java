@@ -109,9 +109,9 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 			return javaOptionsMap;
 
 		Map<String, String> ht = new Hashtable<>();
-		ht.put("org.eclipse.jdt.core.compiler.compliance", "1.5");
-		ht.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform", "1.5");
-		ht.put("org.eclipse.jdt.core.compiler.source", "1.5");
+		ht.put("org.eclipse.jdt.core.compiler.compliance", "1.8");
+		ht.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform", "1.8");
+		ht.put("org.eclipse.jdt.core.compiler.source", "1.8");
 		return ht;
 	}
 

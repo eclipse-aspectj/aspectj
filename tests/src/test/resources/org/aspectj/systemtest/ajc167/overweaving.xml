@@ -3,7 +3,7 @@
 <suite>
    
     <ajc-test dir="features167/overweaving/getset" title="getset - 1">
-     <compile files="A.aj B.aj Class1.java Class2.java" options="-1.5"/>
+     <compile files="A.aj B.aj Class1.java Class2.java" options="-1.8"/>
      <run class="Class1">
        <stdout>
          <line text="B:set(String Class1.message)"/>
@@ -24,9 +24,9 @@
    </ajc-test>
    
     <ajc-test dir="features167/overweaving/getset" title="getset - 2">
-     <compile files="A.aj Class1.java" options="-1.5"/>
-     <compile files="B.aj" options="-1.5 -Xlint:ignore"/>
-     <compile files="Class2.java" options="-1.5 -Xlint:ignore"/>
+     <compile files="A.aj Class1.java" options="-1.8"/>
+     <compile files="B.aj" options="-1.8 -Xlint:ignore"/>
+     <compile files="Class2.java" options="-1.8 -Xlint:ignore"/>
      <run class="Class1" ltw="aop.xml">
        <stdout>
        <!-- should be advised by both, but was *already* advised by A during first weave -->
@@ -48,9 +48,9 @@
    </ajc-test>
      
     <ajc-test dir="features167/overweaving/getsetTJP" title="getset - tjp - 1">
-     <compile files="A.aj Class1.java" options="-1.5"/>
-     <compile files="B.aj" options="-1.5 -Xlint:ignore"/>
-     <compile files="Class2.java" options="-1.5 -Xlint:ignore"/>
+     <compile files="A.aj Class1.java" options="-1.8"/>
+     <compile files="B.aj" options="-1.8 -Xlint:ignore"/>
+     <compile files="Class2.java" options="-1.8 -Xlint:ignore"/>
      <run class="Class1" ltw="aop.xml">
        <stdout>
        <!-- should be advised by both, but was *already* advised by A during first weave -->
@@ -72,7 +72,7 @@
    </ajc-test>
    
     <ajc-test dir="features167/overweaving/calls" title="calls - 1">
-     <compile files="A.aj B.aj Class1.java Class2.java" options="-1.5"/>
+     <compile files="A.aj B.aj Class1.java Class2.java" options="-1.8"/>
      <run class="Class1">
        <stdout>
          <line text="B:call(void java.io.PrintStream.println(String))"/>
@@ -91,9 +91,9 @@
    </ajc-test>
    
     <ajc-test dir="features167/overweaving/calls" title="calls - 2">
-     <compile files="A.aj Class1.java" options="-1.5"/>
-     <compile files="B.aj" options="-1.5 -Xlint:ignore"/>
-     <compile files="Class2.java" options="-1.5 -Xlint:ignore"/>
+     <compile files="A.aj Class1.java" options="-1.8"/>
+     <compile files="B.aj" options="-1.8 -Xlint:ignore"/>
+     <compile files="Class2.java" options="-1.8 -Xlint:ignore"/>
      <run class="Class1" ltw="aop.xml">
        <stdout>
        <!-- should be advised by both, but was *already* advised by A during first weave -->
@@ -113,9 +113,9 @@
    </ajc-test>
    
     <ajc-test dir="features167/overweaving/callsTJP" title="calls - tjp - 1">
-     <compile files="A.aj Class1.java" options="-1.5"/>
-     <compile files="B.aj" options="-1.5 -Xlint:ignore"/>
-     <compile files="Class2.java" options="-1.5 -Xlint:ignore"/>
+     <compile files="A.aj Class1.java" options="-1.8"/>
+     <compile files="B.aj" options="-1.8 -Xlint:ignore"/>
+     <compile files="Class2.java" options="-1.8 -Xlint:ignore"/>
      <run class="Class1" ltw="aop.xml">
        <stdout>
        <!-- should be advised by both, but was *already* advised by A during first weave -->
@@ -135,9 +135,9 @@
    </ajc-test>
    
    <ajc-test dir="features167/overweaving/messy2" title="really messy">
-     <compile files="A.aj Class1.java" options="-1.5"/>
-     <compile files="B.aj" options="-1.5 -Xlint:ignore"/>
-     <compile files="Class2.java" options="-1.5 -Xlint:ignore"/>
+     <compile files="A.aj Class1.java" options="-1.8"/>
+     <compile files="B.aj" options="-1.8 -Xlint:ignore"/>
+     <compile files="Class2.java" options="-1.8 -Xlint:ignore"/>
      <run class="Class1" ltw="aop.xml">
        <stdout>
        <!-- should be advised by both, but was *already* advised by A during first weave -->
@@ -157,8 +157,8 @@
    </ajc-test>
    
    <ajc-test dir="features167/overweaving" title="simple">
-     <compile files="A.aj C.java" options="-1.5"/>
-     <compile files="X.aj" options="-1.5 -Xlint:ignore"/>
+     <compile files="A.aj C.java" options="-1.8"/>
+     <compile files="X.aj" options="-1.8 -Xlint:ignore"/>
      <run class="com.andy.C" ltw="aop.xml">
        <stdout>
          <line text="AspectX&gt;&gt;execution(void com.andy.C.main(String[]))"/>
@@ -170,8 +170,8 @@
    </ajc-test>
    
    <ajc-test dir="features167/overweaving/messy" title="messy">
-     <compile files="A.aj C.java" options="-1.5"/>
-     <compile files="X.aj" options="-1.5 -Xlint:ignore"/>
+     <compile files="A.aj C.java" options="-1.8"/>
+     <compile files="X.aj" options="-1.8 -Xlint:ignore"/>
      <run class="com.andy.C" ltw="aop.xml">
        <stdout>
          <line text="X:execution(void com.andy.C.main(String[]))"/>
@@ -183,8 +183,8 @@
    </ajc-test>
    
    <ajc-test dir="features167/overweaving/cflow" title="cflow">
-     <compile files="A.aj C.java" options="-1.5"/>
-     <compile files="X.aj" options="-1.5 -Xlint:ignore"/>
+     <compile files="A.aj C.java" options="-1.8"/>
+     <compile files="X.aj" options="-1.8 -Xlint:ignore"/>
      <run class="com.andy.C" ltw="aop.xml">
        <stdout>
          <line text="X:execution(void com.andy.C.main(String[]))"/>

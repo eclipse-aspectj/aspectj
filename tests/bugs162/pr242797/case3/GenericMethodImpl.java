@@ -1,9 +1,10 @@
 import java.util.LinkedList;
 import java.util.List;
 
-public class GenericMethodImpl<D extends Type1> implements GenericMethodInterface{
+public class GenericMethodImpl implements GenericMethodInterface{
 	
-	public <T extends D> List<T> getStuff(){
+	@Override
+	public <T extends Type1> List<T> getStuff() {
 		return new LinkedList<T>();
 	}
 

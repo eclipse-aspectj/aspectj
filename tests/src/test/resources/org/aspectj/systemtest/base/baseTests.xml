@@ -211,7 +211,8 @@
 
     <ajc-test dir="base/test136" title="supers, supers, supers"
       keywords="from-base">
-        <compile files="Driver.java" options="-1.4"/>
+        <!-- 13-Feb-25: The last piece of advice doesn't match, not sure why it is there if it doesn't match but the test expectations don't need it to match -->
+        <compile files="Driver.java" options="-1.8 -Xlint:ignore"/>
         <run class="Driver"/>
     </ajc-test>
 

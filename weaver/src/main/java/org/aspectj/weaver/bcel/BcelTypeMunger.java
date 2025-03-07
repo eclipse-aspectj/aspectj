@@ -503,7 +503,23 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			// Check for covariance
 			ResolvedType subType = weaver.getWorld().resolve(subMethod.getReturnType());
 			ResolvedType superType = weaver.getWorld().resolve(superMethod.getReturnType());
-			if (!superType.isAssignableFrom(subType)) {
+
+			boolean isError = false;
+			// Not compatible return types if looks like boxing
+			if (weaver.getWorld().isInJava5Mode()) {
+				if (superType.isPrimitiveType() && !subType.isPrimitiveType()) {
+					isError = true;
+				} else if (subType.isPrimitiveType() && !superType.isPrimitiveType()) {
+					isError = true;
+				}
+			}
+			if (isError == false) {
+				if (!superType.isAssignableFrom(subType)) {
+					isError = true;
+				}
+			}
+		
+			if (isError) {
 				weaver.getWorld()
 						.getMessageHandler()
 						.handleMessage(

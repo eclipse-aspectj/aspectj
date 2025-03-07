@@ -1,4 +1,5 @@
 import org.aspectj.testing.Tester;
+import org.aspectj.lang.annotation.SuppressAjWarnings;
 
 public class  StaticCalls {
     public static void main(String args[]) { test(); }

@@ -1,5 +1,5 @@
 
-
+import org.aspectj.lang.annotation.SuppressAjWarnings;
 import org.aspectj.testing.Tester;
 
 /** @testcase PR#36778 advise join points in subclass of empty interface */
@@ -20,7 +20,7 @@ aspect Log {
     interface LoggedType {
     }
     declare parents: C implements LoggedType;
-    void around() : staticinitialization(LoggedType) // CE: limitation
+    @SuppressAjWarnings("adviceDidNotMatch") void around() : staticinitialization(LoggedType) // CE: limitation
         {
         hits++;
         log.append(thisJoinPoint + ";");

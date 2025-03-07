@@ -149,8 +149,7 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 				"<pkg*A12.aj>A´declare \\@constructor");
 	}
 
-	// what about 2 pieces of before advice with the same
-	// signature and the same pointcut
+	// what about 2 pieces of before advice with the same signature and the same pointcut
 	public void testTwoPiecesOfAdviceWithSameSignatureAndPointcut() {
 		runTest("two pieces of advice with the same signature and pointcut");
 		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();

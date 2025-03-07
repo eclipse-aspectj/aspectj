@@ -7,7 +7,7 @@
 
     <!-- something simple -->
     <ajc-test dir="bugs151/atDecp/case1" title="atDecp - simple">
-      <compile files="MainClass.java" options="-1.5 -showWeaveInfo">
+      <compile files="MainClass.java" options="-1.8 -showWeaveInfo">
         <message kind="weave" text="Extending interface set for type 'moody.AnnotationMoodImplementor' (MainClass.java) to include 'moody.AnnotationMoodIndicator$Moody' (MainClass.java)"/>
 	    <message kind="weave" text="Type 'moody.AnnotationMoodImplementor' (MainClass.java) has intertyped method from 'moody.AnnotationMoodIndicator' (MainClass.java:'moody.Mood moody.AnnotationMoodIndicator$Moody.getMood()')"/>
 	    <message kind="weave" text="Type 'moody.AnnotationMoodImplementor' (MainClass.java) has intertyped method from 'moody.AnnotationMoodIndicator' (MainClass.java:'void moody.AnnotationMoodIndicator$Moody.setMood(moody.Mood)')"/>
@@ -23,7 +23,7 @@
 
     <!-- applying parent based on annotation -->
     <ajc-test dir="bugs151/atDecp/case2" title="atDecp - annotation">
-      <compile files="MainClass.java" options="-1.5 -showWeaveInfo">
+      <compile files="MainClass.java" options="-1.8 -showWeaveInfo">
         <message kind="weave" text="Extending interface set for type 'moody.AnnotationMoodImplementor' (MainClass.java) to include 'moody.AnnotationMoodIndicator$Moody' (MainClass.java)"/>
 	    <message kind="weave" text="Type 'moody.AnnotationMoodImplementor' (MainClass.java) has intertyped method from 'moody.AnnotationMoodIndicator' (MainClass.java:'moody.Mood moody.AnnotationMoodIndicator$Moody.getMood()')"/>
 	    <message kind="weave" text="Type 'moody.AnnotationMoodImplementor' (MainClass.java) has intertyped method from 'moody.AnnotationMoodIndicator' (MainClass.java:'void moody.AnnotationMoodIndicator$Moody.setMood(moody.Mood)')"/>
@@ -39,8 +39,8 @@
 
     <!-- when interface is binary -->
     <ajc-test dir="bugs151/atDecp/case3" title="atDecp - binary interface">
-      <compile files="Mood.java,Moody.java" outjar="moody.jar" options="-1.5"/>
-      <compile files="MainClass.java" classpath="moody.jar" options="-1.5 -showWeaveInfo">
+      <compile files="Mood.java,Moody.java" outjar="moody.jar" options="-1.8"/>
+      <compile files="MainClass.java" classpath="moody.jar" options="-1.8 -showWeaveInfo">
         <message kind="weave" text="Extending interface set for type 'theapp.AnnotationMoodImplementor' (MainClass.java) to include 'moody.Moody' (MainClass.java)"/>
         <message kind="weave" text="Type 'theapp.AnnotationMoodImplementor' (MainClass.java) has intertyped method from 'theapp.AnnotationMoodIndicator' (MainClass.java:'moody.Mood moody.Moody.getMood()')"/>
         <message kind="weave" text="Type 'theapp.AnnotationMoodImplementor' (MainClass.java) has intertyped method from 'theapp.AnnotationMoodIndicator' (MainClass.java:'void moody.Moody.setMood(moody.Mood)')"/>
@@ -56,8 +56,8 @@
 
     <!-- when interface is binary and implementation is not an inner  -->
     <ajc-test dir="bugs151/atDecp/case4" title="atDecp - binary interface - 2">
-      <compile files="Mood.java,Moody.java" outjar="moody.jar" options="-1.5"/>
-      <compile files="MainClass.java,AnnotationMoodImplementor.java,TheAspect.java,MoodyImpl.java" classpath="moody.jar" options="-1.5 -showWeaveInfo">
+      <compile files="Mood.java,Moody.java" outjar="moody.jar" options="-1.8"/>
+      <compile files="MainClass.java,AnnotationMoodImplementor.java,TheAspect.java,MoodyImpl.java" classpath="moody.jar" options="-1.8 -showWeaveInfo">
         <message kind="weave" text="Extending interface set for type 'theapp.AnnotationMoodImplementor' (AnnotationMoodImplementor.java) to include 'moody.Moody' (TheAspect.java)"/>
         <message kind="weave" text="Type 'theapp.AnnotationMoodImplementor' (AnnotationMoodImplementor.java) has intertyped method from 'theapp.AnnotationMoodIndicator' (TheAspect.java:'moody.Mood moody.Moody.getMood()')"/>
         <message kind="weave" text="Type 'theapp.AnnotationMoodImplementor' (AnnotationMoodImplementor.java) has intertyped method from 'theapp.AnnotationMoodIndicator' (TheAspect.java:'void moody.Moody.setMood(moody.Mood)')"/>
@@ -75,21 +75,21 @@
 
 
     <ajc-test dir="bugs151/pr126560" title="@AJ deow doesn't throw an invalidAbsoluteTypeName when specify type in the same package">
-        <compile files="pkg1/C.java, pkg1/A.java" options="-1.5">
+        <compile files="pkg1/C.java, pkg1/A.java" options="-1.8">
           <message kind="error" line="8" text="error"/>
           <message kind="warning" line="5" text="warning"/>
 	    </compile>
     </ajc-test>
 
     <ajc-test dir="bugs151/pr126560" title="@AJ deow doesn't throw an invalidAbsoluteTypeName when specify type in the same file">
-        <compile files="pkg2/InOneFile.java" options="-1.5">
+        <compile files="pkg2/InOneFile.java" options="-1.8">
           <message kind="warning" line="14" text="call hello"/>
           <message kind="error" line="15" text="call hi"/>
 	    </compile>
     </ajc-test>
 
     <ajc-test dir="bugs151/pr98901" title="annotations and itds">
-     <compile files="Failing.java" options="-1.5"/>
+     <compile files="Failing.java" options="-1.8"/>
      <run class="Failing">
        <stderr>
           <line text="On TestInterface:@TestAnnotation(value=true)" vm="1.5-13"/>
@@ -101,7 +101,7 @@
     </ajc-test>
 
     <ajc-test dir="bugs151/pr98901" title="annotations and itds - 2">
-     <compile files="Failing2.java" options="-1.5"/>
+     <compile files="Failing2.java" options="-1.8"/>
      <run class="Failing2">
        <stderr>
           <line text="On TestInterface:@TestAnnotation(value=true)" vm="1.5-13"/>
@@ -113,32 +113,32 @@
     </ajc-test>
 
     <ajc-test dir="bugs151/pr132926" pr="132926" title="crashing on annotation type resolving with asm - 1">
-     <compile files="InputAnnotation.java,AffectedType.java" options="-1.5"/>
+     <compile files="InputAnnotation.java,AffectedType.java" options="-1.8"/>
     </ajc-test>
 
     <ajc-test dir="bugs151/pr132926" pr="132926" title="crashing on annotation type resolving with asm - 2">
-     <compile files="InputAnnotation.java" outjar="foo.jar" options="-1.5"/>
-     <compile files="AffectedType.java" classpath="foo.jar" options="-1.5"/>
+     <compile files="InputAnnotation.java" outjar="foo.jar" options="-1.8"/>
+     <compile files="AffectedType.java" classpath="foo.jar" options="-1.8"/>
     </ajc-test>
 
     <ajc-test dir="bugs151/pr132926" pr="132926" title="crashing on annotation type resolving with asm - 3">
-     <compile files="InputAnnotation2.java" outjar="foo.jar" options="-1.5"/>
-     <compile files="AffectedType.java" classpath="foo.jar" options="-1.5">
+     <compile files="InputAnnotation2.java" outjar="foo.jar" options="-1.8"/>
+     <compile files="AffectedType.java" classpath="foo.jar" options="-1.8">
      	<message kind="error" line="9" text="AffectedType is not a valid target for annotation InputAnnotation, this annotation can only be applied to these element types {METHOD}"/>
      </compile>
     </ajc-test>
 
     <ajc-test dir="bugs151/pr133307" title="circular generics">
-      <compile files="Broken.aj" options="-1.5"/>
+      <compile files="Broken.aj" options="-1.8"/>
     </ajc-test>
 
     <ajc-test dir="bugs151/pr123553" title="generic advice parameters">
-        <compile files="A.java" options="-1.5"/>
+        <compile files="A.java" options="-1.8"/>
         <run class="A"/>
     </ajc-test>
 
     <ajc-test dir="bugs151/pr133298" title="doubly annotating a method with declare">
-      <compile files="DecA.java" options="-1.5"/>
+      <compile files="DecA.java" options="-1.8"/>
       <run class="DecA">
         <stderr>
           <line text="There are 2 annotations on public void m()"/>
@@ -155,7 +155,7 @@
     </ajc-test>
 
     <ajc-test dir="bugs151/pr133298" title="doubly annotating a method with declare - 2">
-      <compile files="DecA2.java" options="-1.5"/>
+      <compile files="DecA2.java" options="-1.8"/>
       <run class="DecA2">
         <stderr>
           <line text="There are 2 annotations on public void Target.m()"/>
@@ -169,25 +169,25 @@
     </ajc-test>
 
      <ajc-test dir="bugs151/pr129566" title="arrayindexoutofbounds">
-        <compile files="SkipList.java" options="-1.5"/>
+        <compile files="SkipList.java" options="-1.8"/>
     </ajc-test>
 
     <ajc-test dir="bugs151" title="member types in generic types">
-        <compile files="pr122458.aj" options="-1.5 -emacssym"/>
+        <compile files="pr122458.aj" options="-1.8 -emacssym"/>
     </ajc-test>
 
     <ajc-test dir="bugs151/pr127299" title="missing import gives funny message">
-        <compile files="ModelErrorConversion.aj" options="-1.5"/>
+        <compile files="ModelErrorConversion.aj" options="-1.8"/>
     </ajc-test>
 
     <ajc-test dir="bugs151/pr122742" title="@AJ VerifyError with @AfterThrowing and thisJoinPoint argument">
-    	<compile files="AfterThrowingTest.java" options="-1.5"/>
+    	<compile files="AfterThrowingTest.java" options="-1.8"/>
     	<run class="AfterThrowingTest">
     	</run>
     </ajc-test>
 
     <ajc-test dir="bugs151/pr122742" title="@AJ VerifyError with @AfterReturning and thisJoinPoint argument">
-    	<compile files="AfterReturningTest.java" options="-1.5"/>
+    	<compile files="AfterReturningTest.java" options="-1.8"/>
     	<run class="AfterReturningTest">
     	</run>
     </ajc-test>
@@ -197,28 +197,28 @@
     </ajc-test>
 
     <ajc-test dir="bugs151/pr123901" title="inlinevisitor NPE">
-        <compile files="A.java,B.java" options="-1.5">
+        <compile files="A.java,B.java" options="-1.8">
           <message kind="error" line="5" text="A cannot be resolved or is not a field"/>
         </compile>
     </ajc-test>
 
     <ajc-test dir="bugs151" title="member types in generic types - 2">
-        <compile files="pr122458_2.aj" options="-1.5 -emacssym"/>
+        <compile files="pr122458_2.aj" options="-1.8 -emacssym"/>
         <run class="pr122458_2"/>
     </ajc-test>
 
     <ajc-test dir="bugs151/pr123695" title="Internal nullptr exception with complex declare annotation">
-        <compile files="InjectName.java,Main.java,MarkMyMethods.java,MarkMyMethodsAspect.java,NameAspect.java,Named.java,Read.java,Write.java" options="-1.5"/>
+        <compile files="InjectName.java,Main.java,MarkMyMethods.java,MarkMyMethodsAspect.java,NameAspect.java,Named.java,Read.java,Write.java" options="-1.8"/>
     </ajc-test>
 
     <ajc-test dir="bugs151/pr124105" title="hasMember problems with packages">
-        <compile files="com/test/IOption.java,com/test/IXOption.java,com/test/IYOption.java,com/test/IZOption.java,com/test/MyBrokenXOption.java,com/test/MyXOption.java,com/test/OptionAspect.aj,com/test/OptionType.java" options="-1.5 -XhasMember">
+        <compile files="com/test/IOption.java,com/test/IXOption.java,com/test/IYOption.java,com/test/IZOption.java,com/test/MyBrokenXOption.java,com/test/MyXOption.java,com/test/OptionAspect.aj,com/test/OptionType.java" options="-1.8 -XhasMember">
           <message kind="error" line="4" text="IOption implementations must provide a constructor which accepts an OptionType"/>
         </compile>
     </ajc-test>
 
     <ajc-test dir="bugs151/pr124803" title="generics and different numbers of type variables">
-        <compile files="Test.java,TestAspect.java" options="-1.5 -showWeaveInfo">
+        <compile files="Test.java,TestAspect.java" options="-1.8 -showWeaveInfo">
           <message kind="weave" text="Join point 'method-execution(void Test.foo(java.lang.Number))' in Type 'Test' (Test.java:12) advised by after advice from 'TestAspect' (TestAspect.java:4)"/>
         </compile>
         <run class="Test">
@@ -229,7 +229,7 @@
     </ajc-test>
 
     <ajc-test dir="bugs151/pr124803" title="generics and different numbers of type variables - classes">
-        <compile files="Test2.java,TestAspect2.java" options="-1.5 -showWeaveInfo">
+        <compile files="Test2.java,TestAspect2.java" options="-1.8 -showWeaveInfo">
           <message kind="weave" text="Join point 'method-execution(void Test2.foo(java.lang.Number))' in Type 'Test2' (Test2.java:12) advised by after advice from 'TestAspect2' (TestAspect2.java:4)"/>
 	      <message kind="weave" text="Join point 'method-execution(void Generic1.foo(java.lang.Number))' in Type 'Generic1' (Test2.java:2) advised by after advice from 'TestAspect2' (TestAspect2.java:4) [with runtime test]"/>
         </compile>
@@ -241,7 +241,7 @@
     </ajc-test>
 
     <ajc-test dir="bugs151/pr124808" title="parameterized collection fields matched via pointcut">
-        <compile files="Test.java,TestAspect.java" options="-1.5"/>
+        <compile files="Test.java,TestAspect.java" options="-1.8"/>
         <run class="Test">
           <stderr>
              <line text="GO Aspects!  get(Set Test.ints)"/>
@@ -250,12 +250,12 @@
     </ajc-test>
 
     <ajc-test dir="bugs151" title="calling inherited generic method from around advice">
-        <compile files="pr124999.aj" options="-1.5"/>
+        <compile files="pr124999.aj" options="-1.8"/>
         <run class="pr124999"/>
     </ajc-test>
 
     <ajc-test dir="bugs151/pr124654" title="generic aspects and annotations">
-        <compile files="GenericAnnotation.java,TestSubAspect.java" options="-1.5"/>
+        <compile files="GenericAnnotation.java,TestSubAspect.java" options="-1.8"/>
         <run class="TestSubAspect">
           <stderr>
             <line text="Reference pointcut advice. interface MyAnnotation"/>
@@ -266,7 +266,7 @@
     </ajc-test>
 
     <ajc-test dir="bugs151" title="incorrectly referencing pointcuts">
-        <compile files="pr122452.aj" options="-1.5">
+        <compile files="pr122452.aj" options="-1.8">
           <message kind="warning" line="2" text="no match for this type name: Point [Xlint:invalidAbsoluteTypeName]"/>
           <message kind="warning" line="3" text="no match for this type name: related.Hello [Xlint:invalidAbsoluteTypeName]"/>
           <message kind="error" line="4" text="Syntax error on token &quot;*&quot;, &quot;(&quot; expected"/>
@@ -274,18 +274,18 @@
     </ajc-test>
 
     <ajc-test dir="bugs151" title="incorrectly referencing pointcuts - 2">
-        <compile files="pr122452_2.aj" options="-1.5">
+        <compile files="pr122452_2.aj" options="-1.8">
           <message kind="error" line="2" text="Syntax error on token &quot;*&quot;, &quot;(&quot; expected"/>
         </compile>
     </ajc-test>
 
     <ajc-test dir="bugs151/pr125080" title="mixing numbers of type parameters">
-        <compile files="Test.java" options="-1.5"/>
+        <compile files="Test.java" options="-1.8"/>
         <run class="ConcreteAspect"/>
     </ajc-test>
 
     <ajc-test dir="bugs151/pr125080" title="mixing numbers of type parameters - 2">
-        <compile files="Test2.java" options="-1.5"/>
+        <compile files="Test2.java" options="-1.8"/>
         <run class="ConcreteAspect"/>
     </ajc-test>
 
@@ -294,11 +294,11 @@
     </ajc-test>
 
     <ajc-test dir="bugs151/pr125475" title="define empty pointcut using an annotation">
-        <compile files="TestEmptyPointcutAtAspect.java" options="-1.5"/>
+        <compile files="TestEmptyPointcutAtAspect.java" options="-1.8"/>
     </ajc-test>
 
     <ajc-test dir="bugs151/pr125475" title="define empty pointcut using an annotation - 2">
-        <compile files="TestEmptyPointcutAtAspect2.java" options="-1.5 -showWeaveInfo">
+        <compile files="TestEmptyPointcutAtAspect2.java" options="-1.8 -showWeaveInfo">
           <message kind="warning" line="10" text="advice defined in TestEmptyPointcutAtAspect2 has not been applied [Xlint:adviceDidNotMatch]"/>
         </compile>
     </ajc-test>
@@ -309,7 +309,7 @@
     </ajc-test>
 
     <ajc-test dir="bugs151/pr128744" title="broken ltw">
-        <compile files="Hello.java World.java" options="-1.5" />
+        <compile files="Hello.java World.java" options="-1.8" />
         <run class="Hello" ltw="aop.xml">
         	<stdout>
                 <line text="Hello"/>
@@ -319,7 +319,7 @@
     </ajc-test>
 
     <ajc-test dir="bugs151/pr125699" title="inherit advice with this() and thisJoinPoint">
-        <compile files="Tracing.aj, TestTracing.aj, AtTestTracing.java" options="-1.5">
+        <compile files="Tracing.aj, TestTracing.aj, AtTestTracing.java" options="-1.8">
           <message kind="warning" line="13" text="advice defined in Tracing has not been applied [Xlint:adviceDidNotMatch]"/>
           <message kind="warning" line="8" text="advice defined in Tracing has not been applied [Xlint:adviceDidNotMatch]"/>
           <message kind="warning" line="3" text="advice defined in Tracing has not been applied [Xlint:adviceDidNotMatch]"/>
@@ -327,7 +327,7 @@
     </ajc-test>
 
     <ajc-test dir="bugs151/pr125699" title="inherit advice with this() and thisJoinPoint - 2">
-        <compile files="Tracing.aj, SubAbstractTracing.aj, SubAtAj.java" options="-1.5">
+        <compile files="Tracing.aj, SubAbstractTracing.aj, SubAtAj.java" options="-1.8">
           <message kind="warning" line="13" text="advice defined in Tracing has not been applied [Xlint:adviceDidNotMatch]"/>
           <message kind="warning" line="8" text="advice defined in Tracing has not been applied [Xlint:adviceDidNotMatch]"/>
           <message kind="warning" line="3" text="advice defined in Tracing has not been applied [Xlint:adviceDidNotMatch]"/>
@@ -335,7 +335,7 @@
     </ajc-test>
 
     <ajc-test dir="bugs151/pr125810" title="warning when inherited pointcut not made concrete">
-        <compile files="SuperAspect.aj, SubAspect.aj, SubAtAspect.java" options="-1.5">
+        <compile files="SuperAspect.aj, SubAspect.aj, SubAtAspect.java" options="-1.8">
           <message kind="error" line="3" text="inherited abstract pointcut SuperAspect.scope() is not made concrete in SubAspect"/>
           <message kind="error" line="1" text="inherited abstract pointcut SuperAspect.scope() is not made concrete in SubAspect"/>
           <message kind="error" line="3" text="inherited abstract pointcut SuperAspect.scope() is not made concrete in SubAtAspect"/>
@@ -344,17 +344,17 @@
     </ajc-test>
 
     <ajc-test dir="bugs151" title="E extends Enum(E) again">
-        <compile files="Pr126316.aj" options="-1.5"/>
+        <compile files="Pr126316.aj" options="-1.8"/>
     </ajc-test>
 
     <ajc-test dir="bugs151" title="@AJ without JoinPoint import">
-        <compile files="pr121616.java" options="-1.5">
+        <compile files="pr121616.java" options="-1.8">
           <message kind="error" line="13" text="JoinPoint cannot be resolved to a type"/>
         </compile>
     </ajc-test>
 
     <ajc-test dir="bugs151/pr122370" title="@AJ declare parents retains field state">
-        <compile files="moody/AnnotationMoodImplementor.java, moody/AnnotationMoodIndicator.java, moody/Mood.java, moody/MainClass.java" options="-1.5"/>
+        <compile files="moody/AnnotationMoodImplementor.java, moody/AnnotationMoodIndicator.java, moody/Mood.java, moody/MainClass.java" options="-1.8"/>
        <run class="moody.MainClass">
             <stdout>
              <line text="ami0's mood is HAPPY"/>
@@ -365,11 +365,11 @@
     </ajc-test>
 
     <ajc-test dir="bugs151" title="@AJ no npe with pointcut containing or, this and a wildcard">
-        <compile files="pr128237.java" options="-1.5"/>
+        <compile files="pr128237.java" options="-1.8"/>
     </ajc-test>
 
     <ajc-test dir="bugs151" title="Generic aspects with annotation type parameters">
-        <compile files="GenericAspectWithAnnotationTypeParameter.aj" options="-1.5"/>
+        <compile files="GenericAspectWithAnnotationTypeParameter.aj" options="-1.8"/>
         <run class="GenericAspectWithAnnotationTypeParameter">
             <stdout>
                 <line text="annotation match - no binding"/>
@@ -381,13 +381,13 @@
     </ajc-test>
 
     <ajc-test dir="bugs151" title="Pointcut interfaces">
-        <compile files="pr130869.aj" options="-1.5">
+        <compile files="pr130869.aj" options="-1.8">
           <message kind="warning" line="30" text="no directly runnable classes"/>
         </compile>
     </ajc-test>
 
     <ajc-test dir="bugs151" title="no ClassCastException with generic aspect and unknown type">
-        <compile files="pr131933.aj" options="-1.5">
+        <compile files="pr131933.aj" options="-1.8">
           <message kind="error" line="5" text="can't bind type name 'MyList'"/>
         </compile>
     </ajc-test>
@@ -395,7 +395,7 @@
     <!-- New features down here... when they arent big enough to have their own test file -->
 
     <ajc-test dir="features151/ptw" title="exposing withintype">
-        <compile files="ExposedType.java" options="-1.5"/>
+        <compile files="ExposedType.java" options="-1.8"/>
         <run class="ExposedType">
           <stderr>
             <line text="here I am execution(void ExposedTypeOne.foo()): for class ExposedTypeOne"/>

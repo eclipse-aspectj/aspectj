@@ -104,9 +104,10 @@ public class OutjarTest extends AjcTestCase {
 	 * Expected result = Compile fails with error message.
 	 */
 	public void testOutjarDeletedOnError () {
-		String[] args = new String[] { "-aspectpath", aspectjarName, "-injars", injarName, "-outjar", outjarName, "-1.4" };
+		String[] args = new String[] { "-aspectpath", aspectjarName, "-injars", injarName, "-outjar", outjarName, "-1.8" };
 		Message error = new Message(WeaverMessages.format(WeaverMessages.CANT_FIND_TYPE_INTERFACES, "jar1.Parent"));
-		MessageSpec spec = new MessageSpec(null, newMessageList(error));
+		Message warning = new Message("advice defined in jar3.Aspect has not been applied [Xlint:adviceDidNotMatch]");
+		MessageSpec spec = new MessageSpec(newMessageList(warning), newMessageList(error));
 		CompilationResult result = ajc(baseDir, args);
 		assertMessages(result, spec);
 		File outjar = new File(ajc.getSandboxDirectory(), outjarName);

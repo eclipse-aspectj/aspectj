@@ -71,9 +71,9 @@ public class SanityTests19 extends XMLBasedAjcTestCase {
 		checkVersion("A", bytecode_version_for_JDK_level, 0);
 	}
 
-	public void testVersionCorrect4() throws ClassNotFoundException { // check it is 49.0 when -1.5 is specified
+	public void testVersionCorrect4() throws ClassNotFoundException {
 		runTest("simple - m");
-		checkVersion("A", Constants.ClassFileVersion.of(5).MAJOR, 0);
+		checkVersion("A", Constants.ClassFileVersion.of(8).MAJOR, 0);
 	}
 
 	// Check the stackmap stuff appears for methods in a Java6 file

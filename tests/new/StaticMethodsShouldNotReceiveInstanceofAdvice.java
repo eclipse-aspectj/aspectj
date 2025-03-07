@@ -1,3 +1,4 @@
+import org.aspectj.lang.annotation.SuppressAjWarnings;
 import org.aspectj.testing.*;
 import java.util.*;
 
@@ -29,11 +30,17 @@ aspect PutsAdviceOnStaticMethods {
     pointcut bad4(): target(*) && call(void ClassWithStaticMethods.staticMethod());
     pointcut bad5(ClassWithStaticMethods c): target(c) && call(void staticMethod());
 
+    @SuppressAjWarnings("adviceDidNotMatch")
     before(): bad0() { bad("bad0:" + thisJoinPoint); }
+    @SuppressAjWarnings("adviceDidNotMatch")
     before(ClassWithStaticMethods c): bad1(c) { bad("bad1:" + thisJoinPoint); }
+    @SuppressAjWarnings("adviceDidNotMatch")
     before(): bad2() { bad("bad2:" + thisJoinPoint); }
+    @SuppressAjWarnings("adviceDidNotMatch")
     before(ClassWithStaticMethods c): bad3(c) { bad("bad3:" + thisJoinPoint); }
+    @SuppressAjWarnings("adviceDidNotMatch")
     before(): bad4() { bad("bad4:" + thisJoinPoint); }
+    @SuppressAjWarnings("adviceDidNotMatch")
     before(ClassWithStaticMethods c): bad5(c) { bad("bad5:" + thisJoinPoint); }     
 
     // This should run

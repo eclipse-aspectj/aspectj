@@ -9,12 +9,12 @@
 	title="Ensure 1st aspect is rewoven when weaving 2nd aspect"
 	keywords="reweavable">
 	<compile files="Main.java, Aspect1.aj" outjar="main1.jar"
-		options="-showWeaveInfo -verbose -1.4">
+		options="-showWeaveInfo -verbose -1.8">
 		<message kind="weave"
 			text="method-execution(void Main.test1())' in Type 'Main' (Main.java:17) advised by before advice from 'Aspect1' (Aspect1.aj:16)" />
 	</compile>
 	<compile classpath="main1.jar" files="Aspect2.aj"
-		outjar="aspect2.jar" options="-showWeaveInfo -verbose -1.4">
+		outjar="aspect2.jar" options="-showWeaveInfo -verbose -1.8 -Xlint:ignore">
 	</compile>
 	<run class="Main" ltw="aop-ltwreweavable.xml">
 		<stdout>
@@ -39,7 +39,7 @@
 	</compile>
 	<compile classpath="main.jar"
 		files="Aspect1.aj, Aspect2.aj, pakkage/Aspect3.aj"
-		outxmlfile="META-INF/aop.xml" options="-1.4">
+		outxmlfile="META-INF/aop.xml" options="-1.8 -Xlint:ignore">
 	</compile>
 	<run class="Main" ltw="">
 		<stdout>
@@ -62,7 +62,7 @@
 	</compile>
 	<compile classpath="main.jar"
 		files="Aspect1.aj, Aspect2.aj, pakkage/Aspect3.aj"
-		outjar="aspects.jar" options="-1.4 -outxml">
+		outjar="aspects.jar" options="-1.8 -outxml -Xlint:ignore">
 	</compile>
 	<run class="Main" ltw="">
 		<stdout>
@@ -189,9 +189,9 @@
 <ajc-test dir="ltw/callMunging/case2"
 	title="aggressive ltw - deca">
 	<compile files="A.java,T.java,Main.java,MarkerAnnotation.java"
-		outjar="classes.jar" options="-1.5" />
+		outjar="classes.jar" options="-1.8" />
 	<compile files="X.java" outjar="aspects.jar"
-		classpath="classes.jar" options="-1.5 -Xlint:ignore" />
+		classpath="classes.jar" options="-1.8 -Xlint:ignore" />
 	<run class="Main" ltw="aop.xml">
 		<stdout>
 			<line text="into:main" />
@@ -213,7 +213,7 @@
 	</compile>
 	<!-- was in next section classpath="main1.jar" -->
 	<compile files="AbstractSuperAspect.aj" outjar="aspect.jar"
-		options="-1.4">
+		options="-1.8">
 	</compile>
 	<run class="Main" ltw="aop-defineaspect.xml">
 		<stdout>
@@ -239,7 +239,7 @@
 	keywords="abstract aspect, ITD">
 	<compile files="TestITDMethod.java">
 	</compile>
-	<compile files="AbstractAspect.aj" options="-1.4">
+	<compile files="AbstractAspect.aj" options="-1.8">
 		<message kind="warning"
 			text="this affected type is not exposed to the weaver: TestITDMethod" />
 	</compile>
@@ -263,7 +263,7 @@
 	</compile>
 	<compile classpath="main.jar"
 		files="Aspect1.aj, Aspect2.aj, pakkage/Aspect3.aj"
-		outjar="aspects.jar" options="-outxml -1.4">
+		outjar="aspects.jar" options="-outxml -1.8 -Xlint:ignore">
 	</compile>
 	<run class="Main" ltw="aop-aspectsinclude.xml">
 		<stdout>
@@ -284,7 +284,7 @@
 	</compile>
 	<compile classpath="main.jar"
 		files="Aspect1.aj, Aspect2.aj, pakkage/Aspect3.aj"
-		outjar="aspects.jar" options="-outxml -1.4">
+		outjar="aspects.jar" options="-outxml -1.8 -Xlint:ignore">
 	</compile>
 	<run class="Main" ltw="aop-aspectsincludewithlintwarning.xml">
 		<stdout>
@@ -350,9 +350,10 @@
 	<compile files="util/A.aj,util/T.aj" />
 	<compile
 		files="child/Executor.aj,child/Advisor.aj,top/SimpleMain.aj"
-		options="-1.4">
+		options="-1.8">
 		<message kind="warning"
 			text="this affected type is not exposed to the weaver: util.A" />
+		<message line="20" kind="warning" text="advice defined in child.Advisor has not been applied [Xlint:adviceDidNotMatch]"/>
 	</compile>
 	<run class="top.SimpleMain" ltw="aop-single.xml">
 		<stdout>
@@ -374,7 +375,7 @@
 	keywords="xlint, ltw">
 	<compile files="Main.java">
 	</compile>
-	<compile files="Aspect3.aj" options="-1.4">
+	<compile files="Aspect3.aj" options="-1.8 -Xlint:ignore">
 	</compile>
 	<run class="Main" ltw="aop-nomatch.xml">
 		<stderr>
@@ -392,7 +393,7 @@
 	keywords="xlint, ltw">
 	<compile files="Main.java">
 	</compile>
-	<compile files="Aspect3.aj" options="-1.4">
+	<compile files="Aspect3.aj" options="-1.8 -Xlint:ignore">
 	</compile>
 	<run class="Main" ltw="aop-nomatchxlintfile.xml"
 		xlintfile="Xlint-nomatch.properties">
@@ -412,7 +413,7 @@
 	keywords="xlint, ltw">
 	<compile files="Main.java">
 	</compile>
-	<compile files="Aspect3.aj" options="-1.4">
+	<compile files="Aspect3.aj" options="-1.8 -Xlint:ignore">
 	</compile>
 	<run class="Main" ltw="aop-nomatchxlint.xml">
 		<stderr>
@@ -431,7 +432,7 @@
 	keywords="xlint, ltw">
 	<compile files="Main.java">
 	</compile>
-	<compile files="Aspect3.aj" options="-1.4">
+	<compile files="Aspect3.aj" options="-1.8 -Xlint:ignore">
 	</compile>
 	<run class="Main" ltw="aop-nomatchxlint.xml">
 		<stderr>
@@ -449,12 +450,12 @@
 <ajc-test dir="ltw" title="Nonstandard jar file extensions"
 	pr="137235">
 	<compile files="folder.jar/Main.java, folder.jar/Aspect1.aj"
-		outjar="folder.jar/main1.zip" options="-showWeaveInfo -1.4">
+		outjar="folder.jar/main1.zip" options="-showWeaveInfo -1.8">
 		<message kind="weave"
 			text="method-execution(void Main.test1())' in Type 'Main' (Main.java:17) advised by before advice from 'Aspect1' (Aspect1.aj:16)" />
 	</compile>
 	<compile classpath="$sandbox/folder.jar/main1.zip"
-		files="Aspect2.aj" outjar="aspect2Jar" options="-showWeaveInfo -1.4">
+		files="Aspect2.aj" outjar="aspect2Jar" options="-showWeaveInfo -1.8 -Xlint:ignore">
 	</compile>
 	<run class="Main" ltw="aop-ltwreweavable.xml"
 		classpath="$sandbox/folder.jar/main1.zip,$sandbox/aspect2Jar">
@@ -481,7 +482,7 @@
 			text="method-execution(void Main.test1())' in Type 'Main' (Main.java:17) advised by before advice from 'Aspect1' (Aspect1.aj:16)" />
 	</compile>
 	<compile classpath="$sandbox/folder.jar/main1.archive"
-		files="Aspect2.aj" outjar="aspect2Jar" options="-showWeaveInfo -1.4">
+		files="Aspect2.aj" outjar="aspect2Jar" options="-showWeaveInfo -1.8 -Xlint:ignore">
 	</compile>
 	<run class="Main" ltw="aop-ltwreweavable.xml"
 		classpath="$sandbox/folder.jar/main1.archive,$sandbox/aspect2Jar">
@@ -505,7 +506,7 @@
 	<compile files="HelloWorldWithException.java"
 		options="-outjar hello.jar" />
 	<compile files="ExceptionHandler.aj"
-		options="-outxml -outjar handler.jar -1.4" />
+		options="-outxml -outjar handler.jar -1.8 -Xlint:ignore" />
 	<ant file="ant.xml" target="JDK14 LTW with XML" verbose="true">
 		<stdout>
 			<line text="Hello World!" />
@@ -538,7 +539,7 @@
 	<compile files="HelloWorldWithException.java"
 		options="-outjar hello.jar" />
 	<compile files="ExceptionHandler.aj"
-		options="-outxml -outjar handler.jar -1.4" />
+		options="-outxml -outjar handler.jar -1.8 -Xlint:ignore" />
 	<ant file="ant-server.xml" target="TestServer with HelloWorld"
 		verbose="true">
 		<stdout>
@@ -560,7 +561,7 @@
 	<compile files="HelloWorldWithException.java"
 		options="-outjar child.jar" />
 	<compile files="ExceptionHandler.aj"
-		options="-outxml -outjar parent.jar -1.4" />
+		options="-outxml -outjar parent.jar -1.8 -Xlint:ignore" />
 	<ant file="ant-server.xml"
 		target="TestServer with Parent and Child" verbose="true">
 		<stdout>
@@ -578,9 +579,9 @@
 	<compile files="HelloWorldWithException.java"
 		options="-outjar hello.jar" />
 	<compile files="ExceptionHandler.aj"
-		options="-outxml -outjar handler.jar -1.4" />
+		options="-outxml -outjar handler.jar -1.8 -Xlint:ignore" />
 	<compile files="Tracing.aj"
-		options="-outxml -outjar tracing.jar -1.4" />
+		options="-outxml -outjar tracing.jar -1.8 -Xlint:ignore" />
 	<ant file="ant.xml"
 		target="override default path using -Dorg.aspectj.weaver.loadtime.configuration"
 		verbose="true">
@@ -594,7 +595,7 @@
 	keywords="ltw">
 	<compile files="pkg/sub/Foo.aj, pkg/Main.aj"
 		options="-outjar base.jar" />
-	<compile files="tracing/Tracer.aj" options="-1.4" />
+	<compile files="tracing/Tracer.aj" options="-1.8 -Xlint:ignore" />
 	<run class="pkg.Main" ltw="aop-include.xml">
 		<stderr>
 			<line text="execution(void pkg.Main.foo())" />
@@ -607,7 +608,7 @@
 	keywords="ltw">
 	<compile files="pkg/sub/Foo.aj, pkg/Main.aj"
 		options="-outjar base.jar" />
-	<compile files="tracing/Tracer.aj" options="-1.4" />
+	<compile files="tracing/Tracer.aj" options="-1.8 -Xlint:ignore" />
 	<run class="pkg.Main" ltw="aop-exclude.xml">
 		<stderr>
 			<line text="execution(void pkg.sub.Foo.foo())" />
@@ -620,7 +621,7 @@
 		options="-outjar base.jar" />
 	<compile
 		files="tracing/Tracer.aj, tracing/staticinit/Tracer.aj, tracing/staticinit/sub/Tracer.aj"
-		options="-1.4" />
+		options="-1.8 -Xlint:ignore" />
 	<run class="pkg.Main" ltw="aop-aspectinclexcl.xml">
 		<stderr>
 			<line text="staticinitialization(pkg.Main.&lt;clinit&gt;)" />
@@ -631,7 +632,7 @@
 
 <ajc-test dir="ltw" title="simple LTW" keywords="ltw">
 	<compile files="HelloWorldWithException.java" />
-	<compile files="ExceptionHandler.aj" options="-outxml -1.4" />
+	<compile files="ExceptionHandler.aj" options="-outxml -1.8 -Xlint:ignore" />
 	<ant file="ant.xml" target="simple LTW" verbose="true">
 		<stdout>
 			<line text="Hello World!" />
@@ -641,7 +642,7 @@
 
 <ajc-test dir="ltw" title="dump on error" keywords="ltw">
 	<compile files="HelloWorldWithException.java" />
-	<compile files="ExceptionHandler.aj" options="-outxml -1.4" />
+	<compile files="ExceptionHandler.aj" options="-outxml -1.8 -Xlint:ignore" />
 	<ant file="ant.xml" target="dump on error" verbose="true">
 		<stdout>
 			<line text="Hello World!" />
@@ -651,11 +652,11 @@
 
 <ajc-test dir="bugs153/pr155033" title="multiple dump on error"
 	keywords="ltw">
-	<compile files="Annotation.java" options="-1.5" />
+	<compile files="Annotation.java" options="-1.8" />
 	<compile
 		files="MultipleDumpTest.java, Class1.java, Class2.java, Class3.java"
-		options="-1.5" />
-	<compile files="Aspect.aj" options="-1.5 -outxml -Xlint:ignore" />
+		options="-1.8" />
+	<compile files="Aspect.aj" options="-1.8 -outxml -Xlint:ignore" />
 	<!-- <run class="MultipleDumpTest" ltw="aop-multipledumponerror.xml"> <stdout>
 		<line text="? AbortingMessageHandler.AbortingMessageHandler()"/> </stdout>
 		</run> -->

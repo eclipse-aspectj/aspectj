@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.aspectj.lang.annotation.SuppressAjWarnings;
+
 /**
  * In this test, we have multiple identical cflow() pointcut 'pieces' used in a number of
  * pointcuts.  We are not naming a cflow() and reusing it, we are just duplicating the
@@ -38,13 +40,13 @@ aspect Cflow1 {
 	pointcut p1(Object o): cflow(execution(* main(..)) && args(o));
 	
 	before(Object o): call(* print(..)) && p1(o) {
-		// Managed by a CflowCounter
+		// Managed by a stack - and o is the args to main, not the args to print
 	}
 	
 	before(Object o): call(* print(..)) && p1(o) {
-		// Managed by a CflowCounter
+		// Managed by a stack - and o is the args to main, not the args to print
 	}
-	
+	@SuppressAjWarnings("adviceDidNotMatch") // main executes in a static context, there will not be a target
 	before(Object o): execution(* print(..)) && cflow(execution(* main(..)) && target(o)) {
 		// Managed by a CflowStack - since state is exposed
 	}

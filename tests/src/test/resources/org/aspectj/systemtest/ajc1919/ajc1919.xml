@@ -164,7 +164,7 @@
 
 	<!-- Weaver error when declaring annotation with SOURCE retention, see https://bugs.eclipse.org/bugs/show_bug.cgi?id=366085 -->
 	<ajc-test dir="bugs1919/366085" vm="1.5" title="declare annotation with SOURCE retention">
-		<compile files="Application.java DeclareAnnotationsAspect.aj ToString.java Marker.java" options="-1.5 -showWeaveInfo">
+		<compile files="Application.java DeclareAnnotationsAspect.aj ToString.java Marker.java" options="-1.8 -showWeaveInfo">
 			<message kind="weave" text="'Application' (Application.java:1) is annotated with @Marker type annotation from 'DeclareAnnotationsAspect'"/>
 			<message kind="weave" text="'public void Application.new(int)' (Application.java:4) is annotated with @Marker constructor annotation from 'DeclareAnnotationsAspect'"/>
 			<message kind="weave" text="'public int Application.getNumber()' (Application.java:8) is annotated with @Marker method annotation from 'DeclareAnnotationsAspect'"/>

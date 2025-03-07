@@ -48,11 +48,11 @@ aspect Tracing {
     after() : trace1() {
         check("after() : trace1()", thisJoinPoint, thisJoinPointStaticPart);
     }
-
-    before(): call(void SourceLocationCall.main(..)) {
-        Tester.check(thisJoinPoint.getSourceLocation() == null, "main call");
-        Tester.check(thisJoinPoint.getThis() == null, "main call");
-    }
+// XXX23: What is this advice for? It doesn't match anything?
+//    before(): call (void SourceLocationCall.main(..)) {
+//        Tester.check(thisJoinPoint.getSourceLocation() == null, "main call");
+//        Tester.check(thisJoinPoint.getThis() == null, "main call");
+//    }
 }
 
 

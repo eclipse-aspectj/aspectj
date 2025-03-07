@@ -18,16 +18,17 @@ import junit.framework.Test;
 
 public class NewFeatures extends org.aspectj.testing.XMLBasedAjcTestCase {
 
-	public void testMakeSJPOptimizationLDCNo() {
-		this.runTest("makeSJP optimization - LDC - No");
-		try {
-			JavaClass myClass = getMyClass("B");
-			Method preClinitMethod = getPreClinitMethod(myClass);
-			NewFeatures.assertTrue("For 1.4 it must use classForName", preClinitMethod.getCode().toString().contains("forName"));
-		} catch (Exception e) {
-			NewFeatures.fail(e.toString());
-		}
-	}
+	// With Java23 marking anything < 1.8 as obsolete, test no longer valid, I think.
+//	public void testMakeSJPOptimizationLDCNo() {
+//		this.runTest("makeSJP optimization - LDC - No");
+//		try {
+//			JavaClass myClass = getMyClass("B");
+//			Method preClinitMethod = getPreClinitMethod(myClass);
+//			NewFeatures.assertTrue("For 1.4 it must use classForName", preClinitMethod.getCode().toString().contains("forName"));
+//		} catch (Exception e) {
+//			NewFeatures.fail(e.toString());
+//		}
+//	}
 
 	@SuppressWarnings("unused")
 	public void testMakeSJPOptimizationCollapsedSJPYes14() {

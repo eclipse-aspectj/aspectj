@@ -4,7 +4,7 @@
 <suite>
     
     <ajc-test dir="features151/serialveruid" title="basic">
-        <compile files="Basic.java" options="-1.5 -XaddSerialVersionUID"/>
+        <compile files="Basic.java" options="-1.8 -XaddSerialVersionUID"/>
         <run class="Basic">
           <stderr>
              <line text="SerialVersionUID is -7868414887470674287"/>
@@ -13,7 +13,7 @@
     </ajc-test>
     
     <ajc-test dir="features151/serialveruid" title="basic - lint">
-        <compile files="Basic.java" options="-1.5 -XaddSerialVersionUID -Xlint:warning">
+        <compile files="Basic.java" options="-1.8 -XaddSerialVersionUID -Xlint:warning">
           <message kind="warning" text="calculated SerialVersionUID for type Basic"/>
         </compile>
         <run class="Basic">
@@ -24,7 +24,7 @@
     </ajc-test>
     
     <ajc-test dir="features151/serialveruid" title="horrible">
-        <compile files="BigHorribleClass.java,AnAspect.java" options="-1.5 -XaddSerialVersionUID -Xlint:warning">
+        <compile files="BigHorribleClass.java,AnAspect.java" options="-1.8 -XaddSerialVersionUID -Xlint:warning">
           <message kind="warning" text="calculated SerialVersionUID for type BigHorribleClass"/>
         </compile>
         <run class="BigHorribleClass">
@@ -35,7 +35,7 @@
     </ajc-test>
     
 	<ajc-test dir="features151/serialveruid" title="abstract class">
-	  <compile files="TwoTypes.java,Test.java,ATest.java" options="-1.5 -XaddSerialVersionUID -Xlint:warning">
+	  <compile files="TwoTypes.java,Test.java,ATest.java" options="-1.8 -XaddSerialVersionUID -Xlint:warning">
           <message kind="warning" text="calculated SerialVersionUID for type TwoTypes"/>
           <message kind="warning" text="calculated SerialVersionUID for type com.testware.ejb.common.Test to be -1674849842374764518L"/>
           <message kind="warning" text="calculated SerialVersionUID for type com.testware.ejb.common.ATest to be -7300724421810308152L"/>

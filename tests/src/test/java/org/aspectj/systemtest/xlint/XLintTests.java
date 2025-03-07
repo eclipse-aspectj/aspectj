@@ -98,7 +98,7 @@ public class XLintTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 //     }
 
   public void test019(){
-    runTest("XLint warning for call PCD's using subtype of defining type (-1.3 -Xlint:ignore)");
+    runTest("XLint warning for call PCD's using subtype of defining type (-1.8 -Xlint:ignore)");
   }
 
 

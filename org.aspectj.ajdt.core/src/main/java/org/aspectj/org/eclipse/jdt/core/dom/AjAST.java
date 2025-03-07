@@ -44,10 +44,6 @@ public class AjAST extends AST {
      * @since 3.0
 	 */
 	public static AjAST newAjAST(int level,boolean previewEnabled) {
-		if ((level != AST.JLS2)
-			&& (level != AST.JLS3)) {
-			throw new IllegalArgumentException();
-		}
 		return new AjAST(level,previewEnabled);
 	}
 

@@ -4,7 +4,7 @@
 <suite>
 
     <ajc-test dir="features152/synchronization" title="basic">
-        <compile files="Basic.java" options="-1.5 -showWeaveInfo -Xjoinpoints:synchronization">
+        <compile files="Basic.java" options="-1.8 -showWeaveInfo -Xjoinpoints:synchronization">
         </compile>
         <run class="Basic">
           <stderr>
@@ -17,7 +17,7 @@
     </ajc-test>
 
     <ajc-test dir="features152/synchronization" title="basic - within">
-        <compile files="Basic2.java" options="-1.5 -Xjoinpoints:synchronization">
+        <compile files="Basic2.java" options="-1.8 -Xjoinpoints:synchronization">
         </compile>
         <run class="Basic2">
           <stderr>
@@ -38,7 +38,7 @@
     </ajc-test>
 
     <ajc-test dir="features152/synchronization" title="basic - within plus args">
-        <compile files="Basic3.java" options="-1.5 -Xjoinpoints:synchronization">
+        <compile files="Basic3.java" options="-1.8 -Xjoinpoints:synchronization">
         </compile>
         <run class="Basic3">
           <stderr>
@@ -59,7 +59,7 @@
     </ajc-test>
 
     <ajc-test dir="features152/synchronization" title="basic - within plus this">
-        <compile files="Basic4.java" options="-1.5 -Xjoinpoints:synchronization">
+        <compile files="Basic4.java" options="-1.8 -Xjoinpoints:synchronization">
         </compile>
         <run class="Basic4">
           <stderr>
@@ -80,7 +80,7 @@
     </ajc-test>
 
     <ajc-test dir="features152/synchronization" title="basic - within plus target">
-        <compile files="Basic5.java" options="-1.5 -Xjoinpoints:synchronization">
+        <compile files="Basic5.java" options="-1.8 -Xjoinpoints:synchronization">
         </compile>
         <run class="Basic5">
           <stderr>
@@ -101,7 +101,7 @@
     </ajc-test>
 
     <ajc-test dir="features152/synchronization" title="a useful program">
-        <compile files="Useful1.java" options="-1.5 -Xjoinpoints:synchronization">
+        <compile files="Useful1.java" options="-1.8 -Xjoinpoints:synchronization">
         </compile>
         <run class="Useful1">
           <stderr>
@@ -112,19 +112,19 @@
     </ajc-test>
 
     <ajc-test dir="features152/synchronization" title="parsing - lock">
-        <compile files="Parsing1.java" options="-1.5 -Xjoinpoints:synchronization">
+        <compile files="Parsing1.java" options="-1.8 -Xjoinpoints:synchronization">
           <message kind="warning" line="5" text="advice defined in Parsing1 has not been applied [Xlint:adviceDidNotMatch]"/>
         </compile>
     </ajc-test>
 
     <ajc-test dir="features152/synchronization" title="parsing - unlock">
-        <compile files="Parsing2.java" options="-1.5 -Xjoinpoints:synchronization">
+        <compile files="Parsing2.java" options="-1.8 -Xjoinpoints:synchronization">
           <message kind="warning" line="5" text="advice defined in Parsing2 has not been applied [Xlint:adviceDidNotMatch]"/>
         </compile>
     </ajc-test>
 
     <ajc-test dir="features152/synchronization" title="parsing - error - lock">
-        <compile files="Parsing1.java" options="-1.5">
+        <compile files="Parsing1.java" options="-1.8">
           <message kind="warning" line="5" text="advice defined in Parsing1 has not been applied [Xlint:adviceDidNotMatch]"/>
           <!-- this next warning comes out twice because we unpack the attributes twice... -->
           <message kind="warning" line="5" text="lock() pointcut designator cannot be used without the option -Xjoinpoints:synchronization"/>
@@ -132,7 +132,7 @@
     </ajc-test>
 
     <ajc-test dir="features152/synchronization" title="parsing - error - unlock">
-        <compile files="Parsing2.java" options="-1.5">
+        <compile files="Parsing2.java" options="-1.8">
           <message kind="warning" line="5" text="advice defined in Parsing2 has not been applied [Xlint:adviceDidNotMatch]"/>
           <!-- this next warning comes out twice because we unpack the attributes twice... -->
           <message kind="warning" line="5" text="unlock() pointcut designator cannot be used without the option -Xjoinpoints:synchronization"/>
@@ -140,7 +140,7 @@
     </ajc-test>
 
     <ajc-test dir="features152/synchronization" title="parsing and matching - lock and static context">
-        <compile files="ParsingAndMatching1.java" options="-1.5 -Xjoinpoints:synchronization"/>
+        <compile files="ParsingAndMatching1.java" options="-1.8 -Xjoinpoints:synchronization"/>
         <run class="ParsingAndMatching1">
           <stderr>
             <line text="Advice running at ParsingAndMatching1.java:14"/>
@@ -150,10 +150,10 @@
     </ajc-test>
 
     <ajc-test dir="features152/synchronization" title="using lock with LTW - missing flag">
-        <compile files="LockAspect1.java" options="-1.5">
+        <compile files="LockAspect1.java" options="-1.8">
           <message kind="warning" line="6" text="lock() pointcut designator cannot be used without the option -Xjoinpoints:synchronization"/>
         </compile>
-        <compile files="BasicProgram1.java" options="-1.5"/>
+        <compile files="BasicProgram1.java" options="-1.8"/>
         <run class="BasicProgram1" ltw="aop1.xml">
         	<stderr>
         	  <!-- warning is something like 'warning at C:\temp\ajcSandbox\ajcTest61975.tmp\LockAspect1.java:6::0 lock() pointcut designator cannot be used without the option -Xjoinpoints:synchronization'/-->
@@ -165,8 +165,8 @@
     </ajc-test>
 
     <ajc-test dir="features152/synchronization/transformed" title="transform with LTW">
-        <compile files="CaptureLock.aj" options="-1.5"/>
-        <compile files="Program.java" options="-1.5"/>
+        <compile files="CaptureLock.aj" options="-1.8"/>
+        <compile files="Program.java" options="-1.8"/>
         <run class="Program" ltw="aop1.xml">
         	<stdout>
         	  <line text="Before a lock or unlock"/>
@@ -186,8 +186,8 @@
     </ajc-test>
 
     <ajc-test dir="features152/synchronization" title="using lock with LTW">
-      <compile files="LockAspect1.java" options="-1.5 -Xjoinpoints:synchronization"/>
-      <compile files="BasicProgram1.java" options="-1.5 -Xjoinpoints:synchronization"/>
+      <compile files="LockAspect1.java" options="-1.8 -Xjoinpoints:synchronization"/>
+      <compile files="BasicProgram1.java" options="-1.8 -Xjoinpoints:synchronization"/>
       <run class="BasicProgram1" ltw="aop3.xml">
         <stderr>
           <line text="Join point 'lock(void java.lang.Object.&lt;lock&gt;(java.lang.Object))' in Type 'BasicProgram1' (BasicProgram1.java:11) advised by before advice from 'LockAspect1' (LockAspect1.java:6)"/>
@@ -203,8 +203,8 @@
     </ajc-test>
 
     <ajc-test dir="features152/synchronization" title="using unlock with LTW">
-      <compile files="UnlockAspect1.java" options="-1.5 -Xjoinpoints:synchronization"/>
-      <compile files="BasicProgram1.java" options="-1.5 -Xjoinpoints:synchronization"/>
+      <compile files="UnlockAspect1.java" options="-1.8 -Xjoinpoints:synchronization"/>
+      <compile files="BasicProgram1.java" options="-1.8 -Xjoinpoints:synchronization"/>
       <run class="BasicProgram1" ltw="aop4.xml">
         <stderr>
           <line text="Join point 'unlock(void java.lang.Object.&lt;unlock&gt;(java.lang.Object))' in Type 'BasicProgram1' (BasicProgram1.java:11) advised by before advice from 'UnlockAspect1' (UnlockAspect1.java:6)"/>
@@ -220,10 +220,10 @@
     </ajc-test>
 
     <ajc-test dir="features152/synchronization" title="using unlock with LTW - missing flag">
-        <compile files="UnlockAspect1.java" options="-1.5">
+        <compile files="UnlockAspect1.java" options="-1.8">
           <message kind="warning" line="6" text="unlock() pointcut designator cannot be used without the option -Xjoinpoints:synchronization"/>
         </compile>
-        <compile files="BasicProgram1.java" options="-1.5"/>
+        <compile files="BasicProgram1.java" options="-1.8"/>
         <run class="BasicProgram1" ltw="aop2.xml">
         	<stderr>
         	  <line text="warning at "/>
@@ -234,7 +234,7 @@
     </ajc-test>
 
     <ajc-test dir="features152/synchronization" title="parsing and matching - unlock and static context">
-        <compile files="ParsingAndMatching2.java" options="-1.5 -Xjoinpoints:synchronization"/>
+        <compile files="ParsingAndMatching2.java" options="-1.8 -Xjoinpoints:synchronization"/>
         <run class="ParsingAndMatching2">
           <stderr>
             <line text="static method running"/>
@@ -244,7 +244,7 @@
     </ajc-test>
 
     <ajc-test dir="features152/synchronization" title="parsing and matching - lock and non-static context">
-        <compile files="ParsingAndMatching3.java" options="-1.5 -Xjoinpoints:synchronization"/>
+        <compile files="ParsingAndMatching3.java" options="-1.8 -Xjoinpoints:synchronization"/>
         <run class="ParsingAndMatching3">
           <stderr>
             <line text="Advice running at ParsingAndMatching3.java:15"/>
@@ -254,7 +254,7 @@
     </ajc-test>
 
     <ajc-test dir="features152/synchronization" title="parsing and matching - unlock and non-static context">
-        <compile files="ParsingAndMatching4.java" options="-1.5 -Xjoinpoints:synchronization"/>
+        <compile files="ParsingAndMatching4.java" options="-1.8 -Xjoinpoints:synchronization"/>
         <run class="ParsingAndMatching4">
           <stderr>
             <line text="non-static method running"/>
@@ -264,7 +264,7 @@
     </ajc-test>
 
     <ajc-test dir="features152/synchronization" title="a useful program - with lock">
-        <compile files="Useful2.java" options="-1.5 -showWeaveInfo -Xjoinpoints:synchronization">
+        <compile files="Useful2.java" options="-1.8 -showWeaveInfo -Xjoinpoints:synchronization">
         	<message kind="weave" text="Join point 'method-execution(void Useful2.main(java.lang.String[]))' in Type 'Useful2' (Useful2.java:33) advised by afterReturning advice from 'LockMonitor' (Useful2.java:25)"/>
         	<message kind="weave" text="Join point 'lock(void java.lang.Object.&lt;lock&gt;(java.lang.Object))' in Type 'Useful2' (Useful2.java:42) advised by before advice from 'LockMonitor' (Useful2.java:9) [with runtime test]"/>
         	<message kind="weave" text="Join point 'unlock(void java.lang.Object.&lt;unlock&gt;(java.lang.Object))' in Type 'Useful2' (Useful2.java:42) advised by after advice from 'LockMonitor' (Useful2.java:14) [with runtime test]"/>
@@ -278,7 +278,7 @@
     </ajc-test>
 
     <ajc-test dir="features152/synchronization" title="combining pcds - lock and this">
-        <compile files="CombiningPCDs1.java" options="-1.5 -Xjoinpoints:synchronization"/>
+        <compile files="CombiningPCDs1.java" options="-1.8 -Xjoinpoints:synchronization"/>
         <run class="CombiningPCDs1">
           <stderr>
             <line text="static method running"/>
@@ -289,7 +289,7 @@
     </ajc-test>
 
     <ajc-test dir="features152/synchronization" title="combining pcds - unlock and this">
-        <compile files="CombiningPCDs2.java" options="-1.5 -Xjoinpoints:synchronization"/>
+        <compile files="CombiningPCDs2.java" options="-1.8 -Xjoinpoints:synchronization"/>
         <run class="CombiningPCDs2">
           <stderr>
             <line text="static method running"/>
@@ -300,7 +300,7 @@
     </ajc-test>
 
     <ajc-test dir="features152/synchronization" title="thisjoinpoint - monitor entry">
-        <compile files="ThisJoinPointLock.java" options="-1.5 -Xjoinpoints:synchronization"/>
+        <compile files="ThisJoinPointLock.java" options="-1.8 -Xjoinpoints:synchronization"/>
         <run class="ThisJoinPointLock">
           <stderr>
             <line text="match.toString(): lock(lock(Object))"/>
@@ -311,7 +311,7 @@
     </ajc-test>
 
     <ajc-test dir="features152/synchronization" title="thisjoinpoint - monitor exit">
-        <compile files="ThisJoinPointUnlock.java" options="-1.5 -Xjoinpoints:synchronization"/>
+        <compile files="ThisJoinPointUnlock.java" options="-1.8 -Xjoinpoints:synchronization"/>
         <run class="ThisJoinPointUnlock">
           <stderr>
             <line text="match.toString(): unlock(unlock(Object))"/>
@@ -322,7 +322,7 @@
     </ajc-test>
 
     <ajc-test dir="features152/synchronization" title="prevent double unlock weaving messages and model contents">
-        <compile files="ThisJoinPointUnlock.java" options="-1.5 -Xjoinpoints:synchronization -showWeaveInfo -emacssym">
+        <compile files="ThisJoinPointUnlock.java" options="-1.8 -Xjoinpoints:synchronization -showWeaveInfo -emacssym">
           <message kind="weave" text="Join point 'lock(void java.lang.Object.&lt;lock&gt;(java.lang.Object))' in Type 'ThisJoinPointUnlock' (ThisJoinPointUnlock.java:38) advised by before advice from 'TJPAspect' (ThisJoinPointUnlock.java:4)"/>
           <message kind="weave" text="Join point 'method-call(void ThisJoinPointUnlock.staticMethod())' in Type 'ThisJoinPointUnlock' (ThisJoinPointUnlock.java:39) advised by before advice from 'TJPAspect' (ThisJoinPointUnlock.java:4)"/>
           <message kind="weave" text="Join point 'unlock(void java.lang.Object.&lt;unlock&gt;(java.lang.Object))' in Type 'ThisJoinPointUnlock' (ThisJoinPointUnlock.java:38) advised by before advice from 'TJPAspect' (ThisJoinPointUnlock.java:4)"/>
@@ -330,7 +330,7 @@
     </ajc-test>
 
     <ajc-test dir="features152/synchronization" title="before advice - lock">
-        <compile files="BeforeLock.java" options="-1.5 -Xjoinpoints:synchronization"/>
+        <compile files="BeforeLock.java" options="-1.8 -Xjoinpoints:synchronization"/>
         <run class="BeforeLock">
           <stderr>
             <line text="before() lock: advice running at BeforeLock.java:26"/>
@@ -343,7 +343,7 @@
     </ajc-test>
 
     <ajc-test dir="features152/synchronization" title="before advice - unlock">
-        <compile files="BeforeUnlock.java" options="-1.5 -Xjoinpoints:synchronization"/>
+        <compile files="BeforeUnlock.java" options="-1.8 -Xjoinpoints:synchronization"/>
         <run class="BeforeUnlock">
           <stderr>
             <line text="static method running"/>
@@ -356,7 +356,7 @@
     </ajc-test>
 
     <ajc-test dir="features152/synchronization" title="after advice - lock">
-        <compile files="AfterLock.java" options="-1.5 -Xjoinpoints:synchronization"/>
+        <compile files="AfterLock.java" options="-1.8 -Xjoinpoints:synchronization"/>
         <run class="AfterLock">
           <stderr>
             <line text="after() lock: advice running at AfterLock.java:26"/>
@@ -369,7 +369,7 @@
     </ajc-test>
 
     <ajc-test dir="features152/synchronization" title="after advice - unlock">
-        <compile files="AfterUnlock.java" options="-1.5 -Xjoinpoints:synchronization"/>
+        <compile files="AfterUnlock.java" options="-1.8 -Xjoinpoints:synchronization"/>
         <run class="AfterUnlock">
           <stderr>
             <line text="static method running"/>
@@ -382,7 +382,7 @@
     </ajc-test>
 
     <ajc-test dir="features152/synchronization" title="around advice - lock">
-        <compile files="AroundLock.java" options="-1.5 -Xjoinpoints:synchronization">
+        <compile files="AroundLock.java" options="-1.8 -Xjoinpoints:synchronization">
           <message kind="warning" line="11" text="Around advice is not supported on the lock and unlock join points (compiler limitation)"/>
           <message kind="warning" line="17" text="Around advice is not supported on the lock and unlock join points (compiler limitation)"/>
           <message kind="warning" line="31" text="Around advice is not supported on the lock and unlock join points (compiler limitation)"/>
@@ -402,7 +402,7 @@
     </ajc-test>
 
     <ajc-test dir="features152/synchronization" title="around advice - unlock">
-        <compile files="AroundUnlock.java" options="-1.5 -Xjoinpoints:synchronization">
+        <compile files="AroundUnlock.java" options="-1.8 -Xjoinpoints:synchronization">
           <message kind="warning" line="5" text="Around advice is not supported on the lock and unlock join points (compiler limitation)"/>
           <message kind="warning" line="10" text="Around advice is not supported on the lock and unlock join points (compiler limitation)"/>
           <message kind="warning" line="23" text="Around advice is not supported on the lock and unlock join points (compiler limitation)"/>
@@ -489,7 +489,7 @@
     </ajc-test>
 
     <ajc-test dir="features152/synchronization/transformed" title="Five - Java5">
-      <compile files="Five.java -1.5 -Xjoinpoints:synchronization">
+      <compile files="Five.java -1.8 -Xjoinpoints:synchronization">
       </compile>
       <run class="Five">
         <stderr>
@@ -497,19 +497,6 @@
           <line text="hello"/>
           <line text="test"/>
           <line text="hello"/>
-          <line text="test"/>
-          <line text="hello"/>
-          <line text="test"/>
-          <line text="hello"/>
-        </stderr>
-      </run>
-    </ajc-test>
-
-    <ajc-test dir="features152/synchronization/transformed" title="Six - preJava5">
-      <compile files="Six.java -Xjoinpoints:synchronization">
-      </compile>
-      <run class="Six">
-        <stderr>
           <line text="test"/>
           <line text="hello"/>
           <line text="test"/>
@@ -543,7 +530,7 @@
     </ajc-test>
 
     <ajc-test dir="features152/synchronization/transformed" title="lock pcd on transformed static method - J5">
-      <compile files="Nine.java -1.5 -Xjoinpoints:synchronization">
+      <compile files="Nine.java -1.8 -Xjoinpoints:synchronization">
       </compile>
       <run class="Nine">
         <stderr>
@@ -555,7 +542,7 @@
     </ajc-test>
 
     <ajc-test dir="features152/synchronization/transformed" title="unlock pcd on transformed static method - J5">
-      <compile files="Ten.java -1.5 -Xjoinpoints:synchronization">
+      <compile files="Ten.java -1.8 -Xjoinpoints:synchronization">
       </compile>
       <run class="Ten">
         <stderr>
@@ -590,8 +577,10 @@
       </run>
     </ajc-test>
 
+
+	<!-- TOTIDY: delete test as was for -1.4? -->
     <ajc-test dir="features152/synchronization/transformed" title="transform static method - preJ5">
-      <compile files="Fifteen.java" options="-Xjoinpoints:synchronization -1.4">
+      <compile files="Fifteen.java" options="-Xjoinpoints:synchronization -1.8">
       </compile>
       <run class="Fifteen">
         <stderr>
@@ -602,8 +591,9 @@
       </run>
     </ajc-test>
 
+	<!-- TOTIDY: delete test as was for -1.4? -->
     <ajc-test dir="features152/synchronization/transformed" title="transform static method - packages - preJ5">
-      <compile files="Sixteen.java" options="-Xjoinpoints:synchronization -1.4">
+      <compile files="Sixteen.java" options="-Xjoinpoints:synchronization -1.8">
       </compile>
       <run class="a.b.c.d.Sixteen">
         <stderr>

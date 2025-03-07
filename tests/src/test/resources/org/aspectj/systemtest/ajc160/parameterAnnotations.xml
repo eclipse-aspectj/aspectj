@@ -4,7 +4,7 @@
 <suite>
 
    <ajc-test dir="features160/parameterAnnotationMatching" title="deow2">
-     <compile options="-1.5" files="Test2.java">
+     <compile options="-1.8" files="Test2.java">
        <message kind="warning" line="9" text="mOne"/>
        <message kind="warning" line="13" text="mTwo"/>
        <message kind="warning" line="15" text="mTwo"/>
@@ -12,7 +12,7 @@
    </ajc-test>
 
    <ajc-test dir="features160/parameterAnnotationMatching" title="deow">
-     <compile options="-1.5" files="Test.java">
+     <compile options="-1.8" files="Test.java">
        <message kind="warning" line="43" text="mOne"/>
        <message kind="warning" line="45" text="mOne"/>
        <message kind="warning" line="43" text="mTwo"/>
@@ -31,11 +31,11 @@
    </ajc-test>
    
    <ajc-test dir="features160/parameterAnnotationMatching" title="no xlint for wrong target">
-     <compile options="-1.5" files="NonNullAssertionForcer.java"/>
+     <compile options="-1.8" files="NonNullAssertionForcer.java"/>
    </ajc-test>
 
    <ajc-test dir="features160/parameterAnnotationMatching" title="various combinations">
-     <compile options="-1.5 -showWeaveInfo" files="TestMatching.aj Anno1.java Anno2.java AnnotatedWithAnno1.java AnnotatedWithAnno2.java">
+     <compile options="-1.8 -showWeaveInfo" files="TestMatching.aj Anno1.java Anno2.java AnnotatedWithAnno1.java AnnotatedWithAnno2.java">
        <message kind="weave" text="'TestMatching' (TestMatching.aj:4) advised by before advice from 'TestMatching' (TestMatching.aj:3)"/>
        
        <message kind="weave" text="'TestMatching' (TestMatching.aj:7) advised by before advice from 'TestMatching' (TestMatching.aj:6)"/>
@@ -69,14 +69,14 @@
    </ajc-test>
    
     <ajc-test dir="features160/parameterAnnotationMatching" title="wildcarded matching">
-     <compile options="-1.5 -showWeaveInfo" files="WildcardedMatching.aj Anno1.java Anno2.java AnnotatedWithAnno1.java AnnotatedWithAnno2.java">
+     <compile options="-1.8 -showWeaveInfo" files="WildcardedMatching.aj Anno1.java Anno2.java AnnotatedWithAnno1.java AnnotatedWithAnno2.java">
        <!-- tbd -->
      </compile>
    </ajc-test>
    
    
    <ajc-test dir="features160/parameterAnnotationMatching" title="various combinations - ctors">
-     <compile options="-1.5 -showWeaveInfo" files="TestMatchingCtors.aj Anno1.java Anno2.java AnnotatedWithAnno1.java AnnotatedWithAnno2.java">
+     <compile options="-1.8 -showWeaveInfo" files="TestMatchingCtors.aj Anno1.java Anno2.java AnnotatedWithAnno1.java AnnotatedWithAnno2.java">
        <message kind="weave" text="(TestMatchingCtors.aj:4) advised by before advice from 'TestMatching' (TestMatchingCtors.aj:3)"/>
        
        <message kind="weave" text="(TestMatchingCtors.aj:7) advised by before advice from 'TestMatching' (TestMatchingCtors.aj:6)"/>
@@ -110,7 +110,7 @@
    </ajc-test>
    
    <ajc-test dir="features160/parameterAnnotationMatching" title="hasmethod">
-     <compile options="-1.5 -showWeaveInfo -XhasMember" files="HasMethodMatching.aj Anno1.java Anno2.java AnnotatedWithAnno1.java AnnotatedWithAnno2.java">
+     <compile options="-1.8 -showWeaveInfo -XhasMember" files="HasMethodMatching.aj Anno1.java Anno2.java AnnotatedWithAnno1.java AnnotatedWithAnno2.java">
        <message kind="weave" text="Extending interface set for type 'Target1' (HasMethodMatching.aj) to include 'java.io.Serializable' (HasMethodMatching.aj)"/>
        <message kind="weave" text="Extending interface set for type 'Target3' (HasMethodMatching.aj) to include 'java.io.Serializable' (HasMethodMatching.aj)"/>
        <message kind="weave" text="Extending interface set for type 'Target4' (HasMethodMatching.aj) to include 'java.io.Serializable' (HasMethodMatching.aj)"/>
@@ -127,8 +127,8 @@
    </ajc-test>
    
    <ajc-test dir="features160/parameterAnnotationMatching" title="binary weaving">
-     <compile options="-1.5" files="SimpleType.java Anno1.java Anno2.java AnnotatedWithAnno1.java AnnotatedWithAnno2.java AnnotatedWithBoth.java" outjar="code.jar"/>
-     <compile options="-1.5 -showWeaveInfo" files="SimpleAspect.java" inpath="code.jar">
+     <compile options="-1.8" files="SimpleType.java Anno1.java Anno2.java AnnotatedWithAnno1.java AnnotatedWithAnno2.java AnnotatedWithBoth.java" outjar="code.jar"/>
+     <compile options="-1.8 -showWeaveInfo" files="SimpleAspect.java" inpath="code.jar">
         <message kind="weave" text="(SimpleType.java:2) advised by before advice from 'SimpleAspect' (SimpleAspect.java:2)"/>
         <message kind="weave" text="(SimpleType.java:3) advised by before advice from 'SimpleAspect' (SimpleAspect.java:4)"/>
         <message kind="weave" text="(SimpleType.java:4) advised by before advice from 'SimpleAspect' (SimpleAspect.java:6)"/>

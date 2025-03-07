@@ -113,12 +113,6 @@ public class SynchronizationTransformTests extends XMLBasedAjcTestCase {
 		checkMethod("C", "b");
 	}
 
-	// < Java5 variant
-	public void testStaticSynchronizedMethodTransformPreJava5() {
-		runTest("Six - preJava5");
-		checkMethod("C", "bbb");
-	}
-
 	public void testLockPcdOnTransformedNonStaticMethod() {
 		runTest("lock pcd on transformed non-static method");
 	}

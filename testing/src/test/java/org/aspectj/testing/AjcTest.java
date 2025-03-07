@@ -11,6 +11,7 @@ package org.aspectj.testing;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.aspectj.tools.ajc.Ajc;
 import org.aspectj.tools.ajc.AjcTestCase;
 import org.aspectj.util.LangUtil;
 
@@ -54,13 +55,17 @@ public class AjcTest {
 	public boolean runTest(AjcTestCase testCase) {
 		if (!canRunOnThisVM()) return false;
 		try {
-			System.out.println("TEST: " + getTitle());
+			if (Ajc.verbose) {
+				System.out.println("TEST: " + getTitle());
+			} 
 			for (ITestStep step: testSteps) {
 				step.setBaseDir(getDir());
 				step.execute(testCase);
 			}
 		} finally {
-			System.out.println("DONE");
+			if (Ajc.verbose) {
+				System.out.println("DONE");
+			} 
 		}
 		return true;
 	}

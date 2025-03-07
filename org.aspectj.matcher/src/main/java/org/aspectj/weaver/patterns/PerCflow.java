@@ -104,11 +104,10 @@ public class PerCflow extends PerClause {
 		CrosscuttingMembers xcut = inAspect.crosscuttingMembers;
 
 		Collection<ShadowMunger> previousCflowEntries = xcut.getCflowEntries();
-		Pointcut concreteEntry = entry.concretize(inAspect, inAspect, 0, null); // IntMap
-		// .
-		// EMPTY
-		// )
-		// ;
+		Pointcut concreteEntry = entry.concretize(inAspect, inAspect, 0, null);
+		if (concreteEntry.getSourceLocation() == null) {
+			concreteEntry.setLocation(sourceContext, start, end);
+		}
 		List<ShadowMunger> innerCflowEntries = new ArrayList<>(xcut.getCflowEntries());
 		innerCflowEntries.removeAll(previousCflowEntries);
 

@@ -3,19 +3,19 @@
 <suite>
 
 	<ajc-test dir="bugs170/pr382723" title="generic aspect">
-		<compile files="FooAspect.java" options="-1.5"/>
+		<compile files="FooAspect.java" options="-1.8"/>
 	</ajc-test>
 
 	<ajc-test dir="bugs170/pr382723" title="generic aspect 2">
-		<compile files="FooAspect2.java" options="-1.5"/>
+		<compile files="FooAspect2.java" options="-1.8"/>
 	</ajc-test>
 
 	<ajc-test dir="bugs170/pr382723" title="generic aspect 3">
-		<compile files="FooAspect3.java" options="-1.5"/>
+		<compile files="FooAspect3.java" options="-1.8"/>
 	</ajc-test>
 
 	<ajc-test dir="bugs170/pr382723" title="generic aspect 4">
-		<compile files="Foo.java" options="-1.5 -showWeaveInfo">
+		<compile files="Foo.java" options="-1.8 -showWeaveInfo">
 			<message kind="weave" text="Join point 'constructor-call(void java.util.LinkedList.&lt;init&gt;())' in Type 'Foo' (Foo.java:41) advised by around advice from 'Bar' (Foo.java:14)"/>
 		</compile>
 		<run class="Foo">
@@ -30,31 +30,31 @@
 
 	<!-- no declare parents, only ITD -->
 	<ajc-test dir="bugs170/pr382189/one" title="covariant generics 1">
-		<compile files="A.java A_ITD.aj B.java SuperA.java SuperB.java" options="-1.5"/>
+		<compile files="A.java A_ITD.aj B.java SuperA.java SuperB.java" options="-1.8"/>
 	</ajc-test>
 
 	<!-- now declare parents and ITD -->
 	<ajc-test dir="bugs170/pr382189/two" title="covariant generics 2">
-		<compile files="A.java A_ITD.aj B.java SuperA.java SuperB.java" options="-1.5"/>
+		<compile files="A.java A_ITD.aj B.java SuperA.java SuperB.java" options="-1.8"/>
 	</ajc-test>
 
 	<!-- now run it -->
 	<ajc-test dir="bugs170/pr382189/three" title="covariant generics 3">
-		<compile files="A.java A_ITD.aj B.java SuperA.java SuperB.java" options="-1.5"/>
+		<compile files="A.java A_ITD.aj B.java SuperA.java SuperB.java" options="-1.8"/>
 		<run class="A"/>
 	</ajc-test>
 
 	<ajc-test dir="bugs170/pr382435/one" title="covariant generic itds 1">
-		<compile files="bug/A.java" options="-1.5"/>
+		<compile files="bug/A.java" options="-1.8"/>
 	</ajc-test>
 
 	<ajc-test dir="bugs170/pr382435/two" title="covariant generic itds 2">
-		<compile files="bug/A.java" options="-1.5"/>
+		<compile files="bug/A.java" options="-1.8"/>
 		<run class="bug.A"/>
 	</ajc-test>
 
 	<ajc-test dir="bugs170/pr382189" title="covariant generics">
-	<compile files="covbug/A.java covbug/A_ITD.aj covbug/B.java covbug/SuperA.java covbug/SuperB.java" options="-1.5"/>
+	<compile files="covbug/A.java covbug/A_ITD.aj covbug/B.java covbug/SuperA.java covbug/SuperB.java" options="-1.8"/>
 	<!-- <run class="Foo">
 	<stdout>
 	<line text="@Anno()"/></stdout>
@@ -62,7 +62,7 @@
 	</ajc-test>
 
 	<ajc-test dir="bugs170/pr377130" title="missing annos on priv aspects">
-	<compile files="Foo.java" options="-1.5"/>
+	<compile files="Foo.java" options="-1.8"/>
 	<run class="Foo">
 	<stdout>
 	<line text="@Anno()"/></stdout>
@@ -70,7 +70,7 @@
 	</ajc-test>
 
 	<ajc-test dir="bugs170/pr377130" title="missing annos on priv aspects - 2">
-	<compile files="Foo2.java" options="-1.5"/>
+	<compile files="Foo2.java" options="-1.8"/>
 	<run class="Foo2">
 	<stdout>
 	<line text="@Anno()"/></stdout>
@@ -78,14 +78,14 @@
 	</ajc-test>
 
  	<ajc-test dir="bugs170/pr376351" title="attribute issue with J7">
-     <compile files="R.java R1.java" outjar="code.jar" options="-1.5"/>
-     <compile files="RAj.java" options="-1.7 -Xlint:ignore" outjar="aspects.jar" classpath="code.jar"/>
+     <compile files="R.java R1.java" outjar="code.jar" options="-1.8"/>
+     <compile files="RAj.java" options="-1.8 -Xlint:ignore" outjar="aspects.jar" classpath="code.jar"/>
      <compile inpath="code.jar" aspectpath="aspects.jar" options="-showWeaveInfo">
      <message kind="weave" text="Join point 'constructor-call(void R.&lt;init&gt;())'"/>
      </compile>
      <!--
      if we had a 1.7 vm we could use this:
-     <compile files="RAj.java" options="-1.7 -Xlint:ignore"/>
+     <compile files="RAj.java" options="-1.8 -Xlint:ignore"/>
      <run class="R" ltw="aop.xml">
      <stderr>
      <line text="org.aspectj.weaver.tools.Jdk14Trace error"/>
@@ -97,12 +97,12 @@
    </ajc-test>
 
  	<ajc-test dir="bugs170/pr376139" title="switch on enum">
-     <compile files="Code.java" options="-1.5"/>
+     <compile files="Code.java" options="-1.8"/>
      <run class="Code"/>
    </ajc-test>
 
  	<ajc-test dir="bugs170/ltw" title="dec at field ordering 1">
-     <compile files="Anno.java TriggerAll.java MyObject.java Main.java" options="-1.5"/>
+     <compile files="Anno.java TriggerAll.java MyObject.java Main.java" options="-1.8"/>
      <run class="ch.tests.Main">
        <stdout>
            <line text="Triggered"/>
@@ -112,7 +112,7 @@
    </ajc-test>
 
  	<ajc-test dir="bugs170/ltw" title="dec at field ordering 2">
-     <compile files="Anno.java Main.java TriggerAll.java  MyObject.java" options="-1.5"/>
+     <compile files="Anno.java Main.java TriggerAll.java  MyObject.java" options="-1.8"/>
      <run class="ch.tests.Main">
        <stdout>
            <line text="Triggered"/>
@@ -122,8 +122,8 @@
    </ajc-test>
 
    <ajc-test dir="bugs170/ltw" title="dec at field ordering ltw 1">
-     <compile files="Anno.java Main.java MyObject.java" options="-1.5"/>
-     <compile files="TriggerAll.java" options="-Xlint:ignore -1.5 "/>
+     <compile files="Anno.java Main.java MyObject.java" options="-1.8"/>
+     <compile files="TriggerAll.java" options="-Xlint:ignore -1.8 "/>
      <run class="ch.tests.Main" ltw="aop.xml">
        <stdout>
            <line text="Triggered"/>
@@ -133,7 +133,7 @@
    </ajc-test>
 
  	<ajc-test dir="bugs170/xmldefs" title="xml defined dec at method">
-     <compile files="Hello.java Anno.java" options="-1.5"/>
+     <compile files="Hello.java Anno.java" options="-1.8"/>
      <run class="Hello" ltw="aop.xml">
        <stdout>
            <line text="Hello"/>
@@ -146,7 +146,7 @@
    </ajc-test>
 
  	<ajc-test dir="bugs170/xmldefs" title="xml defined dec at method 2">
-     <compile files="Hello.java Anno2.java" options="-1.5"/>
+     <compile files="Hello.java Anno2.java" options="-1.8"/>
      <run class="Hello" ltw="aop2.xml">
        <stdout>
            <line text="Hello"/>
@@ -165,7 +165,7 @@
    </ajc-test>
 
  	<ajc-test dir="bugs170/xmldefs" title="xml defined dec at field">
-     <compile files="Hello2.java Anno.java" options="-1.5"/>
+     <compile files="Hello2.java Anno.java" options="-1.8"/>
      <run class="Hello2" ltw="aop3.xml">
        <stdout>
            <line text="Annotations on i? true"/>
@@ -176,7 +176,7 @@
    </ajc-test>
 
    <ajc-test dir="bugs170/xmldefs" title="xml defined dec anno - variants 1">
-     <compile files="Hello4.java Anno4.java" options="-1.5"/>
+     <compile files="Hello4.java Anno4.java" options="-1.8"/>
      <run class="Hello4" ltw="aop4.xml">
        <stdout>
            <line text="Annotations on field1? true"/>
@@ -197,7 +197,7 @@
    </ajc-test>
 
    <ajc-test dir="bugs170/xmldefs" title="xml defined dec anno - variants 2">
-     <compile files="Hello5.java Anno5.java" options="-1.5"/>
+     <compile files="Hello5.java Anno5.java" options="-1.8"/>
      <run class="Hello5" ltw="aop5.xml">
        <stdout>
            <line text="Annotations on field1? true"/>
@@ -218,7 +218,7 @@
    </ajc-test>
 
    <ajc-test dir="bugs170/xmldefs" title="xml defined dec anno - multiple values">
-     <compile files="Hello6.java Anno6.java" options="-1.5"/>
+     <compile files="Hello6.java Anno6.java" options="-1.8"/>
      <run class="Hello6" ltw="aop6.xml">
        <stdout>
            <line text="Annotations on field1? true"/>
@@ -230,7 +230,7 @@
    </ajc-test>
 
    <ajc-test dir="bugs170/xmldefs" title="xml defined dec anno - multiple values and spaces">
-     <compile files="Hello6.java Anno6.java" options="-1.5"/>
+     <compile files="Hello6.java Anno6.java" options="-1.8"/>
      <run class="Hello6" ltw="aop6a.xml">
        <stdout>
            <line text="Annotations on field1? true"/>
@@ -242,7 +242,7 @@
    </ajc-test>
 
    <ajc-test dir="bugs170/xmldefs" title="xml defined dec anno - type">
-     <compile files="Hello7.java Anno7.java" options="-1.5"/>
+     <compile files="Hello7.java Anno7.java" options="-1.8"/>
      <run class="Hello7" ltw="aop7.xml">
        <stdout>
            <line text="Annotations on Hello7? true"/>
@@ -253,7 +253,7 @@
    </ajc-test>
 
    <ajc-test dir="bugs170/pr371998" title="BCException anno decp">
-     <compile files="AspectTest.java" options="-1.5 -showWeaveInfo">
+     <compile files="AspectTest.java" options="-1.8 -showWeaveInfo">
    	   <message kind="weave" text="Extending interface set for type 'Foo' (AspectTest.java) to include 'X' (AspectTest.java)"/>
    	   <message kind="weave" text="Type 'Foo' (AspectTest.java) has intertyped method from 'AspectTest' (AspectTest.java:'void X.xxx()')"/>
    	   <message kind="weave" text="Extending interface set for type 'Bar' (AspectTest.java) to include 'X' (AspectTest.java)"/>
@@ -268,112 +268,112 @@
    </ajc-test>
 
    <ajc-test dir="bugs170/language" title="perthis">
-   	<compile files="PerThis.java" options="-1.7">
+   	<compile files="PerThis.java" options="-1.8">
    	</compile>
    </ajc-test>
 
    <ajc-test dir="bugs170/language" title="pertarget">
-   	<compile files="PerTarget.java" options="-1.7">
+   	<compile files="PerTarget.java" options="-1.8">
    	</compile>
    </ajc-test>
 
    <ajc-test dir="bugs170/language" title="percflow">
-   	<compile files="PerCflow.java" options="-1.7">
+   	<compile files="PerCflow.java" options="-1.8">
    	</compile>
    </ajc-test>
 
    <ajc-test dir="bugs170/language" title="pertypewithin">
-   	<compile files="PerTypeWithin.java" options="-1.7">
+   	<compile files="PerTypeWithin.java" options="-1.8">
    	</compile>
    </ajc-test>
 
    <ajc-test dir="bugs170/language" title="diamond 1">
-   	<compile files="Diamond.java" options="-1.5">
+   	<compile files="Diamond.java" options="-1.8">
    		<message kind="error" line="11" text="'&lt;&gt;' operator is not allowed for source level below 1.7"/>
    	</compile>
    </ajc-test>
 
    <ajc-test dir="bugs170/language" title="diamond 2">
-   	<compile files="Diamond.java" options="-1.7">
+   	<compile files="Diamond.java" options="-1.8">
    	</compile>
    </ajc-test>
 
    <ajc-test dir="bugs170/language" title="diamond itd 1">
-   	<compile files="DiamondITD.java" options="-1.7">
+   	<compile files="DiamondITD.java" options="-1.8">
    	</compile>
    </ajc-test>
 
    <ajc-test dir="bugs170/language" title="literals 1">
-   	<compile files="Literals.java" options="-1.5">
+   	<compile files="Literals.java" options="-1.8">
    		<message kind="error" line="8" text="Underscores can only be used with source level 1.7 or greater"/>
    	</compile>
    </ajc-test>
 
    <ajc-test dir="bugs170/language" title="literals 2">
-   	<compile files="Literals.java" options="-1.7">
+   	<compile files="Literals.java" options="-1.8">
    	</compile>
    </ajc-test>
 
    <ajc-test dir="bugs170/language" title="literals itd 1">
-   	<compile files="LiteralsITD.java" options="-1.7">
+   	<compile files="LiteralsITD.java" options="-1.8">
    	</compile>
    </ajc-test>
 
    <ajc-test dir="bugs170/language" title="string switch 1">
-   	<compile files="StringSwitch.java" options="-1.5">
+   	<compile files="StringSwitch.java" options="-1.8">
    	<message kind="error" line="9" text="Cannot switch on a value of type String for source level below 1.7. Only convertible int values or enum variables are permitted"/>
    	</compile>
    </ajc-test>
 
    <ajc-test dir="bugs170/language" title="string switch 2">
-   	<compile files="StringSwitch.java" options="-1.7">
+   	<compile files="StringSwitch.java" options="-1.8">
    	</compile>
    </ajc-test>
 
    <ajc-test dir="bugs170/language" title="multi catch 1">
-   	<compile files="MultiCatch.java" options="-1.5">
+   	<compile files="MultiCatch.java" options="-1.8">
    		<message kind="error" line="6" text="Multi-catch parameters are not allowed for source level below 1.7"/>
    	</compile>
    </ajc-test>
 
    <ajc-test dir="bugs170/language" title="multi catch 2">
-   	<compile files="MultiCatch.java" options="-1.7">
+   	<compile files="MultiCatch.java" options="-1.8">
    	</compile>
    </ajc-test>
 
    <ajc-test dir="bugs170/language" title="multi catch with handler 1">
-   	<compile files="MultiCatchWithHandler.java" options="-1.7">
+   	<compile files="MultiCatchWithHandler.java" options="-1.8">
    	</compile>
    </ajc-test>
 
    <ajc-test dir="bugs170/language" title="multi catch aspect 1">
-   	<compile files="MultiCatchAspect.java" options="-1.7">
+   	<compile files="MultiCatchAspect.java" options="-1.8">
    	</compile>
    </ajc-test>
 
    <ajc-test dir="bugs170/language" title="try resources 1">
-   	<compile files="TryResources.java" options="-1.7">
+   	<compile files="TryResources.java" options="-1.8">
    	</compile>
    </ajc-test>
 
    <ajc-test dir="bugs170/language" title="try resources 2">
-   	<compile files="TryResourcesAspect.java" options="-1.7">
+   	<compile files="TryResourcesAspect.java" options="-1.8">
    	</compile>
    </ajc-test>
 
    <ajc-test dir="bugs170/language" title="multi catch with handler 2">
-   	<compile files="MultiCatchWithHandler2.java" options="-1.7">
+   	<compile files="MultiCatchWithHandler2.java" options="-1.8">
    	</compile>
      <run class="MultiCatchWithHandler2"/>
    </ajc-test>
 
    <ajc-test dir="bugs170/sanity" title="sanity 1">
-   	<compile files="DeclareAtType.java" options="-1.5">
+   	<compile files="DeclareAtType.java" options="-1.8">
    	</compile>
    </ajc-test>
 
    <ajc-test dir="bugs170/pr363979" title="missing impl">
-     <compile files="Example.java" options="-1.5"/>
+     <compile files="Example.java" options="-1.8"/>
      <run class="Example">
 	     <stdout>
 	    	 <line text="yes"/>
@@ -382,7 +382,7 @@
    </ajc-test>
 
    <ajc-test dir="bugs170/pr363979" title="missing impl 2">
-     <compile files="Example2.java" options="-1.5"/>
+     <compile files="Example2.java" options="-1.8"/>
      <run class="Example2">
 	     <stdout>
 	    	 <line text="yes"/>
@@ -391,8 +391,8 @@
    </ajc-test>
 
    <ajc-test dir="bugs170/pr364380" title="stackoverflow">
-     <compile files="X.aj" options="-1.5" outjar="foo.jar"/>
-     <compile files="C.java" options="-1.5" inpath="foo.jar">
+     <compile files="X.aj" options="-1.8" outjar="foo.jar"/>
+     <compile files="C.java" options="-1.8" inpath="foo.jar">
      <message kind="warning" text="An advice already exists for setting an owner"/>
      </compile>
    </ajc-test>

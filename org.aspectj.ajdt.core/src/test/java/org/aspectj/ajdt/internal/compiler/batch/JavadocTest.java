@@ -35,7 +35,7 @@ public class JavadocTest extends AjcTestCase {
 	 *
 	 */
 	public void testMissingJavadoc() {
-		String[] args = new String[] { "World.java", "-warn:allJavadoc", "-1.4" };
+		String[] args = new String[] { "World.java", "-warn:allJavadoc", "-Xlint:ignore", "-1.8" };
 
 		List<Message> warningMessages = new ArrayList<>();
 		// These warnings are against public textX() methods declared in the World.java

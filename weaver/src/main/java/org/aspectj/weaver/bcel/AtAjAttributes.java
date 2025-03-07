@@ -411,6 +411,11 @@ public class AtAjAttributes {
 		if (method.getName().startsWith(NameMangler.PREFIX)) {
 			return Collections.emptyList(); // already dealt with by ajc...
 		}
+		if (method.isBridge()) {
+			// This happens for 1.8 compiled code where a bridge method is created for annotation style advice declared
+			// in an abstract class
+			return Collections.emptyList();
+		}
 
 		AjAttributeMethodStruct struct = new AjAttributeMethodStruct(method, bMethod, type, context, msgHandler);
 		Attribute[] attributes = method.getAttributes();
@@ -1757,17 +1762,23 @@ public class AtAjAttributes {
 				// LocalVariable(start_pc = 6, length = 40, index = 1:org.aspectj.lang.ProceedingJoinPoint pjp)
 				// LocalVariable(start_pc = 6, length = 40, index = 2:int __cobertura__line__number__)
 				// LocalVariable(start_pc = 6, length = 40, index = 3:int __cobertura__branch__number__)
-				LocalVariable localVariable = lvt[0];
-				if (localVariable != null) { // pr348488
-					if (localVariable.getStartPC() != 0) {
-						// looks suspicious so let's use this information
-						for (int j = 0; j < lvt.length && arguments.size() < method.getArgumentTypes().length; j++) {
-							localVariable = lvt[j];
-							if (localVariable.getIndex() >= startAtStackIndex) {
-								arguments.add(new MethodArgument(localVariable.getName(), localVariable.getIndex()));
+				if (lvt.length > 0) {
+					// If 0 this may be a bridge synthetic method that was advice annotated in
+					// a parent abstract class. 
+					LocalVariable localVariable = lvt[0];
+					if (localVariable != null) { // pr348488
+						if (localVariable.getStartPC() != 0) {
+							// looks suspicious so let's use this information
+							for (int j = 0; j < lvt.length && arguments.size() < method.getArgumentTypes().length; j++) {
+								localVariable = lvt[j];
+								if (localVariable.getIndex() >= startAtStackIndex) {
+									arguments.add(new MethodArgument(localVariable.getName(), localVariable.getIndex()));
+								}
 							}
 						}
 					}
+//				} else if (method.isBridge()) {
+//					method.
 				}
 			}
 		} else {

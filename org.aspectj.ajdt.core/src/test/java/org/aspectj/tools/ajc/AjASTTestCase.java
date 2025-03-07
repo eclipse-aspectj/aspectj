@@ -26,17 +26,14 @@ import org.aspectj.org.eclipse.jdt.core.SourceRange;
 public abstract class AjASTTestCase extends TestCase {
 
 	protected AjAST createAjAST() {
-		return createAjAST(AST.JLS3);
+		return createAjAST(AST.JLS20);
 	}
 
 	protected AjAST createAjAST(int astlevel) {
-		if (astlevel != AST.JLS2 && astlevel != AST.JLS3) {
-			fail("need to pass AST.JLS2 or AST.JLS3 as an argument");
-		}
 		String source = "";
 		ASTParser parser = ASTParser.newParser(astlevel);
 		parser.setSource(source.toCharArray());
-		parser.setCompilerOptions(new HashMap());
+		parser.setCompilerOptions(new HashMap<>());
 		CompilationUnit cu = (CompilationUnit) parser.createAST(null);
 		AST ast = cu.getAST();
 		assertTrue("the ast should be an instance of AjAST",
@@ -44,9 +41,9 @@ public abstract class AjASTTestCase extends TestCase {
 		return (AjAST) ast;
 	}
 
-	protected void checkJLS3(String source, ITypePatternTester tester) {
-		ASTParser parser = ASTParser.newParser(AST.JLS3);
-		parser.setCompilerOptions(new HashMap());
+	protected void checkJLS20(String source, ITypePatternTester tester) {
+		ASTParser parser = ASTParser.newParser(AST.JLS20);
+		parser.setCompilerOptions(new HashMap<>());
 		parser.setSource(source.toCharArray());
 		CompilationUnit cu2 = (CompilationUnit) parser.createAST(null);
 		AjASTVisitor visitor = tester.createVisitor();
@@ -54,8 +51,8 @@ public abstract class AjASTTestCase extends TestCase {
 		tester.testCondition(visitor);
 	}
 
-	protected void checkJLS3(String source, int start, int length) {
-		checkJLS3(source, new SourceRangeTester(start, length));
+	protected void checkJLS20(String source, int start, int length) {
+		checkJLS20(source, new SourceRangeTester(start, length));
 	}
 
 	/**
@@ -65,9 +62,9 @@ public abstract class AjASTTestCase extends TestCase {
 	 * @param expectedSourceRanges
 	 *            of TypePattern nodes encountered while visiting the AST
 	 */
-	protected void checkTypePatternSourceRangesJLS3(String source,
+	protected void checkTypePatternSourceRangesJLS20(String source,
 			int[][] expectedSourceRanges) {
-		checkJLS3(source,
+		checkJLS20(source,
 				new TypePatternSourceRangeTester(expectedSourceRanges));
 	}
 
@@ -79,9 +76,9 @@ public abstract class AjASTTestCase extends TestCase {
 	 *            expected category of a TypeCategoryTypePattern node
 	 *            encountered in the AST
 	 */
-	protected void checkCategoryTypePatternJLS3(String source,
+	protected void checkCategoryTypePatternJLS20(String source,
 			int expectedCategory, String expectedExpression) {
-		checkJLS3(source, new TypeCategoryTester(expectedCategory, expectedExpression));
+		checkJLS20(source, new TypeCategoryTester(expectedCategory, expectedExpression));
 	}
 
 

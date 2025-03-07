@@ -129,7 +129,7 @@
 	</ajc-test>
 
 	<ajc-test dir="bugs199/github_115" title="annotation style A">
-		<compile files="A.java" options="-1.5">
+		<compile files="A.java" options="-1.8">
 			<message kind="warning" line="28" text="advice defined in Azpect has not been applied [Xlint:adviceDidNotMatch]"/>
 		</compile>
 		<run class="A">
@@ -141,7 +141,7 @@
 	</ajc-test>
 
 	<ajc-test dir="bugs199/github_115" title="annotation style B">
-		<compile files="B.java" options="-1.5"/>
+		<compile files="B.java" options="-1.8"/>
 		<run class="B">
 			<stdout>
 				<line text="Azpect.before"/>
@@ -151,7 +151,7 @@
 	</ajc-test>
 
 	<ajc-test dir="bugs199/github_120" title="annotation style C">
-		<compile files="C.java" options="-1.5"/>
+		<compile files="C.java" options="-1.8"/>
 		<run class="C">
 			<stdout>
 				<line text="check if() pointcut running on C(1)"/>
@@ -162,7 +162,7 @@
 	</ajc-test>
 
 	<ajc-test dir="bugs199/github_120" title="annotation style D">
-		<compile files="D.java" options="-1.5"/>
+		<compile files="D.java" options="-1.8"/>
 		<run class="D">
 			<stdout>
 				<line text="advice running"/>
@@ -172,7 +172,7 @@
 	</ajc-test>
 
 	<ajc-test dir="bugs199/github_122" title="annotation style negated if">
-		<compile files="E.java" options="-1.5"/>
+		<compile files="E.java" options="-1.8"/>
 		<run class="E">
 			<stdout>
 				<line text="advice running"/>
@@ -186,7 +186,7 @@
 			Here the Java test sets system property org.aspectj.weaver.openarchives to 20 in order to provoke
 			open JAR limit exhaustion
 		-->
-		<compile files="Application.java" options="-1.5" />
+		<compile files="Application.java" options="-1.8" />
 		<run class="Application">
 			<stdout>
 				<line text="Before advice"/>

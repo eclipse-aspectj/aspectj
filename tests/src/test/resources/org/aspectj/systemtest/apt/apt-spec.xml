@@ -87,8 +87,8 @@
     </ajc-test>
 
     <ajc-test dir="apt/test2" title="annotation processing generating java files with aspects">
-        <compile options="-1.6" files="DemoProcessor.java Marker.java" />
-        <compile options="-1.6 -showWeaveInfo -processor DemoProcessor" files="Code.java">
+        <compile options="-1.8" files="DemoProcessor.java Marker.java" />
+        <compile options="-1.8 -showWeaveInfo -processor DemoProcessor" files="Code.java">
             <message kind="warning" text="Generated aspect to advise too"/>
             <message kind="warning" text="Generated aspect to advise boo"/>
             <message kind="weave"

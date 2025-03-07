@@ -3611,9 +3611,9 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		initialiseProject("PR164384");
 
 		Map<String, String> javaOptions = new Hashtable<>();
-		javaOptions.put("org.eclipse.jdt.core.compiler.compliance", "1.6");
-		javaOptions.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform", "1.6");
-		javaOptions.put("org.eclipse.jdt.core.compiler.source", "1.6");
+		javaOptions.put("org.eclipse.jdt.core.compiler.compliance", "1.8");
+		javaOptions.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform", "1.8");
+		javaOptions.put("org.eclipse.jdt.core.compiler.source", "1.8");
 		configureJavaOptionsMap("PR164384", javaOptions);
 
 		build("PR164384");
@@ -3643,26 +3643,17 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		initialiseProject("PR164384");
 
 		Map<String, String> javaOptions = new Hashtable<>();
-		javaOptions.put("org.eclipse.jdt.core.compiler.compliance", "1.6");
-		javaOptions.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform", "1.5");
-		javaOptions.put("org.eclipse.jdt.core.compiler.source", "1.5");
+		javaOptions.put("org.eclipse.jdt.core.compiler.compliance", "1.8");
+		javaOptions.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform", "1.6");
+		javaOptions.put("org.eclipse.jdt.core.compiler.source", "1.6");
 		configureJavaOptionsMap("PR164384", javaOptions);
 
 		build("PR164384");
 		List<IMessage> errors = getErrorMessages("PR164384");
-		if (getCompilerForProjectWithName("PR164384").isJava6Compatible()) {
-			assertTrue("There should be no errors:\n" + errors, errors.isEmpty());
-		} else {
-			String expectedError = "Java 6.0 compliance level is unsupported";
-			String found = errors.get(0).getMessage();
-			assertEquals("Expected 'Java 6.0 compliance level is unsupported'" + " error message but found " + found,
-					expectedError, found);
-			// This is because the 'Java 6.0 compliance' error is an 'error'
-			// rather than an 'abort'. Aborts are really for compiler
-			// exceptions.
-			assertTrue("expected there to be more than the one compliance level" + " error but only found that one",
-					errors.size() > 1);
-		}
+		String expectedError = "Compiling for Java version '1.6' is no longer supported. Minimal supported version is '1.8'";
+		String found = errors.get(0).getMessage();
+		assertEquals("Expected '"+expectedError+"'" + " error message but found " + found,
+				expectedError, found);
 	}
 
 	/**
@@ -3675,25 +3666,16 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		Map<String, String> javaOptions = new Hashtable<>();
 		javaOptions.put("org.eclipse.jdt.core.compiler.compliance", "1.6");
 		javaOptions.put("org.eclipse.jdt.core.compiler.codegen.targetPlatform", "1.6");
-		javaOptions.put("org.eclipse.jdt.core.compiler.source", "1.5");
+		javaOptions.put("org.eclipse.jdt.core.compiler.source", "1.8");
 		configureJavaOptionsMap("PR164384", javaOptions);
 
 		build("PR164384");
 		List<IMessage> errors = getErrorMessages("PR164384");
 
-		if (getCompilerForProjectWithName("PR164384").isJava6Compatible()) {
-			assertTrue("There should be no errros:\n" + errors, errors.isEmpty());
-		} else {
-			String expectedError = "Java 6.0 compliance level is unsupported";
-			String found = errors.get(0).getMessage();
-			assertEquals("Expected 'Java 6.0 compliance level is unsupported'" + " error message but found " + found,
-					expectedError, found);
-			// This is because the 'Java 6.0 compliance' error is an 'error'
-			// rather than an 'abort'. Aborts are really for compiler
-			// exceptions.
-			assertTrue("expected there to be more than the one compliance level" + " error but only found that one",
-					errors.size() > 1);
-		}
+		String expectedError = "Compiling for Java version '1.6' is no longer supported. Minimal supported version is '1.8'";
+		String found = errors.get(0).getMessage();
+		assertEquals("Expected '"+expectedError+"'" + " error message but found " + found,
+				expectedError, found);
 	}
 
 	public void testPr168840() throws Exception {

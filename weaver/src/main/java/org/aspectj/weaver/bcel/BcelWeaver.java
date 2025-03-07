@@ -1261,6 +1261,12 @@ public class BcelWeaver {
 					if (ba.getKind() == AdviceKind.CflowEntry || ba.getKind() == AdviceKind.CflowBelowEntry) {
 						continue;
 					}
+					if (ba.getKind() == AdviceKind.PerCflowEntry || ba.getKind() == AdviceKind.PerTargetEntry ||
+						ba.getKind() == AdviceKind.PerCflowBelowEntry || ba.getKind() == AdviceKind.PerThisEntry ||
+						ba.getKind() == AdviceKind.PerTypeWithinEntry) {
+						// Unclear if we want advice did not match warnings for per clauses...
+						continue;
+					}
 					if (!ba.hasMatchedSomething()) {
 						// Because we implement some features of AJ itself by
 						// creating our own kind of mungers, you sometimes

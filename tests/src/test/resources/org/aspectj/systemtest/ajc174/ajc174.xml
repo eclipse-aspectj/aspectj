@@ -3,13 +3,13 @@
 <suite>
 
 	<ajc-test dir="bugs174/ajdt_markers" title="ajdt markers">
-		<compile files="Code.java" options="-1.5 -showWeaveInfo">
+		<compile files="Code.java" options="-1.8 -showWeaveInfo">
 		</compile>
 	</ajc-test>
 
 
 	<ajc-test dir="bugs174/extra_inserts" title="extra inserts">
-		<compile files="Code.java" options="-1.5">
+		<compile files="Code.java" options="-1.8">
 			<message kind="warning" line="8"  text="Call to foo made inside class Bar"/>
 			<message kind="warning" line="15" text="Call to foo made inside class Boo"/>
 			<message kind="warning" line="8"  text="Call to foo made inside member booble"/>
@@ -20,31 +20,31 @@
 	</ajc-test>
 
 	<ajc-test dir="bugs174/pr419279" title="more configurable lint">
-		<compile files="Code.java" options="-1.5">
+		<compile files="Code.java" options="-1.8">
 			<message kind="warning" text="advice defined in Code has not been applied [Xlint:adviceDidNotMatch]"/>
 		</compile>
-		<compile files="Code.java" options="-1.5 -Xlint:adviceDidNotMatch=ignore">
+		<compile files="Code.java" options="-1.8 -Xlint:adviceDidNotMatch=ignore">
 		</compile>
-		<compile files="Code.java" options="-1.5 -Xlint:adviceDidNotMatch=error">
+		<compile files="Code.java" options="-1.8 -Xlint:adviceDidNotMatch=error">
 			<message kind="error" text="advice defined in Code has not been applied [Xlint:adviceDidNotMatch]"/>
 		</compile>
-		<compile files="Code.java" options="-1.5 -Xlint:foo=bar">
+		<compile files="Code.java" options="-1.8 -Xlint:foo=bar">
 			<message kind="error" text="invalid Xlint key: foo"/>
 		</compile>
-		<compile files="Code.java" options="-1.5 -Xlint:adviceDidNotMatch=wibble">
+		<compile files="Code.java" options="-1.8 -Xlint:adviceDidNotMatch=wibble">
 			<message kind="error" text="invalid Xlint message kind (must be one of ignore, warning, error): wibble"/>
 		</compile>
-		<compile files="Code.java" options="-1.5 -Xlint:adviceDidNotMatch=ignore{adviceDidNotMatch=error">
+		<compile files="Code.java" options="-1.8 -Xlint:adviceDidNotMatch=ignore{adviceDidNotMatch=error">
 			<message kind="error" text="advice defined in Code has not been applied [Xlint:adviceDidNotMatch]"/>
 		</compile>
-		<compile files="Code.java" options="-1.5 -Xlint:adviceDidNotMatch=error{noGuardForLazyTjp=error">
+		<compile files="Code.java" options="-1.8 -Xlint:adviceDidNotMatch=error{noGuardForLazyTjp=error">
 			<message kind="error" text="advice defined in Code has not been applied [Xlint:adviceDidNotMatch]"/>
 			<message kind="error" text="can not build thisJoinPoint lazily for this advice since it has no suitable guard [Xlint:noGuardForLazyTjp]"/>
 		</compile>
 	</ajc-test>
 
 	<ajc-test dir="bugs174/pr418129" title="annotated itd">
-		<compile files="Target.java" options="-1.5 -showWeaveInfo">
+		<compile files="Target.java" options="-1.8 -showWeaveInfo">
 			<message kind="weave" text="Type 'Behavior' (Target.java) has intertyped method from 'Trait' (Target.java:'java.lang.String Behavior.hello()')"/>
 			<message kind="weave" text="Type 'Target' (Target.java) has intertyped method from 'Trait' (Target.java:'java.lang.String Behavior.hello()')"/>
 			<message kind="weave" text="'public java.lang.String Target.hello()' (Target.java) is annotated with @Tagged method annotation from 'Target$A' (Target.java:18)"/>
@@ -58,7 +58,7 @@
 
 	<!-- declared with throws exception -->
 	<ajc-test dir="bugs174/pr418129" title="annotated itd 2">
-		<compile files="Target2.java" options="-1.5 -showWeaveInfo">
+		<compile files="Target2.java" options="-1.8 -showWeaveInfo">
 			<message kind="weave" text="Type 'Behavior' (Target2.java) has intertyped method from 'Trait' (Target2.java:'java.lang.String Behavior.hello()')"/>
 			<message kind="weave" text="Type 'Target2' (Target2.java) has intertyped method from 'Trait' (Target2.java:'java.lang.String Behavior.hello()')"/>
 			<message kind="weave" text="'public java.lang.String Target2.hello()' (Target2.java) is annotated with @Tagged method annotation from 'Target2$A' (Target2.java:18)"/>
@@ -72,7 +72,7 @@
 
 	<!-- already annotated with another annotation -->
 	<ajc-test dir="bugs174/pr418129" title="annotated itd 3">
-		<compile files="Target3.java" options="-1.5 -showWeaveInfo">
+		<compile files="Target3.java" options="-1.8 -showWeaveInfo">
 			<message kind="weave" text="Type 'Behavior' (Target3.java) has intertyped method from 'Trait' (Target3.java:'java.lang.String Behavior.hello()')"/>
 			<message kind="weave" text="Type 'Target3' (Target3.java) has intertyped method from 'Trait' (Target3.java:'java.lang.String Behavior.hello()')"/>
 			<message kind="weave" text="'public java.lang.String Target3.hello()' (Target3.java) is annotated with @Tagged method annotation from 'Target3$A' (Target3.java:16)"/>
@@ -88,7 +88,7 @@
 
 	<!-- already annotated with the same annotation -->
 	<ajc-test dir="bugs174/pr418129" title="annotated itd 4">
-		<compile files="Target4.java" options="-1.5 -showWeaveInfo">
+		<compile files="Target4.java" options="-1.8 -showWeaveInfo">
 			<message kind="weave" text="Type 'Behavior' (Target4.java) has intertyped method from 'Trait' (Target4.java:'java.lang.String Behavior.hello()')"/>
 			<message kind="weave" text="Type 'Target4' (Target4.java) has intertyped method from 'Trait' (Target4.java:'java.lang.String Behavior.hello()')"/>
 			<!--  warning turned off as it gets confusing - when the itd on the interface is hit by a deca -->
@@ -106,7 +106,7 @@
 	</ajc-test>
 
 	<ajc-test dir="bugs174/pr413378" title="super itd ctor">
-		<compile files="Code.java" options="-1.5 -showWeaveInfo">
+		<compile files="Code.java" options="-1.8 -showWeaveInfo">
 			<message kind="weave" text="Type 'Child' (Code.java) has intertyped constructor from 'MyTest' (Code.java:'void Child.&lt;init&gt;(java.lang.String, int)')"/>
 		</compile>
 		<run class="Code">
@@ -118,7 +118,7 @@
 	</ajc-test>
 
 	<ajc-test dir="bugs174/pr368046" title="classloader exclusion - 1">
-	  <compile files="Azpect.java" outjar="foo.jar" options="-1.4"/>
+	  <compile files="Azpect.java" outjar="foo.jar" options="-1.8 -Xlint:ignore"/>
       <compile files="Code.java" classpath="$sandbox/foo.jar"/>
       <run class="Code" classpath="$sandbox/foo.jar" ltw="aop1.xml">
         <stdout>
@@ -136,7 +136,7 @@
 	</ajc-test>
 
 	<ajc-test dir="bugs174/pr368046" title="classloader exclusion - 2">
-	  <compile files="Azpect.java" outjar="foo.jar" options="-1.4"/>
+	  <compile files="Azpect.java" outjar="foo.jar" options="-1.8 -Xlint:ignore"/>
       <compile files="Code.java" classpath="$sandbox/foo.jar"/>
       <run class="Code" classpath="$sandbox/foo.jar" ltw="aop1.xml">
         <stdout>
@@ -155,7 +155,7 @@
 	</ajc-test>
 
 	<ajc-test dir="bugs174/pr368046" title="classloader exclusion - 3">
-	  <compile files="Azpect.java" outjar="foo.jar" options="-1.4"/>
+	  <compile files="Azpect.java" outjar="foo.jar" options="-1.8 -Xlint:ignore"/>
       <compile files="Code.java" classpath="$sandbox/foo.jar"/>
       <run class="Code" classpath="$sandbox/foo.jar" ltw="aop1.xml">
         <stdout>
@@ -173,7 +173,7 @@
 	</ajc-test>
 
 	<ajc-test dir="bugs174/pr368046" title="classloader exclusion - 4">
-	  <compile files="Azpect.java" outjar="foo.jar" options="-1.4"/>
+	  <compile files="Azpect.java" outjar="foo.jar" options="-1.8 -Xlint:ignore"/>
       <compile files="Code.java" classpath="$sandbox/foo.jar"/>
       <run class="Code" classpath="$sandbox/foo.jar" ltw="aop2.xml">
         <stdout>
@@ -192,8 +192,8 @@
 	</ajc-test>
 
 	<ajc-test dir="bugs174/pr368046" title="classloader exclusion - 5">
-	  <compile files="Azpect.java" outjar="foo.jar" options="-1.4"/>
-      <compile files="Code.java" classpath="$sandbox/foo.jar"/>
+	  <compile files="Azpect.java" outjar="foo.jar" options="-1.8 -Xlint:ignore"/>
+      <compile files="Code.java" options="-1.8" classpath="$sandbox/foo.jar"/>
       <run class="Code" classpath="$sandbox/foo.jar" ltw="aop3.xml">
         <stdout>
           <line text="advice"/>

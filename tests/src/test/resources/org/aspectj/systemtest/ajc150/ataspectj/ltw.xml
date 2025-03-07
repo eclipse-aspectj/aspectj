@@ -8,29 +8,28 @@
     <ajc-test dir="java5/ataspectj" title="AjcLTW PerClauseTest -XterminateAfterCompilation">
         <compile
                 files="ataspectj/PerClauseTest.java,ataspectj/PerClauseTestAspects.java,ataspectj/TestHelper.java"
-                options="-1.5 -XterminateAfterCompilation"/>
+                options="-1.8 -XterminateAfterCompilation"/>
         <ant file="ajc-ant.xml" target="ltw.PerClauseTest" verbose="true"/>
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="AjcLTW PerClauseTest -Xreweavable">
         <compile
                 files="ataspectj/PerClauseTest.java,ataspectj/PerClauseTestAspects.java,ataspectj/TestHelper.java"
-                options="-1.5"/>
+                options="-1.8"/>
         <ant file="ajc-ant.xml" target="ltw.PerClauseTest" verbose="true"/>
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="JavaCAjcLTW PerClauseTest">
         <compile
                 files="ataspectj/PerClauseTest.java,ataspectj/TestHelper.java,ataspectj/PerClauseTestAspects.java"
-                options="-1.5 -XterminateAfterCompilation"/>
+                options="-1.8 -XterminateAfterCompilation"/>
         <comment>
             aspectOf methods will be pushed in, ignore warning for adviceDidNotMatch but still do the logic for them
             since such just added methods are an interesting case (percflow ajc$perCflowStack advice)
         </comment>
         <compile
                 files="ataspectj/PerClauseTestAspects.java"
-                options="-1.5 -Xdev:NoAtAspectJProcessing">
-            <message kind="warning"/>
+                options="-1.8 -Xdev:NoAtAspectJProcessing">
         </compile>
         <ant file="ajc-ant.xml" target="ltw.PerClauseTest" verbose="true"/>
     </ajc-test>
@@ -38,71 +37,71 @@
     <ajc-test dir="java5/ataspectj" title="AjcLTW AroundInlineMungerTest -XterminateAfterCompilation">
         <compile
                 files="ataspectj/AroundInlineMungerTest.java,ataspectj/AroundInlineMungerTestAspects.java,ataspectj/TestHelper.java"
-                options="-1.5 -XterminateAfterCompilation"/>
+                options="-1.8 -XterminateAfterCompilation"/>
         <ant file="ajc-ant.xml" target="ltw.AroundInlineMungerTest" verbose="true"/>
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="AjcLTW AroundInlineMungerTest -Xreweavable">
         <compile
                 files="ataspectj/AroundInlineMungerTest.java,ataspectj/AroundInlineMungerTestAspects.java,ataspectj/TestHelper.java"
-                options="-1.5"/>
+                options="-1.8"/>
         <ant file="ajc-ant.xml" target="ltw.AroundInlineMungerTest" verbose="true"/>
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="AjcLTW AroundInlineMungerTest">
         <compile
                 files="ataspectj/AroundInlineMungerTestAspects.java"
-                options="-1.5 -Xlint:ignore"/>
+                options="-1.8 -Xlint:ignore"/>
         <compile
                 files="ataspectj/AroundInlineMungerTest.java,ataspectj/TestHelper.java"
-                options="-1.5"/>
+                options="-1.8"/>
         <ant file="ajc-ant.xml" target="ltw.AroundInlineMungerTest" verbose="true"/>
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="AjcLTW AroundInlineMungerTest -XnoInline -Xreweavable">
         <compile
                 files="ataspectj/AroundInlineMungerTestAspects.java"
-                options="-1.5 -Xlint:ignore -XnoInline"/>
+                options="-1.8 -Xlint:ignore -XnoInline"/>
         <compile
                 files="ataspectj/AroundInlineMungerTest.java,ataspectj/TestHelper.java"
-                options="-1.5 -XnoInline"/>
+                options="-1.8 -XnoInline"/>
         <ant file="ajc-ant.xml" target="ltw.AroundInlineMungerTest" verbose="true"/>
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="AjcLTW AroundInlineMungerTest2">
         <compile
                 files="ataspectj/AroundInlineMungerTestAspects2.aj"
-                options="-1.5 -Xlint:ignore"/>
+                options="-1.8 -Xlint:ignore"/>
         <compile
                 files="ataspectj/AroundInlineMungerTest2.aj,ataspectj/TestHelper.java"
-                options="-1.5"/>
+                options="-1.8"/>
         <ant file="ajc-ant.xml" target="ltw.AroundInlineMungerTest2" verbose="true"/>
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="LTW DumpTest none">
         <compile
                 files="ataspectj/DumpTest.java,ataspectj/DumpTestTheDump.java,ataspectj/TestHelper.java"
-                options="-1.5"/>
+                options="-1.8"/>
         <run class="ataspectj.DumpTest" ltw="ataspectj/aop-dumpnone.xml"/>
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="LTW DumpTest">
         <compile
                 files="ataspectj/EmptyAspect.aj"
-                options="-1.5 -Xlint:ignore"/>
+                options="-1.8 -Xlint:ignore"/>
         <compile
                 files="ataspectj/DumpTest.java,ataspectj/DumpTestTheDump.java,ataspectj/TestHelper.java"
-                options="-1.5"/>
+                options="-1.8"/>
         <run class="ataspectj.DumpTest" ltw="ataspectj/aop-dump.xml"/>
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="LTW DumpTest before and after">
         <compile
                 files="ataspectj/EmptyAspect.aj"
-                options="-1.5 -Xlint:ignore"/>
+                options="-1.8 -Xlint:ignore"/>
         <compile
                 files="com/foo/bar/Test.java, com/foo/bar/Test$$EnhancerByCGLIB$$12345.java"
-                options="-1.5"/>
+                options="-1.8"/>
         <run class="com.foo.bar.Test$$EnhancerByCGLIB$$12345" ltw="ataspectj/aop-dumpbeforeandafter.xml">
         	<stdout>
         		<line text="Test$$EnhancerByCGLIB$$12345.main()"/>
@@ -122,34 +121,34 @@
     <ajc-test dir="java5/ataspectj" title="LTW DumpTest closure">
         <compile
                 files="ataspectj/DumpTest.java,ataspectj/DumpTestTheDump.java,ataspectj/TestAroundAspect.aj"
-                options="-1.5"/>
+                options="-1.8"/>
         <run class="ataspectj.DumpTest" ltw="ataspectj/aop-dumpclosure.xml"/>
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="LTW DumpTest proxy">
         <compile
                 files="ataspectj/EmptyAspect.aj"
-                options="-1.5 -Xlint:ignore"/>
+                options="-1.8 -Xlint:ignore"/>
         <compile
                 files="ataspectj/TestProxyGenerator.java,ataspectj/TestInterface.java"
-                options="-1.5"/>
+                options="-1.8"/>
         <ant file="ajc-ant.xml" target="ltw.DumpProxyTest" verbose="true"/>
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="LTW DumpTest JSP">
         <compile
                 files="ataspectj/EmptyAspect.aj"
-                options="-1.5 -Xlint:ignore"/>
+                options="-1.8 -Xlint:ignore"/>
         <compile
                 files="com/ibm/_jsp/_abc123_xyz890.java"
-                options="-1.5"/>
+                options="-1.8"/>
         <run class="com.ibm._jsp._abc123_xyz890" ltw="ataspectj/aop-dumpjsp.xml"/>
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="Ajc Aspect1 LTW Aspect2 -Xreweavable">
         <compile
                 files="ataspectj/ltwreweavable/Main.java,ataspectj/ltwreweavable/Aspect1.java,ataspectj/ltwreweavable/Advisable.java"
-                options="-1.5"
+                options="-1.8"
                 outjar="main1.jar"/>
         <ant file="ajc-ant.xml" target="ltw.Aspect2MainTest" verbose="true"/>
     </ajc-test>
@@ -157,11 +156,11 @@
     <ajc-test dir="java5/ataspectj" title="LTW Log silent">
     	<compile
     		files="ataspectj/ltwlog/Main.java"
-    		options="-1.5"
+    		options="-1.8"
     	/>
     	<compile
     		files="ataspectj/ltwlog/Aspect1.java"
-    		options="-1.5 -XterminateAfterCompilation"
+    		options="-1.8 -XterminateAfterCompilation"
     	>
         </compile>
         <run class="ataspectj.ltwlog.Main" ltw="ataspectj/ltwlog/aop-silent.xml">
@@ -176,11 +175,11 @@
     <ajc-test dir="java5/ataspectj" title="LTW Log verbose">
     	<compile
     		files="ataspectj/ltwlog/Main.java"
-    		options="-1.5"
+    		options="-1.8"
     	/>
     	<compile
     		files="ataspectj/ltwlog/Aspect1.java"
-    		options="-1.5 -XterminateAfterCompilation"
+    		options="-1.8 -XterminateAfterCompilation"
     	>
         </compile>
         <run class="ataspectj.ltwlog.Main" ltw="ataspectj/ltwlog/aop-verbose.xml">
@@ -201,11 +200,11 @@
     <ajc-test dir="java5/ataspectj" title="LTW Log verbose and showWeaveInfo">
     	<compile
     		files="ataspectj/ltwlog/Main.java"
-    		options="-1.5"
+    		options="-1.8"
     	/>
     	<compile
     		files="ataspectj/ltwlog/Aspect1.java"
-    		options="-1.5 -XterminateAfterCompilation"
+    		options="-1.8 -XterminateAfterCompilation"
     	>
         </compile>
         <run class="ataspectj.ltwlog.Main" ltw="ataspectj/ltwlog/aop-verboseandshow.xml">
@@ -228,11 +227,11 @@
     <ajc-test dir="java5/ataspectj" title="LTW Log messageHandlerClass">
     	<compile
     		files="ataspectj/ltwlog/Main.java, ataspectj/ltwlog/MessageHolder.java"
-    		options="-1.5"
+    		options="-1.8"
     	/>
     	<compile
     		files="ataspectj/ltwlog/Aspect1.java"
-    		options="-1.5 -XterminateAfterCompilation"
+    		options="-1.8 -XterminateAfterCompilation"
     	>
         </compile>
         <run class="ataspectj.ltwlog.Main" ltw="ataspectj/ltwlog/aop-messagehandler.xml">
@@ -253,7 +252,7 @@
         <!-- ajc compile them to test reweable as well -->
         <compile
                 files="ataspectj/DeclareParentsInterfaceTest.java,ataspectj/DeclareParentsImplementsTest.java,ataspectj/TestHelper.java"
-                options="-1.5"
+                options="-1.8"
                 />
         <!--<run class="ataspectj.DeclareParentsInterfaceTest" ltw="ataspectj/aop-decptest.xml"/>-->
         <ant file="ajc-ant.xml" target="ltw.Decp" verbose="true">
@@ -276,7 +275,7 @@
         <!-- ajc compile them but with only one aspect -->
         <compile
                 files="ataspectj/DeclareParentsImplementsReweavableTest.java,ataspectj/TestHelper.java"
-                options="-1.5"
+                options="-1.8"
                 />
         <!-- compile the other aspect alone (won't be applied) -->
         <ant file="ajc-ant.xml" target="ltw.Decp2" verbose="true"/>
@@ -286,7 +285,7 @@
     <ajc-test dir="java5/ataspectj" title="Compile time aspects declared to ltw weaver">
         <compile
                 files="ataspectj/ltwlog/MessageHolder.java,ataspectj/ltwreweavable/MainReweavableLogging.java,ataspectj/ltwreweavable/AspectReweavableLogging.java,ataspectj/ltwreweavable/Advisable.java,ataspectj/ltwreweavable/EmptyAtAspect.java"
-                options="-1.5"
+                options="-1.8"
                 outjar="main1.jar"/>
         <ant file="ajc-ant.xml" target="Compile time aspects declared to ltw weaver" verbose="true"/>
     </ajc-test>
@@ -294,7 +293,7 @@
     <ajc-test dir="java5/ataspectj" title="Concrete@Aspect">
         <compile
             files="ataspectj/ConcreteAtAspectTest.java,ataspectj/TestHelper.java"
-            options="-1.5 -XterminateAfterCompilation"
+            options="-1.8 -XterminateAfterCompilation"
             />
         <run class="ataspectj.ConcreteAtAspectTest" ltw="ataspectj/aop-concreteataspect.xml"/>
     </ajc-test>
@@ -302,7 +301,7 @@
     <ajc-test dir="java5/ataspectj" title="ConcreteAspect">
         <compile
             files="ataspectj/ConcreteAspectTest.aj,ataspectj/TestHelper.java"
-            options="-1.5 -Xdev:NoAtAspectJProcessing -XterminateAfterCompilation"
+            options="-1.8 -Xdev:NoAtAspectJProcessing -XterminateAfterCompilation"
             />
         <run class="ataspectj.ConcreteAspectTest" ltw="ataspectj/aop-concreteaspect.xml"/>
     </ajc-test>
@@ -310,7 +309,7 @@
     <ajc-test dir="java5/ataspectj" title="ConcretePrecedenceAspect">
         <compile
             files="ataspectj/ConcretePrecedenceAspectTest.java,ataspectj/TestHelper.java"
-            options="-1.5 -Xdev:NoAtAspectJProcessing -XterminateAfterCompilation"
+            options="-1.8 -Xdev:NoAtAspectJProcessing -XterminateAfterCompilation"
             />
         <run class="ataspectj.ConcretePrecedenceAspectTest" ltw="ataspectj/aop-concreteprecedenceaspect.xml"/>
     </ajc-test>
@@ -318,28 +317,28 @@
     <ajc-test dir="java5/ataspectj" title="AspectOfWhenAspectNotInInclude">
         <compile
             files="ataspectj/bugs/AspectOfWhenAspectNotInIncludeTest.java,ataspectj/TestHelper.java"
-            options="-1.5 -XterminateAfterCompilation"/>
+            options="-1.8 -XterminateAfterCompilation"/>
         <run class="ataspectj.bugs.AspectOfWhenAspectNotInIncludeTest" ltw="ataspectj/bugs/aop-aspectofwhenaspectnotinincludetest.xml"/>
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="AspectOfWhenAspectExcluded">
         <compile
             files="ataspectj/bugs/AspectOfWhenAspectNotInIncludeTest.java,ataspectj/TestHelper.java"
-            options="-1.5 -XterminateAfterCompilation"/>
+            options="-1.8 -XterminateAfterCompilation"/>
         <run class="ataspectj.bugs.AspectOfWhenAspectNotInIncludeTest" ltw="ataspectj/bugs/aop-aspectofwhenaspectexcludedtest.xml"/>
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="AspectOfWhenNonAspectExcluded">
         <compile
             files="ataspectj/bugs/NotAspect.java"
-            options="-1.5 -XterminateAfterCompilation"/>
+            options="-1.8 -XterminateAfterCompilation"/>
         <run class="ataspectj.bugs.NotAspect" ltw="ataspectj/bugs/aop-aspectofwhennonaspectexcludedtest.xml"/>
     </ajc-test>
 
     <ajc-test dir="java5/ataspectj" title="AppContainer">
         <compile
             files="ataspectj/hierarchy/AppContainerTest.java,ataspectj/hierarchy/app/SubApp.java,ataspectj/TestHelper.java"
-            options="-1.5 -XterminateAfterCompilation"
+            options="-1.8 -XterminateAfterCompilation"
             />
         <ant file="ajc-ant.xml" target="ltw.AppContainer" verbose="true"/>
     </ajc-test>
@@ -347,7 +346,7 @@
     <ajc-test dir="java5/ataspectj" title="CflowBelowStack">
         <compile
             files="ataspectj/bugs/CflowBelowStackTest.java,ataspectj/TestHelper.java"
-            options="-1.5 -verbose "/>
+            options="-1.8 -verbose "/>
         <run class="ataspectj.bugs.CflowBelowStackTest" ltw="ataspectj/bugs/aop-cflowbelowstacktest.xml"/>
     </ajc-test>
 

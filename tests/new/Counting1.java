@@ -1,4 +1,6 @@
 import java.util.Vector;
+
+import org.aspectj.lang.annotation.SuppressAjWarnings;
 import org.aspectj.testing.*;
 
 public class Counting1 {
@@ -159,7 +161,7 @@ aspect Mobility { declare precedence: Mobility, MoveTracking;
         //!!! syntax of this call is slightly different
         //!!! than in the paper
     }
-    
+    @SuppressAjWarnings("adviceDidNotMatch")
     void around(int i): args(i) && call(void *gaoijbal()) {
     	if (enableMoves) throw new RuntimeException("bad things");
     }

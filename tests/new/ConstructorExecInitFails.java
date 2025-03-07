@@ -10,7 +10,6 @@ public class ConstructorExecInitFails {
     	try {
         	new ConstructorExecInitFails();
     	} catch (NoAspectBoundException e) {
-    		
     		Tester.check(e.getCause() instanceof NoAspectBoundException,
     				"Expected NoAspectBoundException, found " + e.getCause());
     		return;

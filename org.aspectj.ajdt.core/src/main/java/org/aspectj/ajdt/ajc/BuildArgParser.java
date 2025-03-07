@@ -35,6 +35,7 @@ import org.aspectj.bridge.SourceLocation;
 import org.aspectj.bridge.Version;
 import org.aspectj.org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.aspectj.org.eclipse.jdt.internal.compiler.apt.dispatch.AptProblem;
+import org.aspectj.org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
 import org.aspectj.org.eclipse.jdt.internal.compiler.batch.FileSystem;
 import org.aspectj.org.eclipse.jdt.internal.compiler.batch.Main;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
@@ -166,7 +167,8 @@ public class BuildArgParser extends Main {
 			super.configure(javaArgList.toArray(new String[0]));
 
 			if (parser.getModuleInfoArgument() != null) {
-				IModule moduleDesc = super.getModuleDesc(parser.getModuleInfoArgument());
+				IModule moduleDesc = super.getModuleDesc(parser.getModuleInfoArgument(),
+						() -> new CompilationUnit(null, parser.getModuleInfoArgument(), null));
 				buildConfig.setModuleDesc(moduleDesc);
 			}
 
@@ -382,7 +384,7 @@ public class BuildArgParser extends Main {
 	 * If the classpath is not set, we use the environment's java.class.path, but remove the aspectjtools.jar entry from that list
 	 * in order to prevent wierd bootstrap issues (refer to bug#39959).
 	 */
-	public List getClasspath(AjcConfigParser parser) {
+	public List<String> getClasspath(AjcConfigParser parser) {
 		List<String> ret = new ArrayList<>();
 
 		// if (parser.bootclasspath == null) {
@@ -904,14 +906,38 @@ public class BuildArgParser extends Main {
 
 	}
 
-	@Override
-	public boolean checkVMVersion(long minimalSupportedVersion) {
-		return super.checkVMVersion(minimalSupportedVersion);
-	}
+//	@Override
+//	public boolean checkVMVersion(long minimalSupportedVersion) {
+//		return super.checkVMVersion(minimalSupportedVersion);
+//	}
 
 	@Override
 	public void initRootModules(LookupEnvironment environment, FileSystem fileSystem) {
 		super.initRootModules(environment, fileSystem);
 	}
+	
+	// Around Java23, looks like JDT has removed this and is just assuming 'modern' Java. 
+	// This is what they had in org.eclipse.jdt.internal.compiler.batch.Main.checkVMVersion()
+	public boolean checkVMVersion(long minimalSupportedVersion) {
+        // the format of this property is supposed to be xx.x where x are digits.
+        String classFileVersion = System.getProperty("java.class.version"); //$NON-NLS-1$
+        if (classFileVersion == null) { 
+                // by default we don't support a class file version we cannot recognize
+                return false;
+        }                       
+        int index = classFileVersion.indexOf('.');
+        if (index == -1) {
+                // by default we don't support a class file version we cannot recognize
+                return false;   
+        }               
+        int majorVersion;
+        try {
+                majorVersion = Integer.parseInt(classFileVersion.substring(0, index));
+        } catch (NumberFormatException e) {
+                // by default we don't support a class file version we cannot recognize
+                return false;
+        }               
+        return ClassFileConstants.getComplianceLevelForJavaVersion(majorVersion) >=minimalSupportedVersion;
+	}  
 
 }

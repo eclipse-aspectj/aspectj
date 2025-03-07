@@ -31,20 +31,17 @@ class E2 extends C  { void foo() {} }
 class s { public static String c; }
 
 aspect A {
-
-    pointcut p3(): this(C) && call(* foo()) && !target(E);
+    pointcut p3(): this(PR353b) && call(* foo()) && !target(E);
     before(): p3() {
         Object target = thisJoinPoint.getTarget();
         JoinPoint.StaticPart sp = thisJoinPoint.getStaticPart();
-        Signature sig = sp.getSignature();
+        Signature sig = sp.getSignature();System.out.println("Signature: "+sig);
+        Class enclosingJoinPointDeclaringType = thisEnclosingJoinPointStaticPart.getSignature().getDeclaringType();
         Class dt = sig.getDeclaringType();
-        Tester.check(!(target instanceof E),
-                     target.getClass().getName() + " instanceof E");
+        Tester.check(!(target instanceof E), target.getClass().getName() + " instanceof E");
         Tester.event("call " + target.getClass().getName());
-        Tester.check(dt == PR353b.class,
-                     "dt != instanceof PR353b");
-	Tester.check(!(target instanceof E),
-                     "!instanceof E");
+        Tester.check(enclosingJoinPointDeclaringType == PR353b.class, "enclosingJoinPointDeclaringType != instanceof PR353b");
+        Tester.check(!(target instanceof E), "!instanceof E");
         String c = thisJoinPoint.getSignature().getDeclaringType().getName();
         Tester.check(s.c.equals(c), "p3: " + s.c + " != " + c);
     }  

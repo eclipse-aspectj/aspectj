@@ -3,21 +3,21 @@
 <suite>
 
   <ajc-test dir="bugs1611/pr336880" title="bounds check confusion">
-  	<compile files="First.java" options="-1.5"/>
-  	<compile files="Second.java" aspectpath="." options="-1.5"/>
+  	<compile files="First.java" options="-1.8"/>
+  	<compile files="Second.java" aspectpath="." options="-1.8"/>
   </ajc-test>
   
   <ajc-test dir="bugs1611/pr336774" title="clashing itds">
-  	<compile files="First.java" options="-1.5"/>
-  	<compile files="Test.java" aspectpath="." options="-1.5"/>
+  	<compile files="First.java" options="-1.8"/>
+  	<compile files="Test.java" aspectpath="." options="-1.8"/>
   </ajc-test>
   
   <ajc-test dir="bugs1611/pr336745" title="incorrect signature">
-  	<compile files="Foo.aj" options="-1.5"/>
+  	<compile files="Foo.aj" options="-1.8"/>
   </ajc-test>
   
   <ajc-test dir="bugs1611/pr336471" title="esjp">
-  	<compile files="Tester.aj" options="-1.5 -Xset:targetRuntime1_6_10=true"/>
+  	<compile files="Tester.aj" options="-1.8 -Xset:targetRuntime1_6_10=true"/>
   	<run class="Tester">
 	  	<stdout>
 		  	<line text="execution(void Tester.main(String[]))"/>
@@ -41,7 +41,7 @@
   
   
   <ajc-test dir="bugs1611/pr336136" title="itit - 2">
-    <compile files="Country_Roo_Op4j2.java" options="-1.5">
+    <compile files="Country_Roo_Op4j2.java" options="-1.8">
     <message kind="error" text="The import com.foo cannot be resolved" line="1"/>
     <message kind="error" text="The import org.javaruntype cannot be resolved" line="3"/>
     <message kind="error" text="The import org.op4j cannot be resolved" line="4"/>
@@ -57,24 +57,24 @@
   
 
   <ajc-test dir="bugs1611/pr335682" title="pr335682">
-    <compile inpath="foo.jar" options="-1.4" outjar="bar.jar"/>
+    <compile inpath="foo.jar" options="-1.8 -Xlint:ignore" outjar="bar.jar"/>
   </ajc-test>
 
   <ajc-test dir="bugs1611/pr335682" title="pr335682 - 2">
-    <compile inpath="case2.jar" options="-1.4" outjar="bar.jar"/>
+    <compile inpath="case2.jar" options="-1.8 -Xlint:ignore" outjar="bar.jar"/>
   </ajc-test>
   
   <ajc-test dir="bugs1611/pr335682" title="pr335682 - 3">
-    <compile inpath="case3.jar" options="-1.4" outjar="bar.jar"/>
+    <compile inpath="case3.jar" options="-1.8 -Xlint:ignore" outjar="bar.jar"/>
   </ajc-test>  
   
   <ajc-test dir="bugs1611/pr335682" title="pr335682 - 5">
-    <compile inpath="case5.jar" options="-1.4" outjar="bar.jar"/>
+    <compile inpath="case5.jar" options="-1.8 -Xlint:ignore" outjar="bar.jar"/>
   </ajc-test>  
 
   <ajc-test dir="bugs1611/pr335783" title="pr335783">
-    <compile files="A.java" options="-1.5"/>
-    <compile files="X.aj" options="-1.5 -Xlint:ignore" />
+    <compile files="A.java" options="-1.8"/>
+    <compile files="X.aj" options="-1.8 -Xlint:ignore" />
     <run class="A" ltw="aop.xml">
     <stdout>
 	    <line text="OK"/>
@@ -83,7 +83,7 @@
   </ajc-test>
   
   <ajc-test dir="bugs1611/pr333274" title="anno style advice chain">
-  <compile files="ma/Annotation1.java  ma/aspect1/Aspect1.java  ma/aspect3/Aspect3.java ma/Main.java ma/Precedence.java" options="-1.5"/>
+  <compile files="ma/Annotation1.java  ma/aspect1/Aspect1.java  ma/aspect3/Aspect3.java ma/Main.java ma/Precedence.java" options="-1.8"/>
   <run class="ma.Main">
   <stdout>
   <line text="&gt;In Aspect1"/>
@@ -100,7 +100,7 @@
   </ajc-test>
   
   <ajc-test dir="bugs1611/pr333274" title="code style advice chain - no inline">
-  <compile files="ma2/Annotation1.java  ma2/aspect1/Aspect1.java  ma2/aspect3/Aspect3.java ma2/Main.java ma2/Precedence.java" options="-1.5 -XnoInline"/>
+  <compile files="ma2/Annotation1.java  ma2/aspect1/Aspect1.java  ma2/aspect3/Aspect3.java ma2/Main.java ma2/Precedence.java" options="-1.8 -XnoInline"/>
   <run class="ma2.Main">
   <stdout>
   <line text="&gt;In Aspect1"/>
@@ -117,7 +117,7 @@
   </ajc-test>
   
   <ajc-test dir="bugs1611/pr333274" title="code style advice chain">
-  <compile files="ma2/Annotation1.java  ma2/aspect1/Aspect1.java  ma2/aspect3/Aspect3.java ma2/Main.java ma2/Precedence.java" options="-1.5 -XnoInline"/>
+  <compile files="ma2/Annotation1.java  ma2/aspect1/Aspect1.java  ma2/aspect3/Aspect3.java ma2/Main.java ma2/Precedence.java" options="-1.8 -XnoInline"/>
   <run class="ma2.Main">
   <stdout>
   <line text="&gt;In Aspect1"/>
@@ -134,7 +134,7 @@
   </ajc-test>
 
   <ajc-test dir="bugs1611/pr328840" title="pr328840">
-    <compile files="Wibble.aj" options="-1.5 -showWeaveInfo">
+    <compile files="Wibble.aj" options="-1.8 -showWeaveInfo">
     <message kind="weave" text="Join point 'field-get(XX Song.i)' in Type 'Song' (Wibble.aj:26) advised by before advice from 'Wibble' (Wibble.aj:9)"/>
     <message kind="weave" text="'XX i' of type 'Song' (Wibble.aj) is annotated with @Foo field annotation from 'Wibble' (Wibble.aj:7)"/>
     </compile>
@@ -145,26 +145,26 @@
   </ajc-test>
   
   <ajc-test dir="bugs1611/pr332388" title="pr332388">
-     <compile files="M.java" outjar="M.jar" options="-1.5"/>
-     <compile files="A.java B.java" classpath="M.jar" outjar="AB.jar" options="-1.5"/>
-     <compile files="MyAspect.java" outjar="aspects.jar" options="-1.5"/>
-     <compile files="" aspectpath="aspects.jar" inpath="AB.jar" options="-1.5">
+     <compile files="M.java" outjar="M.jar" options="-1.8"/>
+     <compile files="A.java B.java" classpath="M.jar" outjar="AB.jar" options="-1.8"/>
+     <compile files="MyAspect.java" outjar="aspects.jar" options="-1.8"/>
+     <compile files="" aspectpath="aspects.jar" inpath="AB.jar" options="-1.8">
      <message kind="error" text="Unable to find type for generic bound.  Missing type is M [Xlint:cantFindType]"/>
      </compile>
   </ajc-test>
   
   <ajc-test dir="bugs1611/pr333469" title="pr333469">
-     <compile files="MyList.java MyList_Serializable.java" options="-1.5"/>
+     <compile files="MyList.java MyList_Serializable.java" options="-1.8"/>
      <run class="MyList">
      <stdout><line text="ser=1"/></stdout>
      </run>
   </ajc-test>
   
   <ajc-test dir="bugs1611/pr332388_2" title="pr332388 - 2">
-     <compile files="M.java" outjar="M.jar" options="-1.5"/>
-     <compile files="A.java" classpath="M.jar" outjar="A.jar" options="-1.5"/>
-     <compile files="MyAspect.java" outjar="aspects.jar" options="-1.5"/>
-     <compile files="" aspectpath="aspects.jar" inpath="A.jar" options="-1.5">
+     <compile files="M.java" outjar="M.jar" options="-1.8"/>
+     <compile files="A.java" classpath="M.jar" outjar="A.jar" options="-1.8"/>
+     <compile files="MyAspect.java" outjar="aspects.jar" options="-1.8"/>
+     <compile files="" aspectpath="aspects.jar" inpath="A.jar" options="-1.8">
      <message kind="error" text="Unable to find type (for bound): M [Xlint:cantFindType]"/>
      </compile>
   </ajc-test>

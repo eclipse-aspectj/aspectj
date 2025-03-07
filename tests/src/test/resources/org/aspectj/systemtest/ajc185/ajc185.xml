@@ -3,7 +3,7 @@
 <suite>
 
 <ajc-test dir="bugs185/456357" title="unresolvable member">
-<compile files="DummyClass.java LogMe.java SampleAspect.java SampleUtil.java" options="-1.7">
+<compile files="DummyClass.java LogMe.java SampleAspect.java SampleUtil.java" options="-1.8">
 </compile>
 </ajc-test>
 

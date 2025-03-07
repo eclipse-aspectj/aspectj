@@ -94,31 +94,29 @@ public class CompilerRun implements IAjcRun {
      * During run, these String are passed as the source and arg files to compile.
      * The list is set up in setupAjcRun(..), when arg files are prefixed with "@".
      */
-    final List /*String*/
-    arguments;
+    final List<String> arguments;
 
     /**
      * During run, these String are collapsed and passed as the injar option.
      * The list is set up in setupAjcRun(..).
      */
-    final List /*String*/
-    injars;
+    final List<String> injars;
 
     /**
      * During run, these String are collapsed and passed as the inpath option.
      * The list is set up in setupAjcRun(..),
      * which extracts only directories from the files attribute.
      */
-    final List inpaths;
+    final List<String> inpaths;
 
     private CompilerRun(Spec spec) {
         if (null == spec) {
             throw new IllegalArgumentException("null spec");
         }
         this.spec = spec;
-        arguments = new ArrayList();
-        injars = new ArrayList();
-        inpaths = new ArrayList();
+        arguments = new ArrayList<>();
+        injars = new ArrayList<>();
+        inpaths = new ArrayList<>();
     }
 
 
@@ -132,7 +130,7 @@ public class CompilerRun implements IAjcRun {
         if (LangUtil.isEmpty(inputs)) {
             return new String[0];
         }
-        ArrayList result = new ArrayList();
+        ArrayList<String> result = new ArrayList<>();
 		for (String input : inputs) {
 			if (null == input) {
 				continue;
@@ -164,7 +162,7 @@ public class CompilerRun implements IAjcRun {
 			}
             suffixes = temp;
         }
-        ArrayList result = new ArrayList();
+        ArrayList<String> result = new ArrayList<>();
 		for (String s : inputs) {
 			String input = s;
 			if (null == input) {
@@ -528,7 +526,7 @@ public class CompilerRun implements IAjcRun {
         boolean handlerResult = false;
         boolean result = false;
         boolean commandResult = false;
-        ArrayList argList = new ArrayList();
+        ArrayList<String> argList = new ArrayList<>();
         final Spec.TestSetup setupResult = spec.testSetup;
         try {
         	if (spec.outjar == null) {
@@ -728,7 +726,7 @@ public class CompilerRun implements IAjcRun {
         private static String updateBootclasspathForSourceVersion(
             String sourceVersion,
             String compilerName,
-            List toAdd) {
+            List<String> toAdd) {
             if (null == sourceVersion) {
                 return null;
             }
@@ -1627,7 +1625,7 @@ public class CompilerRun implements IAjcRun {
                         Option.FORCE_PREFIXES,
                         false);
 
-                Map map = new TreeMap();
+                Map<Option,String> map = new TreeMap<>();
                 map.put(eclipseOption, ReflectionFactory.ECLIPSE);
                 //map.put(BUILDERCOMPILER_OPTION, BUILDER_COMPILER);
                 map.put(
@@ -1643,7 +1641,7 @@ public class CompilerRun implements IAjcRun {
                     Collections.unmodifiableSet(
                         compilerOptionToClassname.keySet());
                 // options not permitted in the harness
-                List list = new ArrayList();
+                List<Option> list = new ArrayList<>();
                 list.add(factory.create("workingdir"));
                 list.add(factory.create("argfile"));
                 list.add(factory.create("sourceroots"));

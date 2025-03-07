@@ -58,9 +58,8 @@
       <compile files="SimpleJ.java" options="-source 13"/>
     </ajc-test>
 
-    <!-- check class file version is 49.0 -->
     <ajc-test dir="bugs160/simplejava" title="simple - m">
-      <compile files="SimpleJ.java" options="-1.5"/>
+      <compile files="SimpleJ.java" options="-1.8"/>
     </ajc-test>
 
     <ajc-test dir="bugs160/simplejava" title="simple - n">

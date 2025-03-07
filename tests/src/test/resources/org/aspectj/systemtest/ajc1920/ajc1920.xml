@@ -178,7 +178,7 @@
 
 	<!-- RuntimeException in BcelWeaver, see https://github.com/eclipse-aspectj/aspectj/issues/190 -->
 	<ajc-test dir="bugs1920/github_190" vm="1.5" title="switch with Integer.MAX_VALUE case">
-		<compile files="SwitchCaseWith_Integer_MAX_VALUE.java" options="-1.5 -showWeaveInfo">
+		<compile files="SwitchCaseWith_Integer_MAX_VALUE.java" options="-1.8 -showWeaveInfo">
 			<message kind="weave" text="Join point 'method-execution(java.lang.String SwitchCaseWith_Integer_MAX_VALUE.switchTest(int))'"/>
 		 </compile>
 		<run class="SwitchCaseWith_Integer_MAX_VALUE">
@@ -194,7 +194,7 @@
 		containing AspectJ keywords, e.g. '(before)', see https://github.com/eclipse-aspectj/aspectj/issues/20
 	-->
 	<ajc-test dir="bugs1920/github_20" vm="1.5" title="parenthesised expression with AspectJ keyword">
-		<compile files="ParenthesisedAJKeywords.java" options="-1.5 -showWeaveInfo"/>
+		<compile files="ParenthesisedAJKeywords.java" options="-1.8 -showWeaveInfo"/>
 		<run class="ParenthesisedAJKeywords">
 			<stdout>
 				<line text="before"/>
@@ -213,7 +213,7 @@
 		static, see https://github.com/eclipse-aspectj/aspectj/issues/162
 	-->
 	<ajc-test dir="bugs1920/github_162" vm="1.5" title="inner aspect of interface is implicitly static">
-		<compile files="InterfaceWithInnerClass.java" options="-1.5 -showWeaveInfo">
+		<compile files="InterfaceWithInnerClass.java" options="-1.8 -showWeaveInfo">
 			<message kind="weave" text="method-execution(int InterfaceWithInnerClass$ImplicitlyStatic.getNumber())' in Type 'InterfaceWithInnerClass$ImplicitlyStatic'"/>
 			<message kind="weave" text="method-execution(void InterfaceWithInnerClass$ImplicitlyStatic.main(java.lang.String[]))' in Type 'InterfaceWithInnerClass$ImplicitlyStatic'"/>
 		</compile>
@@ -231,7 +231,7 @@
 		see https://github.com/eclipse-aspectj/aspectj/issues/24
 	-->
 	<ajc-test dir="bugs1920/github_24" vm="1.5" title="exact array type matching, aspect compiled together with target class">
-		<compile files="ExactlyMatchingAspect.aj MaybeMissingClass.java" options="-1.5 -showWeaveInfo">
+		<compile files="ExactlyMatchingAspect.aj MaybeMissingClass.java" options="-1.8 -showWeaveInfo">
 			<!-- Even before the bugfix, in this case weaving worked as expected -->
 			<message kind="weave" text="method-execution(MaybeMissingClass MaybeMissingClass.f1())"/>
 			<message kind="weave" text="method-execution(MaybeMissingClass[] MaybeMissingClass.f2())"/>
@@ -263,11 +263,11 @@
 		see https://github.com/eclipse-aspectj/aspectj/issues/24
 	-->
 	<ajc-test dir="bugs1920/github_24" vm="1.5" title="exact array type matching, aspect compiled separately from target class">
-		<compile files="ExactlyMatchingAspect.aj" options="-1.5 -showWeaveInfo" outjar="aspect.jar">
+		<compile files="ExactlyMatchingAspect.aj" options="-1.8 -showWeaveInfo" outjar="aspect.jar">
 			<message kind="warning" text="no match for this type name: MaybeMissingClass [Xlint:invalidAbsoluteTypeName]"/>
 			<message kind="warning" text="advice defined in ExactlyMatchingAspect has not been applied [Xlint:adviceDidNotMatch]"/>
 		</compile>
-		<compile files="MaybeMissingClass.java" options="-1.5 -showWeaveInfo" aspectpath="aspect.jar">
+		<compile files="MaybeMissingClass.java" options="-1.8 -showWeaveInfo" aspectpath="aspect.jar">
 			<!-- Before the bugfix, f1 would be woven twice, f2 not at all-->
 			<message kind="weave" text="method-execution(MaybeMissingClass MaybeMissingClass.f1())"/>
 			<message kind="weave" text="method-execution(MaybeMissingClass[] MaybeMissingClass.f2())"/>
@@ -299,7 +299,7 @@
 		see https://github.com/eclipse-aspectj/aspectj/issues/24
 	-->
 	<ajc-test dir="bugs1920/github_24" vm="1.5" title="fuzzy array type matching, aspect compiled together with target class">
-		<compile files="FuzzilyMatchingAspect.aj MaybeMissingClass.java" options="-1.5 -showWeaveInfo">
+		<compile files="FuzzilyMatchingAspect.aj MaybeMissingClass.java" options="-1.8 -showWeaveInfo">
 			<!-- Before the bugfix, both f1 and f2 would be woven twice -->
 			<message kind="weave" text="method-execution(MaybeMissingClass MaybeMissingClass.f1())"/>
 			<message kind="weave" text="method-execution(MaybeMissingClass[] MaybeMissingClass.f2())"/>
@@ -331,10 +331,10 @@
 		see https://github.com/eclipse-aspectj/aspectj/issues/24
 	-->
 	<ajc-test dir="bugs1920/github_24" vm="1.5" title="fuzzy array type matching, aspect compiled separately from target class">
-		<compile files="FuzzilyMatchingAspect.aj" options="-1.5 -showWeaveInfo" outjar="aspect.jar">
+		<compile files="FuzzilyMatchingAspect.aj" options="-1.8 -showWeaveInfo" outjar="aspect.jar">
 			<message kind="warning" text="advice defined in FuzzilyMatchingAspect has not been applied [Xlint:adviceDidNotMatch]"/>
 		</compile>
-		<compile files="MaybeMissingClass.java" options="-1.5 -showWeaveInfo" aspectpath="aspect.jar">
+		<compile files="MaybeMissingClass.java" options="-1.8 -showWeaveInfo" aspectpath="aspect.jar">
 			<!-- Before the bugfix, both f1 and f2 would be woven twice -->
 			<message kind="weave" text="method-execution(MaybeMissingClass MaybeMissingClass.f1())"/>
 			<message kind="weave" text="method-execution(MaybeMissingClass[] MaybeMissingClass.f2())"/>
@@ -374,8 +374,8 @@
 			<message kind="warning" text="can not build thisJoinPoint lazily for this advice since it has no suitable guard [Xlint:noGuardForLazyTjp]"/>
 			<message kind="warning" text="advice defined in FirstAspect has not been applied [Xlint:adviceDidNotMatch]"/>
 		</compile>
-		<compile files="Application.java MarkerTwo.java" options="-1.5 -showWeaveInfo -Xlint:warning" classpath="$sandbox/first-aspect.jar" outjar="application.jar"/>
-		<compile files="SecondAspect.java" options="-1.5 -showWeaveInfo -Xlint:warning" aspectpath="first-aspect.jar" inpath="application.jar" outjar="second-aspect.jar">
+		<compile files="Application.java MarkerTwo.java" options="-1.8 -showWeaveInfo -Xlint:warning" classpath="$sandbox/first-aspect.jar" outjar="application.jar"/>
+		<compile files="SecondAspect.java" options="-1.8 -showWeaveInfo -Xlint:warning" aspectpath="first-aspect.jar" inpath="application.jar" outjar="second-aspect.jar">
 			<message kind="warning" text="can not build thisJoinPoint lazily for this advice since it has no suitable guard [Xlint:noGuardForLazyTjp]"/>
 			<message kind="warning" text="at this shadow method-execution(void Application.greet(java.lang.String)) no precedence is specified between advice applying from aspect FirstAspect and aspect SecondAspect [Xlint:unorderedAdviceAtShadow]"/>
 			<message kind="warning" text="can not implement lazyTjp at joinpoint method-execution(void Application.greet(java.lang.String)) because of advice conflicts, see secondary locations to find conflicting advice [Xlint:multipleAdviceStoppingLazyTjp]"/>
