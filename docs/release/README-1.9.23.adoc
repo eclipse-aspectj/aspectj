@@ -9,7 +9,7 @@
 
 _© Copyright 2025 Contributors. All rights reserved._
 
-_Release info: 1.9.23 available 11-May-2024_
+_Release info: 1.9.23 available 7-Mar-2025_
 
 Please note that Bugzilla for issue management is deprecated and new issues should be filed as
 https://github.com/eclipse-aspectj/aspectj/issues/new[GitHub issues]. The list of issues addressed for 1.9.23 can be
