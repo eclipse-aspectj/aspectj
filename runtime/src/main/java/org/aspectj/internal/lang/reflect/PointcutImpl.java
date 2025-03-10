@@ -29,7 +29,7 @@ public class PointcutImpl implements Pointcut {
 	private final PointcutExpression pc;
 	private final Method baseMethod;
 	private final AjType<?> declaringType;
-	private String[] parameterNames = new String[0];
+	private final String[] parameterNames;
 
 	protected PointcutImpl(String name, String pc, Method method, AjType declaringType, String pNames) {
 		this.name = name;
