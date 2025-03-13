@@ -5,7 +5,7 @@
 
 	<groupId>org.aspectj</groupId>
 	<artifactId>aspectj-parent</artifactId>
-	<version>1.9.23-SNAPSHOT</version>
+	<version>1.9.23</version>
 	<packaging>pom</packaging>
 
 	<name>AspectJ Parent Project</name>
@@ -19,7 +19,7 @@
 			Set fixed timestamp for reproducible builds,
 			see https://maven.apache.org/guides/mini/guide-reproducible-builds.html
 		-->
-		<project.build.outputTimestamp>2024-01-01T00:00:00Z</project.build.outputTimestamp>
+		<project.build.outputTimestamp>2025-03-12T21:09:12Z</project.build.outputTimestamp>
 
 		<!-- By default, do not deploy artifacts - override for the ones which actually should be deployed -->
 		<maven.deploy.skip>true</maven.deploy.skip>
@@ -45,11 +45,13 @@
 			<id>ossrh</id>
 			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
+<!--
 		<site>
 			<id>aspectj-site-local</id>
-			<!-- Use mvn site:deploy from root directory to create multi-module Maven site there -->
+			 Use mvn site:deploy from root directory to create multi-module Maven site there
 			<url>file://${user.dir}/aj-build/dist/site</url>
 		</site>
+-->
 	</distributionManagement>
 
 	<repositories>

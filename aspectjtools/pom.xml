@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.aspectj</groupId>
 		<artifactId>aspectj-parent</artifactId>
-		<version>1.9.23-SNAPSHOT</version>
+		<version>1.9.23</version>
 	</parent>
 
 	<artifactId>aspectjtools</artifactId>
@@ -32,7 +32,7 @@
 		<developer>
 			<id>aclement</id>
 			<name>Andy Clement</name>
-			<email>aclement@vmware.com</email>
+			<email>andrew.clement@broadcom.com</email>
 		</developer>
 		<developer>
 			<id>kriegaex</id>
