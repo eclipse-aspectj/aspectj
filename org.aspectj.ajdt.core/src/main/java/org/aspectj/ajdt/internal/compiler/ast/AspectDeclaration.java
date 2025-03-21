@@ -1071,14 +1071,14 @@ public class AspectDeclaration extends TypeDeclaration {
 					}
 				});
 	}
-
+	
 	private void generateInlineAccessMethod(ClassFile classFile, final MethodBinding accessMethod, final ResolvedMember method) {
 		generateMethod(classFile, accessMethod, makeEffectiveSignatureAttribute(method, Shadow.MethodCall, false),
 				new BodyGenerator() {
 					public void generate(CodeStream codeStream) {
 						// body starts here
 
-						AstUtil.generateParameterLoads(accessMethod.parameters, codeStream);
+						AstUtil.generateParameterLoads(accessMethod.parameters, accessMethod.parameterNames, codeStream);
 
 						if (Modifier.isStatic(method.getModifiers())) {
 							codeStream.invoke(Opcodes.OPC_invokestatic, factory.makeMethodBinding(method), null);
@@ -1086,6 +1086,14 @@ public class AspectDeclaration extends TypeDeclaration {
 							codeStream.invoke(Opcodes.OPC_invokevirtual, factory.makeMethodBinding(method), null);
 						}
 
+						if (codeStream.locals != null) {
+							for (int a = 0; a < codeStream.locals.length; a++) {
+								if (codeStream.locals[a] != null) {
+									codeStream.locals[a].recordInitializationEndPC(codeStream.position);
+								}
+							}
+						}
+						
 						AstUtil.generateReturn(accessMethod.returnType, codeStream);
 						// body ends here
 					}

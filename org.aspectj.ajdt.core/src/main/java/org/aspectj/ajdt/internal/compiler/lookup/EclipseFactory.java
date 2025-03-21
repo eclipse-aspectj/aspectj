@@ -975,8 +975,19 @@ public class EclipseFactory {
 		if (NameMangler.isSyntheticMethod(member.getName(), true)) {
 			mb.modifiers |= Flags.AccSynthetic;
 		}
-
+		String[] parameterNames = member.getParameterNames();
+		if (parameterNames != null) {
+			mb.parameterNames = makeCharCharArray(parameterNames);
+		}
 		return mb;
+	}
+	
+	private char[][] makeCharCharArray(String[] names) {
+		char[][] array = new char[names.length][];
+		for (int i=0;i<names.length;i++) {
+			array[i] = names[i].toCharArray();
+		}
+		return array;
 	}
 
 	/**

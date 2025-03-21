@@ -318,16 +318,25 @@ public class AjcMemberMaker {
 
 	public static ResolvedMember inlineAccessMethodForMethod(UnresolvedType aspectType, ResolvedMember method) {
 		UnresolvedType[] paramTypes = method.getParameterTypes();
+		String[] paramNames = method.getParameterNames();
 		if (!Modifier.isStatic(method.getModifiers())) {
 			paramTypes = UnresolvedType.insert(method.getDeclaringType(), paramTypes);
+			if (paramNames != null) {
+				String[] newParamNames = new String[paramNames.length+1];
+				System.arraycopy(paramNames, 0, newParamNames, 1, paramNames.length);
+				newParamNames[0] = "targetInstance";
+				paramNames = newParamNames;
+			}
 		}
-		return new ResolvedMemberImpl(Member.METHOD, aspectType,
+		ResolvedMember inlineAccessMethodForMethod = new ResolvedMemberImpl(Member.METHOD, aspectType,
 				PUBLIC_STATIC, // ??? what about privileged and super access
-				// ???Modifier.PUBLIC | (method.isStatic() ? Modifier.STATIC : 0),
 				method.getReturnType(),
-
 				NameMangler.inlineAccessMethodForMethod(method.getName(), method.getDeclaringType(), aspectType), paramTypes,
 				method.getExceptions());
+		if (paramNames != null) {
+			inlineAccessMethodForMethod.setParameterNames(paramNames);
+		}
+		return inlineAccessMethodForMethod;
 	}
 
 	public static ResolvedMember inlineAccessMethodForFieldGet(UnresolvedType aspectType, Member field) {

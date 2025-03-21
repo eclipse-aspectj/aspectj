@@ -46,6 +46,15 @@
 		</run>
 	</ajc-test>
 	
+	<ajc-test dir="bugs1923/gh328" vm="17" title="problem with inline accessor generator for around advice">
+		<compile files="One.java" options="-17">
+		</compile>
+	</ajc-test>
+	
+	<ajc-test dir="bugs1923/gh327" vm="17" title="problem with intertype field declaration code generation">
+		<compile files="A.aj" options="-17">
+		</compile>
+	</ajc-test>
 	
 
 </suite>

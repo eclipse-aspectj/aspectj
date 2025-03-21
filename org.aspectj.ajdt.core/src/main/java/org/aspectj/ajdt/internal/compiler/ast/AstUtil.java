@@ -152,11 +152,19 @@ public class AstUtil {
 		return getCompilationUnitScope(scope.parent);
 	}
 
-	public static void generateParameterLoads(TypeBinding[] parameters, CodeStream codeStream) {
+	public static void generateParameterLoads(TypeBinding[] parameters, char[][] parameterNames, CodeStream codeStream) {
 		int paramIndex = 0;
 		int varIndex = 0;
 		while (paramIndex < parameters.length) {
-			TypeBinding param = parameters[paramIndex++];
+			TypeBinding param = parameters[paramIndex];
+			if (parameterNames != null) {
+				char[] parameterName = parameterNames[paramIndex];
+				LocalVariableBinding lvb = new LocalVariableBinding(parameterName, param, 0, true);
+				codeStream.record(lvb);
+				lvb.recordInitializationStartPC(codeStream.position);
+				lvb.resolvedPosition = paramIndex;
+			}
+			paramIndex++;
 			codeStream.load(param, varIndex);
 			varIndex += slotsNeeded(param);
 		}

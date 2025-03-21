@@ -19,8 +19,8 @@ public class Bugs1923Tests extends XMLBasedAjcTestCase {
     return XMLBasedAjcTestCase.loadSuite(Bugs1923Tests.class);
   }
   
-  public void testNothing() {
-	  // placeholder - delete when actual test added in here
+  public void testGh328_AroundAdviceInlineAccessor() {
+	  runTest("problem with inline accessor generator for around advice");
   }
 
   @Override
