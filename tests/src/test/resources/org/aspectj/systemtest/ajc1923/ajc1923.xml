@@ -51,10 +51,25 @@
 		</compile>
 	</ajc-test>
 	
-	<ajc-test dir="bugs1923/gh327" vm="17" title="problem with intertype field declaration code generation">
+	<ajc-test dir="bugs1923/gh327" vm="17" title="problem with intertype field declaration code generation - static">
 		<compile files="A.aj" options="-17">
 		</compile>
 	</ajc-test>
 	
+	<ajc-test dir="bugs1923/gh327" vm="17" title="problem with intertype field declaration code generation - nonstatic">
+		<compile files="B.aj" options="-17">
+		</compile>
+	</ajc-test>
+
+    <ajc-test dir="new/verifyError" pr="36673"
+      title="problem with intertype field declaration code generation - private">
+        <compile files="Privilege.java" options="-17"/>
+        <run class="Privilege"/>
+    </ajc-test>
+
+	<ajc-test dir="bugs1923/gh327" vm="17" title="problem with intertype method declaration code generation">
+		<compile files="F.aj" options="-17">
+		</compile>
+	</ajc-test>
 
 </suite>

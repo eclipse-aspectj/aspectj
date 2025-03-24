@@ -454,16 +454,15 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 			PrivilegedFieldBinding fBinding = (PrivilegedFieldBinding) Scope.findPrivilegedHandler(binding.declaringClass)
 					.getPrivilegedAccessField(field, null);
 			if (field.isStatic()) {
+				LocalVariableBinding valueVar = createUsedVar(codeStream, "value", field.type, 0);
 				codeStream.load(field.type, 0);
 				codeStream.invoke(Opcodes.OPC_invokestatic,fBinding.writer,null);
+				valueVar.recordInitializationEndPC(codeStream.position);
 			} else {
 				// Example: 
 				// We are generating: public static void ajc$interFieldSetDispatch$PersonAspect$Manager$jobTitle(Manager, java.lang.String) 
 				// And it is calling: public static void ajc$set$jobTitle(Manager, java.lang.String) 
-				LocalVariableBinding instanceVar = new LocalVariableBinding("instance".toCharArray(),this.onTypeBinding,Modifier.PUBLIC,true);
-				codeStream.record(instanceVar);
-				instanceVar.recordInitializationStartPC(codeStream.position);
-				instanceVar.resolvedPosition = 0;
+				LocalVariableBinding instanceVar = createUsedVar(codeStream, "instance", this.onTypeBinding, 0);
 				codeStream.aload_0();
 				LocalVariableBinding valueVar = new LocalVariableBinding("value".toCharArray(),this.realFieldType,Modifier.PUBLIC,true);
 				codeStream.record(valueVar);
@@ -477,13 +476,27 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 			return;
 		}
 		if (field.isStatic()) {
+			LocalVariableBinding valueVar = createUsedVar(codeStream, "value", field.type, 0);
 			codeStream.load(field.type, 0);
-			codeStream.fieldAccess(Opcodes.OPC_putstatic,field,null);
+			codeStream.fieldAccess(Opcodes.OPC_putstatic, field, null);
+			valueVar.recordInitializationEndPC(codeStream.position);
 		} else {
+			LocalVariableBinding instanceVar = createUsedVar(codeStream, "instance", this.onTypeBinding, 0);
 			codeStream.aload_0();
+			LocalVariableBinding valueVar = createUsedVar(codeStream, "value", field.type, 1);
 			codeStream.load(field.type, 1);
 			codeStream.fieldAccess(Opcodes.OPC_putfield,field,null);
+			instanceVar.recordInitializationEndPC(codeStream.position);
+			valueVar.recordInitializationEndPC(codeStream.position);
 		}
+	}
+
+	private LocalVariableBinding createUsedVar(CodeStream codeStream, String name, TypeBinding type, int position) {
+		LocalVariableBinding instanceVar = new LocalVariableBinding(name.toCharArray(), type, Modifier.PUBLIC,true);
+		codeStream.record(instanceVar);
+		instanceVar.recordInitializationStartPC(codeStream.position);
+		instanceVar.resolvedPosition = position;
+		return instanceVar;
 	}
 
 	protected Shadow.Kind getShadowKindForBody() {

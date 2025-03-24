@@ -162,7 +162,7 @@ public class AstUtil {
 				LocalVariableBinding lvb = new LocalVariableBinding(parameterName, param, 0, true);
 				codeStream.record(lvb);
 				lvb.recordInitializationStartPC(codeStream.position);
-				lvb.resolvedPosition = paramIndex;
+				lvb.resolvedPosition = varIndex;
 			}
 			paramIndex++;
 			codeStream.load(param, varIndex);

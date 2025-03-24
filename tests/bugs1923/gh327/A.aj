@@ -1,5 +1,5 @@
 privileged public aspect A {
-    public static final String B.s = C.f.toString();
+    public final static String B.s = C.f.toString();
 }
 
 class B { }

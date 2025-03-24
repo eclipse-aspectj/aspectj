@@ -23,6 +23,22 @@ public class Bugs1923Tests extends XMLBasedAjcTestCase {
 	  runTest("problem with inline accessor generator for around advice");
   }
 
+  public void testGh327_IntertypeFields_Static() {
+	  runTest("problem with intertype field declaration code generation - static");
+  }
+
+  public void testGh327_IntertypeFields_NonStatic() {
+	  runTest("problem with intertype field declaration code generation - nonstatic");
+  }
+  
+  public void testGh327_IntertypeFields_Private() {
+	  runTest("problem with intertype field declaration code generation - private");
+  }
+
+  public void testGh327_IntertypeMethods() {
+	  runTest("problem with intertype method declaration code generation");
+  }
+
   @Override
   protected java.net.URL getSpecFile() {
     return getClassResource("ajc1923.xml");

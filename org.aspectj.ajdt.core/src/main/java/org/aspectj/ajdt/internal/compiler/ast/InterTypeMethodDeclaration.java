@@ -36,6 +36,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TagBits;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeIds;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.AbortCompilationUnit;
@@ -259,6 +260,44 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 		generateDispatchMethod(classScope, classFile);
 	}
 
+	/**
+	 * Generate a dispatch method for the intertype method declaration.
+	 * 
+	 * Best illustrated by example, the ITD might be:
+	 * <pre><tt>
+	 * aspect F {
+	 * 		void C.displaySearch(StringBuffer buffer, String name, String prefix, A criteria,B context)
+	 * }
+	 * </tt></pre> 
+	 * In the class representing the aspect F we will generate the dispatcher:
+	 * <pre><tt>
+	 * public static void ajc$interMethodDispatch1$F$C$displaySearch(C, java.lang.StringBuffer, java.lang.String, java.lang.String, A, B) 
+	 * </tt></pre> 
+	 * and the dispatcher will call the ITD method on the real target:
+	 * <pre><tt>
+	 * instanceOfC.displaySearch(java.lang.StringBuffer, java.lang.String, java.lang.String, A, B) 
+	 * </tt></pre> 
+	 * 
+	 * Example generated code:
+	 * <pre><tt>
+	 * public static void ajc$interMethodDispatch1$F$C$displaySearch(C, java.lang.StringBuffer, java.lang.String, java.lang.String, A, B);
+     *   descriptor: (LC;Ljava/lang/StringBuffer;Ljava/lang/String;Ljava/lang/String;LA;LB;)V
+     *   flags: (0x1009) ACC_PUBLIC, ACC_STATIC, ACC_SYNTHETIC
+     *   Code:
+     *   stack=6, locals=6, args_size=6
+     *   0: aload_0
+     *   1: aload_1
+     *   2: aload_2
+     *   3: aload_3
+     *   4: aload         4
+     *   6: aload         5
+     *   8: invokeinterface #28,  6           // InterfaceMethod C.displaySearch:(Ljava/lang/StringBuffer;Ljava/lang/String;Ljava/lang/String;LA;LB;)V
+     *  13: return
+	 * </tt></pre> 
+	 *
+	 * @param classScope the aspect containing the ITD
+	 * @param classFile the class file to which the dispatch method is being added
+	 */
 	public void generateDispatchMethod(ClassScope classScope, ClassFile classFile) {
 		EclipseFactory world = EclipseFactory.fromScopeLookupEnvironment(classScope);
 
@@ -288,6 +327,7 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 
 		Argument[] itdArgs = this.arguments;
 		if (itdArgs != null) {
+			int rp = 0;
 			for (Argument itdArg : itdArgs) {
 				LocalVariableBinding lvb = itdArg.binding;
 				LocalVariableBinding lvbCopy = new LocalVariableBinding(lvb.name, lvb.type, lvb.modifiers, true);
@@ -295,7 +335,8 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 				lvbCopy.declaration = new LocalDeclaration(itdArg.name, 0, 0);
 				codeStream.record(lvbCopy);
 				lvbCopy.recordInitializationStartPC(0);
-				lvbCopy.resolvedPosition = lvb.resolvedPosition;
+				lvbCopy.resolvedPosition = rp;
+				rp += getSlotSize(itdArg.binding.type.id);
 			}
 		}
 
@@ -339,6 +380,16 @@ public class InterTypeMethodDeclaration extends InterTypeDeclaration {
 		classFile.completeCodeAttribute(codeAttributeOffset,scope);
 		attributeNumber++;
 		classFile.completeMethodInfo(binding,methodAttributeOffset, attributeNumber);
+	}
+
+	public static int getSlotSize(int typeId) {
+		switch (typeId) {
+		case TypeIds.T_double:
+		case TypeIds.T_long:
+			return 2;
+		default:
+			return 1;
+		}
 	}
 
 	@Override
