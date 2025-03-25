@@ -29,6 +29,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ExtraCompilerModifiers;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.weaver.AnnotationAJ;
@@ -404,7 +405,14 @@ public class EclipseResolvedMember extends ResolvedMemberImpl {
 		if (realBinding instanceof MethodBinding) {
 			MethodBinding mb = (MethodBinding) realBinding;
 			if (mb != null) {
-				SourceTypeBinding stb = (SourceTypeBinding) mb.declaringClass;
+				SourceTypeBinding stb = null;
+				ReferenceBinding declaringClass = mb.declaringClass;
+				if (declaringClass != null) {
+					declaringClass = declaringClass.actualType();
+				}
+				if (declaringClass instanceof SourceTypeBinding) {
+					stb = (SourceTypeBinding)declaringClass;
+				}
 				if (stb != null) {
 					ClassScope cScope = stb.scope;
 					if (cScope != null) {

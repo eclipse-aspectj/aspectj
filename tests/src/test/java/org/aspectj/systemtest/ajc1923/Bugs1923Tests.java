@@ -38,6 +38,10 @@ public class Bugs1923Tests extends XMLBasedAjcTestCase {
   public void testGh327_IntertypeMethods() {
 	  runTest("problem with intertype method declaration code generation");
   }
+  
+  public void testGh326_ClassCastExceptionHandling() {
+	 runTest("classcast on exception handling aspect");
+  }
 
   @Override
   protected java.net.URL getSpecFile() {

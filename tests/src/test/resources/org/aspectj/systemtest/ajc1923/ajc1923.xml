@@ -71,5 +71,16 @@
 		<compile files="F.aj" options="-17">
 		</compile>
 	</ajc-test>
+	
+	<ajc-test dir="bugs1923/gh326" vm="17" title="classcast on exception handling aspect">
+		<compile files="pkg/BusinessDao.java pkg/BusinessService.java pkg/SourceException.java pkg/TargetException.java pkg/BusinessDto.java pkg/HandleSourceException.java pkg/SourceExceptionHandlerAspect.aj" options="-17">
+		</compile>
+		<run class="pkg.BusinessService">
+		<stdout>		
+		<line text="42"/>
+		</stdout>
+		</run>
+	</ajc-test>
+
 
 </suite>
