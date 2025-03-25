@@ -17,6 +17,8 @@ package org.aspectj.weaver;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.aspectj.util.GenericSignature;
 import org.aspectj.util.GenericSignature.ClassSignature;
@@ -160,9 +162,13 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 	public final boolean isArray() {
 		return signature.length() > 0 && signature.charAt(0) == '[';
 	}
-
+	
 	public final int getDimensions() {
-		return signature.replaceAll("^(\\[*).*", "$1").length();
+		int d = 0;
+		for (int i=0;i<signature.length() && signature.charAt(i)=='[';i++) {
+				d++;
+		}
+		return d;
 	}
 
 	/**
