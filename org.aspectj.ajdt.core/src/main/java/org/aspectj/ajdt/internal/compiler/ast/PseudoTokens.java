@@ -28,8 +28,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
-import org.aspectj.org.eclipse.jdt.internal.compiler.parser.TerminalTokens;
-
+import org.aspectj.org.eclipse.jdt.internal.compiler.parser.TerminalToken;
 
 public class PseudoTokens extends ASTNode {
 	BasicTokenSource tokenSource;
@@ -62,7 +61,7 @@ public class PseudoTokens extends ASTNode {
 		IToken last = tokenSource.next();
 		if (tokenSource.next() != IToken.EOF) {
 			parser.problemReporter().parseError(last.getStart(), last.getEnd(),
-											TerminalTokens.TokenNameIdentifier,
+											TerminalToken.TokenNameIdentifier,
 		                                    last.getString().toCharArray(),
 		                                    last.getString(),
 		                                    new String[] {endToken});
@@ -86,7 +85,7 @@ public class PseudoTokens extends ASTNode {
 		}
 
 		parser.problemReporter().parseError(start, end,
-											TerminalTokens.TokenNameIdentifier,
+											TerminalToken.TokenNameIdentifier,
 		                                    found.toCharArray(),
 		                                    found,
 		                                    new String[] {pe.getMessage()});

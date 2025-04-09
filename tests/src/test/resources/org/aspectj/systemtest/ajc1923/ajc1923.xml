@@ -30,22 +30,6 @@
 		</run>
 	</ajc-test>
 	
-	<!-- https://openjdk.org/jeps/455 -->
-	<ajc-test dir="features1923/java23" vm="23" title="primitive types patterns - switch - with advice">
-		<compile files="PrimitivePatternsSwitch2.java" options="--enable-preview -23 -showWeaveInfo">
-		<message kind="weave" line="12" text="Join point 'method-call(boolean PrimitivePatternsSwitch2.isOdd(int))' in Type 'PrimitivePatternsSwitch2' (PrimitivePatternsSwitch2.java:12) advised by around advice from 'X'"/>>
-		</compile>
-		<run class="PrimitivePatternsSwitch2" vmargs="--enable-preview">
-			<stdout>
-			<!-- advice forces all the isOdd() calls to return false -->
-			<line text="no"/>
-			<line text="no"/>
-			<line text="no"/>
-			<line text="no"/>
-			</stdout>
-		</run>
-	</ajc-test>
-	
 	<ajc-test dir="bugs1923/gh328" vm="17" title="problem with inline accessor generator for around advice">
 		<compile files="One.java" options="-17">
 		</compile>
@@ -71,16 +55,30 @@
 		<compile files="F.aj" options="-17">
 		</compile>
 	</ajc-test>
-	
+
 	<ajc-test dir="bugs1923/gh326" vm="17" title="classcast on exception handling aspect">
 		<compile files="pkg/BusinessDao.java pkg/BusinessService.java pkg/SourceException.java pkg/TargetException.java pkg/BusinessDto.java pkg/HandleSourceException.java pkg/SourceExceptionHandlerAspect.aj" options="-17">
 		</compile>
 		<run class="pkg.BusinessService">
-		<stdout>		
+		<stdout>
 		<line text="42"/>
 		</stdout>
 		</run>
 	</ajc-test>
+
+	<ajc-test dir="bugs1923/gh322" vm="17" title="ajc error for particular Pointcut and @Deprecated">
+		<!--
+		<compile files="TheClass.java TheInterface.java TheAspect.java SomeAnnotation.java" options="-17,-Xlint:ignore">
+		</compile>
+		<compile files="TheInterface.java TheAspect.java SomeAnnotation.java TheClass.java" options="-17,-Xlint:ignore">
+		</compile>
+		-->
+		<compile files="TheAspect.java SomeAnnotation.java TheClass.java TheInterface.java " options="-17,-Xlint:ignore">
+		</compile>
+		<compile files="TheAspect.java SomeAnnotation.java TheClass.java TheInterface.java" options="-17,-Xlint:ignore">
+		</compile>
+	</ajc-test>
+
 
 
 </suite>

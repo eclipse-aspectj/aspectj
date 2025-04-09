@@ -74,6 +74,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.DefaultErrorHandlingPolicies;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ICompilerRequestor;
+import org.aspectj.org.eclipse.jdt.internal.compiler.IErrorHandlingPolicy;
 import org.aspectj.org.eclipse.jdt.internal.compiler.IProblemFactory;
 import org.aspectj.org.eclipse.jdt.internal.compiler.batch.ClasspathLocation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
@@ -1063,7 +1064,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		final BuildArgParser bMain = buildConfig.getBuildArgParser();
 
 		final org.aspectj.org.eclipse.jdt.internal.compiler.Compiler compiler = new org.aspectj.org.eclipse.jdt.internal.compiler.Compiler(
-			environment, DefaultErrorHandlingPolicies.proceedWithAllProblems(), settings,
+			environment, DefaultErrorHandlingPolicies.proceedWithAllProblems(), new CompilerOptions(settings),
 			getBatchRequestor(), getProblemFactory());
 		bMain.compilerOptions = compiler.options;
 		bMain.batchCompiler = compiler;

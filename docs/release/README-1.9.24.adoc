@@ -1,38 +1,53 @@
-= AspectJ 1.9.23
+= AspectJ 1.9.24
 :doctype: book
 :leveloffset: +1
 
-= AspectJ 1.9.23
+= AspectJ 1.9.24
+
+// AspectJ_JDK_Update: Each a.b.c release needs a new release notes document. For a.b.c.d minors, the existing a.b.c
+// document can be updated. After copying this document, remove the comment from the previous one.
 
 _© Copyright 2025 Contributors. All rights reserved._
 
-_Release info: 1.9.23 available 7-Mar-2025_
+_Release info: 1.9.24 available 28-Mar-2025_
 
 Please note that Bugzilla for issue management is deprecated and new issues should be filed as
-https://github.com/eclipse-aspectj/aspectj/issues/new[GitHub issues]. The list of issues addressed for 1.9.23 can be
+https://github.com/eclipse-aspectj/aspectj/issues/new[GitHub issues]. The list of issues addressed for 1.9.24 can be
 found here:
 
-* https://github.com/eclipse-aspectj/aspectj/issues?q=is%3Aissue+is%3Aclosed++milestone%3A1.9.23[GitHub 1.9.23]
-* https://bugs.eclipse.org/bugs/buglist.cgi?bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&f0=OP&f1=OP&f3=CP&f4=CP&j1=OR&list_id=16866879&product=AspectJ&query_format=advanced&target_milestone=1.9.23[Bugzilla 1.9.23]
+* https://github.com/eclipse-aspectj/aspectj/issues?q=is%3Aissue+is%3Aclosed++milestone%3A1.9.24[GitHub 1.9.24]
+* https://bugs.eclipse.org/bugs/buglist.cgi?bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&f0=OP&f1=OP&f3=CP&f4=CP&j1=OR&list_id=16866879&product=AspectJ&query_format=advanced&target_milestone=1.9.24[Bugzilla 1.9.24]
 
 == New features
 
-AspectJ 1.9.23 supports https://openjdk.java.net/projects/jdk/23/[Java 23], its final and preview features:
+AspectJ 1.9.24 supports https://openjdk.java.net/projects/jdk/24/[Java 24], its final and preview features:
 
-* 455:	Primitive Types in Patterns, instanceof, and switch (Preview)
-* 466:	Class-File API (Second Preview)
-* 467:	Markdown Documentation Comments
-* 469:	Vector API (Eighth Incubator)
-* 473:	Stream Gatherers (Second Preview)
-* 471:	Deprecate the Memory-Access Methods in sun.misc.Unsafe for Removal
-* 474:	ZGC: Generational Mode by Default
-* 476:	Module Import Declarations (Preview)
-* 477:	Implicitly Declared Classes and Instance Main Methods (Third Preview)
-* 480:	Structured Concurrency (Third Preview)
-* 481:	Scoped Values (Third Preview)
-* 482:	Flexible Constructor Bodies (Second Preview)
+* 404:	Generational Shenandoah (Experimental)
+* 450:	Compact Object Headers (Experimental)
+* 472:	Prepare to Restrict the Use of JNI
+* 475:	Late Barrier Expansion for G1
+* 478:	Key Derivation Function API (Preview)
+* 479:	Remove the Windows 32-bit x86 Port
+* 483:	Ahead-of-Time Class Loading & Linking
+* 484:	Class-File API
+* 485:	Stream Gatherers
+* 486:	Permanently Disable the Security Manager
+* 487:	Scoped Values (Fourth Preview)
+* 488:	Primitive Types in Patterns, instanceof, and switch (Second Preview)
+* 489:	Vector API (Ninth Incubator)
+* 490:	ZGC: Remove the Non-Generational Mode
+* 491:	Synchronize Virtual Threads without Pinning
+* 492:	Flexible Constructor Bodies (Third Preview)
+* 493:	Linking Run-Time Images without JMODs
+* 494:	Module Import Declarations (Second Preview)
+* 495:	Simple Source Files and Instance Main Methods (Fourth Preview)
+* 496:	Quantum-Resistant Module-Lattice-Based Key Encapsulation Mechanism
+* 497:	Quantum-Resistant Module-Lattice-Based Digital Signature Algorithm
+* 498:	Warn upon Use of Memory-Access Methods in sun.misc.Unsafe
+* 499:	Structured Concurrency (Fourth Preview)
+* 501:	Deprecate the 32-bit x86 Port for Removal
 
-Some of these are API/JVM only so don't affect the compiler and should just work on Java 23 runtimes.
+Some of these are API/JVM only so don't affect the compiler and should just work on Java 24 runtimes.
 
 == Improvements
 
@@ -40,7 +55,7 @@ Some of these are API/JVM only so don't affect the compiler and should just work
 
 == Other changes and bug fixes
 
-Importantly with the adoption of the JDT Compiler for Java 23, the versions of Java 1.1 > 1.7 are considered no longer
+Importantly with the adoption of JDT Compiler later than 22, the versions of Java 1.1 > 1.7 are considered no longer
 supported so any attempt to specify a build for any of those Java versions will now fail immediately.
 
 == AspectJ usage hints

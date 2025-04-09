@@ -18,6 +18,9 @@
 			<outputDirectory>.</outputDirectory>
 			<includes>
 				<include>LICENSE-AspectJ.adoc</include>
+				<include>licenses/LICENSE-Apache-1.1.txt</include>
+				<include>licenses/LICENSE-EPL-2.0.txt</include>
+				<include>licenses/LICENSE-BSD-3-CLAUSE.txt</include>
 			</includes>
 		</fileSet>
 

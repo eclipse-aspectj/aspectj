@@ -1,0 +1,49 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<!--
+	JDK 23 (https://openjdk.org/projects/jdk/24/):
+		404:	Generational Shenandoah (Experimental)
+		450:	Compact Object Headers (Experimental)
+		472:	Prepare to Restrict the Use of JNI
+		475:	Late Barrier Expansion for G1
+		478:	Key Derivation Function API (Preview)
+		479:	Remove the Windows 32-bit x86 Port
+		483:	Ahead-of-Time Class Loading & Linking
+		484:	Class-File API
+		485:	Stream Gatherers
+		486:	Permanently Disable the Security Manager
+		487:	Scoped Values (Fourth Preview)
+		488:	Primitive Types in Patterns, instanceof, and switch (Second Preview)
+		489:	Vector API (Ninth Incubator)
+		490:	ZGC: Remove the Non-Generational Mode
+		491:	Synchronize Virtual Threads without Pinning
+		492:	Flexible Constructor Bodies (Third Preview)
+		493:	Linking Run-Time Images without JMODs
+		494:	Module Import Declarations (Second Preview)
+		495:	Simple Source Files and Instance Main Methods (Fourth Preview)
+		496:	Quantum-Resistant Module-Lattice-Based Key Encapsulation Mechanism
+		497:	Quantum-Resistant Module-Lattice-Based Digital Signature Algorithm
+		498:	Warn upon Use of Memory-Access Methods in sun.misc.Unsafe
+		499:	Structured Concurrency (Fourth Preview)
+		501:	Deprecate the 32-bit x86 Port for Removal
+-->
+<suite>
+	
+	<!-- https://openjdk.org/jeps/455 -->
+	<ajc-test dir="features1923/java23" vm="24" title="primitive types patterns - switch - with advice">
+		<compile files="PrimitivePatternsSwitch2.java" options="--enable-preview -24 -showWeaveInfo">
+		<message kind="weave" line="12" text="Join point 'method-call(boolean PrimitivePatternsSwitch2.isOdd(int))' in Type 'PrimitivePatternsSwitch2' (PrimitivePatternsSwitch2.java:12) advised by around advice from 'X'"/>>
+		</compile>
+		<run class="PrimitivePatternsSwitch2" vmargs="--enable-preview">
+			<stdout>
+			<!-- advice forces all the isOdd() calls to return false -->
+			<line text="no"/>
+			<line text="no"/>
+			<line text="no"/>
+			<line text="no"/>
+			</stdout>
+		</run>
+	</ajc-test>
+	
+
+</suite>

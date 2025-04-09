@@ -620,6 +620,7 @@ public class AjcTaskTest extends TestCase {
   public void testVersions() {
     String[] inputs = AjcTask.TARGET_INPUTS;
     for (String value : inputs) {
+    	System.out.println("Value is "+value);
       AjcTask task = getTask(NOFILE);
       task.setTarget(value);
       String[] cmd = task.makeCommand();

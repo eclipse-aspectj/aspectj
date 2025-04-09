@@ -251,26 +251,26 @@ public class AjcTask extends MatchingTask {
 	public static final String COMMAND_EDITOR_NAME = AjcTask.class.getName() + ".COMMAND_EDITOR";
 
 	// AspectJ_JDK_Update: Check minimum supported ECJ version, currently 1.3
-	public static final int JAVA_VERSION_MIN = 3;
+	public static final int JAVA_VERSION_MIN = 8;
 	// AspectJ_JDK_Update: Check maximum supported ECJ version
-	public static final int JAVA_VERSION_MAX = 23;
+	public static final int JAVA_VERSION_MAX = 24;
 
 	static final String[] SOURCE_INPUTS;
 	static final String[] TARGET_INPUTS;
 	static final String[] COMPLIANCE_INPUTS;
 
 	static {
-		// 1.3 to 1.9
+		// JAVA_VERSION_MIN to 1.9
 		final int major1Versions = 10 - JAVA_VERSION_MIN;
 		// 5 to JAVA_VERSION_MAX
-		final int major5AndUpVersions = JAVA_VERSION_MAX - 4;
+		final int major5AndUpVersions = JAVA_VERSION_MAX - 7; // was -4 meaning don't count 1.1/1.2/1.3/1.4 - changed to -7 meaning don't include 1.1>1.7
 
 		SOURCE_INPUTS = new String[major1Versions + major5AndUpVersions];
 		TARGET_INPUTS = new String[major1Versions + major5AndUpVersions];
 		COMPLIANCE_INPUTS = new String[major1Versions + major5AndUpVersions];
 
 		int arrayIndex = 0;
-		for (int i = 3; i <= JAVA_VERSION_MAX ; i++) {
+		for (int i = JAVA_VERSION_MIN; i <= JAVA_VERSION_MAX ; i++) {
 			// Before Java 10, 1.x majors were supported by ECJ/AJC
 			if (i < 10) {
 				SOURCE_INPUTS[arrayIndex] = "1." + i;

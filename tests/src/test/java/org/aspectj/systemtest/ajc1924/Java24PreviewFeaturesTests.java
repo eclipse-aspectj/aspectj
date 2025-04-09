@@ -5,9 +5,8 @@
  * which accompanies this distribution, and is available at
  * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *******************************************************************************/
-package org.aspectj.systemtest.ajc1923;
+package org.aspectj.systemtest.ajc1924;
 
-import org.aspectj.apache.bcel.Constants;
 import org.aspectj.testing.JavaVersionSpecificXMLBasedAjcTestCase;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
@@ -16,25 +15,24 @@ import junit.framework.Test;
 /**
  * @author Andy Clement
  */
-public class Ajc1923TestsJava extends JavaVersionSpecificXMLBasedAjcTestCase {
+public class Java24PreviewFeaturesTests extends JavaVersionSpecificXMLBasedAjcTestCase {
 
-	private static final Constants.ClassFileVersion classFileVersion = Constants.ClassFileVersion.of(23);
+  public Java24PreviewFeaturesTests() {
+    super(24, 24);
+  }
 
-	public Ajc1923TestsJava() {
-		super(23);
-	}
+  public static Test suite() {
+    return XMLBasedAjcTestCase.loadSuite(Java24PreviewFeaturesTests.class);
+  }
+  
+  public void testJep455PrimitivePatternsSwitch1() {
+	  fail();
+//	  runTest("primitive types patterns - switch");
+  }
 
-	public static Test suite() {
-		return XMLBasedAjcTestCase.loadSuite(Ajc1923TestsJava.class);
-	}
-
-	@Override
-	protected java.net.URL getSpecFile() {
-		return getClassResource("ajc1923.xml");
-	}
-	
-	public void testNothing() {
-	}
-
+  @Override
+  protected java.net.URL getSpecFile() {
+    return getClassResource("ajc1924.xml");
+  }
 
 }

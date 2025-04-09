@@ -46,6 +46,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.parser.TerminalToken;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.ISourceContext;
@@ -292,7 +293,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 			}
 		} catch (ParserException pEx) {
 			typeDecl.scope.problemReporter().parseError(pcLoc[0] + pEx.getLocation().getStart(),
-					pcLoc[0] + pEx.getLocation().getEnd(), -1, perClause.toCharArray(), perClause,
+					pcLoc[0] + pEx.getLocation().getEnd(), TerminalToken.TokenNameInvalid, perClause.toCharArray(), perClause,
 					new String[] { pEx.getMessage() });
 		}
 	}
@@ -413,7 +414,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 			((AjMethodDeclaration) methodDeclaration).addAttribute(new EclipseAttributeAdapter(attr));
 		} catch (ParserException pEx) {
 			methodDeclaration.scope.problemReporter().parseError(pcLocation[0] + pEx.getLocation().getStart(),
-					pcLocation[0] + pEx.getLocation().getEnd(), -1, pointcutExpression.toCharArray(), pointcutExpression,
+					pcLocation[0] + pEx.getLocation().getEnd(), TerminalToken.TokenNameInvalid, pointcutExpression.toCharArray(), pointcutExpression,
 					new String[] { pEx.getMessage() });
 		}
 	}
@@ -586,7 +587,7 @@ public class ValidateAtAspectJAnnotationsVisitor extends ASTVisitor {
 			}
 		} catch (ParserException pEx) {
 			methodDeclaration.scope.problemReporter().parseError(pcLocation[0] + pEx.getLocation().getStart(),
-					pcLocation[0] + pEx.getLocation().getEnd(), -1, pointcutExpression.toCharArray(), pointcutExpression,
+					pcLocation[0] + pEx.getLocation().getEnd(), TerminalToken.TokenNameInvalid, pointcutExpression.toCharArray(), pointcutExpression,
 					new String[] { pEx.getMessage() });
 		}
 

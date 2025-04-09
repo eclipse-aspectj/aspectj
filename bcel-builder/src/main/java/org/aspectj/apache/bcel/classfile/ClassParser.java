@@ -1,5 +1,3 @@
-package org.aspectj.apache.bcel.classfile;
-
 /* ====================================================================
  * The Apache Software License, Version 1.1
  *
@@ -53,6 +51,7 @@ package org.aspectj.apache.bcel.classfile;
  * information on the Apache Software Foundation, please see
  * <https://www.apache.org/>.
  */
+package org.aspectj.apache.bcel.classfile;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -67,7 +66,7 @@ import org.aspectj.apache.bcel.Constants;
  * Wrapper class that parses a given Java .class file. The method <A
  * href ="#parse">parse</A> returns a <A href ="JavaClass.html">
  * JavaClass</A> object on success. When an I/O error or an
- * inconsistency occurs an appropiate exception is propagated back to
+ * inconsistency occurs an appropriate exception is propagated back to
  * the caller.
  *
  * The structure and the names comply, except for a few conveniences,

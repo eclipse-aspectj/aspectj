@@ -57,6 +57,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.SourceTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TagBits;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
+import org.aspectj.org.eclipse.jdt.internal.compiler.parser.TerminalToken;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.ProblemReporter;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.ProblemSeverities;
 import org.aspectj.util.FuzzyBoolean;
@@ -770,7 +771,7 @@ public class AjProblemReporter extends ProblemReporter {
 
 	// pr246393 - if we are going to complain about privileged, we clearly don't know what is going on, so don't
 	// confuse the user
-	public void parseErrorInsertAfterToken(int start, int end, int currentKind, char[] errorTokenSource, String errorTokenName,
+	public void parseErrorInsertAfterToken(int start, int end, TerminalToken currentKind, char[] errorTokenSource, String errorTokenName,
 			String expectedToken) {
 		if (expectedToken.equals("privileged") || expectedToken.equals("around")) {
 			super.parseErrorNoSuggestion(start, end, currentKind, errorTokenSource, errorTokenName);

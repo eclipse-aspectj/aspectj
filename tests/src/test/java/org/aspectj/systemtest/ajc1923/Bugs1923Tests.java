@@ -42,6 +42,10 @@ public class Bugs1923Tests extends XMLBasedAjcTestCase {
   public void testGh326_ClassCastExceptionHandling() {
 	 runTest("classcast on exception handling aspect");
   }
+  
+  public void testGh322_DeprecatedAnnotation() {
+	  runTest("ajc error for particular Pointcut and @Deprecated");
+  }
 
   @Override
   protected java.net.URL getSpecFile() {

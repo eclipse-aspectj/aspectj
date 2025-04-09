@@ -16,6 +16,7 @@
 			<outputDirectory>.</outputDirectory>
 			<includes>
 				<include>LICENSE-AspectJ.adoc</include>
+				<include>licenses/LICENSE-EPL-2.0.txt</include>
 			</includes>
 		</fileSet>
 		<fileSet>

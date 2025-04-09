@@ -60,6 +60,15 @@ public class DeclarationFactory implements IDeclarationFactory {
 		return new AjConstructorDeclaration(result);
 	}
 
+	public ConstructorDeclaration createConstructorDeclaration(CompilationResult result, boolean isCompact) {
+		return new AjConstructorDeclaration(result) {
+			@Override
+			public boolean isCompactConstructor() {
+				return isCompact;
+			}
+		};
+	}
+
 	public MessageSend createProceed(MessageSend m) {
 		return new Proceed(m);
 	}

@@ -27,8 +27,8 @@
 		<maven.javadoc.skip>true</maven.javadoc.skip>
 
 		<!-- Dependency versions -->
-		<jdt.core.version>1.9.23</jdt.core.version> <!-- AspectJ_JDK_Update -->
-		<asm.version>9.7.1</asm.version> <!-- AspectJ_JDK_Update -->
+		<jdt.core.version>1.9.24</jdt.core.version> <!-- AspectJ_JDK_Update -->
+		<asm.version>9.8</asm.version> <!-- AspectJ_JDK_Update -->
 		<commons.digester.version>3.2</commons.digester.version>
 		<commons.logging.version>1.3.0</commons.logging.version>
 		<lib.ant.version>1.6.3</lib.ant.version>
@@ -188,7 +188,7 @@
 		<profile>
 			<id>jdk-18-to-xx</id>
 			<activation>
-				<jdk>[18,)</jdk>
+				<jdk>[18,23)</jdk>
 			</activation>
 			<properties>
 				<!--

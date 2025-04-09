@@ -70,7 +70,7 @@
     	  <!-- this message no longer coming out with Java23 upgrade to ECJ -->
     	  <!-- message file="C.java" kind="error" line="1" text="Unnamed Classes and Instance Main Methods"/-->
     	  <!-- this message now comes out with Java23 upgrade to ECJ -->
-    	  <message file="C.java" kind="error" line="1" text="The preview feature Implicitly Declared Classes and Instance Main Methods is only available with source level 23 and above"/>
+    	  <message file="C.java" kind="error" line="1" text="The preview feature Implicitly Declared Classes and Instance Main Methods is only available with source level 24 and above"/>
     	  
     	  <message file="C.java" kind="error" line="2" text="blahblahpackage cannot be resolved to a type"/>
     	  <message file="C.java" kind="error" line="2" text="Implicitly declared class must have a candidate main method"/>
