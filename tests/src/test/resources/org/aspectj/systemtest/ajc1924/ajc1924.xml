@@ -45,5 +45,15 @@
 		</run>
 	</ajc-test>
 	
+	<ajc-test dir="bugs1924/336" vm="24" title="proceed code gen problem 1">
+		<compile files="Bang.java" options="-17"/>
+		<run class="Bang"/>
+	</ajc-test>
+	
+	<ajc-test dir="bugs1924/337" vm="24" title="proceed code gen problem 2">
+		<compile files="X.aj" options="-17"/>
+		<run class="X"/>
+	</ajc-test>
+	
 
 </suite>

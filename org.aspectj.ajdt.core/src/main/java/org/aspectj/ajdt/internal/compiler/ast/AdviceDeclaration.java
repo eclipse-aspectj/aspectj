@@ -196,7 +196,6 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 
 	private void generateProceedMethod(ClassScope classScope, ClassFile classFile) {
 		MethodBinding binding = proceedMethodBinding;
-
 		classFile.generateMethodInfoHeader(binding);
 		int methodAttributeOffset = classFile.contentsOffset;
 		int attributeNumber = classFile.generateMethodInfoAttributes(binding, AstUtil.getAjSyntheticAttribute());
@@ -214,16 +213,17 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 		
 		Argument[] arguments = this.arguments;
 		if (arguments != null) {
+			int rp = 0;
 			for (Argument argument: arguments) {
 				LocalVariableBinding lvb = argument.binding;
 				LocalVariableBinding lvbCopy = new LocalVariableBinding(lvb.name, lvb.type, lvb.modifiers, true);
 				lvbCopy.declaration = new LocalDeclaration(argument.name, 0, 0);
 				codeStream.record(lvbCopy);
 				lvbCopy.recordInitializationStartPC(0);
-				lvbCopy.resolvedPosition = lvb.resolvedPosition;
+				lvbCopy.resolvedPosition = rp;
+				rp += InterTypeMethodDeclaration.getSlotSize(lvb.type.id);
 			}
 		}
-
 		codeStream.aload(closureIndex);
 
 		// build the Object[]
@@ -242,7 +242,6 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 			if (type.isBaseType()) {
 				codeStream.invoke(Opcodes.OPC_invokestatic, AjTypeConstants.getConversionMethodToObject(classScope, type), null);
 			}
-
 			codeStream.aastore();
 		}
 

@@ -21,6 +21,14 @@ public class Bugs1924Tests extends XMLBasedAjcTestCase {
     
   public void testNothing() {
   }
+  
+  public void testGh336_ProceedCodeGenProblem() {
+	  runTest("proceed code gen problem 1");
+  }
+  
+  public void testGh337_ProceedCodeGenProblem() {
+	  runTest("proceed code gen problem 2");
+  }
 
   @Override
   protected java.net.URL getSpecFile() {
