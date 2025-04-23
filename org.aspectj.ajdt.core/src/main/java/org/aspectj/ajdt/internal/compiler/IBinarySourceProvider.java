@@ -10,7 +10,10 @@
  *******************************************************************************/
 package org.aspectj.ajdt.internal.compiler;
 
+import java.util.List;
 import java.util.Map;
+
+import org.aspectj.weaver.UnwovenClassFile;
 
 /**
  * @author colyer
@@ -22,6 +25,6 @@ import java.util.Map;
  */
 public interface IBinarySourceProvider {
 
-	Map /* fileName |-> List<UnwovenClassFile> */ getBinarySourcesForThisWeave();
+	Map<String,List<UnwovenClassFile>> getBinarySourcesForThisWeave();
 
 }

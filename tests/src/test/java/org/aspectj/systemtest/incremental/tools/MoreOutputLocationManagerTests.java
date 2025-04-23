@@ -23,7 +23,7 @@ import org.aspectj.ajdt.internal.core.builder.AjBuildConfig;
 import org.aspectj.ajdt.internal.core.builder.AjState;
 import org.aspectj.ajdt.internal.core.builder.IncrementalStateManager;
 import org.aspectj.util.FileUtil;
-import org.aspectj.weaver.bcel.UnwovenClassFile;
+import org.aspectj.weaver.UnwovenClassFile;
 
 /**
  * Similar to OutputLocationManagerTests, however, tests the different scenarios when no outputDir is set but instead there is an

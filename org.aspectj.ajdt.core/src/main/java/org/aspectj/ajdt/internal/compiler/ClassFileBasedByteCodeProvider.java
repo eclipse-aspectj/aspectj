@@ -12,7 +12,7 @@ package org.aspectj.ajdt.internal.compiler;
 
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
-import org.aspectj.weaver.bcel.UnwovenClassFile;
+import org.aspectj.weaver.UnwovenClassFile;
 import org.aspectj.weaver.bcel.UnwovenClassFileWithThirdPartyManagedBytecode;
 
 /**

@@ -40,9 +40,9 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
+import org.aspectj.weaver.UnwovenClassFile;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
-import org.aspectj.weaver.bcel.UnwovenClassFile;
 
 /**
  * Adapts standard JDT Compiler to add in AspectJ specific behaviours. This version implements pipelining - where files are compiled

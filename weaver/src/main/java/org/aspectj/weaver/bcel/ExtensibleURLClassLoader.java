@@ -22,6 +22,7 @@ import java.security.CodeSource;
 
 import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.ClassPathManager;
 import org.aspectj.weaver.UnresolvedType;
 
 public abstract class ExtensibleURLClassLoader extends URLClassLoader {

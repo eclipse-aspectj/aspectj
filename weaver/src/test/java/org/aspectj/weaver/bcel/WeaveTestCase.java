@@ -98,7 +98,7 @@ public abstract class WeaveTestCase extends TestCase {
 			if (behave15)
 				world.setBehaveInJava5Way(true);
 
-			UnwovenClassFile classFile = makeUnwovenClassFile(classDir, name, outDirPath);
+			BcelUnwovenClassFile classFile = makeUnwovenClassFile(classDir, name, outDirPath);
 
 			weaver.addClassFile(classFile, false);
 			weaver.setShadowMungers(planners);
@@ -109,7 +109,7 @@ public abstract class WeaveTestCase extends TestCase {
 		}
 	}
 
-	protected void weaveTestInner(BcelWeaver weaver, UnwovenClassFile classFile, String name, String outName) throws IOException {
+	protected void weaveTestInner(BcelWeaver weaver, BcelUnwovenClassFile classFile, String name, String outName) throws IOException {
 		// int preErrors = currentResult.errorCount();
 		BcelObjectType classType = BcelWorld.getBcelObjectType(world.resolve(classFile.getClassName()));
 		LazyClassGen gen = weaver.weave(classFile, classType);
@@ -155,16 +155,16 @@ public abstract class WeaveTestCase extends TestCase {
 	/**
 	 * '/' in the name indicates the location of the class
 	 */
-	public static UnwovenClassFile makeUnwovenClassFile(String classDir, String name, String outDir) throws IOException {
+	public static BcelUnwovenClassFile makeUnwovenClassFile(String classDir, String name, String outDir) throws IOException {
 		File outFile = new File(outDir, name + ".class");
 		if (classDir.endsWith(".jar")) {
 			String fname = name + ".class";
-			UnwovenClassFile ret = new UnwovenClassFile(outFile.getAbsolutePath(), FileUtil.readAsByteArray(FileUtil
+			BcelUnwovenClassFile ret = new BcelUnwovenClassFile(outFile.getAbsolutePath(), FileUtil.readAsByteArray(FileUtil
 					.getStreamFromZip(classDir, fname)));
 			return ret;
 		} else {
 			File inFile = new File(classDir, name + ".class");
-			return new UnwovenClassFile(outFile.getAbsolutePath(), FileUtil.readAsByteArray(inFile));
+			return new BcelUnwovenClassFile(outFile.getAbsolutePath(), FileUtil.readAsByteArray(inFile));
 		}
 	}
 

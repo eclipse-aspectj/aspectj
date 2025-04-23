@@ -16,7 +16,7 @@ package org.aspectj.weaver.bcel;
  *         strategy that makes sense. By refering to bytes held elsewhere, the goal is to reduce the overall memory consumption by
  *         not holding a copy.
  */
-public class UnwovenClassFileWithThirdPartyManagedBytecode extends UnwovenClassFile {
+public class UnwovenClassFileWithThirdPartyManagedBytecode extends BcelUnwovenClassFile {
 
 	IByteCodeProvider provider;
 

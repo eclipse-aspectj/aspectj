@@ -61,10 +61,11 @@ import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ReferenceTypeDelegate;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnwovenClassFile;
+import org.aspectj.weaver.bcel.BcelClazz;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.weaver.bcel.TypeDelegateResolver;
-import org.aspectj.weaver.bcel.UnwovenClassFile;
 
 /**
  * Maintains state needed for incremental compilation
@@ -2549,7 +2550,8 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 		}
 		try {
 			ClassParser parser = new ClassParser(f.toString());
-			return world.buildBcelDelegate(referenceType, parser.parse(), true, false);
+			// TODO Pass the f into a world operation - removing bcel from AjState
+			return world.buildBcelDelegate(referenceType, BcelClazz.asBcelClazz(parser.parse()), true, false);
 		} catch (IOException e) {
 			IMessage msg = new Message("Failed to recover " + referenceType, referenceType.getDelegate()!=null?referenceType.getSourceLocation():null, false);
 			buildManager.handler.handleMessage(msg);

@@ -48,6 +48,7 @@ import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.bcel.BcelAnnotation;
+import org.aspectj.weaver.bcel.BcelClazz;
 import org.aspectj.weaver.bcel.BcelPerClauseAspectAdder;
 import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.weaver.bcel.LazyClassGen;
@@ -501,7 +502,7 @@ public class ConcreteAspectCodeGen {
 		// register the fresh new class into the world repository as it does not
 		// exist on the classpath anywhere
 		JavaClass jc = cg.getJavaClass((BcelWorld) world);
-		((BcelWorld) world).addSourceObjectType(jc, true);
+		((BcelWorld) world).addSourceObjectType(BcelClazz.asBcelClazz(jc), true);
 
 		bytes = jc.getBytes();
 		return bytes;

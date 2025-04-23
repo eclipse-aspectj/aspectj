@@ -9,7 +9,7 @@
  * Contributors:
  * Palo Alto Research Center, Incorporated (PARC).
  * ******************************************************************/
-package org.aspectj.weaver.bcel;
+package org.aspectj.weaver;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -43,9 +43,6 @@ import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.LangUtil;
 import org.aspectj.util.SoftHashMap;
-import org.aspectj.weaver.BCException;
-import org.aspectj.weaver.UnresolvedType;
-import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.tools.Trace;
 import org.aspectj.weaver.tools.TraceFactory;
 
@@ -184,7 +181,7 @@ public class ClassPathManager {
 		public abstract void close();
 	}
 
-	abstract static class Entry {
+	public abstract static class Entry {
 		public abstract ClassFile find(String name) throws IOException;
 	}
 
@@ -324,7 +321,7 @@ public class ClassPathManager {
 	 * lookups of that type even faster. Maintaining just a package cache rather than complete type cache
 	 * helps reduce memory usage but still gives reasonably fast lookup performance.
 	 */
-	static class JImageEntry extends Entry {
+	public static class JImageEntry extends Entry {
 
 		// Map from a JRT-FS file to the cache state for that file
 		private static Map<String, JImageState> states = new HashMap<>();
@@ -484,7 +481,7 @@ public class ClassPathManager {
 			return cf;
 		}
 
-		Map<String, Path> getPackageCache() {
+		public Map<String, Path> getPackageCache() {
 			return state.packageCache;
 		}
 

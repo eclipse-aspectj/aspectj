@@ -13,7 +13,7 @@ package org.aspectj.ajdt.internal.compiler;
 import java.util.List;
 
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
-import org.aspectj.weaver.bcel.UnwovenClassFile;
+import org.aspectj.weaver.UnwovenClassFile;
 
 /**
  * Holds a compilation result produced by the Java compilation phase, ready for weaving in the weave phase. NOTE: This class defines

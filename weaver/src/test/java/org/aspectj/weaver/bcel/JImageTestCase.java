@@ -26,15 +26,16 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.util.LangUtil;
+import org.aspectj.weaver.ClassPathManager;
 import org.aspectj.weaver.UnresolvedType;
-import org.aspectj.weaver.bcel.ClassPathManager.ClassFile;
-import org.aspectj.weaver.bcel.ClassPathManager.Entry;
-import org.aspectj.weaver.bcel.ClassPathManager.JImageEntry;
+import org.aspectj.weaver.ClassPathManager.ClassFile;
+import org.aspectj.weaver.ClassPathManager.Entry;
+import org.aspectj.weaver.ClassPathManager.JImageEntry;
 
 import junit.framework.TestCase;
 
 /**
- * Exercise the JImage handling in @link {@link org.aspectj.weaver.bcel.ClassPathManager}.
+ * Exercise the JImage handling in @link {@link org.aspectj.weaver.ClassPathManager}.
  *
  * @author Andy Clement
  */

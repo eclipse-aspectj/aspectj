@@ -49,11 +49,12 @@ import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.IClassFileProvider;
 import org.aspectj.weaver.IUnwovenClassFile;
 import org.aspectj.weaver.IWeaveRequestor;
+import org.aspectj.weaver.UnwovenClassFile;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.bcel.BcelObjectType;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
-import org.aspectj.weaver.bcel.UnwovenClassFile;
+import org.aspectj.weaver.bcel.BcelUnwovenClassFile;
 import org.aspectj.weaver.tools.cache.CachedClassEntry;
 import org.aspectj.weaver.tools.cache.CachedClassReference;
 import org.aspectj.weaver.tools.cache.SimpleCache;
@@ -879,14 +880,14 @@ public class WeavingAdaptor implements IMessageContext {
 
 	private class WeavingClassFileProvider implements IClassFileProvider {
 
-		private final UnwovenClassFile unwovenClass;
+		private final BcelUnwovenClassFile unwovenClass;
 		private final List<UnwovenClassFile> unwovenClasses = new ArrayList<>();
 		private IUnwovenClassFile wovenClass;
 		private boolean isApplyAtAspectJMungersOnly = false;
 
 		public WeavingClassFileProvider(String name, byte[] bytes) {
 			ensureDelegateInitialized(name, bytes);
-			this.unwovenClass = new UnwovenClassFile(name, delegateForCurrentClass.getResolvedTypeX().getName(), bytes);
+			this.unwovenClass = new BcelUnwovenClassFile(name, delegateForCurrentClass.getResolvedTypeX().getName(), bytes);
 			this.unwovenClasses.add(unwovenClass);
 
 			if (shouldDump(name.replace('/', '.'), true)) {

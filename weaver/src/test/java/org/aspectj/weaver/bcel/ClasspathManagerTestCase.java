@@ -24,9 +24,10 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.util.LangUtil;
+import org.aspectj.weaver.ClassPathManager;
 import org.aspectj.weaver.TypeFactory;
 import org.aspectj.weaver.UnresolvedType;
-import org.aspectj.weaver.bcel.ClassPathManager.ClassFile;
+import org.aspectj.weaver.ClassPathManager.ClassFile;
 
 import junit.framework.TestCase;
 

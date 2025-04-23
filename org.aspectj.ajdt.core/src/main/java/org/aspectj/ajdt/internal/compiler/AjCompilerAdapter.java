@@ -31,9 +31,9 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclarat
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
+import org.aspectj.weaver.UnwovenClassFile;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
-import org.aspectj.weaver.bcel.UnwovenClassFile;
 
 /**
  * @author colyer
@@ -57,7 +57,7 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 	private IOutputClassFileNameProvider outputFileNameProvider;
 	private IBinarySourceProvider binarySourceProvider;
 	private WeaverMessageHandler weaverMessageHandler;
-	private Map /* fileName |-> List<UnwovenClassFile> */binarySourceSetForFullWeave = new HashMap();
+	private Map<String, List<UnwovenClassFile>> binarySourceSetForFullWeave = new HashMap<>();
 
 	private ContextToken processingToken = null;
 	private ContextToken resolvingToken = null;

@@ -32,6 +32,7 @@ import org.aspectj.weaver.Lint.Kind;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
+import org.aspectj.weaver.bcel.BcelClazz;
 import org.aspectj.weaver.bcel.BcelWeakClassLoaderReference;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
@@ -523,7 +524,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 						break;
 					}
 
-					((BcelWorld) weaver.getWorld()).addSourceObjectType(Utility.makeJavaClass(concreteAspect.name, gen.getBytes()),
+					((BcelWorld) weaver.getWorld()).addSourceObjectType(BcelClazz.asBcelClazz(Utility.makeJavaClass(concreteAspect.name, gen.getBytes())),
 							true);
 
 					concreteAspects.add(gen);

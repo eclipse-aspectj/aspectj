@@ -836,18 +836,18 @@ public final class LazyClassGen {
 		return ret;
 	}
 
-	public List<UnwovenClassFile.ChildClass> getChildClasses(BcelWorld world) {
+	public List<BcelUnwovenClassFile.ChildClass> getChildClasses(BcelWorld world) {
 		if (classGens.isEmpty()) {
 			return Collections.emptyList();
 		}
-		List<UnwovenClassFile.ChildClass> ret = new ArrayList<>();
+		List<BcelUnwovenClassFile.ChildClass> ret = new ArrayList<>();
 		for (LazyClassGen clazz : classGens) {
 			byte[] bytes = clazz.getJavaClass(world).getBytes();
 			String name = clazz.getName();
 			int index = name.lastIndexOf('$');
 			// XXX this could be bad, check use of dollar signs.
 			name = name.substring(index + 1);
-			ret.add(new UnwovenClassFile.ChildClass(name, bytes));
+			ret.add(new BcelUnwovenClassFile.ChildClass(name, bytes));
 		}
 		return ret;
 	}

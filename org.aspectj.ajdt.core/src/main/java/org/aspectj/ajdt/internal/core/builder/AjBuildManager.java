@@ -92,10 +92,10 @@ import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.CustomMungerFactory;
 import org.aspectj.weaver.Dump;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnwovenClassFile;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
-import org.aspectj.weaver.bcel.UnwovenClassFile;
 import org.eclipse.core.runtime.OperationCanceledException;
 
 public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySourceProvider, ICompilerAdapterFactory {
@@ -138,7 +138,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 	private boolean batchCompile = true;
 	private INameEnvironment environment;
 
-	private Map<String, List<UnwovenClassFile>> /* String -> List<UCF> */binarySourcesForTheNextCompile = new HashMap<>();
+	private Map<String, List<UnwovenClassFile>> binarySourcesForTheNextCompile = new HashMap<>();
 
 	// FIXME asc should this really be in here?
 	// private AsmManager structureModel;

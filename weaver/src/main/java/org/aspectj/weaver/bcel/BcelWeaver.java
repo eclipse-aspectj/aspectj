@@ -56,6 +56,8 @@ import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.AnnotationOnTypeMunger;
 import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.BytecodeWeaver;
+import org.aspectj.weaver.Clazz;
 import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.CrosscuttingMembersSet;
@@ -71,6 +73,7 @@ import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.UnresolvedType;
+import org.aspectj.weaver.UnwovenClassFile;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.World;
@@ -100,10 +103,7 @@ import org.aspectj.weaver.tools.TraceFactory;
  * @author Andy Clement
  * @author Alexandre Vasseur
  */
-public class BcelWeaver {
-
-	public static final String CLOSURE_CLASS_PREFIX = "$Ajc";
-	public static final String SYNTHETIC_CLASS_POSTFIX = "$ajc";
+public class BcelWeaver extends BytecodeWeaver {
 
 	private static Trace trace = TraceFactory.getTraceFactory().getTrace(BcelWeaver.class);
 
@@ -262,7 +262,7 @@ public class BcelWeaver {
 				JavaClass jc = parser.parse();
 				inStream.closeEntry();
 
-				ResolvedType type = world.addSourceObjectType(jc, false).getResolvedTypeX();
+				ResolvedType type = world.addSourceObjectType(BcelClazz.asBcelClazz(jc), false).getResolvedTypeX();
 				type.setBinaryPath(inFile.getAbsolutePath());
 				if (type.isAspect()) {
 					addedAspects.add(type);
@@ -316,7 +316,7 @@ public class BcelWeaver {
 	private ResolvedType isAspect(byte[] classbytes, String name, File dir) throws IOException {
 		ClassParser parser = new ClassParser(new ByteArrayInputStream(classbytes), name);
 		JavaClass jc = parser.parse();
-		ResolvedType type = world.addSourceObjectType(jc, false).getResolvedTypeX();
+		ResolvedType type = world.addSourceObjectType(BcelClazz.asBcelClazz(jc), false).getResolvedTypeX();
 		String typeName = type.getName().replace('.', File.separatorChar);
 		int end = name.lastIndexOf(typeName + ".class");
 		String binaryPath = null;
@@ -349,8 +349,8 @@ public class BcelWeaver {
 	 * subdirectories) are considered resources and are also copied.
 	 *
 	 */
-	public List<UnwovenClassFile> addDirectoryContents(File inFile, File outDir) throws IOException {
-		List<UnwovenClassFile> addedClassFiles = new ArrayList<>();
+	public List<BcelUnwovenClassFile> addDirectoryContents(File inFile, File outDir) throws IOException {
+		List<BcelUnwovenClassFile> addedClassFiles = new ArrayList<>();
 
 		// Get a list of all files (i.e. everything that isnt a directory)
 		File[] files = FileUtil.listFiles(inFile, new FileFilter() {
@@ -396,7 +396,7 @@ public class BcelWeaver {
 						String filename = entry.getName();
 						// System.out.println("? addJarFile() filename='" + filename
 						// + "'");
-						UnwovenClassFile classFile = new UnwovenClassFile(new File(outDir, filename).getAbsolutePath(), bytes);
+						BcelUnwovenClassFile classFile = new BcelUnwovenClassFile(new File(outDir, filename).getAbsolutePath(), bytes);
 
 						if (filename.endsWith(".class")) {
 							ReferenceType type = this.addClassFile(classFile, false);
@@ -459,7 +459,7 @@ public class BcelWeaver {
 		return type;
 	}
 
-	public UnwovenClassFile addClassFile(File classFile, File inPathDir, File outDir) throws IOException {
+	public BcelUnwovenClassFile addClassFile(File classFile, File inPathDir, File outDir) throws IOException {
 		FileInputStream fis = new FileInputStream(classFile);
 		byte[] bytes = FileUtil.readAsByteArray(fis);
 		// String relativePath = files[i].getPath();
@@ -468,7 +468,7 @@ public class BcelWeaver {
 		// files[i].getAbsolutePath().startsWith(inFile.getAbsolutePath()
 		// or we are in trouble...
 		String filename = classFile.getAbsolutePath().substring(inPathDir.getAbsolutePath().length() + 1);
-		UnwovenClassFile ucf = new UnwovenClassFile(new File(outDir, filename).getAbsolutePath(), bytes);
+		BcelUnwovenClassFile ucf = new BcelUnwovenClassFile(new File(outDir, filename).getAbsolutePath(), bytes);
 		if (filename.endsWith(".class")) {
 			// System.err.println(
 			// "BCELWeaver: processing class from input directory "+classFile);
@@ -1058,8 +1058,8 @@ public class BcelWeaver {
 						BcelPerClauseAspectAdder selfMunger = new BcelPerClauseAspectAdder(theType, theType.getPerClause().getKind());
 						selfMunger.forceMunge(clazz, true);
 						classType.finishedWith();
-						UnwovenClassFile[] newClasses = getClassFilesFor(clazz);
-						for (UnwovenClassFile newClass : newClasses) {
+						BcelUnwovenClassFile[] newClasses = getClassFilesFor(clazz);
+						for (BcelUnwovenClassFile newClass : newClasses) {
 							requestor.acceptResult(newClass);
 						}
 						wovenClassNames.add(classFile.getClassName());
@@ -1421,7 +1421,7 @@ public class BcelWeaver {
 		classType.finishedWith();
 		// clazz is null if the classfile was unchanged by weaving...
 		if (clazz != null) {
-			UnwovenClassFile[] newClasses = getClassFilesFor(clazz);
+			BcelUnwovenClassFile[] newClasses = getClassFilesFor(clazz);
 			// OPTIMIZE can we avoid using the string name at all in
 			// UnwovenClassFile instances?
 			// Copy the char[] across as it means the
@@ -1429,7 +1429,7 @@ public class BcelWeaver {
 			if (newClasses[0].getClassName().equals(classFile.getClassName())) {
 				newClasses[0].setClassNameAsChars(classFile.getClassNameAsChars());
 			}
-			for (UnwovenClassFile newClass : newClasses) {
+			for (BcelUnwovenClassFile newClass : newClasses) {
 				requestor.acceptResult(newClass);
 			}
 		} else {
@@ -1456,13 +1456,13 @@ public class BcelWeaver {
 		weaveNormalTypeMungers(world.resolve(typeName));
 	}
 
-	public UnwovenClassFile[] getClassFilesFor(LazyClassGen clazz) {
-		List<UnwovenClassFile.ChildClass> childClasses = clazz.getChildClasses(world);
-		UnwovenClassFile[] ret = new UnwovenClassFile[1 + childClasses.size()];
-		ret[0] = new UnwovenClassFile(clazz.getFileName(), clazz.getClassName(), clazz.getJavaClassBytesIncludingReweavable(world));
+	public BcelUnwovenClassFile[] getClassFilesFor(LazyClassGen clazz) {
+		List<BcelUnwovenClassFile.ChildClass> childClasses = clazz.getChildClasses(world);
+		BcelUnwovenClassFile[] ret = new BcelUnwovenClassFile[1 + childClasses.size()];
+		ret[0] = new BcelUnwovenClassFile(clazz.getFileName(), clazz.getClassName(), clazz.getJavaClassBytesIncludingReweavable(world));
 		int index = 1;
-		for (UnwovenClassFile.ChildClass element : childClasses) {
-			UnwovenClassFile childClass = new UnwovenClassFile(clazz.getFileName() + "$" + element.name, element.bytes);
+		for (BcelUnwovenClassFile.ChildClass element : childClasses) {
+			BcelUnwovenClassFile childClass = new BcelUnwovenClassFile(clazz.getFileName() + "$" + element.name, element.bytes);
 			ret[index++] = childClass;
 		}
 		return ret;
@@ -1654,7 +1654,7 @@ public class BcelWeaver {
 	}
 
 	// FOR TESTING
-	LazyClassGen weave(UnwovenClassFile classFile, BcelObjectType classType) throws IOException {
+	LazyClassGen weave(BcelUnwovenClassFile classFile, BcelObjectType classType) throws IOException {
 		LazyClassGen ret = weave(classFile, classType, true);
 		return ret;
 	}
@@ -1924,9 +1924,9 @@ public class BcelWeaver {
 		if (zipOutputStream != null) {
 			String mainClassName = classFile.getJavaClass().getClassName();
 			writeZipEntry(getEntryName(mainClassName), clazz.getJavaClass(world).getBytes());
-			List<UnwovenClassFile.ChildClass> childClasses = clazz.getChildClasses(world);
+			List<BcelUnwovenClassFile.ChildClass> childClasses = clazz.getChildClasses(world);
 			if (!childClasses.isEmpty()) {
-				for (UnwovenClassFile.ChildClass c : childClasses) {
+				for (BcelUnwovenClassFile.ChildClass c : childClasses) {
 					writeZipEntry(getEntryName(mainClassName + "$" + c.name), c.bytes);
 				}
 			}

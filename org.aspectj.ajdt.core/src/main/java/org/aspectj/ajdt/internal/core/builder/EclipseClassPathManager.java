@@ -17,7 +17,7 @@ import java.util.List;
 
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.weaver.UnresolvedType;
-import org.aspectj.weaver.bcel.ClassPathManager;
+import org.aspectj.weaver.ClassPathManager;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileReader;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.IBinaryType;

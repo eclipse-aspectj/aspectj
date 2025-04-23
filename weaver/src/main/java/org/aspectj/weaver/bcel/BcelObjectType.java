@@ -49,6 +49,7 @@ import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.AnnotationTargetKind;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.BindingScope;
+import org.aspectj.weaver.Clazz;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ReferenceType;
@@ -138,9 +139,9 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	 * that's a bigger piece of work. XXX
 	 */
 
-	BcelObjectType(ReferenceType resolvedTypeX, JavaClass javaClass, boolean artificial, boolean exposedToWeaver) {
+	BcelObjectType(ReferenceType resolvedTypeX, Clazz javaClass, boolean artificial, boolean exposedToWeaver) {
 		super(resolvedTypeX, exposedToWeaver);
-		this.javaClass = javaClass;
+		this.javaClass = ((BcelClazz)javaClass).getJavaClass();
 		this.artificial = artificial;
 		initializeFromJavaclass();
 
@@ -157,7 +158,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 
 		// this should only ever be java.lang.Object which is
 		// the only class in Java-1.4 with no superclasses
-		isObject = (javaClass.getSuperclassNameIndex() == 0);
+		isObject = javaClass.isJavaLangObject();
 		ensureAspectJAttributesUnpacked();
 
 		// Experimental code leading to undesired ripple effects elsewhere, requiring more rework

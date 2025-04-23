@@ -1,16 +1,4 @@
-/* *******************************************************************
- * Copyright (c) 2002 Palo Alto Research Center, Incorporated (PARC).
- * All rights reserved.
- * This program and the accompanying materials are made available
- * under the terms of the Eclipse Public License v 2.0
- * which accompanies this distribution and is available at
- * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
- *
- * Contributors:
- *     PARC     initial implementation
- * ******************************************************************/
-
-package org.aspectj.weaver.bcel;
+package org.aspectj.weaver;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -18,11 +6,10 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.util.FileUtil;
-import org.aspectj.weaver.IUnwovenClassFile;
 
-public class UnwovenClassFile implements IUnwovenClassFile {
+public abstract class UnwovenClassFile implements IUnwovenClassFile {
+
 	protected String filename;
 	protected char[] charfilename;
 	protected byte[] bytes;
@@ -32,19 +19,7 @@ public class UnwovenClassFile implements IUnwovenClassFile {
 	protected String className = null;
 	protected boolean isModule = false;
 
-	public UnwovenClassFile(String filename, byte[] bytes) {
-		this.filename = filename;
-		this.isModule = filename.toLowerCase().endsWith("module-info.java");
-		this.bytes = bytes;
-	}
-
-	/** Use if the classname is known, saves a bytecode parse */
-	public UnwovenClassFile(String filename, String classname, byte[] bytes) {
-		this.filename = filename;
-		this.isModule = filename.toLowerCase().endsWith("module-info.class");
-		this.className = classname;
-		this.bytes = bytes;
-	}
+	public abstract Clazz getJavaClass();
 
 	public boolean shouldBeWoven() {
 		// Skip module-info files for now, they aren't really types
@@ -64,20 +39,7 @@ public class UnwovenClassFile implements IUnwovenClassFile {
 		// if (bytes == null) bytes = javaClass.getBytes();
 		return bytes;
 	}
-
-	public JavaClass getJavaClass() {
-		// XXX need to know when to make a new class and when not to
-		// XXX this is an important optimization
-		if (getBytes() == null) {
-			System.out.println("no bytes for: " + getFilename());
-			// Thread.currentThread().dumpStack();
-			Thread.dumpStack();
-		}
-		return Utility.makeJavaClass(filename, getBytes());
-		// if (javaClass == null) javaClass = Utility.makeJavaClass(filename, getBytes());
-		// return javaClass;
-	}
-
+	
 	public void writeUnchangedBytes() throws IOException {
 		writeWovenBytes(getBytes(), Collections.<ChildClass>emptyList());
 	}
@@ -170,7 +132,7 @@ public class UnwovenClassFile implements IUnwovenClassFile {
 		public final String name;
 		public final byte[] bytes;
 
-		ChildClass(String name, byte[] bytes) {
+		public ChildClass(String name, byte[] bytes) {
 			this.name = name;
 			this.bytes = bytes;
 		}
