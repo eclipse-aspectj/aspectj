@@ -22,10 +22,10 @@ import java.util.Map;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.util.ClassPath;
 import org.aspectj.apache.bcel.util.SyntheticRepository;
+import org.aspectj.weaver.BytecodeWorld;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.World.TypeMap;
-import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.weaver.loadtime.definition.Definition;
 import org.aspectj.weaver.tools.WeavingAdaptor;
 
@@ -564,7 +564,7 @@ public class ClassLoaderWeavingAdaptorTest extends TestCase {
 		}
 		etime = System.currentTimeMillis();
 		System.out.println("Rejection " + (etime - stime) + "ms");
-		BcelWorld world = adaptor.getWorld();
+		BytecodeWorld world = adaptor.getWorld();
 		Field f = World.class.getDeclaredField("typeMap");
 		f.setAccessible(true);
 		TypeMap typeMap = (TypeMap) f.get(world);
@@ -651,7 +651,7 @@ public class ClassLoaderWeavingAdaptorTest extends TestCase {
 
 	static class TestClassLoaderWeavingAdaptor extends ClassLoaderWeavingAdaptor {
 
-		public BcelWorld getWorld() {
+		public BytecodeWorld getWorld() {
 			return bcelWorld;
 		}
 	}

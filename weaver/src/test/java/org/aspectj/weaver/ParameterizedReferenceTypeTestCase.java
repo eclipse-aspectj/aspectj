@@ -27,7 +27,7 @@ import junit.framework.TestCase;
  */
 public class ParameterizedReferenceTypeTestCase extends TestCase {
 
-	BcelWorld world;
+	BytecodeWorld world;
 	ReferenceType listOfString;
 
 	public void testDeclaredMethodWithParameter() {

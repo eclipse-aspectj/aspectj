@@ -44,6 +44,7 @@ import org.aspectj.org.eclipse.jdt.internal.core.builder.BatchImageBuilder;
 import org.aspectj.org.eclipse.jdt.internal.core.builder.BuildNotifier;
 import org.aspectj.org.eclipse.jdt.internal.core.builder.IncrementalImageBuilder;
 import org.aspectj.org.eclipse.jdt.internal.core.builder.JavaBuilder;
+import org.aspectj.weaver.BytecodeWorld;
 import org.aspectj.weaver.Lint;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
@@ -169,7 +170,7 @@ public class AspectJBuilder extends JavaBuilder implements ICompilerAdapterFacto
 		// TODO deal with injars, inpath, and aspectpath here...
 	}
 
-	private void setLintProperties(BcelWorld world, AjCompilerOptions options) {
+	private void setLintProperties(BytecodeWorld world, AjCompilerOptions options) {
 		Properties p = new Properties();
 		Lint lintSettings = world.getLint();
 		Map<String, String> map = options.getMap();

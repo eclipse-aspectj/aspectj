@@ -48,6 +48,7 @@ import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.AnnotationOnTypeMunger;
 import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.BytecodeWorld;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.MemberUtils;
@@ -140,7 +141,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 
 		if (changed && worthReporting) {
 			ResolvedType declaringAspect = null;
-			AsmManager model = ((BcelWorld) getWorld()).getModelAsAsmManager();
+			AsmManager model = ((BytecodeWorld) getWorld()).getModelAsAsmManager();
 			if (model != null) {
 				if (munger instanceof NewParentTypeMunger) {
 					NewParentTypeMunger nptMunger = (NewParentTypeMunger) munger;
@@ -780,7 +781,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 			il.append(InstructionFactory.createLoad(paramType, pos));
 			pos += paramType.getSize();
 		}
-		il.append(Utility.createInvoke(fact, (BcelWorld) aspectType.getWorld(), method));
+		il.append(Utility.createInvoke(fact, (BytecodeWorld) aspectType.getWorld(), method));
 		il.append(InstructionFactory.createReturn(BcelWorld.makeBcelType(method.getReturnType())));
 
 		mg.getBody().insert(il);
@@ -1338,7 +1339,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	 *        already created them.
 	 * @param theBridgeMethod
 	 */
-	private void createBridgeMethod(BcelWorld world, NewMethodTypeMunger munger, ResolvedMember unMangledInterMethod,
+	private void createBridgeMethod(BytecodeWorld world, NewMethodTypeMunger munger, ResolvedMember unMangledInterMethod,
 			LazyClassGen clazz, Type[] paramTypes, ResolvedMember theBridgeMethod) {
 		InstructionList body;
 		InstructionFactory fact;
@@ -1856,7 +1857,7 @@ public class BcelTypeMunger extends ConcreteTypeMunger {
 	}
 
 	private static LazyMethodGen makeDispatcher(LazyClassGen onGen, String dispatchName, ResolvedMember superMethod,
-			BcelWorld world, boolean isSuper) {
+			BytecodeWorld world, boolean isSuper) {
 		Type[] paramTypes = BcelWorld.makeBcelTypes(superMethod.getParameterTypes());
 		Type returnType = BcelWorld.makeBcelType(superMethod.getReturnType());
 

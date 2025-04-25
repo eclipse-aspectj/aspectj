@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.weaver.BytecodeWorld;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
@@ -182,7 +183,7 @@ public abstract class ReflectionBasedReferenceTypeDelegateTest extends TestCase 
 		ResolvedType superType = serializableType.getSuperclass();
 		assertTrue("Superclass of serializable should be Object but was " + superType, superType.equals(UnresolvedType.OBJECT));
 
-		BcelWorld bcelworld = new BcelWorld();
+		BytecodeWorld bcelworld = new BcelWorld();
 		bcelworld.setBehaveInJava5Way(true);
 		ResolvedType bcelSupertype = bcelworld.resolve(UnresolvedType.SERIALIZABLE).getSuperclass();
 		assertTrue("Should be null but is " + bcelSupertype, bcelSupertype.equals(UnresolvedType.OBJECT));
@@ -193,7 +194,7 @@ public abstract class ReflectionBasedReferenceTypeDelegateTest extends TestCase 
 		ResolvedType superType = ifaceType.getSuperclass();
 		assertTrue("Superclass should be Object but was " + superType, superType.equals(UnresolvedType.OBJECT));
 
-		BcelWorld bcelworld = new BcelWorld();
+		BytecodeWorld bcelworld = new BcelWorld();
 		bcelworld.setBehaveInJava5Way(true);
 		ResolvedType bcelSupertype = bcelworld.resolve("java.security.Key").getSuperclass();
 		assertTrue("Should be null but is " + bcelSupertype, bcelSupertype.equals(UnresolvedType.OBJECT));
@@ -204,7 +205,7 @@ public abstract class ReflectionBasedReferenceTypeDelegateTest extends TestCase 
 		ResolvedType superType = voidType.getSuperclass();
 		assertNull(superType);
 
-		BcelWorld bcelworld = new BcelWorld();
+		BytecodeWorld bcelworld = new BcelWorld();
 		bcelworld.setBehaveInJava5Way(true);
 		ResolvedType bcelSupertype = bcelworld.resolve("void").getSuperclass();
 		assertTrue("Should be null but is " + bcelSupertype, bcelSupertype == null);
@@ -215,14 +216,14 @@ public abstract class ReflectionBasedReferenceTypeDelegateTest extends TestCase 
 		ResolvedType superType = voidType.getSuperclass();
 		assertNull(superType);
 
-		BcelWorld bcelworld = new BcelWorld();
+		BytecodeWorld bcelworld = new BcelWorld();
 		bcelworld.setBehaveInJava5Way(true);
 		ResolvedType bcelSupertype = bcelworld.resolve("int").getSuperclass();
 		assertTrue("Should be null but is " + bcelSupertype, bcelSupertype == null);
 	}
 
 	public void testGenericInterfaceSuperclass_BcelWorldResolution() {
-		BcelWorld bcelworld = new BcelWorld();
+		BytecodeWorld bcelworld = new BcelWorld();
 		bcelworld.setBehaveInJava5Way(true);
 
 		UnresolvedType javaUtilMap = UnresolvedType.forName("java.util.Map");
@@ -247,7 +248,7 @@ public abstract class ReflectionBasedReferenceTypeDelegateTest extends TestCase 
 		boolean barfIfClinitMissing = false;
 		world.setBehaveInJava5Way(true);
 
-		BcelWorld bcelWorld = new BcelWorld(getClass().getClassLoader(), IMessageHandler.THROW, null);
+		BytecodeWorld bcelWorld = new BcelWorld(getClass().getClassLoader(), IMessageHandler.THROW, null);
 		bcelWorld.setBehaveInJava5Way(true);
 		UnresolvedType javaUtilHashMap = UnresolvedType.forName("java.util.HashMap");
 		ReferenceType rawType = (ReferenceType) bcelWorld.resolve(javaUtilHashMap);

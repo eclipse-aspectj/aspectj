@@ -31,9 +31,10 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclarat
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
+import org.aspectj.weaver.BytecodeWeaver;
+import org.aspectj.weaver.BytecodeWorld;
 import org.aspectj.weaver.UnwovenClassFile;
 import org.aspectj.weaver.bcel.BcelWeaver;
-import org.aspectj.weaver.bcel.BcelWorld;
 
 /**
  * @author colyer
@@ -43,7 +44,7 @@ import org.aspectj.weaver.bcel.BcelWorld;
 public class AjCompilerAdapter extends AbstractCompilerAdapter {
 
 	private Compiler compiler;
-	private BcelWeaver weaver;
+	private BytecodeWeaver weaver;
 	private EclipseFactory eWorld;
 	private boolean isBatchCompile;
 	private boolean reportedErrors;
@@ -81,7 +82,7 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 	 * @param incrementalCompilationState if we are doing an incremental build, and the weaver determines that we need to weave the world,
 	 *        this is the set of intermediate results that will be passed to the weaver.
 	 */
-	public AjCompilerAdapter(Compiler compiler, boolean isBatchCompile, BcelWorld world, BcelWeaver weaver,
+	public AjCompilerAdapter(Compiler compiler, boolean isBatchCompile, BytecodeWorld world, BytecodeWeaver weaver,
 			EclipseFactory eFactory, IIntermediateResultsRequestor intRequestor, IProgressListener progressListener,
 			IOutputClassFileNameProvider outputFileNameProvider, IBinarySourceProvider binarySourceProvider,
 			Map fullBinarySourceEntries, /* fileName |-> List<UnwovenClassFile> */

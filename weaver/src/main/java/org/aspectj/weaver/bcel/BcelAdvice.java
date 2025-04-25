@@ -34,6 +34,7 @@ import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.BytecodeWorld;
 import org.aspectj.weaver.IEclipseSourceContext;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.Lint;
@@ -507,7 +508,7 @@ class BcelAdvice extends Advice {
 	InstructionList getAdviceInstructions(BcelShadow s, BcelVar extraArgVar, InstructionHandle ifNoAdvice) {
 		BcelShadow shadow = s;
 		InstructionFactory fact = shadow.getFactory();
-		BcelWorld world = shadow.getWorld();
+		BytecodeWorld world = shadow.getWorld();
 
 		InstructionList il = new InstructionList();
 
@@ -559,7 +560,7 @@ class BcelAdvice extends Advice {
 
 	public InstructionList getAdviceArgSetup(BcelShadow shadow, BcelVar extraVar, InstructionList closureInstantiation) {
 		InstructionFactory fact = shadow.getFactory();
-		BcelWorld world = shadow.getWorld();
+		BytecodeWorld world = shadow.getWorld();
 		InstructionList il = new InstructionList();
 
 		// if (targetAspectField != null) {

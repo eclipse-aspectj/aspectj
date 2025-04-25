@@ -95,7 +95,7 @@ public class BoundedReferenceTypeTestCase extends TestCase {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		BcelWorld world = new BcelWorld();
+		BytecodeWorld world = new BcelWorld();
 		javaLangClass = (ReferenceType) world.resolve(UnresolvedType.forName("java/lang/Class"));
 		javaLangObject = (ReferenceType) world.resolve(UnresolvedType.OBJECT);
 		extendsClass = new BoundedReferenceType(javaLangClass, true, world);

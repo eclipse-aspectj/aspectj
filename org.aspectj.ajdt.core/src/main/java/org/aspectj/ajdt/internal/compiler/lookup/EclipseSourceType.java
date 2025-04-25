@@ -1224,5 +1224,10 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 		tv.setRank(typeParameter.binding.rank);
 		return tv;
 	}
+	
+	@Override
+	public boolean isEclipseSourceTypeDelegate() {
+		return true;
+	}
 
 }

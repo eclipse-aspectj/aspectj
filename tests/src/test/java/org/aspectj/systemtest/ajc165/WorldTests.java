@@ -11,6 +11,7 @@
 package org.aspectj.systemtest.ajc165;
 
 import org.aspectj.testing.XMLBasedAjcTestCase;
+import org.aspectj.weaver.BytecodeWorld;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.bcel.BcelWorld;
 
@@ -19,7 +20,7 @@ import junit.framework.Test;
 public class WorldTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
 	public void testWorldSize() {
-		BcelWorld world = new BcelWorld("../weaver5/bin/");
+		BytecodeWorld world = new BcelWorld("../weaver5/bin/");
 		assertEquals(9, world.getFixed().size()); // 9 primitive types
 		assertEquals(0, world.getExpendable().size()); // nothing loaded
 

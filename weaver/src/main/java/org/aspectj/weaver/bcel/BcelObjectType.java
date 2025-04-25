@@ -49,6 +49,7 @@ import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.AnnotationTargetKind;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.BindingScope;
+import org.aspectj.weaver.BytecodeWorld;
 import org.aspectj.weaver.Clazz;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.ISourceContext;
@@ -400,7 +401,7 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		declares = new ArrayList<>();
 		processAttributes(l, pointcuts, false);
 		ReferenceType type = getResolvedTypeX();
-		AsmManager asmManager = ((BcelWorld) type.getWorld()).getModelAsAsmManager();
+		AsmManager asmManager = ((BytecodeWorld) type.getWorld()).getModelAsAsmManager();
 		l = AtAjAttributes.readAj5ClassAttributes(asmManager, javaClass, type, type.getSourceContext(), msgHandler,
 				isCodeStyleAspect);
 		AjAttribute.Aspect deferredAspectAttribute = processAttributes(l, pointcuts, true);

@@ -1276,5 +1276,10 @@ public class ReferenceType extends ResolvedType {
 	public boolean hasNewInterfaces() {
 		return newInterfaces != null;
 	}
+	
+	@Override
+	public boolean hasEclipseSourceTypeDelegate() {
+		return delegate != null && delegate.isEclipseSourceTypeDelegate();
+	}
 
 }

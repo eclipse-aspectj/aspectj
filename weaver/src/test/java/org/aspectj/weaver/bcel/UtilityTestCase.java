@@ -14,6 +14,8 @@
 package org.aspectj.weaver.bcel;
 import java.io.IOException;
 
+import org.aspectj.weaver.BytecodeWorld;
+
 import junit.framework.TestCase;
 
 public class UtilityTestCase extends TestCase {
@@ -44,7 +46,7 @@ public class UtilityTestCase extends TestCase {
 //    }
 
     public static void main(String[] args) throws IOException {
-    	BcelWorld world = new BcelWorld();
+    	BytecodeWorld world = new BcelWorld();
         LazyClassGen clazz = new LazyClassGen(BcelWorld.getBcelObjectType(world.resolve(args[0])));
         clazz.print();
     }

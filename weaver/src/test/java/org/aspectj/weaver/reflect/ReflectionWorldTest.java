@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.weaver.BytecodeWorld;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
@@ -166,7 +167,7 @@ public class ReflectionWorldTest extends TestCase {
 		ResolvedType rType_Outer = rType_Inner.getOuterClass();
 		assertEquals("Lorg/aspectj/weaver/reflect/ReflectionWorldTest$TestClass2;",rType_Outer.getSignature());
 
-		BcelWorld bWorld = new BcelWorld(getClass().getClassLoader(), IMessageHandler.THROW, null);
+		BytecodeWorld bWorld = new BcelWorld(getClass().getClassLoader(), IMessageHandler.THROW, null);
 		bWorld.setBehaveInJava5Way(true);
 		UnresolvedType javaUtilHashMap = UnresolvedType.forName("java.util.HashMap");
 		ReferenceType rawType = (ReferenceType) bWorld.resolve(javaUtilHashMap);
@@ -190,7 +191,7 @@ public class ReflectionWorldTest extends TestCase {
 	public void xtestTypeConversions_509327_2() throws Exception {
 		ReflectionWorld world = new ReflectionWorld(getClass().getClassLoader());
 		JavaLangTypeToResolvedTypeConverter converter = new JavaLangTypeToResolvedTypeConverter(world);
-		BcelWorld bWorld = new BcelWorld(getClass().getClassLoader(), IMessageHandler.THROW, null);
+		BytecodeWorld bWorld = new BcelWorld(getClass().getClassLoader(), IMessageHandler.THROW, null);
 		bWorld.setBehaveInJava5Way(true);
 
 		// Slightly more advanced, now the method is returning a parameterized form of the outer

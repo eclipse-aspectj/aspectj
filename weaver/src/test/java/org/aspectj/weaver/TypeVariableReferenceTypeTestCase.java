@@ -27,7 +27,7 @@ public class TypeVariableReferenceTypeTestCase extends TestCase {
 	BoundedReferenceType extendsClass;
 	BoundedReferenceType superClass;
 	BoundedReferenceType extendsWithExtras;
-	BcelWorld world;
+	BytecodeWorld world;
 
 	@Override
 	protected void setUp() throws Exception {

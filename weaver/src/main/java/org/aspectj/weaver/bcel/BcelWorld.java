@@ -16,9 +16,7 @@ package org.aspectj.weaver.bcel;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -42,22 +40,14 @@ import org.aspectj.apache.bcel.util.ClassLoaderRepository;
 import org.aspectj.apache.bcel.util.ClassPath;
 import org.aspectj.apache.bcel.util.NonCachingClassLoaderRepository;
 import org.aspectj.apache.bcel.util.Repository;
-import org.aspectj.asm.AsmManager;
-import org.aspectj.asm.IRelationship;
 import org.aspectj.asm.internal.CharOperation;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
-import org.aspectj.bridge.ISourceLocation;
-import org.aspectj.bridge.Message;
 import org.aspectj.bridge.MessageUtil;
-import org.aspectj.bridge.WeaveMessage;
-import org.aspectj.weaver.Advice;
-import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.AnnotationOnTypeMunger;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.BytecodeWorld;
-import org.aspectj.weaver.Checker;
 import org.aspectj.weaver.ClassPathManager;
 import org.aspectj.weaver.Clazz;
 import org.aspectj.weaver.ICrossReferenceHandler;
@@ -72,20 +62,10 @@ import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedMemberImpl;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.ResolvedTypeMunger;
-import org.aspectj.weaver.Shadow;
-import org.aspectj.weaver.ShadowMunger;
+import org.aspectj.weaver.TypeDelegateResolver;
 import org.aspectj.weaver.UnresolvedType;
-import org.aspectj.weaver.World;
-import org.aspectj.weaver.loadtime.definition.Definition;
-import org.aspectj.weaver.loadtime.definition.DocumentParser;
-import org.aspectj.weaver.model.AsmRelationshipProvider;
 import org.aspectj.weaver.patterns.DeclareAnnotation;
 import org.aspectj.weaver.patterns.DeclareParents;
-import org.aspectj.weaver.patterns.ParserException;
-import org.aspectj.weaver.patterns.PatternParser;
-import org.aspectj.weaver.patterns.TypePattern;
-import org.aspectj.weaver.tools.Trace;
-import org.aspectj.weaver.tools.TraceFactory;
 
 public class BcelWorld extends BytecodeWorld/* implements Repository*/ {
 
@@ -93,7 +73,6 @@ public class BcelWorld extends BytecodeWorld/* implements Repository*/ {
 	protected Repository delegate;
 	private BcelWeakClassLoaderReference loaderRef;
 	private final BcelWeavingSupport bcelWeavingSupport = new BcelWeavingSupport();
-	private List<TypeDelegateResolver> typeDelegateResolvers;
 
 	public BcelWorld() {
 		this("");
@@ -346,10 +325,6 @@ public class BcelWorld extends BytecodeWorld/* implements Repository*/ {
 
 	private Clazz makeClazz(String classname, byte[] bytes) {
 		return BcelClazz.asBcelClazz(Utility.makeJavaClass(classname, bytes));
-	}
-
-	void deleteSourceObjectType(UnresolvedType ty) {
-		typeMap.remove(ty.getSignature());
 	}
 
 	public static Member makeFieldJoinPointSignature(LazyClassGen cg, FieldInstruction fi) {
@@ -843,13 +818,6 @@ public class BcelWorld extends BytecodeWorld/* implements Repository*/ {
 	@Override
 	public boolean isLoadtimeWeaving() {
 		return false;
-	}
-
-	public void addTypeDelegateResolver(TypeDelegateResolver typeDelegateResolver) {
-		if (typeDelegateResolvers == null) {
-			typeDelegateResolvers = new ArrayList<>();
-		}
-		typeDelegateResolvers.add(typeDelegateResolver);
 	}
 
 	@Override

@@ -47,6 +47,7 @@ import org.aspectj.weaver.Advice;
 import org.aspectj.weaver.AdviceKind;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.BytecodeWorld;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.Member;
@@ -126,7 +127,7 @@ public class BcelShadow extends Shadow {
 	private static final String[] NoDeclaredExceptions = new String[0];
 
 	private ShadowRange range;
-	private final BcelWorld world;
+	private final BytecodeWorld world;
 	private final LazyMethodGen enclosingMethod;
 
 	// TESTING this will tell us if the optimisation succeeded *on the last shadow processed*
@@ -140,7 +141,7 @@ public class BcelShadow extends Shadow {
 	 * This generates an unassociated shadow, rooted in a particular method but not rooted to any particular point in the code. It
 	 * should be given to a rooted ShadowRange in the {@link ShadowRange#associateWithShadow(BcelShadow)} method.
 	 */
-	public BcelShadow(BcelWorld world, Kind kind, Member signature, LazyMethodGen enclosingMethod, BcelShadow enclosingShadow) {
+	public BcelShadow(BytecodeWorld world, Kind kind, Member signature, LazyMethodGen enclosingMethod, BcelShadow enclosingShadow) {
 		super(kind, signature, enclosingShadow);
 		this.world = world;
 		this.enclosingMethod = enclosingMethod;
@@ -480,7 +481,7 @@ public class BcelShadow extends Shadow {
 		return enclosingMethod.getEnclosingClass();
 	}
 
-	public BcelWorld getWorld() {
+	public BytecodeWorld getWorld() {
 		return world;
 	}
 
@@ -530,7 +531,7 @@ public class BcelShadow extends Shadow {
 	 * Make the shadow for an exception handler. Currently makes an empty shadow that only allows before advice to be woven into it.
 	 */
 
-	public static BcelShadow makeExceptionHandler(BcelWorld world, ExceptionRange exceptionRange, LazyMethodGen enclosingMethod,
+	public static BcelShadow makeExceptionHandler(BytecodeWorld world, ExceptionRange exceptionRange, LazyMethodGen enclosingMethod,
 			InstructionHandle startOfHandler, BcelShadow enclosingShadow) {
 		InstructionList body = enclosingMethod.getBody();
 		UnresolvedType catchType = exceptionRange.getCatchType();
@@ -569,7 +570,7 @@ public class BcelShadow extends Shadow {
 
 	/** create an init join point associated w/ an interface in the body of a constructor */
 
-	public static BcelShadow makeIfaceInitialization(BcelWorld world, LazyMethodGen constructor,
+	public static BcelShadow makeIfaceInitialization(BytecodeWorld world, LazyMethodGen constructor,
 			Member interfaceConstructorSignature) {
 		// this call marks the instruction list as changed
 		constructor.getBody();
@@ -647,7 +648,7 @@ public class BcelShadow extends Shadow {
 		return ret;
 	}
 
-	public static BcelShadow makeMethodExecution(BcelWorld world, LazyMethodGen enclosingMethod, boolean lazyInit) {
+	public static BcelShadow makeMethodExecution(BytecodeWorld world, LazyMethodGen enclosingMethod, boolean lazyInit) {
 		if (!lazyInit) {
 			return makeMethodExecution(world, enclosingMethod);
 		}
@@ -668,11 +669,11 @@ public class BcelShadow extends Shadow {
 		r.associateWithTargets(Range.genStart(body), Range.genEnd(body));
 	}
 
-	public static BcelShadow makeMethodExecution(BcelWorld world, LazyMethodGen enclosingMethod) {
+	public static BcelShadow makeMethodExecution(BytecodeWorld world, LazyMethodGen enclosingMethod) {
 		return makeShadowForMethod(world, enclosingMethod, MethodExecution, enclosingMethod.getMemberView());
 	}
 
-	public static BcelShadow makeShadowForMethod(BcelWorld world, LazyMethodGen enclosingMethod, Shadow.Kind kind, Member sig) {
+	public static BcelShadow makeShadowForMethod(BytecodeWorld world, LazyMethodGen enclosingMethod, Shadow.Kind kind, Member sig) {
 		final InstructionList body = enclosingMethod.getBody();
 		BcelShadow s = new BcelShadow(world, kind, sig, enclosingMethod, null);
 		ShadowRange r = new ShadowRange(body);
@@ -785,7 +786,7 @@ public class BcelShadow extends Shadow {
 		return s;
 	}
 
-	public static BcelShadow makeShadowForMethodCall(BcelWorld world, LazyMethodGen enclosingMethod, InstructionHandle callHandle,
+	public static BcelShadow makeShadowForMethodCall(BytecodeWorld world, LazyMethodGen enclosingMethod, InstructionHandle callHandle,
 			BcelShadow enclosingShadow, Kind kind, ResolvedMember sig) {
 		final InstructionList body = enclosingMethod.getBody();
 		BcelShadow s = new BcelShadow(world, kind, sig, enclosingMethod, enclosingShadow);
@@ -796,7 +797,7 @@ public class BcelShadow extends Shadow {
 		return s;
 	}
 
-	public static BcelShadow makeFieldGet(BcelWorld world, ResolvedMember field, LazyMethodGen enclosingMethod,
+	public static BcelShadow makeFieldGet(BytecodeWorld world, ResolvedMember field, LazyMethodGen enclosingMethod,
 			InstructionHandle getHandle, BcelShadow enclosingShadow) {
 		final InstructionList body = enclosingMethod.getBody();
 		BcelShadow s = new BcelShadow(world, FieldGet, field,
@@ -811,7 +812,7 @@ public class BcelShadow extends Shadow {
 		return s;
 	}
 
-	public static BcelShadow makeFieldSet(BcelWorld world, ResolvedMember field, LazyMethodGen enclosingMethod,
+	public static BcelShadow makeFieldSet(BytecodeWorld world, ResolvedMember field, LazyMethodGen enclosingMethod,
 			InstructionHandle setHandle, BcelShadow enclosingShadow) {
 		final InstructionList body = enclosingMethod.getBody();
 		BcelShadow s = new BcelShadow(world, FieldSet, field,

@@ -40,9 +40,10 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
+import org.aspectj.weaver.BytecodeWeaver;
+import org.aspectj.weaver.BytecodeWorld;
 import org.aspectj.weaver.UnwovenClassFile;
 import org.aspectj.weaver.bcel.BcelWeaver;
-import org.aspectj.weaver.bcel.BcelWorld;
 
 /**
  * Adapts standard JDT Compiler to add in AspectJ specific behaviours. This version implements pipelining - where files are compiled
@@ -93,7 +94,7 @@ import org.aspectj.weaver.bcel.BcelWorld;
 public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 
 	private Compiler compiler;
-	private BcelWeaver weaver;
+	private BytecodeWeaver weaver;
 	private EclipseFactory eWorld;
 	private boolean isBatchCompile;
 	private boolean reportedErrors;
@@ -139,7 +140,7 @@ public class AjPipeliningCompilerAdapter extends AbstractCompilerAdapter {
 	 * @param incrementalCompilationState if we are doing an incremental build, and the weaver determines that we need to weave the world,
 	 *        this is the set of intermediate results that will be passed to the weaver.
 	 */
-	public AjPipeliningCompilerAdapter(Compiler compiler, boolean isBatchCompile, BcelWorld world, BcelWeaver weaver,
+	public AjPipeliningCompilerAdapter(Compiler compiler, boolean isBatchCompile, BytecodeWorld world, BytecodeWeaver weaver,
 			EclipseFactory eFactory, IIntermediateResultsRequestor intRequestor, IProgressListener progressListener,
 			IOutputClassFileNameProvider outputFileNameProvider, IBinarySourceProvider binarySourceProvider,
 			Map fullBinarySourceEntries, /* fileName |-> List<UnwovenClassFile> */

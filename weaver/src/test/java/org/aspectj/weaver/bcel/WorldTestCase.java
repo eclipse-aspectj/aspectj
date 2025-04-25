@@ -15,6 +15,7 @@ package org.aspectj.weaver.bcel;
 import java.lang.reflect.Modifier;
 
 import org.aspectj.weaver.Advice;
+import org.aspectj.weaver.BytecodeWorld;
 import org.aspectj.weaver.CommonWorldTests;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.MemberImpl;
@@ -31,7 +32,7 @@ import org.aspectj.weaver.World;
  */
 public class WorldTestCase extends CommonWorldTests {
 
-	private final BcelWorld world = new BcelWorld(WeaverTestCase.TESTDATA_PATH + "/tracing.jar");
+	private final BytecodeWorld world = new BcelWorld(WeaverTestCase.TESTDATA_PATH + "/tracing.jar");
 
 	protected World getWorld() {
 		return world;

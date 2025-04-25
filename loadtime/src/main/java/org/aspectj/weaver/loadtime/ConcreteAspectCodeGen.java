@@ -41,6 +41,7 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.Message;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AnnotationAJ;
+import org.aspectj.weaver.BytecodeWorld;
 import org.aspectj.weaver.GeneratedReferenceTypeDelegate;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
@@ -501,7 +502,7 @@ public class ConcreteAspectCodeGen {
 		// TODO AV - unsafe cast
 		// register the fresh new class into the world repository as it does not
 		// exist on the classpath anywhere
-		JavaClass jc = cg.getJavaClass((BcelWorld) world);
+		JavaClass jc = cg.getJavaClass((BytecodeWorld) world);
 		((BcelWorld) world).addSourceObjectType(BcelClazz.asBcelClazz(jc), true);
 
 		bytes = jc.getBytes();

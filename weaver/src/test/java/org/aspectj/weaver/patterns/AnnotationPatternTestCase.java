@@ -12,6 +12,7 @@ package org.aspectj.weaver.patterns;
 import org.aspectj.bridge.AbortException;
 import org.aspectj.weaver.AnnotatedElement;
 import org.aspectj.weaver.AnnotationAJ;
+import org.aspectj.weaver.BytecodeWorld;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverTestCase;
@@ -328,7 +329,7 @@ public class AnnotationPatternTestCase extends TestCase {
 	}
 
 	public TestScope makeSimpleScope() {
-		BcelWorld bWorld = new BcelWorld(WeaverTestCase.TESTDATA_PATH + "/testcode.jar"); // testcode contains Foo/Boo/Goo/etc
+		BytecodeWorld bWorld = new BcelWorld(WeaverTestCase.TESTDATA_PATH + "/testcode.jar"); // testcode contains Foo/Boo/Goo/etc
 		bWorld.setBehaveInJava5Way(true);
 		return new TestScope(new String[] { "int", "java.lang.String", "Foo", "Boo", "Goo" }, new String[] { "a", "b", "foo",
 				"boo", "goo" }, bWorld);

@@ -57,6 +57,7 @@ import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AjAttribute.WeaverState;
 import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.BytecodeWorld;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.MemberKind;
 import org.aspectj.weaver.NameMangler;
@@ -269,7 +270,7 @@ public final class LazyClassGen {
 		}
 		// out.println("classPath: " + classPath);
 
-		BcelWorld world = new BcelWorld(path);
+		BytecodeWorld world = new BcelWorld(path);
 
 		UnresolvedType ut = UnresolvedType.forName(name);
 		ut.setNeedsModifiableDelegate(true);
@@ -504,7 +505,7 @@ public final class LazyClassGen {
 		return false;
 	}
 
-	private void writeBack(BcelWorld world) {
+	private void writeBack(BytecodeWorld world) {
 		if (getConstantPool().getSize() > Short.MAX_VALUE) {
 			reportClassTooBigProblem();
 			return;
@@ -741,12 +742,12 @@ public final class LazyClassGen {
 		return gen.hasAttribute("SourceDebugExtension");
 	}
 
-	public JavaClass getJavaClass(BcelWorld world) {
+	public JavaClass getJavaClass(BytecodeWorld world) {
 		writeBack(world);
 		return myGen.getJavaClass();
 	}
 
-	public byte[] getJavaClassBytesIncludingReweavable(BcelWorld world) {
+	public byte[] getJavaClassBytesIncludingReweavable(BytecodeWorld world) {
 		writeBack(world);
 		byte[] wovenClassFileData = myGen.getJavaClass().getBytes();
 		// At 1.6 stackmaps are optional, whilst at 1.7 and later they
@@ -836,7 +837,7 @@ public final class LazyClassGen {
 		return ret;
 	}
 
-	public List<BcelUnwovenClassFile.ChildClass> getChildClasses(BcelWorld world) {
+	public List<BcelUnwovenClassFile.ChildClass> getChildClasses(BytecodeWorld world) {
 		if (classGens.isEmpty()) {
 			return Collections.emptyList();
 		}
@@ -1324,7 +1325,7 @@ public final class LazyClassGen {
 			list.append(fact.createInvoke(factoryType.getClassName(), signatureMakerName, signatureType, Type.STRINGARRAY1,
 					Constants.INVOKEVIRTUAL));
 		} else if (sig.getKind().equals(Member.METHOD)) {
-			BcelWorld w = shadow.getWorld();
+			BytecodeWorld w = shadow.getWorld();
 
 			// For methods, push the parts of the signature on.
 			list.append(InstructionFactory.PUSH(cp, makeString(sig.getModifiers(w))));
@@ -1356,14 +1357,14 @@ public final class LazyClassGen {
 			list.append(fact.createInvoke(factoryType.getClassName(), signatureMakerName, signatureType, Type.STRINGARRAY1,
 					Constants.INVOKEVIRTUAL));
 		} else if (sig.getKind().equals(Member.HANDLER)) {
-			BcelWorld w = shadow.getWorld();
+			BytecodeWorld w = shadow.getWorld();
 			list.append(InstructionFactory.PUSH(cp, makeString(sig.getDeclaringType())));
 			list.append(InstructionFactory.PUSH(cp, makeString(sig.getParameterTypes())));
 			list.append(InstructionFactory.PUSH(cp, makeString(sig.getParameterNames(w))));
 			list.append(fact.createInvoke(factoryType.getClassName(), signatureMakerName, signatureType, Type.STRINGARRAY3,
 					Constants.INVOKEVIRTUAL));
 		} else if (sig.getKind().equals(Member.CONSTRUCTOR)) {
-			BcelWorld w = shadow.getWorld();
+			BytecodeWorld w = shadow.getWorld();
 			if (w.isJoinpointArrayConstructionEnabled() && sig.getDeclaringType().isArray()) {
 				// its the magical new jp
 				list.append(InstructionFactory.PUSH(cp, makeString(Modifier.PUBLIC)));
@@ -1383,7 +1384,7 @@ public final class LazyClassGen {
 						Constants.INVOKEVIRTUAL));
 			}
 		} else if (sig.getKind().equals(Member.FIELD)) {
-			BcelWorld w = shadow.getWorld();
+			BytecodeWorld w = shadow.getWorld();
 			list.append(InstructionFactory.PUSH(cp, makeString(sig.getModifiers(w))));
 			list.append(InstructionFactory.PUSH(cp, sig.getName()));
 			// see pr227401
@@ -1396,7 +1397,7 @@ public final class LazyClassGen {
 			list.append(fact.createInvoke(factoryType.getClassName(), signatureMakerName, signatureType, Type.STRINGARRAY4,
 					Constants.INVOKEVIRTUAL));
 		} else if (sig.getKind().equals(Member.ADVICE)) {
-			BcelWorld w = shadow.getWorld();
+			BytecodeWorld w = shadow.getWorld();
 			list.append(InstructionFactory.PUSH(cp, makeString(sig.getModifiers(w))));
 			list.append(InstructionFactory.PUSH(cp, sig.getName()));
 			list.append(InstructionFactory.PUSH(cp, makeString(sig.getDeclaringType())));
@@ -1407,7 +1408,7 @@ public final class LazyClassGen {
 			list.append(fact.createInvoke(factoryType.getClassName(), signatureMakerName, signatureType, new Type[] { Type.STRING,
 					Type.STRING, Type.STRING, Type.STRING, Type.STRING, Type.STRING, Type.STRING }, Constants.INVOKEVIRTUAL));
 		} else if (sig.getKind().equals(Member.STATIC_INITIALIZATION)) {
-			BcelWorld w = shadow.getWorld();
+			BytecodeWorld w = shadow.getWorld();
 			list.append(InstructionFactory.PUSH(cp, makeString(sig.getModifiers(w))));
 			list.append(InstructionFactory.PUSH(cp, makeString(sig.getDeclaringType())));
 			list.append(fact.createInvoke(factoryType.getClassName(), signatureMakerName, signatureType, Type.STRINGARRAY2,
@@ -1503,7 +1504,7 @@ public final class LazyClassGen {
 		pushString(list, shadow.getKind().getName());
 		String factoryMethod = getFactoryMethod(field, shadow);
 		Member sig = shadow.getSignature();
-		BcelWorld w = shadow.getWorld();
+		BytecodeWorld w = shadow.getWorld();
 
 		if (sig.getKind().equals(Member.METHOD)) {
 			pushInt(list, sig.getModifiers(w));

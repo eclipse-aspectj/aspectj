@@ -12,6 +12,7 @@ package org.aspectj.systemtest.ajc1811;
 
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+import org.aspectj.weaver.BytecodeWorld;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnresolvedType;
@@ -28,7 +29,7 @@ public class Ajc1811Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("parameterized with inner");
 		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(), "Outer");
 		assertNotNull(jc);
-		BcelWorld world = new BcelWorld(ajc.getSandboxDirectory().toString());
+		BytecodeWorld world = new BcelWorld(ajc.getSandboxDirectory().toString());
 
 		ResolvedType outerType = world.resolve(UnresolvedType.forName("Outer"));
 		ResolvedMember m = findMethod(outerType,"m");

@@ -2926,4 +2926,8 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 		return (bits & IsPrivilegedAspect) != 0;
 	}
 
+	public boolean hasEclipseSourceTypeDelegate() {
+		return false;
+	}
+
 }

@@ -1,3 +1,10 @@
+/*******************************************************************************
+ * Copyright (c) 2025 Contributors
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *******************************************************************************/
 package org.aspectj.weaver;
 
 import java.io.File;
@@ -30,6 +37,8 @@ public abstract class BytecodeWorld extends World {
 
 	private boolean isXmlConfiguredWorld = false;
 	private WeavingXmlConfig xmlConfiguration;
+
+	protected List<TypeDelegateResolver> typeDelegateResolvers;
 
 	public final IRelationship.Kind determineRelKind(ShadowMunger munger) {
 		AdviceKind ak = ((Advice) munger).getKind();
@@ -488,5 +497,18 @@ public abstract class BytecodeWorld extends World {
 	}
 
 	protected abstract Clazz lookupJavaClass(ClassPathManager classPath, String name);
+
+	public void addTypeDelegateResolver(TypeDelegateResolver typeDelegateResolver) {
+		if (typeDelegateResolvers == null) {
+			typeDelegateResolvers = new ArrayList<>();
+		}
+		typeDelegateResolvers.add(typeDelegateResolver);
+	}
+	
+	public abstract void tidyUp();
+	public abstract void demote(ResolvedType type);
+
+	// TODO what on earth does this method do, what is 'source'
+	protected abstract AbstractReferenceTypeDelegate addSourceObjectType(Clazz clazz, boolean b);
 
 }

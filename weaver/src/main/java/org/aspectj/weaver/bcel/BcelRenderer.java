@@ -20,6 +20,7 @@ import org.aspectj.apache.bcel.generic.ObjectType;
 import org.aspectj.apache.bcel.generic.ReferenceType;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.BytecodeWorld;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.MemberImpl;
 import org.aspectj.weaver.UnresolvedType;
@@ -45,11 +46,11 @@ public final class BcelRenderer implements ITestVisitor, IExprVisitor {
 
 	private InstructionList instructions;
 	private InstructionFactory fact;
-	private BcelWorld world;
+	private BytecodeWorld world;
 
 	InstructionHandle sk, fk, next = null;
 
-	private BcelRenderer(InstructionFactory fact, BcelWorld world) {
+	private BcelRenderer(InstructionFactory fact, BytecodeWorld world) {
 		super();
 		this.fact = fact;
 		this.world = world;
@@ -58,13 +59,13 @@ public final class BcelRenderer implements ITestVisitor, IExprVisitor {
 
 	// ---- renderers
 
-	public static InstructionList renderExpr(InstructionFactory fact, BcelWorld world, Expr e) {
+	public static InstructionList renderExpr(InstructionFactory fact, BytecodeWorld world, Expr e) {
 		BcelRenderer renderer = new BcelRenderer(fact, world);
 		e.accept(renderer);
 		return renderer.instructions;
 	}
 
-	public static InstructionList renderExpr(InstructionFactory fact, BcelWorld world, Expr e, Type desiredType) {
+	public static InstructionList renderExpr(InstructionFactory fact, BytecodeWorld world, Expr e, Type desiredType) {
 		BcelRenderer renderer = new BcelRenderer(fact, world);
 		e.accept(renderer);
 		InstructionList il = renderer.instructions;
@@ -72,7 +73,7 @@ public final class BcelRenderer implements ITestVisitor, IExprVisitor {
 		return il;
 	}
 
-	public static InstructionList renderExprs(InstructionFactory fact, BcelWorld world, Expr[] es) {
+	public static InstructionList renderExprs(InstructionFactory fact, BytecodeWorld world, Expr[] es) {
 		BcelRenderer renderer = new BcelRenderer(fact, world);
 		for (int i = es.length - 1; i >= 0; i--) {
 			es[i].accept(renderer);
@@ -94,7 +95,7 @@ public final class BcelRenderer implements ITestVisitor, IExprVisitor {
 	 *
 	 * @returns the instruction list representing this expression
 	 */
-	public static InstructionList renderTest(InstructionFactory fact, BcelWorld world, Test e, InstructionHandle sk,
+	public static InstructionList renderTest(InstructionFactory fact, BytecodeWorld world, Test e, InstructionHandle sk,
 			InstructionHandle fk, InstructionHandle next) {
 		BcelRenderer renderer = new BcelRenderer(fact, world);
 		renderer.recur(e, sk, fk, next);

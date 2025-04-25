@@ -145,4 +145,6 @@ public interface ReferenceTypeDelegate {
 
 	boolean hasAnnotations();
 
+	boolean isEclipseSourceTypeDelegate();
+
 }

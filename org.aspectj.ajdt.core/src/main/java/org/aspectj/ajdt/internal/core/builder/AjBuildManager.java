@@ -89,6 +89,8 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.problem.DefaultProblemFactory;
 import org.aspectj.tools.ajc.Main;
 import org.aspectj.util.FileUtil;
+import org.aspectj.weaver.BytecodeWeaver;
+import org.aspectj.weaver.BytecodeWorld;
 import org.aspectj.weaver.CustomMungerFactory;
 import org.aspectj.weaver.Dump;
 import org.aspectj.weaver.ResolvedType;
@@ -157,11 +159,11 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		DO_RUNTIME_VERSION_CHECK = null != caller;
 	}
 
-	public BcelWeaver getWeaver() {
+	public BytecodeWeaver getWeaver() {
 		return state.getWeaver();
 	}
 
-	public BcelWorld getBcelWorld() {
+	public BytecodeWorld getBcelWorld() {
 		return state.getBcelWorld();
 	}
 
@@ -393,7 +395,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 			}
 			ret = !handler.hasErrors();
 			if (getBcelWorld() != null) {
-				final BcelWorld bcelWorld = getBcelWorld();
+				final BytecodeWorld bcelWorld = getBcelWorld();
 				bcelWorld.reportTimers();
 				bcelWorld.tidyUp();
 			}
@@ -1237,7 +1239,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 			}
 
 			private void addAspectName(String name, char[] fileContainingAspect) {
-				BcelWorld world = getBcelWorld();
+				BytecodeWorld world = getBcelWorld();
 				ResolvedType type = world.resolve(name);
 				// System.err.println("? writeAspectName() type=" + type);
 				if (type.isAspect()) {
@@ -1496,7 +1498,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 	 * @param forCompiler
 	 */
 	private void populateCompilerOptionsFromLintSettings(org.aspectj.org.eclipse.jdt.internal.compiler.Compiler forCompiler) {
-		BcelWorld world = this.state.getBcelWorld();
+		BytecodeWorld world = this.state.getBcelWorld();
 		IMessage.Kind swallowedExceptionKind = world.getLint().swallowedExceptionInCatchBlock.getKind();
 		Map<String, String> optionsMap = new HashMap<>();
 		optionsMap.put(CompilerOptions.OPTION_ReportSwallowedExceptionInCatchBlock, swallowedExceptionKind == null ? "ignore"

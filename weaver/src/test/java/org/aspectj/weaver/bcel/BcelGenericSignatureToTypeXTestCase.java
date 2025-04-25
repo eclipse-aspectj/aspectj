@@ -20,6 +20,7 @@ import org.aspectj.util.GenericSignature;
 import org.aspectj.util.GenericSignature.ClassSignature;
 import org.aspectj.util.GenericSignatureParser;
 import org.aspectj.util.LangUtil;
+import org.aspectj.weaver.BytecodeWorld;
 import org.aspectj.weaver.UnresolvedType;
 
 import junit.framework.TestCase;
@@ -41,7 +42,7 @@ public class BcelGenericSignatureToTypeXTestCase extends TestCase {
 	}
 
 	public void testEnumFromHell() throws Exception {
-		BcelWorld world = new BcelWorld();
+		BytecodeWorld world = new BcelWorld();
 		JavaClass javaLangEnum = Repository.lookupClass("java/lang/Enum");
 		GenericSignature.ClassSignature cSig = getGenericClassTypeSignature(javaLangEnum);
 		UnresolvedType superclass = BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(cSig.superclassSignature,
@@ -64,7 +65,7 @@ public class BcelGenericSignatureToTypeXTestCase extends TestCase {
 	}
 
 	public void testColonColon() throws Exception {
-		BcelWorld world = new BcelWorld();
+		BytecodeWorld world = new BcelWorld();
 		GenericSignature.ClassSignature cSig = new GenericSignatureParser()
 				.parseAsClassSignature("<T::Ljava/io/Serializable;>Ljava/lang/Object;Ljava/lang/Comparable<TT;>;");
 		UnresolvedType resolved = BcelGenericSignatureToTypeXConverter.classTypeSignature2TypeX(cSig.superclassSignature,

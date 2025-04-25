@@ -2044,4 +2044,8 @@ public abstract class World implements Dump.INode {
 		// override if interested in write events
 	}
 
+	public void deleteSourceObjectType(UnresolvedType ty) {
+		typeMap.remove(ty.getSignature());
+	}
+
 }

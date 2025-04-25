@@ -22,7 +22,7 @@ import junit.framework.TestCase;
 public class Member15Test extends TestCase {
 
 	  public void testCanBeParameterizedRegularMethod() {
-	    	BcelWorld world = new BcelWorld();
+	    	BytecodeWorld world = new BcelWorld();
 	    	ResolvedType javaLangClass = world.resolve(UnresolvedType.forName("java/lang/Class"));
 	    	ResolvedMember[] methods = javaLangClass.getDeclaredMethods();
 	    	ResolvedMember getAnnotations = null;
@@ -39,7 +39,7 @@ public class Member15Test extends TestCase {
 	    }
 
 	    public void testCanBeParameterizedGenericMethod() {
-	    	BcelWorld world = new BcelWorld();
+	    	BytecodeWorld world = new BcelWorld();
 	    	world.setBehaveInJava5Way(true);
 	    	ResolvedType javaLangClass = world.resolve(UnresolvedType.forName("java.lang.Class"));
 	    	javaLangClass = javaLangClass.getGenericType();
@@ -59,7 +59,7 @@ public class Member15Test extends TestCase {
 	    }
 
 	    public void testCanBeParameterizedMethodInGenericType() {
-	       	BcelWorld world = new BcelWorld();
+	       	BytecodeWorld world = new BcelWorld();
 	       	world.setBehaveInJava5Way(true);
 	    	ResolvedType javaUtilList = world.resolve(UnresolvedType.forName("java.util.List"));
 	    	javaUtilList = javaUtilList.getGenericType();

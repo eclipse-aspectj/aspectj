@@ -9,10 +9,7 @@
  * Contributors:
  *   Andy Clement, SpringSource
  * ******************************************************************/
-package org.aspectj.weaver.bcel;
-
-import org.aspectj.weaver.ReferenceType;
-import org.aspectj.weaver.ReferenceTypeDelegate;
+package org.aspectj.weaver;
 
 /**
  * A type delegate resolver is able to create type delegates for a named reference type.  A type delegate will implement

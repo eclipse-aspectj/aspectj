@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.aspectj.weaver.AdviceKind;
+import org.aspectj.weaver.BytecodeWorld;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.MemberImpl;
 import org.aspectj.weaver.Shadow;
@@ -52,7 +53,7 @@ public class AroundWeaveTestCase extends WeaveTestCase {
 
 
     private BcelAdvice makeAroundMunger(final boolean matchOnlyPrintln) {
-        BcelWorld world = super.world;
+        BytecodeWorld world = super.world;
         final Member sig =
             MemberImpl.method(
                 UnresolvedType.forName("Aspect"),

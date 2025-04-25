@@ -53,6 +53,7 @@ import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.BytecodeWorld;
 import org.aspectj.weaver.ConstantPoolReader;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.Lint;
@@ -129,7 +130,7 @@ public class Utility {
 		return nice.toString();
 	}
 
-	public static Instruction createSuperInvoke(InstructionFactory fact, BcelWorld world, Member signature) {
+	public static Instruction createSuperInvoke(InstructionFactory fact, BytecodeWorld world, Member signature) {
 		short kind;
 		if (Modifier.isInterface(signature.getModifiers())) {
 			throw new RuntimeException("bad");
@@ -145,7 +146,7 @@ public class Utility {
 				BcelWorld.makeBcelType(signature.getReturnType()), BcelWorld.makeBcelTypes(signature.getParameterTypes()), kind);
 	}
 
-	public static Instruction createInvoke(InstructionFactory fact, BcelWorld world, Member signature) {
+	public static Instruction createInvoke(InstructionFactory fact, BytecodeWorld world, Member signature) {
 		short kind;
 		int signatureModifiers = signature.getModifiers();
 		if (Modifier.isInterface(signatureModifiers)) {

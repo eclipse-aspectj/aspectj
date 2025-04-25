@@ -26,6 +26,8 @@ import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.Constants;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.LangUtil;
+import org.aspectj.weaver.BytecodeWeaver;
+import org.aspectj.weaver.BytecodeWorld;
 import org.aspectj.weaver.IUnwovenClassFile;
 import org.aspectj.weaver.Lint;
 import org.aspectj.weaver.Lint.Kind;
@@ -422,7 +424,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		// TODO proceedOnError option
 	}
 
-	private void registerAspectExclude(final BcelWeaver weaver, final ClassLoader loader, final List<Definition> definitions) {
+	private void registerAspectExclude(final BytecodeWeaver weaver, final ClassLoader loader, final List<Definition> definitions) {
 		String fastMatchInfo = null;
 		for (Definition definition : definitions) {
 			for (String exclude : definition.getAspectExcludePatterns()) {
@@ -436,7 +438,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		}
 	}
 
-	private void registerAspectInclude(final BcelWeaver weaver, final ClassLoader loader, final List<Definition> definitions) {
+	private void registerAspectInclude(final BytecodeWeaver weaver, final ClassLoader loader, final List<Definition> definitions) {
 		String fastMatchInfo = null;
 		for (Definition definition : definitions) {
 			for (String include : definition.getAspectIncludePatterns()) {
@@ -492,7 +494,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 					}
 					String definedScope = definition.getScopeForAspect(aspectClassName);
 					if (definedScope != null) {
-						((BcelWorld) weaver.getWorld()).addScopedAspect(aspectClassName, definedScope);
+						((BytecodeWorld) weaver.getWorld()).addScopedAspect(aspectClassName, definedScope);
 					}
 					// ResolvedType aspect =
 					weaver.addLibraryAspect(aspectClassName);
@@ -591,7 +593,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	 * @param loader
 	 * @param definitions
 	 */
-	private void registerIncludeExclude(final BcelWeaver weaver, final ClassLoader loader, final List<Definition> definitions) {
+	private void registerIncludeExclude(final BytecodeWeaver weaver, final ClassLoader loader, final List<Definition> definitions) {
 		String fastMatchInfo = null;
 		for (Definition definition : definitions) {
 			for (String value : definition.getIncludePatterns()) {
@@ -731,7 +733,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	 * @param loader
 	 * @param definitions
 	 */
-	private void registerDump(final BcelWeaver weaver, final ClassLoader loader, final List<Definition> definitions) {
+	private void registerDump(final BytecodeWeaver weaver, final ClassLoader loader, final List<Definition> definitions) {
 		for (Definition definition : definitions) {
 			for (String dump : definition.getDumpPatterns()) {
 				TypePattern pattern = new PatternParser(dump).parseTypePattern();

@@ -170,4 +170,9 @@ public abstract class AbstractReferenceTypeDelegate implements ReferenceTypeDele
 	public boolean hasBeenWoven() {
 		return false;
 	}
+	
+	@Override
+	public boolean isEclipseSourceTypeDelegate() {
+		return false;
+	}
 }

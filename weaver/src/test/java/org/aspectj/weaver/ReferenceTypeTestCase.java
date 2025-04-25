@@ -27,7 +27,7 @@ import junit.framework.TestCase;
 public class ReferenceTypeTestCase extends TestCase {
 
 	public void testIsRawTrue() {
-		BcelWorld world = new BcelWorld();
+		BytecodeWorld world = new BcelWorld();
 		world.setBehaveInJava5Way(true);
 		UnresolvedType javaLangClass = UnresolvedType.forName("java.lang.Class");
 		ResolvedType rtx = world.resolve(javaLangClass);
@@ -37,7 +37,7 @@ public class ReferenceTypeTestCase extends TestCase {
 	}
 
 	public void testIsRawFalse() {
-		BcelWorld world = new BcelWorld();
+		BytecodeWorld world = new BcelWorld();
 		world.setBehaveInJava5Way(true);
 		UnresolvedType javaLangObject = UnresolvedType.forName("java.lang.Object");
 		ResolvedType rtx = world.resolve(javaLangObject);
@@ -47,7 +47,7 @@ public class ReferenceTypeTestCase extends TestCase {
 	}
 
 	public void testIsGenericTrue() {
-		BcelWorld world = new BcelWorld();
+		BytecodeWorld world = new BcelWorld();
 		world.setBehaveInJava5Way(true);
 		UnresolvedType javaLangClass = UnresolvedType.forName("java.lang.Class");
 		ResolvedType rtx = world.resolve(javaLangClass);
@@ -55,14 +55,14 @@ public class ReferenceTypeTestCase extends TestCase {
 	}
 
 	public void testIsGenericFalse() {
-		BcelWorld world = new BcelWorld();
+		BytecodeWorld world = new BcelWorld();
 		world.setBehaveInJava5Way(true);
 		UnresolvedType javaLangObject = UnresolvedType.forName("java.lang.Object");
 		ResolvedType rtx = world.resolve(javaLangObject);
 		assertFalse(rtx.isGenericType());
 	}
 
-	BcelWorld world;
+	BytecodeWorld world;
 
 	@Override
 	public void setUp() throws Exception {

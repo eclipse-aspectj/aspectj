@@ -43,11 +43,13 @@
       <artifactId>runtime</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!--
     <dependency>
       <groupId>org.aspectj</groupId>
       <artifactId>bcel-builder</artifactId>
       <version>${project.version}</version>
     </dependency>
+    -->
     <dependency>
       <groupId>org.aspectj</groupId>
       <artifactId>testing-util</artifactId>

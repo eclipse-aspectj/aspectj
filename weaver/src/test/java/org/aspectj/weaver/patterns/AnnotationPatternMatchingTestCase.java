@@ -18,6 +18,7 @@ import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.weaver.BytecodeWorld;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.WeaverTestCase;
@@ -58,7 +59,7 @@ import junit.framework.TestCase;
  */
 public class AnnotationPatternMatchingTestCase extends TestCase {
 
-	private BcelWorld world;
+	private BytecodeWorld world;
 	private AnnotationTypePattern fooTP, simpleAnnotationTP;
 
 	private ResolvedType loadType(String name) {

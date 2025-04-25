@@ -57,15 +57,16 @@ import org.aspectj.org.eclipse.jdt.internal.core.builder.ReferenceCollection;
 import org.aspectj.org.eclipse.jdt.internal.core.builder.StringSet;
 import org.aspectj.util.FileUtil;
 import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.BytecodeWeaver;
+import org.aspectj.weaver.BytecodeWorld;
 import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ReferenceTypeDelegate;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.UnwovenClassFile;
 import org.aspectj.weaver.bcel.BcelClazz;
-import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
-import org.aspectj.weaver.bcel.TypeDelegateResolver;
+import org.aspectj.weaver.TypeDelegateResolver;
 
 /**
  * Maintains state needed for incremental compilation
@@ -209,8 +210,8 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 
 	SoftHashMap/* <baseDir,SoftHashMap<theFile,className>> */fileToClassNameMap = new SoftHashMap();
 
-	private BcelWeaver weaver;
-	private BcelWorld world;
+	private BytecodeWeaver weaver;
+	private BytecodeWorld world;
 
 	// --- below here is unsorted state
 
@@ -1424,7 +1425,7 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 			if (compiledTypes != null) {
 				for (char[] className : (Iterable<char[]>) compiledTypes.keySet()) {
 					String typeName = new String(className).replace('/', '.');
-					if (!typeName.contains(BcelWeaver.SYNTHETIC_CLASS_POSTFIX)) {
+					if (!typeName.contains(BytecodeWeaver.SYNTHETIC_CLASS_POSTFIX)) {
 						ResolvedType rt = world.resolve(typeName);
 						if (rt.isMissing()) {
 							// This can happen in a case where another problem has occurred that prevented it being
@@ -2319,20 +2320,20 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 		return structureModel;
 	}
 
-	public void setWeaver(BcelWeaver bw) {
+	public void setWeaver(BytecodeWeaver bw) {
 		weaver = bw;
 	}
 
-	public BcelWeaver getWeaver() {
+	public BytecodeWeaver getWeaver() {
 		return weaver;
 	}
 
-	public void setWorld(BcelWorld bw) {
+	public void setWorld(BytecodeWorld bw) {
 		world = bw;
 		world.addTypeDelegateResolver(this);
 	}
 
-	public BcelWorld getBcelWorld() {
+	public BytecodeWorld getBcelWorld() {
 		return world;
 	}
 
@@ -2447,7 +2448,7 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 		public void deleteFromFileSystem(AjBuildConfig buildConfig) {
 			String namePrefix = locationOnDisk.getName();
 			namePrefix = namePrefix.substring(0, namePrefix.lastIndexOf('.'));
-			final String targetPrefix = namePrefix + BcelWeaver.CLOSURE_CLASS_PREFIX;
+			final String targetPrefix = namePrefix + BytecodeWeaver.CLOSURE_CLASS_PREFIX;
 			File dir = locationOnDisk.getParentFile();
 			if (dir != null) {
 				File[] weaverGenerated = dir.listFiles(new FilenameFilter() {
@@ -2551,7 +2552,7 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 		try {
 			ClassParser parser = new ClassParser(f.toString());
 			// TODO Pass the f into a world operation - removing bcel from AjState
-			return world.buildBcelDelegate(referenceType, BcelClazz.asBcelClazz(parser.parse()), true, false);
+			return ((BcelWorld)world).buildBcelDelegate(referenceType, BcelClazz.asBcelClazz(parser.parse()), true, false);
 		} catch (IOException e) {
 			IMessage msg = new Message("Failed to recover " + referenceType, referenceType.getDelegate()!=null?referenceType.getSourceLocation():null, false);
 			buildManager.handler.handleMessage(msg);

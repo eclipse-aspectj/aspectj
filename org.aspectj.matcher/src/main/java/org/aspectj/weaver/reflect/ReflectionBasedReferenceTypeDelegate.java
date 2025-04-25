@@ -400,4 +400,9 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 	public boolean hasBeenWoven() {
 		return false;
 	}
+
+	@Override
+	public boolean isEclipseSourceTypeDelegate() {
+		return false;
+	}
 }

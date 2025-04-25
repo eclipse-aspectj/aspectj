@@ -64,6 +64,7 @@ import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AjcMemberMaker;
 import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.BCException;
+import org.aspectj.weaver.BytecodeWorld;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.IClassWeaver;
 import org.aspectj.weaver.IntMap;
@@ -349,7 +350,7 @@ class BcelClassWeaver implements IClassWeaver {
 	/**
 	 * Create a single bridge method called 'theBridgeMethod' that bridges to 'whatToBridgeTo'
 	 */
-	private static void createBridgeMethod(BcelWorld world, LazyMethodGen whatToBridgeToMethodGen, LazyClassGen clazz, ResolvedMember theBridgeMethod) {
+	private static void createBridgeMethod(BytecodeWorld world, LazyMethodGen whatToBridgeToMethodGen, LazyClassGen clazz, ResolvedMember theBridgeMethod) {
 		InstructionList body;
 		InstructionFactory fact;
 		int pos = 0;
@@ -773,7 +774,7 @@ class BcelClassWeaver implements IClassWeaver {
 	 *
 	 * See pr108101
 	 */
-	public static boolean calculateAnyRequiredBridgeMethods(BcelWorld world, LazyClassGen clazz) {
+	public static boolean calculateAnyRequiredBridgeMethods(BytecodeWorld world, LazyClassGen clazz) {
 		world.ensureAdvancedConfigurationProcessed();
 
 		if (!world.isInJava5Mode()) {
