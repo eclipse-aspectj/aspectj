@@ -134,5 +134,25 @@ class BoundedReferenceTypeDelegate extends AbstractReferenceTypeDelegate {
 	public TypeVariable[] getTypeVariables() {
 		return resolvedTypeX.getTypeVariables();
 	}
+	
+	@Override
+	public String getFilename() {
+		throw new IllegalStateException();
+	}
+
+	@Override
+	public void setJavaClass(Clazz unwovenClass, boolean b) {
+		throw new IllegalStateException();
+	}
+	
+	@Override
+	public byte[] getBytes() {
+		throw new IllegalStateException();
+	}
+	
+	@Override
+	public Clazz getClazzHolder() {
+		throw new IllegalStateException();
+	}
 
 }

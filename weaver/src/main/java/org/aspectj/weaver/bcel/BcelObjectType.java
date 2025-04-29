@@ -185,6 +185,10 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 		initializeFromJavaclass();
 	}
 
+	public void setJavaClass(Clazz newclass, boolean artificial) {
+		setJavaClass(((BcelClazz)newclass).getJavaClass(),artificial);
+	}
+
 	@Override
 	public boolean isCacheable() {
 		return true;
@@ -1021,5 +1025,26 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 
 	public boolean isWeavable() {
 		return true;
+	}
+
+	public void setBytes(byte[] bytes) {
+		JavaClass newJavaClass = Utility.makeJavaClass(getJavaClass().getFileName(), bytes);
+		setJavaClass(newJavaClass, true);
+		getResolvedTypeX().ensureConsistent();
+	}
+
+	@Override
+	public byte[] getBytes() {
+		return javaClass.getBytes();
+	}
+	
+	@Override
+	public String getFilename() {
+		return javaClass.getFileName();
+	}
+	
+	@Override
+	public Clazz getClazzHolder() {
+		return BcelClazz.asBcelClazz(javaClass);
 	}
 }

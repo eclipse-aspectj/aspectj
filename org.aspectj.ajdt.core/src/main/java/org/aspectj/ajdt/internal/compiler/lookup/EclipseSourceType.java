@@ -68,6 +68,7 @@ import org.aspectj.weaver.AnnotationValue;
 import org.aspectj.weaver.ArrayAnnotationValue;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ClassAnnotationValue;
+import org.aspectj.weaver.Clazz;
 import org.aspectj.weaver.EnumAnnotationValue;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
@@ -1229,5 +1230,24 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	public boolean isEclipseSourceTypeDelegate() {
 		return true;
 	}
+	
+	@Override
+	public byte[] getBytes() {
+		return null;
+	}
 
+	@Override
+	public void setJavaClass(Clazz unwovenClass, boolean b) {
+		throw new IllegalStateException();
+	}
+	
+	@Override
+	public String getFilename() {
+		throw new IllegalStateException();
+	}
+	
+	@Override
+	public Clazz getClazzHolder() {
+		throw new IllegalStateException();
+	}
 }

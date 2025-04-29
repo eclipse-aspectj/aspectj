@@ -41,4 +41,9 @@ public class BcelClazz implements Clazz {
 	public boolean isJavaLangObject() {
 		return javaClass.getSuperclassNameIndex() == 0;
 	}
+
+	@Override
+	public byte[] getBytes() {
+		return javaClass.getBytes();
+	}
 }

@@ -473,10 +473,21 @@ public class BcelWorld extends BytecodeWorld/* implements Repository*/ {
 		return buf.toString();
 	}
 
-	/**
-	 * Retrieve a bcel delegate for an aspect - this will return NULL if the delegate is an EclipseSourceType and not a
-	 * BcelObjectType - this happens quite often when incrementally compiling.
-	 */
+	public ReferenceTypeDelegate getReferenceTypeDelegateIfBytecodey(ResolvedType concreteAspect) {
+		if (concreteAspect == null) {
+			return null;
+		}
+		if (!(concreteAspect instanceof ReferenceType)) { // Might be Missing
+			return null;
+		}
+		ReferenceTypeDelegate rtDelegate = ((ReferenceType) concreteAspect).getDelegate();
+		if (rtDelegate instanceof BcelObjectType) {
+			return (BcelObjectType) rtDelegate;
+		} else {
+			return null;
+		}
+	}
+
 	public static BcelObjectType getBcelObjectType(ResolvedType concreteAspect) {
 		if (concreteAspect == null) {
 			return null;
@@ -491,6 +502,25 @@ public class BcelWorld extends BytecodeWorld/* implements Repository*/ {
 			return null;
 		}
 	}
+	
+//	/**
+//	 * Retrieve a bcel delegate for an aspect - this will return NULL if the delegate is an EclipseSourceType and not a
+//	 * BcelObjectType - this happens quite often when incrementally compiling.
+//	 */
+//	public static BcelObjectType getBcelObjectType(ResolvedType concreteAspect) {
+//		if (concreteAspect == null) {
+//			return null;
+//		}
+//		if (!(concreteAspect instanceof ReferenceType)) { // Might be Missing
+//			return null;
+//		}
+//		ReferenceTypeDelegate rtDelegate = ((ReferenceType) concreteAspect).getDelegate();
+//		if (rtDelegate instanceof BcelObjectType) {
+//			return (BcelObjectType) rtDelegate;
+//		} else {
+//			return null;
+//		}
+//	}
 
 	public void tidyUp() {
 		// At end of compile, close any open files so deletion of those archives
@@ -871,6 +901,10 @@ public class BcelWorld extends BytecodeWorld/* implements Repository*/ {
 
 	public void storeClass(JavaClass unwovenJavaClass) {
 		delegate.storeClass(unwovenJavaClass);
+	}
+
+	public void storeClass(Clazz unwovenJavaClass) {
+		delegate.storeClass(((BcelClazz)unwovenJavaClass).getJavaClass());
 	}
 	
 }

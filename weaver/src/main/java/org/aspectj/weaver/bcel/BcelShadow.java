@@ -1996,7 +1996,7 @@ public class BcelShadow extends Shadow {
 			return; // Don't initialize statics in interfaces
 		}
 		ResolvedType aspectRT = munger.getConcreteAspect();
-		BcelWorld.getBcelObjectType(aspectRT);
+		getWorld().getReferenceTypeDelegateIfBytecodey(aspectRT); // TODO why call this?
 
 		// Although matched, if the visibility rules prevent the aspect from seeing this type, don't
 		// insert any code (easier to do it here than try to affect the matching logic, unfortunately)

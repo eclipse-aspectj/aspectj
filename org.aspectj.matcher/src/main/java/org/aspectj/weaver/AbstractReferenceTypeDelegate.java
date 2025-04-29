@@ -19,7 +19,6 @@ import java.util.List;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.util.GenericSignature;
 import org.aspectj.util.GenericSignature.ClassSignature;
-import org.aspectj.util.GenericSignature.FormalTypeParameter;
 import org.aspectj.util.GenericSignatureParser;
 import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 
@@ -175,4 +174,33 @@ public abstract class AbstractReferenceTypeDelegate implements ReferenceTypeDele
 	public boolean isEclipseSourceTypeDelegate() {
 		return false;
 	}
+	
+	@Override
+	public void finishedWith() {
+	}
+	
+	@Override
+	public void weavingCompleted() {
+	}
+	
+	@Override
+	public byte[] getBytes() {
+		throw new IllegalStateException();
+	}
+	
+	@Override
+	public Object getLazyClassGen() {
+		throw new IllegalStateException();
+	}
+	
+	@Override
+	public boolean isSynthetic() {
+		throw new IllegalStateException();
+	}
+	
+	@Override
+	public void setBytes(byte[] bytes) {
+		throw new IllegalStateException();
+	}
+	
 }

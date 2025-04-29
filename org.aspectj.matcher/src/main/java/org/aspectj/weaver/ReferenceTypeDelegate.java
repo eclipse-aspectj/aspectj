@@ -14,6 +14,7 @@ package org.aspectj.weaver;
 
 import java.util.Collection;
 
+import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.patterns.Declare;
 import org.aspectj.weaver.patterns.PerClause;
@@ -146,5 +147,25 @@ public interface ReferenceTypeDelegate {
 	boolean hasAnnotations();
 
 	boolean isEclipseSourceTypeDelegate();
+
+	byte[] getBytes();
+
+	String getFilename();
+
+	void setJavaClass(Clazz unwovenClass, boolean b);
+
+	void finishedWith();
+
+	void weavingCompleted();
+
+	Clazz getClazzHolder();
+
+	Object getLazyClassGen();
+
+	ISourceLocation getSourceLocation();
+
+	boolean isSynthetic();
+
+	void setBytes(byte[] bytes);
 
 }

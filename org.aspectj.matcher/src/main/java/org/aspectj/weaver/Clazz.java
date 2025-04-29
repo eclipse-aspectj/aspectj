@@ -12,5 +12,7 @@ public interface Clazz {
 	String getSourceFileName();
 
 	boolean isJavaLangObject();
+	
+	byte[] getBytes();
 
 }

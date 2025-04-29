@@ -511,4 +511,5 @@ public abstract class BytecodeWorld extends World {
 	// TODO what on earth does this method do, what is 'source'
 	protected abstract AbstractReferenceTypeDelegate addSourceObjectType(Clazz clazz, boolean b);
 
+	public abstract ReferenceTypeDelegate getReferenceTypeDelegateIfBytecodey(ResolvedType concreteAspect);
 }

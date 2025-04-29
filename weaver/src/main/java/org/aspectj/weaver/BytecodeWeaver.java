@@ -7,7 +7,6 @@
  *******************************************************************************/
 package org.aspectj.weaver;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
@@ -27,16 +26,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.jar.Attributes;
+import java.util.jar.Attributes.Name;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
-import java.util.jar.Attributes.Name;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import org.aspectj.apache.bcel.classfile.ClassParser;
-import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.asm.internal.AspectJElementHierarchy;
@@ -51,11 +48,8 @@ import org.aspectj.bridge.context.ContextToken;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.FuzzyBoolean;
 import org.aspectj.weaver.bcel.BcelObjectType;
-import org.aspectj.weaver.bcel.BcelPerClauseAspectAdder;
-import org.aspectj.weaver.bcel.BcelTypeMunger;
-import org.aspectj.weaver.bcel.BcelWorld;
+//import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.weaver.bcel.LazyClassGen;
-import org.aspectj.weaver.bcel.Utility;
 import org.aspectj.weaver.model.AsmRelationshipProvider;
 import org.aspectj.weaver.patterns.AndPointcut;
 import org.aspectj.weaver.patterns.BindingPattern;
@@ -70,6 +64,7 @@ import org.aspectj.weaver.patterns.KindedPointcut;
 import org.aspectj.weaver.patterns.NameBindingPointcut;
 import org.aspectj.weaver.patterns.NotPointcut;
 import org.aspectj.weaver.patterns.OrPointcut;
+import org.aspectj.weaver.patterns.PerClause.Kind;
 import org.aspectj.weaver.patterns.Pointcut;
 import org.aspectj.weaver.patterns.PointcutRewriter;
 import org.aspectj.weaver.patterns.WithinPointcut;
@@ -721,13 +716,12 @@ public abstract class BytecodeWeaver {
 					String className = classFile.getClassName();
 					ResolvedType theType = world.resolve(className);
 					if (theType.isAnnotationStyleAspect()) {
-						BcelObjectType classType = BcelWorld.getBcelObjectType(theType);
+						ReferenceTypeDelegate classType = getWorld().getReferenceTypeDelegateIfBytecodey(theType);
 						if (classType == null) {
 							throw new BCException("Can't find bcel delegate for " + className + " type=" + theType.getClass());
 						}
-						LazyClassGen clazz = classType.getLazyClassGen();
-						BcelPerClauseAspectAdder selfMunger = new BcelPerClauseAspectAdder(theType, theType.getPerClause().getKind());
-						selfMunger.forceMunge(clazz, true);
+						LazyClassGen clazz = (LazyClassGen)classType.getLazyClassGen();
+						makePerClauseAspectAdder(theType, theType.getPerClause().getKind(), clazz, true);
 						classType.finishedWith();
 						UnwovenClassFile[] newClasses = getClassFilesFor(clazz);
 						for (UnwovenClassFile newClass : newClasses) {
@@ -751,7 +745,7 @@ public abstract class BytecodeWeaver {
 			UnwovenClassFile classFile = i.next();
 			if (classFile.shouldBeWoven()) {
 				String className = classFile.getClassName();
-				BcelObjectType classType = getClassType(className);
+				ReferenceTypeDelegate classType = getClassType(className);
 
 				// null return from getClassType() means the delegate is an eclipse
 				// source type - so
@@ -809,7 +803,7 @@ public abstract class BytecodeWeaver {
 				String className = classFile.getClassName();
 				ResolvedType theType = world.resolve(className);
 				if (theType.isAspect()) {
-					BcelObjectType classType = BcelWorld.getBcelObjectType(theType);
+					ReferenceTypeDelegate classType = getWorld().getReferenceTypeDelegateIfBytecodey(theType);
 					if (classType == null) {
 
 						// Sometimes.. if the Bcel Delegate couldn't be found then a
@@ -841,7 +835,7 @@ public abstract class BytecodeWeaver {
 				String className = classFile.getClassName();
 				ResolvedType theType = world.resolve(className);
 				if (!theType.isAspect()) {
-					BcelObjectType classType = BcelWorld.getBcelObjectType(theType);
+					ReferenceTypeDelegate classType = getWorld().getReferenceTypeDelegateIfBytecodey(theType);
 					if (classType == null) {
 
 						// bug 119882 - see above comment for bug 113531
@@ -876,6 +870,8 @@ public abstract class BytecodeWeaver {
 	}
 
 	
+	protected abstract ConcreteTypeMunger makePerClauseAspectAdder(ResolvedType theType, Kind kind, LazyClassGen clazz, boolean b);
+
 	/**
 	 * 'typeToWeave' is one from the 'typesForWeaving' list. This routine ensures we process supertypes (classes/interfaces) of
 	 * 'typeToWeave' that are in the 'typesForWeaving' list before 'typeToWeave' itself. 'typesToWeave' is then removed from the
@@ -1025,15 +1021,17 @@ public abstract class BytecodeWeaver {
 				didSomething = true;
 				ResolvedTypeMunger newAnnotationTM = new AnnotationOnTypeMunger(annoX);
 				newAnnotationTM.setSourceLocation(decA.getSourceLocation());
-				onType.addInterTypeMunger(new BcelTypeMunger(newAnnotationTM, decA.getAspect().resolve(getWorld())), false);
+				ConcreteTypeMunger concreteTypeMunger = makeTypeMunger(newAnnotationTM, decA.getAspect().resolve(getWorld()));
+				onType.addInterTypeMunger(concreteTypeMunger, false);
 				decA.copyAnnotationTo(onType);
 			}
 		}
 		return didSomething;
 	}
 
+	public abstract ConcreteTypeMunger makeTypeMunger(ResolvedTypeMunger resolvedTypeMunger, ResolvedType aspect);
 
-	private void weaveAndNotify(UnwovenClassFile classFile, BcelObjectType classType, IWeaveRequestor requestor) throws IOException {
+	private void weaveAndNotify(UnwovenClassFile classFile, ReferenceTypeDelegate classType, IWeaveRequestor requestor) throws IOException {
 		trace.enter("weaveAndNotify", this, new Object[] { classFile, classType, requestor });
 
 		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.WEAVING_TYPE, classType
@@ -1078,7 +1076,7 @@ public abstract class BytecodeWeaver {
 		List<ResolvedType> newParents = p.findMatchingNewParents(onType, true);
 		if (!newParents.isEmpty()) {
 			didSomething = true;
-			BcelWorld.getBcelObjectType(onType);
+			getWorld().getReferenceTypeDelegateIfBytecodey(onType);
 			// System.err.println("need to do declare parents for: " + onType);
 			for (ResolvedType newParent : newParents) {
 				// We set it here so that the imminent matching for ITDs can
@@ -1092,7 +1090,7 @@ public abstract class BytecodeWeaver {
 					newParentMunger.setIsMixin(true);
 				}
 				newParentMunger.setSourceLocation(p.getSourceLocation());
-				onType.addInterTypeMunger(new BcelTypeMunger(newParentMunger, xcutSet.findAspectDeclaringParents(p)), false);
+				onType.addInterTypeMunger(makeTypeMunger(newParentMunger, xcutSet.findAspectDeclaringParents(p)), false);
 			}
 		}
 		return didSomething;
@@ -1125,17 +1123,17 @@ public abstract class BytecodeWeaver {
 		return ret;
 	}
 
-	protected abstract LazyClassGen weave(UnwovenClassFile classFile, BcelObjectType classType, boolean dump) throws IOException;
+	protected abstract LazyClassGen weave(UnwovenClassFile classFile, ReferenceTypeDelegate classType, boolean dump) throws IOException;
 	
 	// exposed for ClassLoader dynamic weaving
-	public LazyClassGen weaveWithoutDump(UnwovenClassFile classFile, BcelObjectType classType) throws IOException {
+	public LazyClassGen weaveWithoutDump(UnwovenClassFile classFile, ReferenceTypeDelegate classType) throws IOException {
 		return weave(classFile, classType, false);
 	}
 
 	public void prepareToProcessReweavableState() {
 	}
 
-	public void processReweavableStateIfPresent(String className, BcelObjectType classType) {
+	public void processReweavableStateIfPresent(String className, ReferenceTypeDelegate classType) {
 		// If the class is marked reweavable, check any aspects around when it
 		// was built are in this world
 		WeaverStateInfo wsi = classType.getWeaverState();
@@ -1190,13 +1188,10 @@ public abstract class BytecodeWeaver {
 							MessageUtil.error(
 							WeaverMessages.format(WeaverMessages.MUST_KEEP_OVERWEAVING_ONCE_START,
 									className)));
-//									onType.getName(), annoX.getTypeName(), annoX.getValidTargets()),
-//							decA.getSourceLocation()));
+//									onType.getName(), annoX.getTypeName(), annoX.getValidTargets()), decA.getSourceLocation()));
 				} else {
-					byte[] bytes = wsi.getUnwovenClassFileData(classType.getJavaClass().getBytes());
-					JavaClass newJavaClass = Utility.makeJavaClass(classType.getJavaClass().getFileName(), bytes);
-					classType.setJavaClass(newJavaClass, true);
-					classType.getResolvedTypeX().ensureConsistent();
+					byte[] bytes = wsi.getUnwovenClassFileData(classType.getClazzHolder()/*classType.getJavaClass()*/.getBytes());
+					classType.setBytes(bytes);
 				}
 			}
 			// } else {
@@ -1239,8 +1234,8 @@ public abstract class BytecodeWeaver {
 	/**
 	 * helper method - will return NULL if the underlying delegate is an EclipseSourceType and not a BcelObjectType
 	 */
-	public BcelObjectType getClassType(String forClass) {
-		return BcelWorld.getBcelObjectType(getWorld().resolve(forClass));
+	public ReferenceTypeDelegate getClassType(String forClass) {
+		return getWorld().getReferenceTypeDelegateIfBytecodey(getWorld().resolve(forClass));
 	}
 
 
@@ -1302,7 +1297,7 @@ public abstract class BytecodeWeaver {
 	}
 
 
-	protected void checkDeclareTypeErrorOrWarning(BytecodeWorld world2, BcelObjectType classType) {
+	protected void checkDeclareTypeErrorOrWarning(BytecodeWorld world2, ReferenceTypeDelegate classType) {
 		List<DeclareTypeErrorOrWarning> dteows = getWorld().getDeclareTypeEows();
 		for (DeclareTypeErrorOrWarning dteow : dteows) {
 			if (dteow.getTypePattern().matchesStatically(classType.getResolvedTypeX())) {

@@ -23,11 +23,14 @@ import org.aspectj.weaver.BytecodeWorld;
 import org.aspectj.weaver.Clazz;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.ReferenceType;
+import org.aspectj.weaver.ReferenceTypeDelegate;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.UnwovenClassFile;
 import org.aspectj.weaver.WeaverStateInfo;
+import org.aspectj.weaver.patterns.PerClause.Kind;
 
 /**
  *
@@ -100,12 +103,16 @@ public class BcelWeaver extends BytecodeWeaver {
 			// Bug 119657 ensure we use the unwoven aspect
 			WeaverStateInfo wsi = type.getWeaverState();
 			if (wsi != null && wsi.isReweavable()) {
-				BcelObjectType classType = getClassType(type.getName());
-				JavaClass wovenJavaClass = classType.getJavaClass();
-				byte[] bytes = wsi.getUnwovenClassFileData(wovenJavaClass.getBytes());
-				JavaClass unwovenJavaClass = Utility.makeJavaClass(wovenJavaClass.getFileName(), bytes);
-				world.storeClass(unwovenJavaClass);
-				classType.setJavaClass(unwovenJavaClass, true);
+				ReferenceTypeDelegate classType2 = getClassType(type.getName());
+//				byte[] bytes = wsi.getUnwovenClassFileData(classType2.getBytes());
+//				BcelObjectType classType = getClassType(type.getName());
+//				JavaClass wovenJavaClass = classType.getJavaClass();
+				byte[] bytes = wsi.getUnwovenClassFileData(classType2.getBytes());
+				Clazz unwovenClass = makeClazz(classType2.getFilename(), bytes);
+//				JavaClass unwovenJavaClass = Utility.makeJavaClass(wovenJavaClass.getFileName(), bytes);
+				world.storeClass(unwovenClass);
+				classType2.setJavaClass(unwovenClass, true);
+//				classType.setJavaClass(unwovenJavaClass, true);
 			}
 
 			// TODO AV - happens to reach that a lot of time: for each type
@@ -165,7 +172,7 @@ public class BcelWeaver extends BytecodeWeaver {
 		return ret;
 	}
 
-	protected LazyClassGen weave(UnwovenClassFile classFile, BcelObjectType classType, boolean dump) throws IOException {
+	protected LazyClassGen weave(UnwovenClassFile classFile, ReferenceTypeDelegate classType, boolean dump) throws IOException {
 		try {
 			if (classType.isSynthetic()) { // Don't touch synthetic classes
 				if (dump) {
@@ -204,7 +211,7 @@ public class BcelWeaver extends BytecodeWeaver {
 
 			LazyClassGen clazz = null;
 			if (mightNeedToWeave || mightNeedBridgeMethods) {
-				clazz = classType.getLazyClassGen();
+				clazz = (LazyClassGen)classType.getLazyClassGen();
 				// System.err.println("got lazy gen: " + clazz + ", " +
 				// clazz.getWeaverState());
 				try {
@@ -305,6 +312,17 @@ public class BcelWeaver extends BytecodeWeaver {
 		} finally {
 			world.demote();
 		}
+	}
+
+	public BcelTypeMunger makeTypeMunger(ResolvedTypeMunger resolvedTypeMunger, ResolvedType aspect) {
+		return new BcelTypeMunger(resolvedTypeMunger, aspect);
+	}
+
+	@Override
+	protected ConcreteTypeMunger makePerClauseAspectAdder(ResolvedType theType, Kind kind, LazyClassGen clazz, boolean checkAlreadyThere) {
+		BcelPerClauseAspectAdder bcelPerClauseAspectAdder = new BcelPerClauseAspectAdder(theType, kind);
+		bcelPerClauseAspectAdder.forceMunge(clazz, checkAlreadyThere);
+		return bcelPerClauseAspectAdder;
 	}
 
 }

@@ -20,9 +20,11 @@ import java.net.URLClassLoader;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.AnnotationTargetKind;
+import org.aspectj.weaver.Clazz;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ReferenceType;
@@ -404,5 +406,53 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 	@Override
 	public boolean isEclipseSourceTypeDelegate() {
 		return false;
+	}
+	
+	@Override
+	public byte[] getBytes() {
+		throw new IllegalStateException();
+	}
+	
+	@Override
+	public void setJavaClass(Clazz unwovenClass, boolean b) {
+		throw new IllegalStateException();
+	}
+	
+	@Override
+	public String getFilename() {
+		throw new IllegalStateException();
+	}
+
+	@Override
+	public void finishedWith() {
+	}
+	
+	@Override
+	public void weavingCompleted() {
+	}
+
+	@Override
+	public Clazz getClazzHolder() {
+		throw new IllegalStateException();
+	}
+
+	@Override
+	public Object getLazyClassGen() {
+		throw new IllegalStateException();
+	}
+
+	@Override
+	public ISourceLocation getSourceLocation() {
+		throw new IllegalStateException();
+	}
+
+	@Override
+	public boolean isSynthetic() {
+		throw new IllegalStateException();
+	}
+	
+	@Override
+	public void setBytes(byte[] bytes) {
+		throw new IllegalStateException();
 	}
 }

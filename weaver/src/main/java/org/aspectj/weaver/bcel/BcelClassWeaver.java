@@ -1148,7 +1148,7 @@ class BcelClassWeaver implements IClassWeaver {
 							WeaveMessage.WEAVEMESSAGE_ANNOTATES,
 							new String[] { sig.toString(), loc.toString(), decaM.getAnnotationString(),
 									methodName.startsWith("<init>") ? "constructor" : "method", decaM.getAspect().toString(),
-											Utility.beautifyLocation(decaM.getSourceLocation()) }));
+											org.aspectj.weaver.Utility.beautifyLocation(decaM.getSourceLocation()) }));
 		}
 	}
 
@@ -1579,7 +1579,7 @@ class BcelClassWeaver implements IClassWeaver {
 							isRemove ? WeaveMessage.WEAVEMESSAGE_REMOVES_ANNOTATION : WeaveMessage.WEAVEMESSAGE_ANNOTATES,
 									new String[] { theField.getFieldAsIs().toString() + "' of type '" + clazz.getName(),
 											clazz.getFileName(), decaf.getAnnotationString(), "field", decaf.getAspect().toString(),
-											Utility.beautifyLocation(decaf.getSourceLocation()) }));
+											org.aspectj.weaver.Utility.beautifyLocation(decaf.getSourceLocation()) }));
 		}
 	}
 

@@ -151,5 +151,25 @@ public class GeneratedReferenceTypeDelegate extends AbstractReferenceTypeDelegat
 	public TypeVariable[] getTypeVariables() {
 		throw new UnsupportedOperationException("Not supported for GeneratedReferenceTypeDelegate");
 	}
+	
+	@Override
+	public String getFilename() {
+		throw new UnsupportedOperationException("Not supported for GeneratedReferenceTypeDelegate");
+	}
+
+	@Override
+	public void setJavaClass(Clazz unwovenClass, boolean b) {
+		throw new UnsupportedOperationException("Not supported for GeneratedReferenceTypeDelegate");
+	}
+	
+	@Override
+	public byte[] getBytes() {
+		throw new UnsupportedOperationException("Not supported for GeneratedReferenceTypeDelegate");
+	}
+	
+	@Override
+	public Clazz getClazzHolder() {
+		throw new UnsupportedOperationException("Not supported for GeneratedReferenceTypeDelegate");
+	}
 
 }
