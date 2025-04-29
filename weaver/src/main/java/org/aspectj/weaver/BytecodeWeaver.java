@@ -47,6 +47,7 @@ import org.aspectj.bridge.context.CompilationAndWeavingContext;
 import org.aspectj.bridge.context.ContextToken;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.FuzzyBoolean;
+import org.aspectj.weaver.bcel.BcelWorld;
 import org.aspectj.weaver.model.AsmRelationshipProvider;
 import org.aspectj.weaver.patterns.AndPointcut;
 import org.aspectj.weaver.patterns.BindingPattern;
@@ -70,8 +71,10 @@ import org.aspectj.weaver.tools.TraceFactory;
 
 public abstract class BytecodeWeaver {
 
-	protected static Trace trace = TraceFactory.getTraceFactory().getTrace(BytecodeWeaver.class);
+	protected transient final BytecodeWorld world;
 	
+	protected static Trace trace = TraceFactory.getTraceFactory().getTrace(BytecodeWeaver.class);
+
 	protected Manifest manifest = null;
 	
 	protected boolean isBatchWeave = true;
@@ -99,7 +102,16 @@ public abstract class BytecodeWeaver {
 	protected Set<IProgramElement> candidatesForRemoval = null;
 
 	private ZipOutputStream zipOutputStream;
-	
+
+	protected BytecodeWeaver(BytecodeWorld world) {
+		this.world = world;
+		this.xcutSet = world.getCrosscuttingMembersSet();
+	}
+
+	public BytecodeWorld getWorld() {
+		return world;
+	}
+
 	public Manifest getManifest(boolean shouldCreate) {
 		if (manifest == null && shouldCreate) {
 			String WEAVER_MANIFEST_VERSION = "1.0";
@@ -115,8 +127,6 @@ public abstract class BytecodeWeaver {
 		return manifest;
 	}
 	
-	public abstract BytecodeWorld getWorld();
-
 	/**
 	 * In 1.5 mode and with XLint:adviceDidNotMatch enabled, put out messages for any mungers that did not match anything.
 	 */
@@ -201,10 +211,6 @@ public abstract class BytecodeWeaver {
 		}
 	}
 
-	public abstract ReferenceType addClassFile(UnwovenClassFile classFile, boolean fromInpath);
-	
-	public abstract void deleteClassFile(String typename);
-	
 	public void setIsBatchWeave(boolean b) {
 		isBatchWeave = b;
 	}
@@ -1735,4 +1741,154 @@ public abstract class BytecodeWeaver {
 		fis.close();
 		return ucf;
 	}
+	
+
+	/**
+	 * Add the given aspect to the weaver. The type is resolved to support DOT for static inner classes as well as DOLLAR
+	 *
+	 * @param aspectName
+	 * @return aspect
+	 */
+	public ResolvedType addLibraryAspect(String aspectName) {
+		if (trace.isTraceEnabled()) {
+			trace.enter("addLibraryAspect", this, aspectName);
+		}
+		// 1 - resolve as is
+		UnresolvedType unresolvedT = UnresolvedType.forName(aspectName);
+		unresolvedT.setNeedsModifiableDelegate(true);
+		ResolvedType type = getWorld().resolve(unresolvedT, true);
+		if (type.isMissing()) {
+			// fallback on inner class lookup mechanism
+			String fixedName = aspectName;
+			int hasDot = fixedName.lastIndexOf('.');
+			while (hasDot > 0) {
+				// System.out.println("BcelWeaver.addLibraryAspect " + fixedName);
+				char[] fixedNameChars = fixedName.toCharArray();
+				fixedNameChars[hasDot] = '$';
+				fixedName = new String(fixedNameChars);
+				hasDot = fixedName.lastIndexOf('.');
+				UnresolvedType ut = UnresolvedType.forName(fixedName);
+				ut.setNeedsModifiableDelegate(true);
+				type = getWorld().resolve(ut, true);
+				if (!type.isMissing()) {
+					break;
+				}
+			}
+		}
+
+		// System.out.println("type: " + type + " for " + aspectName);
+		if (type.isAspect()) {
+			// Bug 119657 ensure we use the unwoven aspect
+			WeaverStateInfo wsi = type.getWeaverState();
+			if (wsi != null && wsi.isReweavable()) {
+				ReferenceTypeDelegate classType2 = getClassType(type.getName());
+				byte[] bytes = wsi.getUnwovenClassFileData(classType2.getBytes());
+				Clazz unwovenClass = makeClazz(classType2.getFilename(), bytes);
+				getWorld().storeClass(unwovenClass);
+				classType2.setJavaClass(unwovenClass, true);
+			}
+
+			// TODO AV - happens to reach that a lot of time: for each type
+			// flagged reweavable X for each aspect in the weaverstate
+			// => mainly for nothing for LTW - pbly for something in incremental
+			// build...
+			xcutSet.addOrReplaceAspect(type);
+			if (trace.isTraceEnabled()) {
+				trace.exit("addLibraryAspect", type);
+			}
+			if (type.getSuperclass().isAspect()) {
+				// If the supertype includes ITDs and the user has not included
+				// that aspect in the aop.xml, they will
+				// not get picked up, which can give unusual behaviour! See bug
+				// 223094
+				// This change causes us to pick up the super aspect regardless
+				// of what was said in the aop.xml - giving
+				// predictable behaviour. If the user also supplied it, there
+				// will be no problem other than the second
+				// addition overriding the first
+				addLibraryAspect(type.getSuperclass().getName());
+			}
+			return type;
+		} else {
+			if (type.isMissing()) {
+				// May not be found if not visible to the classloader that can see the aop.xml during LTW
+				IMessage message = new Message("The specified aspect '"+aspectName+"' cannot be found", null, true);
+				getWorld().getMessageHandler().handleMessage(message);
+			} else {
+				IMessage message = new Message("Cannot register '"+aspectName+"' because the type found with that name is not an aspect", null, true);
+				getWorld().getMessageHandler().handleMessage(message);
+			}
+			return null;
+		}
+		
+		
+	}
+	
+
+	/**
+	 * Should be addOrReplace
+	 */
+	public ReferenceType addClassFile(UnwovenClassFile classFile, boolean fromInpath) {
+		addedClasses.add(classFile);
+		ReferenceType type = getWorld().addSourceObjectType(classFile.getJavaClass(), false).getResolvedTypeX();
+		if (fromInpath) {
+			type.setBinaryPath(classFile.getFilename());
+		}
+		return type;
+	}
+	
+
+	public void deleteClassFile(String typename) {
+		deletedTypenames.add(typename);
+		getWorld().deleteSourceObjectType(UnresolvedType.forName(typename));
+	}
+
+	protected void tryRemoveFromModel(ReferenceTypeDelegate classType) {
+		AsmManager model = getWorld().getModelAsAsmManager();
+		if (getWorld().isMinimalModel() && model != null && !classType.isAspect()) {
+			AspectJElementHierarchy hierarchy = (AspectJElementHierarchy) model.getHierarchy();
+			String pkgname = classType.getResolvedTypeX().getPackageName();
+			String tname = classType.getResolvedTypeX().getSimpleBaseName();
+			IProgramElement typeElement = hierarchy.findElementForType(pkgname, tname);
+			if (typeElement != null && hasInnerType(typeElement)) {
+				// Cannot remove it right now (has inner type), schedule it
+				// for possible deletion later if all inner types are
+				// removed
+				candidatesForRemoval.add(typeElement);
+			}
+			if (typeElement != null && !hasInnerType(typeElement)) {
+				IProgramElement parent = typeElement.getParent();
+				// parent may have children: PACKAGE DECL, IMPORT-REFERENCE, TYPE_DECL
+				if (parent != null) {
+					// if it was the only type we should probably remove
+					// the others too.
+					parent.removeChild(typeElement);
+					if (parent.getKind().isSourceFile()) {
+						removeSourceFileIfNoMoreTypeDeclarationsInside(hierarchy, typeElement, parent);
+					} else {
+						hierarchy.forget(null, typeElement);
+						// At this point, the child has been removed. We should now check if the parent is in our
+						// 'candidatesForRemoval' set. If it is then that means we were going to remove it but it had a
+						// child. Now we can check if it still has a child - if it doesn't it can also be removed!
+						walkUpRemovingEmptyTypesAndPossiblyEmptySourceFile(hierarchy, tname, parent);
+					}
+
+				}
+			}
+		}
+	}
+
+	public boolean isXmlExcluded(ReferenceType resolvedClassType) {
+		if (getWorld().isXmlConfigured() && getWorld().getXmlConfiguration().excludesType(resolvedClassType)) {
+			if (!getWorld().getMessageHandler().isIgnoring(IMessage.INFO)) {
+				getWorld().getMessageHandler().handleMessage(
+						MessageUtil.info("Type '" + resolvedClassType.getName()
+								+ "' not woven due to exclusion via XML weaver exclude section"));
+
+			}
+			return true;
+		}
+		return false;
+	}
+
 }

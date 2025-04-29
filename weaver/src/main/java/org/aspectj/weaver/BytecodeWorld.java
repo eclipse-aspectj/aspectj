@@ -36,6 +36,7 @@ public abstract class BytecodeWorld extends World {
 	protected static Trace trace = TraceFactory.getTraceFactory().getTrace(BytecodeWorld.class);
 
 	private boolean isXmlConfiguredWorld = false;
+
 	private WeavingXmlConfig xmlConfiguration;
 
 	protected List<TypeDelegateResolver> typeDelegateResolvers;
@@ -512,4 +513,6 @@ public abstract class BytecodeWorld extends World {
 	protected abstract AbstractReferenceTypeDelegate addSourceObjectType(Clazz clazz, boolean b);
 
 	public abstract ReferenceTypeDelegate getReferenceTypeDelegateIfBytecodey(ResolvedType concreteAspect);
+
+	protected abstract void storeClass(Clazz unwovenClass);
 }
