@@ -58,6 +58,8 @@ import org.aspectj.weaver.AjAttribute.WeaverState;
 import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.BytecodeWorld;
+import org.aspectj.weaver.Clazz;
+import org.aspectj.weaver.LazyClass;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.MemberKind;
 import org.aspectj.weaver.NameMangler;
@@ -69,6 +71,7 @@ import org.aspectj.weaver.SignatureUtils;
 import org.aspectj.weaver.TypeVariable;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.UnresolvedType.TypeKind;
+import org.aspectj.weaver.UnwovenClassFile.ChildClass;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.WeaverStateInfo;
 import org.aspectj.weaver.World;
@@ -80,7 +83,7 @@ import org.aspectj.weaver.bcel.asm.StackMapAdder;
  * until they must be written out, don't add them to the underlying MethodGen! Things are slightly different if this represents an
  * Aspect.
  */
-public final class LazyClassGen {
+public final class LazyClassGen extends LazyClass {
 
 	private static final Type[] ARRAY_7STRING_INT = new Type[] { Type.STRING, Type.STRING, Type.STRING, Type.STRING, Type.STRING,
 			Type.STRING, Type.STRING, Type.INT };
@@ -116,10 +119,6 @@ public final class LazyClassGen {
 			Type.STRING, Type.INT, Type.STRING, Type.CLASS, Type.CLASS_ARRAY, Type.STRING_ARRAY,
 			Type.CLASS_ARRAY, Type.CLASS, Type.INT
 	};
-
-
-
-
 
 	private static final int ACC_SYNTHETIC = 0x1000;
 
@@ -742,13 +741,13 @@ public final class LazyClassGen {
 		return gen.hasAttribute("SourceDebugExtension");
 	}
 
-	public JavaClass getJavaClass(BytecodeWorld world) {
-		writeBack(world);
-		return myGen.getJavaClass();
+	public Clazz getJavaClass(World world) {
+		writeBack((BytecodeWorld)world);
+		return BcelClazz.asBcelClazz(myGen.getJavaClass());
 	}
 
-	public byte[] getJavaClassBytesIncludingReweavable(BytecodeWorld world) {
-		writeBack(world);
+	public byte[] getJavaClassBytesIncludingReweavable(World world) {
+		writeBack((BytecodeWorld)world);
 		byte[] wovenClassFileData = myGen.getJavaClass().getBytes();
 		// At 1.6 stackmaps are optional, whilst at 1.7 and later they
 		// are required (unless turning off the verifier)
@@ -781,8 +780,8 @@ public final class LazyClassGen {
 		}
 	}
 
-	public void addGeneratedInner(LazyClassGen newClass) {
-		classGens.add(newClass);
+	public void addGeneratedInner(LazyClass newClass) {
+		classGens.add((LazyClassGen)newClass);
 	}
 
 	public void addInterface(ResolvedType newInterface, ISourceLocation sourceLocation) {
@@ -837,7 +836,7 @@ public final class LazyClassGen {
 		return ret;
 	}
 
-	public List<BcelUnwovenClassFile.ChildClass> getChildClasses(BytecodeWorld world) {
+	public List<BcelUnwovenClassFile.ChildClass> getChildClasses(World world) {
 		if (classGens.isEmpty()) {
 			return Collections.emptyList();
 		}

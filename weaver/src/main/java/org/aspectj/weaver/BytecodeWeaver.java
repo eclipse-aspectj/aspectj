@@ -47,9 +47,6 @@ import org.aspectj.bridge.context.CompilationAndWeavingContext;
 import org.aspectj.bridge.context.ContextToken;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.FuzzyBoolean;
-import org.aspectj.weaver.bcel.BcelObjectType;
-//import org.aspectj.weaver.bcel.BcelWorld;
-import org.aspectj.weaver.bcel.LazyClassGen;
 import org.aspectj.weaver.model.AsmRelationshipProvider;
 import org.aspectj.weaver.patterns.AndPointcut;
 import org.aspectj.weaver.patterns.BindingPattern;
@@ -115,7 +112,6 @@ public abstract class BytecodeWeaver {
 			attributes.put(Name.MANIFEST_VERSION, WEAVER_MANIFEST_VERSION);
 			attributes.put(CREATED_BY, WEAVER_CREATED_BY);
 		}
-
 		return manifest;
 	}
 	
@@ -720,7 +716,8 @@ public abstract class BytecodeWeaver {
 						if (classType == null) {
 							throw new BCException("Can't find bcel delegate for " + className + " type=" + theType.getClass());
 						}
-						LazyClassGen clazz = (LazyClassGen)classType.getLazyClassGen();
+						Object lazyClassGen = classType.getLazyClassGen();
+						LazyClass clazz = classType.getLazyClassGen();
 						makePerClauseAspectAdder(theType, theType.getPerClause().getKind(), clazz, true);
 						classType.finishedWith();
 						UnwovenClassFile[] newClasses = getClassFilesFor(clazz);
@@ -870,7 +867,7 @@ public abstract class BytecodeWeaver {
 	}
 
 	
-	protected abstract ConcreteTypeMunger makePerClauseAspectAdder(ResolvedType theType, Kind kind, LazyClassGen clazz, boolean b);
+	protected abstract ConcreteTypeMunger makePerClauseAspectAdder(ResolvedType theType, Kind kind, LazyClass clazz, boolean b);
 
 	/**
 	 * 'typeToWeave' is one from the 'typesForWeaving' list. This routine ensures we process supertypes (classes/interfaces) of
@@ -1036,7 +1033,7 @@ public abstract class BytecodeWeaver {
 
 		ContextToken tok = CompilationAndWeavingContext.enteringPhase(CompilationAndWeavingContext.WEAVING_TYPE, classType
 				.getResolvedTypeX().getName());
-		LazyClassGen clazz = weaveWithoutDump(classFile, classType);
+		LazyClass clazz = weaveWithoutDump(classFile, classType);
 		classType.finishedWith();
 		// clazz is null if the classfile was unchanged by weaving...
 		if (clazz != null) {
@@ -1110,7 +1107,7 @@ public abstract class BytecodeWeaver {
 		CompilationAndWeavingContext.leavingPhase(tok);
 	}
 
-	public UnwovenClassFile[] getClassFilesFor(LazyClassGen clazz) {
+	public UnwovenClassFile[] getClassFilesFor(LazyClass clazz) {
 		List<UnwovenClassFile.ChildClass> childClasses = clazz.getChildClasses(getWorld());
 		UnwovenClassFile[] ret = new UnwovenClassFile[1 + childClasses.size()];
 		ret[0] = makeUnwovenClassFile(clazz.getFileName(), clazz.getClassName(), clazz.getJavaClassBytesIncludingReweavable(getWorld()));
@@ -1123,10 +1120,10 @@ public abstract class BytecodeWeaver {
 		return ret;
 	}
 
-	protected abstract LazyClassGen weave(UnwovenClassFile classFile, ReferenceTypeDelegate classType, boolean dump) throws IOException;
+	protected abstract LazyClass weave(UnwovenClassFile classFile, ReferenceTypeDelegate classType, boolean dump) throws IOException;
 	
 	// exposed for ClassLoader dynamic weaving
-	public LazyClassGen weaveWithoutDump(UnwovenClassFile classFile, ReferenceTypeDelegate classType) throws IOException {
+	public LazyClass weaveWithoutDump(UnwovenClassFile classFile, ReferenceTypeDelegate classType) throws IOException {
 		return weave(classFile, classType, false);
 	}
 
@@ -1399,7 +1396,7 @@ public abstract class BytecodeWeaver {
 		return c;
 	}
 
-	protected void dump(UnwovenClassFile classFile, LazyClassGen clazz) throws IOException {
+	protected void dump(UnwovenClassFile classFile, LazyClass clazz) throws IOException {
 		if (zipOutputStream != null) {
 			String mainClassName = classFile.getJavaClass().getClassName();
 			writeZipEntry(getEntryName(mainClassName), clazz.getJavaClass(getWorld()).getBytes());

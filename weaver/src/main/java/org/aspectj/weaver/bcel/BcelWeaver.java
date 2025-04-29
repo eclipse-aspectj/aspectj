@@ -22,6 +22,7 @@ import org.aspectj.weaver.BytecodeWeaver;
 import org.aspectj.weaver.BytecodeWorld;
 import org.aspectj.weaver.Clazz;
 import org.aspectj.weaver.ConcreteTypeMunger;
+import org.aspectj.weaver.LazyClass;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ReferenceTypeDelegate;
 import org.aspectj.weaver.ResolvedType;
@@ -319,9 +320,9 @@ public class BcelWeaver extends BytecodeWeaver {
 	}
 
 	@Override
-	protected ConcreteTypeMunger makePerClauseAspectAdder(ResolvedType theType, Kind kind, LazyClassGen clazz, boolean checkAlreadyThere) {
+	protected ConcreteTypeMunger makePerClauseAspectAdder(ResolvedType theType, Kind kind, LazyClass clazz, boolean checkAlreadyThere) {
 		BcelPerClauseAspectAdder bcelPerClauseAspectAdder = new BcelPerClauseAspectAdder(theType, kind);
-		bcelPerClauseAspectAdder.forceMunge(clazz, checkAlreadyThere);
+		bcelPerClauseAspectAdder.forceMunge((LazyClassGen)clazz, checkAlreadyThere);
 		return bcelPerClauseAspectAdder;
 	}
 

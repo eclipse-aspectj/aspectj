@@ -70,6 +70,7 @@ import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.ClassAnnotationValue;
 import org.aspectj.weaver.Clazz;
 import org.aspectj.weaver.EnumAnnotationValue;
+import org.aspectj.weaver.LazyClass;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
@@ -1248,6 +1249,11 @@ public class EclipseSourceType extends AbstractReferenceTypeDelegate {
 	
 	@Override
 	public Clazz getClazzHolder() {
+		throw new IllegalStateException();
+	}
+	
+	@Override
+	public LazyClass getLazyClassGen() {
 		throw new IllegalStateException();
 	}
 }

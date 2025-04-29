@@ -189,7 +189,7 @@ public abstract class AbstractReferenceTypeDelegate implements ReferenceTypeDele
 	}
 	
 	@Override
-	public Object getLazyClassGen() {
+	public LazyClass getLazyClassGen() {
 		throw new IllegalStateException();
 	}
 	

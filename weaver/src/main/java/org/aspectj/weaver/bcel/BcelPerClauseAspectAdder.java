@@ -24,6 +24,7 @@ import org.aspectj.apache.bcel.generic.ReferenceType;
 import org.aspectj.apache.bcel.generic.Type;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.AjcMemberMaker;
+import org.aspectj.weaver.LazyClass;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.NameMangler;
 import org.aspectj.weaver.ResolvedMember;

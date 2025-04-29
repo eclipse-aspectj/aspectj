@@ -115,7 +115,7 @@ public abstract class WeaveTestCase extends TestCase {
 		LazyClassGen gen = weaver.weave(classFile, classType);
 		if (gen == null) {
 			// we didn't do any weaving, but let's make a gen anyway
-			gen = classType.getLazyClassGen(); // new LazyClassGen(classType);
+			gen = (LazyClassGen)classType.getLazyClassGen(); // new LazyClassGen(classType);
 		}
 		try {
 			String filenameToUse = findMostRelevantFile(outName);

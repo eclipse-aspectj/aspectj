@@ -68,6 +68,7 @@ import org.aspectj.weaver.BytecodeWorld;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.IClassWeaver;
 import org.aspectj.weaver.IntMap;
+import org.aspectj.weaver.LazyClass;
 import org.aspectj.weaver.Member;
 import org.aspectj.weaver.MissingResolvedTypeWithKnownSignature;
 import org.aspectj.weaver.NameMangler;

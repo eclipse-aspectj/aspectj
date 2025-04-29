@@ -171,5 +171,10 @@ public class GeneratedReferenceTypeDelegate extends AbstractReferenceTypeDelegat
 	public Clazz getClazzHolder() {
 		throw new UnsupportedOperationException("Not supported for GeneratedReferenceTypeDelegate");
 	}
+	
+	@Override
+	public LazyClass getLazyClassGen() {
+		throw new UnsupportedOperationException("Not supported for GeneratedReferenceTypeDelegate");
+	}
 
 }

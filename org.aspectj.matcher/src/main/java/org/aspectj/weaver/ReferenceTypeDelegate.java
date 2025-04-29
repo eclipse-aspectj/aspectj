@@ -160,7 +160,7 @@ public interface ReferenceTypeDelegate {
 
 	Clazz getClazzHolder();
 
-	Object getLazyClassGen();
+	LazyClass getLazyClassGen();
 
 	ISourceLocation getSourceLocation();
 

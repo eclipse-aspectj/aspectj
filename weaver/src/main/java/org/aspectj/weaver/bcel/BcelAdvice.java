@@ -251,7 +251,7 @@ class BcelAdvice extends Advice {
 		if (boType.javaClass.getMajor() >= Constants.MAJOR_1_8) {
 			if (containsInvokedynamic == 0) {
 				containsInvokedynamic = 1;
-				LazyMethodGen lmg = boType.getLazyClassGen().getLazyMethodGen(this.signature.getName(), this.signature.getSignature(), true);
+				LazyMethodGen lmg = ((LazyClassGen)boType.getLazyClassGen()).getLazyMethodGen(this.signature.getName(), this.signature.getSignature(), true);
 				// Check Java8 supertypes
 				ResolvedType searchType = concreteAspect;
 				while (lmg == null) {
@@ -263,7 +263,7 @@ class BcelAdvice extends Advice {
 						if (bot.javaClass.getMajor() < Constants.MAJOR_1_8) {
 							break;
 						}
-						lmg = bot.getLazyClassGen().getLazyMethodGen(this.signature.getName(), this.signature.getSignature(), true);
+						lmg = ((LazyClassGen)bot.getLazyClassGen()).getLazyMethodGen(this.signature.getName(), this.signature.getSignature(), true);
 					}
 				}
 				if (lmg != null) {

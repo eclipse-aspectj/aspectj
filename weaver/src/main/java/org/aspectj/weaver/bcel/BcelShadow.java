@@ -2161,7 +2161,7 @@ public class BcelShadow extends Shadow {
 		// ??? might want some checks here to give better errors
 		ResolvedType rt = (declaringAspectType.isParameterizedType() ? declaringAspectType.getGenericType() : declaringAspectType);
 		BcelObjectType ot = BcelWorld.getBcelObjectType(rt);
-		LazyMethodGen adviceMethod = ot.getLazyClassGen().getLazyMethodGen(mungerSig);
+		LazyMethodGen adviceMethod = ((LazyClassGen)ot.getLazyClassGen()).getLazyMethodGen(mungerSig);
 		if (!adviceMethod.getCanInline()) {
 			weaveAroundClosure(munger, hasDynamicTest);
 			return;

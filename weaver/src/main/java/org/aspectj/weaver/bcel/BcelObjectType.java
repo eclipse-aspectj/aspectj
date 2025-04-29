@@ -53,6 +53,7 @@ import org.aspectj.weaver.BytecodeWorld;
 import org.aspectj.weaver.Clazz;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.LazyClass;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedPointcutDefinition;
@@ -73,7 +74,7 @@ import org.aspectj.weaver.patterns.PerClause;
 public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	public JavaClass javaClass;
 	private boolean artificial; // Was the BcelObject built from an artificial set of bytes? Or from the real ondisk stuff?
-	private LazyClassGen lazyClassGen = null; // set lazily if it's an aspect
+	private LazyClass lazyClassGen = null; // set lazily if it's an aspect
 
 	private int modifiers;
 	private String className;
@@ -569,8 +570,8 @@ public class BcelObjectType extends AbstractReferenceTypeDelegate {
 	 * Return the lazyClassGen associated with this type. For aspect types, this value will be cached, since it is used to inline
 	 * advice. For non-aspect types, this lazyClassGen is always newly constructed.
 	 */
-	public LazyClassGen getLazyClassGen() {
-		LazyClassGen ret = lazyClassGen;
+	public LazyClass getLazyClassGen() {
+		LazyClass ret = lazyClassGen;
 		if (ret == null) {
 			// System.err.println("creating lazy class gen for: " + this);
 			ret = new LazyClassGen(this);

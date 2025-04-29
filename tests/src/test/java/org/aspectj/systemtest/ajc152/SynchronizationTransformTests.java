@@ -174,7 +174,7 @@ public class SynchronizationTransformTests extends XMLBasedAjcTestCase {
 
 	private LazyMethodGen getMethod(String typename, String methodname) {
 		BcelObjectType type = getBcelObjectFor(typename);
-		LazyClassGen lcg = type.getLazyClassGen();
+		LazyClassGen lcg = (LazyClassGen)type.getLazyClassGen();
 		List<LazyMethodGen> methods = lcg.getMethodGens();
 		for (LazyMethodGen element: methods) {
 			if (element.getName().equals(methodname)) {

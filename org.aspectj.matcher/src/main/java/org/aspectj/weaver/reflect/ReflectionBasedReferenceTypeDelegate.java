@@ -27,6 +27,7 @@ import org.aspectj.weaver.AnnotationTargetKind;
 import org.aspectj.weaver.Clazz;
 import org.aspectj.weaver.ConcreteTypeMunger;
 import org.aspectj.weaver.ISourceContext;
+import org.aspectj.weaver.LazyClass;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ReferenceTypeDelegate;
 import org.aspectj.weaver.ResolvedMember;
@@ -437,7 +438,7 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 	}
 
 	@Override
-	public Object getLazyClassGen() {
+	public LazyClass getLazyClassGen() {
 		throw new IllegalStateException();
 	}
 
