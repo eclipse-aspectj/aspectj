@@ -5207,7 +5207,9 @@
         <message kind="warning" line="38" text="erasure type matching in withincode ok"/>
         <message kind="warning" line="39" text="erasure type matching in withincode ok"/>
         <message kind="warning" line="42" text="erasure type matching in withincode ok"/>
+        <message kind="warning" line="61" text="withincode and parameterized method ok"/>
         <message kind="warning" line="62" text="withincode and parameterized method ok"/>
+        <message kind="warning" line="61" text="withincode and generic interface ok"/>
         <message kind="warning" line="62" text="withincode and generic interface ok"/>
         <message kind="warning" line="65" text="withincode and interface control test"/>
         <message kind="warning" line="35" text="match on parameterized args"/>
@@ -5218,16 +5220,27 @@
 
     <ajc-test dir="java5/generics/pointcuts" title="withincode with overriding of inherited generic members">
      <compile files="WithinCodeOverriding.aj" options="-1.8">
+        <message kind="warning" line="36" text="wildcard declaring type match on erasure"/>
         <message kind="warning" line="37" text="wildcard declaring type match on erasure"/>
+        <message kind="warning" line="49" text="wildcard declaring type match on erasure"/>
         <message kind="warning" line="50" text="wildcard declaring type match on erasure"/>
+        <message kind="warning" line="62" text="wildcard declaring type match on erasure"/>
         <message kind="warning" line="63" text="wildcard declaring type match on erasure"/>
+        <message kind="warning" line="36" text="base declaring type match on erasure"/>
         <message kind="warning" line="37" text="base declaring type match on erasure"/>
+        <message kind="warning" line="49" text="base declaring type match on erasure"/>
         <message kind="warning" line="50" text="base declaring type match on erasure"/>
+        <message kind="warning" line="62" text="base declaring type match on erasure"/>
         <message kind="warning" line="63" text="base declaring type match on erasure"/>
+        <message kind="warning" line="49" text="sub type match on erasure"/>
         <message kind="warning" line="50" text="sub type match on erasure"/>
+        <message kind="warning" line="62" text="parameterized match on erasure"/>
         <message kind="warning" line="63" text="parameterized match on erasure"/>
+        <message kind="warning" line="79" text="erasure match on base interface"/>
         <message kind="warning" line="80" text="erasure match on base interface"/>
+        <message kind="warning" line="79" text="wildcard match on erasure"/>
         <message kind="warning" line="80" text="wildcard match on erasure"/>
+        <message kind="warning" line="79" text="parameterized match"/>
         <message kind="warning" line="80" text="parameterized match"/>
      </compile>
     </ajc-test>
@@ -5445,7 +5458,9 @@
      <compile files="GenericMethods.aj" options="-1.8">
          <message kind="warning" line="19" text="static generic method match"/>
          <message kind="warning" line="34" text="static generic method match"/>
+         <message kind="warning" line="23" text="instance generic method match"/>
          <message kind="warning" line="24" text="instance generic method match"/>
+         <message kind="warning" line="38" text="instance generic method match"/>
          <message kind="warning" line="39" text="instance generic method match"/>
      </compile>
    </ajc-test>
