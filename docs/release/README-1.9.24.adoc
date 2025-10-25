@@ -4,9 +4,6 @@
 
 = AspectJ 1.9.24
 
-// AspectJ_JDK_Update: Each a.b.c release needs a new release notes document. For a.b.c.d minors, the existing a.b.c
-// document can be updated. After copying this document, remove the comment from the previous one.
-
 _© Copyright 2025 Contributors. All rights reserved._
 
 _Release info: 1.9.24 available 28-Mar-2025_

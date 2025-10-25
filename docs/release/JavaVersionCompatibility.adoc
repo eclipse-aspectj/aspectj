@@ -9,6 +9,7 @@ be easily concluded from the AspectJ version number anymore, and we are sorry fo
 [%autowidth, stripes=even, options="header"]
 |===
 |AspectJ version |Java version |Comments
+|1.9.25 |25 |
 |1.9.24 |24 |
 |1.9.23 |23 |
 |1.9.22 - 1.9.22.1 |22 |

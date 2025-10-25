@@ -24,7 +24,7 @@ jobs:
       matrix:
         # AspectJ_JDK_Update: Always keep LTS versions + latest version supported by JDT Core
         # Check for available Temurin releases on https://adoptium.net/releases.html
-        java: [ 17, 21, 22, 23 ]
+        java: [ 17, 21, 25 ]
 
     runs-on: ubuntu-latest
 

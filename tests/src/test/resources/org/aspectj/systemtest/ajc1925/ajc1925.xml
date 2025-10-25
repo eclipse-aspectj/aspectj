@@ -1,0 +1,108 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<!--
+JDK 25 (https://openjdk.org/projects/jdk/25/):
+
+470:	PEM Encodings of Cryptographic Objects (Preview)
+502:	Stable Values (Preview)
+503:	Remove the 32-bit x86 Port
+505:	Structured Concurrency (Fifth Preview)
+506:	Scoped Values
+507:	Primitive Types in Patterns, instanceof, and switch (Third Preview)
+508:	Vector API (Tenth Incubator)
+509:	JFR CPU-Time Profiling (Experimental)
+510:	Key Derivation Function API
+511:	Module Import Declarations
+512:	Compact Source Files and Instance Main Methods
+513:	Flexible Constructor Bodies
+514:	Ahead-of-Time Command-Line Ergonomics
+515:	Ahead-of-Time Method Profiling
+518:	JFR Cooperative Sampling
+519:	Compact Object Headers
+520:	JFR Method Timing & Tracing
+521:	Generational Shenandoah
+-->
+<suite>
+	
+	<!-- https://openjdk.org/jeps/455 -->
+	<ajc-test dir="features1923/java23" vm="25" title="primitive types patterns - switch - with advice">
+		<compile files="PrimitivePatternsSwitch2.java" options="--enable-preview -25 -showWeaveInfo">
+		<message kind="weave" line="12" text="Join point 'method-call(boolean PrimitivePatternsSwitch2.isOdd(int))' in Type 'PrimitivePatternsSwitch2' (PrimitivePatternsSwitch2.java:12) advised by around advice from 'X'"/>>
+		</compile>
+		<run class="PrimitivePatternsSwitch2" vmargs="--enable-preview">
+			<stdout>
+			<!-- advice forces all the isOdd() calls to return false -->
+			<line text="no"/>
+			<line text="no"/>
+			<line text="no"/>
+			<line text="no"/>
+			</stdout>
+		</run>
+	</ajc-test>
+	
+	<ajc-test dir="features1925/flexibleConstructors" vm="25" title="flexible constructors - 1">
+		<compile files="Code1.java" options="-25"/>
+		<run class="Code1"><stdout><line text="hello"/></stdout></run>
+	</ajc-test>
+
+	<ajc-test dir="features1925/flexibleConstructors" vm="25" title="flexible constructors - 2">
+		<compile files="Code2.java" options="-25"/>
+		<!-- the messages are in this order because there is code before the super and the super marks the point of differentiation between execution and preinitialization JPs -->
+		<run class="Code2">
+			<stdout>
+				<line text="hello"/>
+				<line text="before"/>
+			</stdout>
+		</run>
+	</ajc-test>
+	
+	<ajc-test dir="features1925/flexibleConstructors" vm="25" title="flexible constructors - 3">
+		<compile files="Code3.java" options="-25"/>
+		<run class="Code3">
+			<stdout>
+				<line text="before"/>
+				<line text="hello"/>
+			</stdout>
+		</run>
+	</ajc-test>
+	
+	<ajc-test dir="features1925/flexibleConstructors" vm="25" title="flexible constructors - 4">
+		<compile files="Code4.java" options="-25"/>
+		<run class="Code4">
+			<stdout>
+				<line text="hello"/>
+				<line text="before"/>
+			</stdout>
+		</run>
+	</ajc-test>
+	
+	<ajc-test dir="features1925/compactSourceFiles" vm="25" title="compact source files - 1">
+		<compile files="CSF1.java" options="-25"/>
+		<run class="CSF1">
+			<stdout>
+				<line text="hello"/>
+			</stdout>
+		</run>
+	</ajc-test>
+	
+	<ajc-test dir="features1925/compactSourceFiles" vm="25" title="compact source files - 2">
+		<compile files="CSF1.java X1.aj" options="-25"/>
+		<run class="CSF1">
+			<stdout>
+				<line text="before"/>
+				<line text="hello"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<ajc-test dir="bugs1925/336" vm="24" title="proceed code gen problem 1">
+		<compile files="Bang.java" options="-17"/>
+		<run class="Bang"/>
+	</ajc-test>
+	
+	<ajc-test dir="bugs1925/337" vm="24" title="proceed code gen problem 2">
+		<compile files="X.aj" options="-17"/>
+		<run class="X"/>
+	</ajc-test>
+
+</suite>

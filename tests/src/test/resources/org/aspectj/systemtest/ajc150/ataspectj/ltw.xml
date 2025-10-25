@@ -257,18 +257,18 @@
         <!--<run class="ataspectj.DeclareParentsInterfaceTest" ltw="ataspectj/aop-decptest.xml"/>-->
         <ant file="ajc-ant.xml" target="ltw.Decp" verbose="true">
         	<stderr>
-        	 	<line text="WARNING: A terminally deprecated method in sun.misc.Unsafe has been called" vm="24"/>
-       			<line text="WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor" vm="24"/>
-       			<line text="WARNING: Please consider reporting this to the maintainers of class org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor" vm="24"/>
-       			<line text="WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release" vm="24"/>
+        	 	<line text="WARNING: A terminally deprecated method in sun.misc.Unsafe has been called" vm="24+"/>
+       			<line text="WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor" vm="24+"/>
+       			<line text="WARNING: Please consider reporting this to the maintainers of class org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor" vm="24+"/>
+       			<line text="WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release" vm="24+"/>
                 <line text="Extending interface set for type 'ataspectj.DeclareParentsInterfaceTest$Target' (DeclareParentsInterfaceTest.java) to include 'ataspectj.DeclareParentsInterfaceTest$Marker' (DeclareParentsInterfaceTest.java)"/>
                 <line text="see also:"/>
                 <line text="Join point 'method-execution(void ataspectj.DeclareParentsInterfaceTest$Target.target())' in Type 'ataspectj.DeclareParentsInterfaceTest$Target' (DeclareParentsInterfaceTest.java:27) advised by before advice from 'ataspectj.DeclareParentsInterfaceTest$TestAspect' (DeclareParentsInterfaceTest.java)"/>
                 <line text="see also:"/>
-                <line text="WARNING: A terminally deprecated method in sun.misc.Unsafe has been called" vm="24"/>
-       			<line text="WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor" vm="24"/>
-       			<line text="WARNING: Please consider reporting this to the maintainers of class org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor" vm="24"/>
-       			<line text="WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release" vm="24"/>
+                <line text="WARNING: A terminally deprecated method in sun.misc.Unsafe has been called" vm="24+"/>
+       			<line text="WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor" vm="24+"/>
+       			<line text="WARNING: Please consider reporting this to the maintainers of class org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor" vm="24+"/>
+       			<line text="WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release" vm="24+"/>
                 <line text="Extending interface set for type 'ataspectj.DeclareParentsImplementsTest$Target' (DeclareParentsImplementsTest.java) to include 'ataspectj.DeclareParentsImplementsTest$Introduced' (DeclareParentsImplementsTest.java)"/>
                 <line text="see also:"/>
                 <line text="Type 'ataspectj.DeclareParentsImplementsTest$Target' (DeclareParentsImplementsTest.java) has intertyped method from 'ataspectj.DeclareParentsImplementsTest$TestAspect' (DeclareParentsImplementsTest.java:'void ataspectj.DeclareParentsImplementsTest$Introduced.intro()')"/>

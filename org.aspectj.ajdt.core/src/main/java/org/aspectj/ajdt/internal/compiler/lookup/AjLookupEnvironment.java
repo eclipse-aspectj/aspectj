@@ -38,6 +38,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.impl.ITypeRequestor;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ExtendedTagBits;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
@@ -153,6 +154,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			ContextToken tok = enteringPhase(BUILDING_FIELDS_AND_METHODS, units[i].compilationResult.fileName);
 			// units[i].scope.checkParameterizedTypes(); do this check a little later, after ITDs applied to stbs
 			units[i].scope.buildFieldsAndMethods();
+			// There used to be a buildComponents() in the buildFieldsAndMethods() but it moved out with J25
+			units[i].scope.collateRecordComponents();
 			leavingPhase(tok);
 		}
 
@@ -1143,8 +1146,8 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			System.arraycopy(abefore, 0, newset, toAdd.length, abefore.length);
 		}
 		sourceType.scope.referenceContext.annotations = newset;
-		if ((sourceType.tagBits & TagBits.AnnotationResolved) != 0) {
-			sourceType.tagBits = sourceType.tagBits - TagBits.AnnotationResolved;
+		if ((sourceType.extendedTagBits & ExtendedTagBits.AnnotationResolved) != 0) {
+			sourceType.extendedTagBits = sourceType.extendedTagBits - ExtendedTagBits.AnnotationResolved;
 		}
 		leavingPhase(tok);
 		if (factory.pushinCollector != null) {

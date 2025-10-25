@@ -384,10 +384,15 @@
 				<line text="Hello world"/>
 			</stdout>
 			<!--
-				Nothing should be printed on stderr, especially no fatal NPE with message
+				Nothing weird should be printed on stderr, especially no fatal NPE with message
 				'Cannot read the array length because "b" is null' and subsequent ajcore.*.txt
 			-->
-			<stderr/>
+			<stderr>
+  			<line text="WARNING: A terminally deprecated method in sun.misc.Unsafe has been called" vm="24+"/>
+       		<line text="WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor" vm="24+"/>
+       		<line text="WARNING: Please consider reporting this to the maintainers of class org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor" vm="24+"/>
+       		<line text="WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release" vm="24+"/>
+			</stderr>
 		</run>
 	</ajc-test>
 

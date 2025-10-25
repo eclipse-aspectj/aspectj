@@ -22,7 +22,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TrueLiteral;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.FalseLiteral;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BlockScope;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TagBits;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ExtendedTagBits;
 
 /**
  * @author colyer
@@ -288,7 +288,7 @@ public class AtAspectJAnnotationFactory {
 			decl.annotations[old.length] = annotation;
 		}
 		if (decl.binding!= null) {
-			if ((decl.binding.tagBits & TagBits.AnnotationResolved) != 0) {
+			if ((decl.binding.extendedTagBits & ExtendedTagBits.AnnotationResolved) != 0) {
 				annotation.resolve(scope);
 			}
 		}

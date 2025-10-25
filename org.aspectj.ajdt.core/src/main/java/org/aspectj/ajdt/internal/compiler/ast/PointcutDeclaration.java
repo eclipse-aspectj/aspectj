@@ -26,9 +26,9 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.aspectj.org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ExtendedTagBits;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ExtraCompilerModifiers;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
-import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TagBits;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.parser.Parser;
 import org.aspectj.weaver.AjAttribute;
@@ -169,7 +169,7 @@ public class PointcutDeclaration extends AjMethodDeclaration {
 		// we attempted to resolve annotations below, but that was too early, so we do it again
 		// now at the 'right' time.
 		if (binding != null) {
-			binding.tagBits -= TagBits.AnnotationResolved;
+			binding.extendedTagBits -= ExtendedTagBits.AnnotationResolved;
 			resolveAnnotations(scope, this.annotations, this.binding);
 
 			TypeDeclaration typeDec = upperScope.referenceContext;

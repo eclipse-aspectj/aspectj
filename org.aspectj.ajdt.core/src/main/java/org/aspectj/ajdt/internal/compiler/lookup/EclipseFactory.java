@@ -833,7 +833,7 @@ public class EclipseFactory {
 	public SyntheticFieldBinding createSyntheticFieldBinding(SourceTypeBinding owningType, ResolvedMember member) {
 		SyntheticFieldBinding sfb = new SyntheticFieldBinding(member.getName().toCharArray(),
 				makeTypeBinding(member.getReturnType()), member.getModifiers() | Flags.AccSynthetic, owningType,
-				Constant.NotAConstant, -1); // index
+				Constant.NotAConstant);
 		// filled in
 		// later
 		owningType.addSyntheticField(sfb);
@@ -866,7 +866,7 @@ public class EclipseFactory {
 		FieldBinding fb = null;
 		if (member.getName().startsWith(NameMangler.PREFIX)) {
 			fb = new SyntheticFieldBinding(member.getName().toCharArray(), makeTypeBinding(member.getReturnType()),
-					member.getModifiers() | Flags.AccSynthetic, currentType, Constant.NotAConstant, -1); // index filled in later
+					member.getModifiers() | Flags.AccSynthetic, currentType, Constant.NotAConstant);
 		} else {
 			fb = new FieldBinding(member.getName().toCharArray(), makeTypeBinding(member.getReturnType()), member.getModifiers(),
 					currentType, Constant.NotAConstant);

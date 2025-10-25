@@ -80,9 +80,10 @@ public class AspectClinit extends Clinit {
 		}
 
 
-		boolean creatingStackMap = (codeStream.generateAttributes & (
-				ClassFileConstants.ATTR_STACK_MAP_TABLE
-				| ClassFileConstants.ATTR_STACK_MAP))!=0;
+		boolean creatingStackMap = true;
+//		(codeStream.generateAttributes & (
+//				ClassFileConstants.ATTR_STACK_MAP_TABLE
+//				| ClassFileConstants.ATTR_STACK_MAP))!=0;
 
 		if (initFailureField != null) {
 			// Changes to this exception handling code may require changes to

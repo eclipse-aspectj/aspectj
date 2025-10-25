@@ -43,6 +43,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.codegen.Opcodes;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.BinaryTypeBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Binding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ClassScope;
+import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ExtendedTagBits;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.InvocationSite;
 import org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LocalVariableBinding;
@@ -217,9 +218,9 @@ public class AspectDeclaration extends TypeDeclaration {
 			// For e37 moved the check down to this level
 			return;
 		}
-		if ((binding.tagBits & TagBits.AnnotationResolved) != 0) {
+		if ((binding.extendedTagBits & ExtendedTagBits.AnnotationResolved) != 0) {
 			// possibly resolution occurred during hasUnsatisfiedDependency()...
-			binding.tagBits = (binding.tagBits & ~TagBits.AnnotationResolved);
+			binding.extendedTagBits = (binding.extendedTagBits & ~ExtendedTagBits.AnnotationResolved);
 		}
 		Annotation atAspectAnnotation = AtAspectJAnnotationFactory.createAspectAnnotation(perClause.toDeclarationString(),
 				declarationSourceStart);

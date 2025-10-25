@@ -513,10 +513,10 @@
 		</stdout>
 		<stderr>
 			<line text="TraceFactory.instance=" />
-  			<line text="WARNING: A terminally deprecated method in sun.misc.Unsafe has been called" vm="24"/>
-       		<line text="WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor" vm="24"/>
-       		<line text="WARNING: Please consider reporting this to the maintainers of class org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor" vm="24"/>
-       		<line text="WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release" vm="24"/>
+  			<line text="WARNING: A terminally deprecated method in sun.misc.Unsafe has been called" vm="24+"/>
+       		<line text="WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor" vm="24+"/>
+       		<line text="WARNING: Please consider reporting this to the maintainers of class org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor" vm="24+"/>
+       		<line text="WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release" vm="24+"/>
 		</stderr>
 	</ant>
 </ajc-test>

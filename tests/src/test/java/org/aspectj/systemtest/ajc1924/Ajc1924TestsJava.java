@@ -32,9 +32,8 @@ public class Ajc1924TestsJava extends JavaVersionSpecificXMLBasedAjcTestCase {
 	protected java.net.URL getSpecFile() {
 		return getClassResource("ajc1924.xml");
 	}
-
-	public void testJep455PrimitivePatternsSwitch2() {
-		runTest("primitive types patterns - switch - with advice");
+	
+	public void testNothing() {
 	}
 
 }

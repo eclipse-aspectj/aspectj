@@ -787,17 +787,38 @@ public abstract class AjcTestCase extends TestCase {
 			Thread.currentThread().setContextClassLoader(sandboxLoader);
 
 			Class<?> toRun = sandboxLoader.loadClass(className);
-			Method mainMethod = toRun.getMethod("main", String[].class);
-			// Since JDK 21, a public main method of a non-public (e.g. default-scoped) class can no longer be invoked without
-			// making it accessible first. Because many test sources contain multiple aspects and classes in one file, this is
-			// a frequent use case.
-			mainMethod.setAccessible(true);
-			mainMethod.invoke(null, new Object[] { args });
+			Method mainMethod = null;
+			try {
+				mainMethod = toRun.getMethod("main", String[].class);
+				// Since JDK 21, a public main method of a non-public (e.g. default-scoped) class can no longer be invoked without
+				// making it accessible first. Because many test sources contain multiple aspects and classes in one file, this is
+				// a frequent use case.
+				mainMethod.setAccessible(true);
+				mainMethod.invoke(null, new Object[] { args });
+			} catch (NoSuchMethodException nsme) {
+				// With JEP512 ( https://openjdk.org/jeps/512 ) and Compact Source Files, the method may be a non-static.
+				mainMethod = toRun.getDeclaredMethod("main");
+				Constructor<?> ctor = toRun.getDeclaredConstructor();
+				ctor.setAccessible(true);
+				Object instance = null;
+				try {
+					instance = ctor.newInstance();
+				} catch (InstantiationException e) {
+					fail("Unable to create an instance of "+className);
+				} catch (IllegalArgumentException e) {
+					fail("Unable to create an instance of "+className);
+				}
+				mainMethod.setAccessible(true);
+				mainMethod.invoke(instance);
+			}
+			
+			
 		} catch (ClassNotFoundException cnf) {
 			fail("Can't find class: " + className);
 		} catch (NoSuchMethodException nsm) {
 			fail(className + " does not have a main method");
 		} catch (IllegalAccessException illEx) {
+			illEx.printStackTrace();
 			fail("main method in class " + className + " is not public");
 		} catch (InvocationTargetException invTgt) {
 			// the main method threw an exception...

@@ -1,7 +1,7 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
 
 <!--
-	JDK 23 (https://openjdk.org/projects/jdk/24/):
+	JDK 24 (https://openjdk.org/projects/jdk/24/):
 		404:	Generational Shenandoah (Experimental)
 		450:	Compact Object Headers (Experimental)
 		472:	Prepare to Restrict the Use of JNI
@@ -29,31 +29,4 @@
 -->
 <suite>
 	
-	<!-- https://openjdk.org/jeps/455 -->
-	<ajc-test dir="features1923/java23" vm="24" title="primitive types patterns - switch - with advice">
-		<compile files="PrimitivePatternsSwitch2.java" options="--enable-preview -24 -showWeaveInfo">
-		<message kind="weave" line="12" text="Join point 'method-call(boolean PrimitivePatternsSwitch2.isOdd(int))' in Type 'PrimitivePatternsSwitch2' (PrimitivePatternsSwitch2.java:12) advised by around advice from 'X'"/>>
-		</compile>
-		<run class="PrimitivePatternsSwitch2" vmargs="--enable-preview">
-			<stdout>
-			<!-- advice forces all the isOdd() calls to return false -->
-			<line text="no"/>
-			<line text="no"/>
-			<line text="no"/>
-			<line text="no"/>
-			</stdout>
-		</run>
-	</ajc-test>
-	
-	<ajc-test dir="bugs1924/336" vm="24" title="proceed code gen problem 1">
-		<compile files="Bang.java" options="-17"/>
-		<run class="Bang"/>
-	</ajc-test>
-	
-	<ajc-test dir="bugs1924/337" vm="24" title="proceed code gen problem 2">
-		<compile files="X.aj" options="-17"/>
-		<run class="X"/>
-	</ajc-test>
-	
-
 </suite>
