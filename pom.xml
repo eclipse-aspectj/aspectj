@@ -5,7 +5,7 @@
 
 	<groupId>org.aspectj</groupId>
 	<artifactId>aspectj-parent</artifactId>
-	<version>1.9.25-SNAPSHOT</version>
+	<version>1.9.25</version>
 	<packaging>pom</packaging>
 
 	<name>AspectJ Parent Project</name>
@@ -19,7 +19,7 @@
 			Set fixed timestamp for reproducible builds,
 			see https://maven.apache.org/guides/mini/guide-reproducible-builds.html
 		-->
-		<project.build.outputTimestamp>2025-04-13T16:47:07Z</project.build.outputTimestamp>
+		<project.build.outputTimestamp>2025-11-01T23:18:11Z</project.build.outputTimestamp>
 
 		<!-- By default, do not deploy artifacts - override for the ones which actually should be deployed -->
 		<maven.deploy.skip>true</maven.deploy.skip>
