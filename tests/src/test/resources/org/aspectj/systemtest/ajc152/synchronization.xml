@@ -324,6 +324,7 @@
     <ajc-test dir="features152/synchronization" title="prevent double unlock weaving messages and model contents">
         <compile files="ThisJoinPointUnlock.java" options="-1.8 -Xjoinpoints:synchronization -showWeaveInfo -emacssym">
           <message kind="weave" text="Join point 'lock(void java.lang.Object.&lt;lock&gt;(java.lang.Object))' in Type 'ThisJoinPointUnlock' (ThisJoinPointUnlock.java:38) advised by before advice from 'TJPAspect' (ThisJoinPointUnlock.java:4)"/>
+          <message kind="weave" text="Join point 'method-execution(void ThisJoinPointUnlock.nonStaticMethod())' in Type 'ThisJoinPointUnlock' (ThisJoinPointUnlock.java:37) advised by before advice from 'TJPAspect' (ThisJoinPointUnlock.java:4)"/>
           <message kind="weave" text="Join point 'method-call(void ThisJoinPointUnlock.staticMethod())' in Type 'ThisJoinPointUnlock' (ThisJoinPointUnlock.java:39) advised by before advice from 'TJPAspect' (ThisJoinPointUnlock.java:4)"/>
           <message kind="weave" text="Join point 'unlock(void java.lang.Object.&lt;unlock&gt;(java.lang.Object))' in Type 'ThisJoinPointUnlock' (ThisJoinPointUnlock.java:38) advised by before advice from 'TJPAspect' (ThisJoinPointUnlock.java:4)"/>
         </compile>
