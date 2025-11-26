@@ -412,10 +412,29 @@ public class InterTypeFieldDeclaration extends InterTypeDeclaration {
 		codeStream.invoke(Opcodes.OPC_invokeinterface,readMethod,null);
 	}
 
+	/**
+	 * Example:
+	 * 
+	 * For this ITD field on an interface type:
+	 * <pre>
+	 * {@code Set<String> I.changeListeners = new HashSet<String>(); }
+	 * </pre>
+	 * the binding (method we are currently writing) is:
+	 * <pre>
+	 * {@code public static void ajc$interFieldSetDispatch$Azpect$I$changeListeners(I, Set<java.lang.String>)}
+	 * </pre>
+	 * and the writeMethod to be invoked is:
+	 * <pre>
+	 * public abstract void ajc$interFieldSet$Azpect$I$changeListeners(Set<java.lang.String>) 
+	 * </pre>
+	 * 
+	 */
 	private void generateInterfaceWriteBody(MethodBinding binding, MethodBinding writeMethod, CodeStream codeStream) {
 		codeStream.aload_0();
+		LocalVariableBinding valueVar = createUsedVar(codeStream, "value", writeMethod.parameters[0], 1);
 		codeStream.load(writeMethod.parameters[0], 1);
 		codeStream.invoke(Opcodes.OPC_invokeinterface, writeMethod, null);
+		valueVar.recordInitializationEndPC(codeStream.position);
 	}
 
 	private void generateClassReadBody(MethodBinding binding, FieldBinding field, CodeStream codeStream) {

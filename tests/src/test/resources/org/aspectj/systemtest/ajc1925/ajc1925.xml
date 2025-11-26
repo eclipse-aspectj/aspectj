@@ -104,5 +104,9 @@ JDK 25 (https://openjdk.org/projects/jdk/25/):
 		<compile files="X.aj" options="-17"/>
 		<run class="X"/>
 	</ajc-test>
+	
+	<ajc-test dir="bugs1925/350" vm="24" title="itd code gen problem">
+		<compile files="Azpect.java" options="-25"/>
+	</ajc-test>
 
 </suite>
