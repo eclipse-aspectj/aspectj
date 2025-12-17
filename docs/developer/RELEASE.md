@@ -4,9 +4,8 @@ AspectJ is built and released with Maven. As of writing this, there is a Maven w
 pointing to Maven 3.6.3, but we are going to use simple `mvn` commands instead of `./mvnw` here, assuming that there is
 a local Maven installation on your workstation. You can easily substitute one for the other command.
 
-When deploying final releases to Sonatype OSSRH, the build uses Nexus Staging Maven plugin instead of Maven Deploy
-plugin. This helps to create a staging repository for the release and later release it to Maven Central without having
-to log into the [Sonatype Nexus web UI](https://oss.sonatype.org/). Everything can be done from the command line.
+Final releases are published to Maven Central via the [Central Publisher Portal](https://central.sonatype.com/publish/publish-portal-upload/).
+The build process creates a bundle archive following the Maven Repository Layout, which is then uploaded manually through the portal.
 
 Snapshots do not need to be staged and released separately, Maven Deploy does the job in this case. so let us begin with
 the simple case:
@@ -68,7 +67,8 @@ manual versioning process without using Maven Release plugin. It might work usin
   - running tests (can be skipped),
   - committing the release POMs,
   - tagging the release,
-  - deploying the release,
+  - preparing the portal bundle,
+  - uploading to Maven Central Portal,
   - setting the next snapshot version in all POMs,
   - committing the snapshot POMs,
   - pushing the previous commits and the release tag to the upstream Git repository.
@@ -94,31 +94,133 @@ mvn versions:set -DnewVersion=1.9.8.M2
 
 # Verify if the POM changes are OK, then remove the POM backup files
 mvn versions:commit
+```
 
-# Build and deploy the release to a Nexus staging repository.
+### Preparing the Portal Bundle
+
+Before building the release bundle, you can do a dry-run to verify everything will work correctly:
+
+```shell
+# Dry-run: Build artifacts and create bundle without GPG signatures
+# This allows you to verify the bundle structure before the actual release
+./scripts/prepare-portal-bundle.sh --dry-run
+
+# Verify the bundle structure
+unzip -l target/portal-bundle-1.9.8.M2.zip | grep 'org/aspectj'
+```
+
+The dry-run creates a bundle identical to the production bundle, except it lacks GPG signatures. This allows you to:
+- Verify the Maven Repository Layout structure is correct
+- Check that all required artifacts are included (JARs, sources, javadoc, POMs)
+- Confirm checksums are present and correctly formatted
+- Test the bundle extraction
+
+Once you're satisfied with the dry-run, prepare the production bundle:
+
+```shell
+# Build, sign, and create the portal bundle
 # The 'release' profile will activate:
-#   - Maven GPG plugin for signing artifacts (stand by to enter your passpharase).
+#   - Maven GPG plugin for signing artifacts (stand by to enter your passphrase).
 #     On Windows, a GUI password dialogue should pop up with a recent GnuPG version.
 #     In case of error 'Failed to execute goal org.apache.maven.plugins:maven-gpg-plugin:1.6:sign',
 #     try 'export GPG_TTY=$(tty)' before running the command.
 #   - Maven Javadoc plugin
-#   - Nexus Staging Maven plugin
-# The 'create-docs profile will make sure to generate AspectJ docs to be included in the installer. 
-# Optionally, use '-DskipTests', if you ran all tests before.
-mvn -P release,create-docs clean deploy
+# The 'create-docs' profile will make sure to generate AspectJ docs to be included in the installer.
+# Optionally, use '--skip-tests', if you ran all tests before.
+# Note: The script explicitly skips Maven deploy (-Dmaven.deploy.skip=true) since releases
+# are uploaded via Central Portal, not through Maven deploy.
+./scripts/prepare-portal-bundle.sh
+
+# OR: Run Maven commands directly (deploy is skipped)
+# mvn -P release,create-docs clean verify -Dmaven.deploy.skip=true
+# mvn assembly:single -Ddescriptor=portal-bundle
 ```
 
-If this command was successful, it means we have created a staging repository on Sonatype OSSRH, uploaded all artifacts
-and all pre-release checks on the Sonatype server passed, i.e. if the POMs contain all necessary information and if
-there are source and javadoc artifacts attached to the build. Now the only step left is to release the staging
-repository to Maven Central.  
+The script will:
+1. Build all artifacts (`mvn clean verify -P release`)
+2. Generate MD5 and SHA1 checksums (via checksum-maven-plugin)
+3. Create GPG signatures for all artifacts (via maven-gpg-plugin)
+4. Package everything into a Maven Repository Layout archive
 
-Actually, Nexus Staging Maven plugin can also be configured deploy and release to Maven Central in a single command, but
-in order to give you a chance to manually download and verify the artifacts from the staging repository, the default
-plugin configuration in the parent POM is `<autoReleaseAfterClose>false</autoReleaseAfterClose>`. Switching the value to
-`true` would release straight to Maven Central, given all previous steps were successful. 
+The bundle will be created in the project root as:
+- `target/portal-bundle-${VERSION}.zip`
+- `target/portal-bundle-${VERSION}.tar.gz`
 
-Before we release the staging repository though, we want to commit and tag the release, then set a new snapshot version:
+### Verifying the Bundle
+
+Before uploading, verify the bundle contains all required files:
+
+```shell
+# Extract and inspect the bundle structure
+unzip -l target/portal-bundle-1.9.8.M2.zip | head -50
+
+# Verify the Maven Repository Layout structure
+unzip -l target/portal-bundle-1.9.8.M2.zip | grep 'org/aspectj'
+
+# Check that all artifacts are present for each module
+# Each module should have:
+#   - {artifactId}-{version}.jar + .asc + .md5 + .sha1
+#   - {artifactId}-{version}-sources.jar + .asc + .md5 + .sha1
+#   - {artifactId}-{version}-javadoc.jar + .asc + .md5 + .sha1
+#   - {artifactId}-{version}.pom + .asc + .md5 + .sha1
+```
+
+### Installing Dry-Run Bundle to Local Maven Repository
+
+To verify that the bundle works correctly, you can install it into your local Maven repository
+and test it with a local project:
+
+```shell
+# Extract the dry-run bundle to a temporary directory
+TEMP_DIR=$(mktemp -d)
+unzip -q target/portal-bundle-1.9.8.M2.zip -d "$TEMP_DIR"
+
+# Copy the extracted Maven Repository Layout structure to your local repository
+# This assumes your local repository is at ~/.m2/repository (default)
+cp -r "$TEMP_DIR/org" ~/.m2/repository/
+
+# Clean up temporary directory
+rm -rf "$TEMP_DIR"
+
+# Verify the artifacts are installed
+ls -la ~/.m2/repository/org/aspectj/aspectjrt/1.9.8.M2/
+ls -la ~/.m2/repository/org/aspectj/aspectjweaver/1.9.8.M2/
+ls -la ~/.m2/repository/org/aspectj/aspectjtools/1.9.8.M2/
+ls -la ~/.m2/repository/org/aspectj/aspectjmatcher/1.9.8.M2/
+```
+
+Now you can test the installed artifacts with a local project:
+
+```shell
+# In a test project that depends on AspectJ, update the version in pom.xml:
+# <dependency>
+#   <groupId>org.aspectj</groupId>
+#   <artifactId>aspectjrt</artifactId>
+#   <version>1.9.8.M2</version>
+# </dependency>
+
+# Build the test project to verify the artifacts resolve correctly
+cd /path/to/test-project
+mvn clean compile
+
+# If using AspectJ compiler, verify it works:
+# mvn clean compile -Dmaven.compiler.compiler=org.aspectj.ajc.AjcCompiler
+```
+
+**Important:** The dry-run bundle does **NOT** include GPG signatures (`.asc` files) and **CANNOT** be uploaded to Maven Central. It is for local verification only.
+
+However, Maven will still resolve and use the artifacts from your local repository without signatures. This allows you to verify:
+- Artifacts are correctly structured
+- POMs are valid and contain correct metadata
+- Dependencies resolve correctly
+- The artifacts can be used in a real project build
+
+If the test project builds successfully, you can proceed with creating the production bundle
+with GPG signatures for the actual release. **Do not attempt to upload the dry-run bundle to Maven Central.**
+
+### Committing and Tagging
+
+Before uploading to the portal, commit and tag the release:
 
 ```shell
 # Commit the release POMs to Git (better do this from your IDE, verifying the
@@ -144,36 +246,50 @@ git push origin
 git push origin V1_9_8_M2
 ```
 
-OK, the Git house-keeping is done. Now finally, let us enjoy the fruits of our work and release the staging repository
-to Maven Central:
+### Uploading to Maven Central Portal
+
+You can upload the bundle either manually through the web UI or programmatically using the Publisher API.
+
+#### Option 1: Manual Upload (Web UI)
+
+1. Go to the [Maven Central Publisher Portal](https://central.sonatype.com/publish/publish-portal-upload/)
+2. Click "Publish Component" (requires at least one verified namespace)
+3. Enter a deployment name (e.g., `org.aspectj:aspectjrt:1.9.8.M2`)
+4. Optionally provide a description
+5. Click "Upload File" and select the bundle archive (`target/portal-bundle-1.9.8.M2.zip` or `.tar.gz`)
+6. Click "Publish Component" to begin the upload
+
+#### Option 2: Programmatic Upload (Publisher API)
+
+The portal provides a REST API for programmatic uploads. You'll need a portal token for authentication.
+
+1. Generate a portal token:
+   - Go to [Central Portal](https://central.sonatype.com/) and navigate to your profile
+   - Generate a token for publishing (see [Portal Token Documentation](https://central.sonatype.com/publish/publish-portal-upload/#generating-a-portal-token-for-publishing))
+
+2. Upload using curl:
 
 ```shell
-# Probably we forgot to write down the staging repository ID before.
-# It was written somewhere in the Maven log:
-#   [INFO]  * Created staging repository with ID "orgaspectj-1106".
-#   [INFO]  * Staging repository at https://oss.sonatype.org:443/service/local/staging/deployByRepositoryId/orgaspectj-1106
-#   ...
-#   [INFO]  * Uploading locally staged artifacts to profile org.aspectj
-#   [INFO]  * Upload of locally staged artifacts finished.
-#   [INFO]  * Closing staging repository with ID "orgaspectj-1106".
-#
-# But it is too far to scroll up. So let us just ask Nexus, which staging
-# repositories there are.
-mvn nexus-staging:rc-list
-# [INFO] ID                   State    Description
-# [INFO] orgaspectj-1106      CLOSED   org.aspectj:aspectjrt:1.9.8.M2
+# Set your portal token (keep this secure, don't commit to version control)
+export CENTRAL_TOKEN="your-portal-token-here"
 
-# Because of problems in Nexus Staging Maven Plugin with more recent JDKs,
-# we might need this first
-export MAVEN_OPTS="--add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED"
-
-# Use the ID of the corresponding CLOSED staging repository for releasing to
-# Maven Central
-mvn nexus-staging:rc-release -DstagingRepositoryId=orgaspectj-1106
+# Upload the bundle
+curl -X POST \
+  -H "Authorization: Bearer ${CENTRAL_TOKEN}" \
+  -F "bundle=@target/portal-bundle-1.9.8.M2.zip" \
+  -F "name=org.aspectj:aspectjrt:1.9.8.M2" \
+  -F "description=AspectJ 1.9.8.M2 release" \
+  https://central.sonatype.com/api/v1/publish
 ```
 
-Tadaa! We have performed an AspectJ release. In a few minutes, the artifacts should appear on Maven Central somewhere
-under https://repo1.maven.org/maven2/org/aspectj/, e.g. AspectJ Tools 1.9.8.M2 would appear under
+For more details on the Publisher API, see the [Publisher API documentation](https://central.sonatype.com/publish/publish-portal-upload/#publisher-api).
+
+**Note:** The API endpoint and authentication method may change. Check the latest portal documentation for current API details.
+
+#### Verification
+
+The portal will validate the bundle and process the upload. Once successful, the artifacts will be available on Maven Central
+within a few minutes under https://repo1.maven.org/maven2/org/aspectj/, e.g. AspectJ Tools 1.9.8.M2 would appear under
 https://repo1.maven.org/maven2/org/aspectj/aspectjtools/1.9.8.M2/. As soon as you see the artifacts there instead of
 "404 not found", you can announce release availability on the AspectJ mailing list and wherever else appropriate.
 

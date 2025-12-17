@@ -41,15 +41,17 @@
 			<id>ossrh</id>
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 		</snapshotRepository>
-		<repository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-		</repository>
+		<!--
+			Releases are now published via Maven Central Portal upload.
+			See docs/developer/RELEASE.md for instructions.
+		-->
+<!--
 		<site>
 			<id>aspectj-site-local</id>
-			<!-- Use mvn site:deploy from root directory to create multi-module Maven site there -->
+			<!- Use mvn site:deploy from root directory to create multi-module Maven site there ->
 			<url>file://${user.dir}/aj-build/dist/site</url>
 		</site>
+-->
 	</distributionManagement>
 
 	<repositories>
@@ -198,6 +200,9 @@
 				-->
 				<jvm.arg.allowSecurityManager>-Djava.security.manager=allow</jvm.arg.allowSecurityManager>
 			</properties>
+		</profile>
+		<profile>
+			<id>central-release</id>
 		</profile>
 		<profile>
 			<id>release</id>
@@ -383,40 +388,43 @@
 					</configuration>
 				</plugin>
 				<plugin>
-					<!--
-						Other than Maven Deploy, this plugin cannot just be added to the 'build/plugins' section of the parent POM
-						once and (de-)activated with a simple property like 'maven.deploy.skip' on a per-module basis. See also
-						https://issues.sonatype.org/browse/OSSRH-68966. Consequently, we do not add it to the parent but separately
-						to each module meant to be published.
-					-->
-					<groupId>org.sonatype.plugins</groupId>
-					<artifactId>nexus-staging-maven-plugin</artifactId>
-					<version>1.6.8</version>
-					<extensions>true</extensions>
-					<configuration>
-						<serverId>ossrh</serverId>
-						<nexusUrl>https://oss.sonatype.org/</nexusUrl>
-						<!-- Activate in order to directly release to Maven Central after successful staging -->
-						<autoReleaseAfterClose>false</autoReleaseAfterClose>
-					</configuration>
-					<dependencies>
-						<!--
-							Plugin version 1.6.8 does not work on JDK 16+ without special MAVEN_OPTS opening certain modules,
-							because the XStream version used needs it. One workaround is to use a more recent XStream version.
-							Attention: Do *not* upgrade to e.g. 1.4.18, because it causes exceptions during deployment.
-							TODO: remove plugin dependency after OSSRH-66257, NEXUS-26993 are fixed.
-						-->
-						<dependency>
-							<groupId>com.thoughtworks.xstream</groupId>
-							<artifactId>xstream</artifactId>
-							<version>1.4.15</version>
-						</dependency>
-					</dependencies>
-				</plugin>
-				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>truezip-maven-plugin</artifactId>
 					<version>1.2</version>
+				</plugin>
+				<plugin>
+					<groupId>net.nicoulaj.maven.plugins</groupId>
+					<artifactId>checksum-maven-plugin</artifactId>
+					<version>1.11</version>
+					<executions>
+						<execution>
+							<id>checksum</id>
+							<goals>
+								<goal>files</goal>
+							</goals>
+							<phase>package</phase>
+						</execution>
+					</executions>
+					<configuration>
+						<!-- Skip if no files match (e.g., for parent POM with packaging=pom) -->
+						<failOnMissingFile>false</failOnMissingFile>
+						<algorithms>
+							<algorithm>MD5</algorithm>
+							<algorithm>SHA-1</algorithm>
+						</algorithms>
+						<csvSummary>false</csvSummary>
+						<fileSets>
+							<fileSet>
+								<directory>${project.build.directory}</directory>
+								<includes>
+									<include>${project.build.finalName}.jar</include>
+									<include>${project.build.finalName}-sources.jar</include>
+									<include>${project.build.finalName}-javadoc.jar</include>
+									<include>flattened-pom.xml</include>
+								</includes>
+							</fileSet>
+						</fileSets>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -596,6 +604,30 @@
 						<ignoredUnusedDeclaredDependency>junit:junit:jar</ignoredUnusedDeclaredDependency>
 						<ignoredUnusedDeclaredDependency>org.aspectj:lib:jar</ignoredUnusedDeclaredDependency>
 					</ignoredUnusedDeclaredDependencies>
+				</configuration>
+			</plugin>
+
+			<!--
+				Checksum plugin for generating MD5 and SHA1 checksums for published artifacts.
+				This runs automatically during package phase for modules that produce artifacts.
+				Note: Removed from parent POM execution - modules that need checksums will inherit
+				the configuration from pluginManagement. The pluginManagement config has
+				failOnMissingFile=false to prevent errors when no files match.
+			-->
+
+			<!--
+				Assembly plugin for creating portal bundle with Maven Repository Layout.
+				Invoke with: mvn assembly:single -Ddescriptor=portal-bundle
+				Note: Uses ${project.version} from this POM (aspectj-parent) - adjust version in this POM to change release version.
+			-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<descriptors>
+						<descriptor>src/assembly/portal-bundle.xml</descriptor>
+					</descriptors>
+					<finalName>portal-bundle-${project.version}</finalName>
 				</configuration>
 			</plugin>
 
