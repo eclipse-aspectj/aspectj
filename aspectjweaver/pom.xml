@@ -168,6 +168,8 @@
 							<!-- The assembly ID 'sources' becomes the artifact classifier, exactly what we want -->
 							<appendAssemblyId>true</appendAssemblyId>
 							<skipAssembly>${maven.source.skip}</skipAssembly>
+							<!-- Override parent's finalName to use module's finalName -->
+							<finalName>${project.build.finalName}</finalName>
 							<archive>
 							</archive>
 							<descriptors>
@@ -266,7 +268,11 @@
 							<goal>jar</goal>
 						</goals>
 						<configuration>
+							<skip>${maven.javadoc.skip}</skip>
 							<sourcepath>${project.build.directory}/unpacked-sources</sourcepath>
+							<!-- Override parent's subpackages - when using sourcepath, javadoc should discover packages automatically -->
+							<!-- But we still need to tell it which packages to process, so use the same package name -->
+							<subpackages>org.aspectj</subpackages>
 						</configuration>
 					</execution>
 				</executions>
@@ -314,6 +320,12 @@
 				</executions>
 			</plugin>
 
+			<!-- Generate checksums for published artifacts -->
+			<plugin>
+				<groupId>net.nicoulaj.maven.plugins</groupId>
+				<artifactId>checksum-maven-plugin</artifactId>
+			</plugin>
+
 			<!-- Caveat: Attaching the flattened POM needs packaging=jar, so do not use packaging=pom for this module -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -339,11 +351,6 @@
 				</executions>
 			</plugin>
 
-			<!-- Deploy this module to Nexus (Sonatype OSSRH, releases promotable to Maven Central) -->
-			<plugin>
-				<groupId>org.sonatype.plugins</groupId>
-				<artifactId>nexus-staging-maven-plugin</artifactId>
-			</plugin>
 
 		</plugins>
 		<pluginManagement>
