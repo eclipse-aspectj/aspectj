@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.aspectj</groupId>
 		<artifactId>aspectj-parent</artifactId>
-		<version>1.9.25.1</version>
+		<version>1.9.25.2-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>bcel-builder</artifactId>
