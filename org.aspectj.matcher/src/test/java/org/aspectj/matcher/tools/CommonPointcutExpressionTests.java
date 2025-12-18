@@ -226,8 +226,8 @@ public abstract class CommonPointcutExpressionTests extends TestCase {
 		ResolvedMember stringValueOfIntMethod = getMethod(jlString, "valueOf", "(I)Ljava/lang/String;");
 		ResolvedMember listAddMethod = getMethod(juList, "add", "(Ljava/lang/Object;)Z");
 
-		assertTrue(ex.matchesMethodExecution(stringSplitMethod).neverMatches());
-		assertTrue(ex.matchesMethodExecution(stringValueOfIntMethod).neverMatches());
+		assertTrue(ex.matchesMethodExecution(stringSplitMethod).alwaysMatches());
+		assertTrue(ex.matchesMethodExecution(stringValueOfIntMethod).alwaysMatches());
 		assertTrue(ex.matchesMethodExecution(listAddMethod).neverMatches());
 	}
 
