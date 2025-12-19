@@ -571,9 +571,23 @@
 		<!--
 			Javac, AJC: no errors. ECJ: "invalid module name: jdk.charsets"
 
-			This is because ECJ does not add internal JDK modules as root modules, but AJC does. This was not so much
-			intentional in AJC, but simply due to the hacky implementation. Anyway, it works and makes AJC more
-			Javac-compliant than ECJ, which is nice.
+			This is because ECJ does not add internal JDK modules (modules with names starting with "jdk.")
+			as root modules, but AJC does. This was not so much intentional in AJC, but simply due to the
+			hacky implementation. Anyway, it works and makes AJC more Javac-compliant than ECJ, which is nice.
+
+			Why ECJ rejects internal JDK modules:
+			- Internal JDK modules (like jdk.charsets) are not part of the public API and are considered
+			  implementation details that may change or be removed between JDK versions
+			- ECJ takes a more conservative approach, only allowing public API modules (java.*) to be
+			  added as root modules via the add-modules option
+			- This is a design decision in ECJ to discourage reliance on internal APIs, whereas javac
+			  is more permissive and allows internal modules to be added
+			- The Java Language Specification doesn't explicitly forbid adding internal modules, so this
+			  is an ECJ interpretation rather than a specification requirement
+
+			Note: AspectJ automatically adds the jmods directory to the module path (see BuildArgParser.java),
+			so ECJ should be able to discover the module. However, on some JDK distributions (e.g., Temurin JDK 25),
+			ECJ may still reject internal JDK modules even when they exist and are discoverable.
 		-->
 		<compile files="UseJDKExtendedCharsets.java" options="-9 --add-modules jdk.charsets --add-exports jdk.charsets/sun.nio.cs.ext=ALL-UNNAMED" />
 		<run class="UseJDKExtendedCharsets" vmargs="-ea --add-modules jdk.charsets --add-exports jdk.charsets/sun.nio.cs.ext=ALL-UNNAMED">
