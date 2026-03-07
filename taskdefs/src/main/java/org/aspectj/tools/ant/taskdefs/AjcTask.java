@@ -1251,9 +1251,8 @@ public class AjcTask extends MatchingTask {
 	}
 
 	protected File zipDirectory(File dir) {
-		File tempDir = new File(".");
 		try {
-			tempDir = File.createTempFile("AjcTest", ".tmp");
+			File tempDir = File.createTempFile("AjcTest", ".tmp");
 			tempDir.mkdirs();
 			tempDir.deleteOnExit(); // XXX remove zip explicitly..
 		} catch (IOException e) {
