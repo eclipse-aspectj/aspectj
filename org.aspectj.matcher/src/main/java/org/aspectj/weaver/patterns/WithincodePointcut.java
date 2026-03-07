@@ -41,6 +41,8 @@ public class WithincodePointcut extends Pointcut {
 		// these next two are needed for inlining of field initializers
 		flags |= Shadow.ConstructorExecution.bit;
 		flags |= Shadow.Initialization.bit;
+		// According to the documentation, method (and constructor) execution matches.
+		flags |= Shadow.MethodExecution.bit;
 		matchedShadowKinds = flags;
 	}
 

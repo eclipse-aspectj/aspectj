@@ -118,7 +118,7 @@ public class PointcutExpressionTest extends TestCase {
 
 		// withincode
 		ex = p.parsePointcutExpression("withincode(* a*(..))");
-		assertTrue("Should not match", ex.matchesMethodExecution(a).neverMatches());
+		assertTrue("Should match", ex.matchesMethodExecution(a).alwaysMatches());
 	}
 
 	public void testMatchesConstructorCall() {
