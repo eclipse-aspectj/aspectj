@@ -21,8 +21,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.ObjectStreamClass;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,6 +32,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -38,7 +41,10 @@ import java.util.Set;
 import org.aspectj.asm.internal.AspectJElementHierarchy;
 import org.aspectj.asm.internal.HandleProviderDelimiter;
 import org.aspectj.asm.internal.JDTLikeHandleProvider;
+import org.aspectj.asm.internal.ProgramElement;
+import org.aspectj.asm.internal.Relationship;
 import org.aspectj.asm.internal.RelationshipMap;
+import org.aspectj.bridge.SourceLocation;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.util.IStructureModel;
 
@@ -248,13 +254,13 @@ public class AsmManager implements IStructureModel {
 				hierarchy.setRoot(IHierarchy.NO_STRUCTURE);
 			} else {
 				String filePath = genExternFilePath(configFilePath);
-				FileInputStream in = new FileInputStream(filePath);
-				ObjectInputStream s = new ObjectInputStream(in);
-				hierarchy = (AspectJElementHierarchy) s.readObject();
-				((AspectJElementHierarchy) hierarchy).setAsmManager(this);
-				hierarchyReadOK = true;
-				mapper = (RelationshipMap) s.readObject();
-				s.close();
+				try (FileInputStream in = new FileInputStream(filePath);
+						ObjectInputStream s = new StructureModelObjectInputStream(in)) {
+					hierarchy = (AspectJElementHierarchy) s.readObject();
+					((AspectJElementHierarchy) hierarchy).setAsmManager(this);
+					hierarchyReadOK = true;
+					mapper = (RelationshipMap) s.readObject();
+				}
 			}
 		} catch (FileNotFoundException fnfe) {
 			// That is OK
@@ -282,6 +288,71 @@ public class AsmManager implements IStructureModel {
 			configFilePath = configFilePath.substring(0, configFilePath.lastIndexOf(".lst"));
 		}
 		return configFilePath + ".ajsym";
+	}
+
+	private static class StructureModelObjectInputStream extends ObjectInputStream {
+
+		private static final Set<String> ALLOWED_SERIALIZED_TYPES = new HashSet<>();
+
+		static {
+			ALLOWED_SERIALIZED_TYPES.add(AspectJElementHierarchy.class.getName());
+			ALLOWED_SERIALIZED_TYPES.add(ProgramElement.class.getName());
+			ALLOWED_SERIALIZED_TYPES.add(RelationshipMap.class.getName());
+			ALLOWED_SERIALIZED_TYPES.add(Relationship.class.getName());
+			ALLOWED_SERIALIZED_TYPES.add(IProgramElement.Accessibility.class.getName());
+			ALLOWED_SERIALIZED_TYPES.add(IProgramElement.ExtraInformation.class.getName());
+			ALLOWED_SERIALIZED_TYPES.add(IProgramElement.Kind.class.getName());
+			ALLOWED_SERIALIZED_TYPES.add(IProgramElement.Modifiers.class.getName());
+			ALLOWED_SERIALIZED_TYPES.add(IRelationship.Kind.class.getName());
+			ALLOWED_SERIALIZED_TYPES.add(SourceLocation.class.getName());
+			ALLOWED_SERIALIZED_TYPES.add(File.class.getName());
+			ALLOWED_SERIALIZED_TYPES.add(String.class.getName());
+			ALLOWED_SERIALIZED_TYPES.add(Boolean.class.getName());
+			ALLOWED_SERIALIZED_TYPES.add(Integer.class.getName());
+			ALLOWED_SERIALIZED_TYPES.add(ArrayList.class.getName());
+			ALLOWED_SERIALIZED_TYPES.add(HashMap.class.getName());
+			ALLOWED_SERIALIZED_TYPES.add(LinkedHashMap.class.getName());
+			ALLOWED_SERIALIZED_TYPES.add("java.util.Arrays$ArrayList");
+			ALLOWED_SERIALIZED_TYPES.add("java.util.Collections$EmptyList");
+			ALLOWED_SERIALIZED_TYPES.add("java.util.Collections$EmptyMap");
+			ALLOWED_SERIALIZED_TYPES.add("java.util.Collections$SingletonList");
+			ALLOWED_SERIALIZED_TYPES.add("java.util.Collections$UnmodifiableCollection");
+			ALLOWED_SERIALIZED_TYPES.add("java.util.Collections$UnmodifiableList");
+			ALLOWED_SERIALIZED_TYPES.add("java.util.Collections$UnmodifiableRandomAccessList");
+		}
+
+		StructureModelObjectInputStream(FileInputStream in) throws IOException {
+			super(in);
+		}
+
+		@Override
+		protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
+			String className = desc.getName();
+			if (!isAllowedSerializedType(className)) {
+				throw new InvalidClassException(className, "not allowed in AspectJ structure model");
+			}
+			return super.resolveClass(desc);
+		}
+
+		private static boolean isAllowedSerializedType(String className) {
+			if (className.startsWith("[")) {
+				return isAllowedArrayType(className);
+			}
+			return ALLOWED_SERIALIZED_TYPES.contains(className);
+		}
+
+		private static boolean isAllowedArrayType(String className) {
+			while (className.startsWith("[")) {
+				className = className.substring(1);
+			}
+			if (className.length() == 1) {
+				return true;
+			}
+			if (className.startsWith("L") && className.endsWith(";")) {
+				return isAllowedSerializedType(className.substring(1, className.length() - 1));
+			}
+			return false;
+		}
 	}
 
 	public String getCanonicalFilePath(File f) {
