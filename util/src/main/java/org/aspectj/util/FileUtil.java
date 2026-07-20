@@ -363,6 +363,29 @@ public class FileUtil {
 	}
 
 	/**
+	 * Test whether a file resolved against a directory really ends up underneath that directory. Names taken from zip or jar
+	 * entries may contain ".." segments or be absolute, in which case resolving them against an output directory escapes it.
+	 *
+	 * @param dir the directory the file is expected to live in
+	 * @param file the file resolved against <code>dir</code>
+	 * @return true if <code>file</code> is below <code>dir</code>
+	 */
+	public static boolean isContainedIn(File dir, File file) {
+		if (null == dir || null == file) {
+			return false;
+		}
+		try {
+			String dirPath = dir.getCanonicalPath();
+			if (!dirPath.endsWith(File.separator)) {
+				dirPath += File.separator;
+			}
+			return file.getCanonicalPath().startsWith(dirPath);
+		} catch (IOException e) {
+			return false;
+		}
+	}
+
+	/**
 	 * Weakly normalize path for comparisons by trimming and changing '\\' to '/'
 	 */
 	public static String weakNormalize(String path) {
