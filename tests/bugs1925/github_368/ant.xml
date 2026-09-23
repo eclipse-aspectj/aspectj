@@ -1,0 +1,11 @@
+<!-- ajc-ant script, not to be used from Ant commant line - see AntSpec -->
+<project name="ltw">
+  <target name="handler advice woven into multi-catch(Exception|LinkageError)">
+    <copy file="${aj.root}/tests/bugs1925/github_368/aop.xml" tofile="${aj.sandbox}/META-INF/aop.xml"/>
+    <java fork="yes" classname="Application" failonerror="yes">
+      <classpath refid="aj.path"/>
+      <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+    </java>
+  </target>
+
+</project>

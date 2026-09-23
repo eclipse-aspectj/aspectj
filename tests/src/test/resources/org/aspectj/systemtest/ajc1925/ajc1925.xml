@@ -158,4 +158,12 @@ JDK 25 (https://openjdk.org/projects/jdk/25/):
 		</run>
 	</ajc-test>
 
+	<!-- https://github.com/eclipse-aspectj/aspectj/issues/368 -->
+	<ajc-test dir="bugs1925/github_368" vm="8" title="handler advice woven into multi-catch(Exception|LinkageError)">
+		<compile files="Worker.java Application.java" options="-8"/>
+		<compile files="LoggingAspect.java" options="-8 -Xlint:ignore"/>
+		<!-- Reproduces only under load-time weaving in a forked JVM with a java agent, hence Ant build -->
+		<ant file="ant.xml" target="handler advice woven into multi-catch(Exception|LinkageError)" verbose="true"/>
+	</ajc-test>
+
 </suite>
