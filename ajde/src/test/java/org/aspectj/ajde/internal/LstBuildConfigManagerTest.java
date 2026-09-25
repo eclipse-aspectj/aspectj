@@ -15,6 +15,7 @@
 package org.aspectj.ajde.internal;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -74,6 +75,27 @@ public class LstBuildConfigManagerTest extends AjdeTestCase {
 		File file = openFile("file-relPath-sameDir.lst");
 		buildConfigManager.buildModel(file.getCanonicalPath());
 		assertTrue("single file", true);
+	}
+
+	public void testRejectImportedConfigFileOutsideProjectRoot() throws IOException {
+		File outsideConfig = new File(getWorkingDir(), "outside.lst");
+		try (FileOutputStream out = new FileOutputStream(outsideConfig)) {
+			out.write("A.java\n".getBytes("UTF-8"));
+		}
+
+		File configFile = openFile("path-traversal.lst");
+		try (FileOutputStream out = new FileOutputStream(configFile)) {
+			out.write("@../outside.lst\n".getBytes("UTF-8"));
+		}
+
+		BuildConfigModel model = buildConfigManager.buildModel(configFile.getCanonicalPath());
+		assertNotNull("expected model root to be created", model.getRoot());
+
+		List messages = getErrorMessages("path-traversal.lst");
+		assertFalse("expected an error message for imports outside project root", messages.isEmpty());
+
+		TestMessage message = (TestMessage) messages.get(0);
+		assertTrue(message.getContainedMessage().getMessage(), message.getContainedMessage().getMessage().contains("outside project root directory"));
 	}
 
 }
