@@ -14,7 +14,7 @@ package org.aspectj.weaver.bcel;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -75,7 +75,7 @@ public class BcelAccessForInlineMunger extends BcelTypeMunger {
 	public boolean munge(BcelClassWeaver weaver) {
 		aspectGen = weaver.getLazyClassGen();
 		inlineAccessors = new HashMap<>(0);
-		inlineAccessorMethodGens = new HashSet<>();
+		inlineAccessorMethodGens = new LinkedHashSet<>();
 
 		// look for all @Around advices
 		for (LazyMethodGen methodGen : aspectGen.getMethodGens()) {
