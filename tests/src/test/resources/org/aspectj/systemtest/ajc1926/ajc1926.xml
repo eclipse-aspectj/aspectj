@@ -1,0 +1,36 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<!--
+JDK 26 (https://openjdk.org/projects/jdk/26/):
+
+500:	Prepare to Make Final Mean Final
+504:	Remove the Applet API
+516:	Ahead-of-Time Object Caching with Any GC
+517:	HTTP/3 for the HTTP Client API
+522:	G1 GC: Improve Throughput by Reducing Synchronization
+524:	PEM Encodings of Cryptographic Objects (Second Preview)
+525:	Structured Concurrency (Sixth Preview)
+526:	Lazy Constants (Second Preview)
+529:	Vector API (Eleventh Incubator)
+530:	Primitive Types in Patterns, instanceof, and switch (Fourth Preview)
+
+-->
+<suite>
+	
+	<!-- https://openjdk.org/jeps/455 becomes JEP530 in Java26 - test moved there -->
+	<ajc-test dir="features1923/java23" vm="26" title="primitive types patterns - switch - with advice">
+		<compile files="PrimitivePatternsSwitch2.java" options="--enable-preview -26 -showWeaveInfo">
+		<message kind="weave" line="12" text="Join point 'method-call(boolean PrimitivePatternsSwitch2.isOdd(int))' in Type 'PrimitivePatternsSwitch2' (PrimitivePatternsSwitch2.java:12) advised by around advice from 'X'"/>>
+		</compile>
+		<run class="PrimitivePatternsSwitch2" vmargs="- -enable-preview">
+			<stdout>
+			<!----> advice forces all the isOdd() calls to return false -->
+			<line text="no"/>
+			<line text="no"/>
+			<line text="no"/>
+			<line text="no"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+</suite>

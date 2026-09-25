@@ -164,6 +164,7 @@ public class Ajc150Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	}
 
 	public void testPossibleStaticImports_pr113066_2() {
+		// With Java26 the expected message changed due to a fix in upstream JDT's ProblemReporter.importProblem(...) (template changed to not double insert name)
 		runTest("possible static imports bug - 2");
 	}
 

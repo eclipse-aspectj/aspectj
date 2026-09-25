@@ -24,21 +24,7 @@ JDK 25 (https://openjdk.org/projects/jdk/25/):
 -->
 <suite>
 	
-	<!-- https://openjdk.org/jeps/455 -->
-	<ajc-test dir="features1923/java23" vm="25" title="primitive types patterns - switch - with advice">
-		<compile files="PrimitivePatternsSwitch2.java" options="--enable-preview -25 -showWeaveInfo">
-		<message kind="weave" line="12" text="Join point 'method-call(boolean PrimitivePatternsSwitch2.isOdd(int))' in Type 'PrimitivePatternsSwitch2' (PrimitivePatternsSwitch2.java:12) advised by around advice from 'X'"/>>
-		</compile>
-		<run class="PrimitivePatternsSwitch2" vmargs="--enable-preview">
-			<stdout>
-			<!-- advice forces all the isOdd() calls to return false -->
-			<line text="no"/>
-			<line text="no"/>
-			<line text="no"/>
-			<line text="no"/>
-			</stdout>
-		</run>
-	</ajc-test>
+	<!-- https://openjdk.org/jeps/455 becomes jep530 in Java26 - test moved there -->
 	
 	<ajc-test dir="features1925/flexibleConstructors" vm="25" title="flexible constructors - 1">
 		<compile files="Code1.java" options="-25"/>

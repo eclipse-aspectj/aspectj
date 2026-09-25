@@ -11,6 +11,7 @@ import junit.framework.Test;
  */
 public class Ajc1925TestsJava extends JavaVersionSpecificXMLBasedAjcTestCase {
 
+	@SuppressWarnings("unused")
 	private static final Constants.ClassFileVersion classFileVersion = Constants.ClassFileVersion.of(25);
 
 	public Ajc1925TestsJava() {
@@ -45,10 +46,6 @@ public class Ajc1925TestsJava extends JavaVersionSpecificXMLBasedAjcTestCase {
 
 	public void testCompactSourceFilesWithAdvice() {
 		runTest("compact source files - 2");
-	}
-
-	public void testJep455PrimitivePatternsSwitch2() {
-		runTest("primitive types patterns - switch - with advice");
 	}
 
 	@Override

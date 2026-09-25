@@ -178,11 +178,11 @@ Limitations which apply to both LTW and CTW modes include:
   <Directory> defaults to the current working dir.
 
 // AspectJ_JDK_Update: increment max. version and, if necessary, min. version
-`-source <[1.8 to 25]>`::
+`-source <[1.8 to 26]>`::
   Set source file Java language level
-`-target <[1.8 to 25]>`::
+`-target <[1.8 to 26]>`::
   Set classfile Java bytecode level
-`-<[1.8 to 25]>`::
+`-<[1.8 to 26]>`::
   Set compiler compliance level. Implies identical `-source` and `-target` levels.
   E.g., `-11` implies `-source 11` and `-target 11`.
 

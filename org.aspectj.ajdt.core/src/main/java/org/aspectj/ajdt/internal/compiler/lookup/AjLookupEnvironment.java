@@ -155,7 +155,7 @@ public class AjLookupEnvironment extends LookupEnvironment implements AnonymousC
 			// units[i].scope.checkParameterizedTypes(); do this check a little later, after ITDs applied to stbs
 			units[i].scope.buildFieldsAndMethods();
 			// There used to be a buildComponents() in the buildFieldsAndMethods() but it moved out with J25
-			units[i].scope.collateRecordComponents();
+			units[i].scope.buildComponents();
 			leavingPhase(tok);
 		}
 

@@ -503,7 +503,7 @@
 
     <ajc-test dir="bugs150/pr113066" title="possible static imports bug - 2">
         <compile files="Consts2.java,TestNPE2.java" options="-1.8">
-          <message kind="error" line="2" text="The field Consts2.a.Consts2.A_CONST is not visible"/>
+          <message kind="error" line="2" text="The field Consts2.A_CONST is not visible"/>
           <!--  message has changed with 3.3 compiler upgrade, it used to be this: -->
           <!-- message kind="error" line="2" text="The import a.Consts2.A_CONST cannot be resolved"/-->
         </compile>
@@ -1088,10 +1088,10 @@
 
      <ajc-test dir="bugs150" pr="78314" title="good error message for unmatched member syntax">
         <compile files="pr78314.aj" options="-1.8">
-          <message kind="error" line="5" text="Syntax error on token &quot;foo&quot;, no accurate correction available"/>
+          <message kind="error" line="5" text="Syntax error on token &quot;foo&quot;, identifier expected after this token"/>
          </compile>
         <compile files="pr78314.aj" options="-1.8">
-          <message kind="error" line="5" text="Syntax error on token &quot;foo&quot;, no accurate correction available"/>
+          <message kind="error" line="5" text="Syntax error on token &quot;foo&quot;, identifier expected after this token"/>
         </compile>
     </ajc-test>
 

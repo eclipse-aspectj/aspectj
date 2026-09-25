@@ -12,10 +12,13 @@
 package org.aspectj.weaver.reflect;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.aspectj.bridge.IMessageHandler;
+import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
@@ -77,7 +80,14 @@ public abstract class ReflectionBasedReferenceTypeDelegateTest extends TestCase 
 	}
 
 	public void testGetAnnotationTypes() {
-		assertEquals("no entries", 0, objectType.getAnnotationTypes().length);
+		List<ResolvedType> annotationList = Arrays.asList(objectType.getAnnotationTypes());
+		if (LangUtil.isVMGreaterOrEqual(26)) {
+			// There is a new annotation hint that appears on Object
+			assertEquals("should be one entry", 1, annotationList.size());
+			assertEquals("Missing expected entry jdk.internal.vm.annotation.AOTSafeClassInitializer","jdk.internal.vm.annotation.AOTSafeClassInitializer",annotationList.get(0).getName());
+		} else {
+			assertEquals("no entries", 0, objectType.getAnnotationTypes().length);
+		}
 	}
 
 	public void testGetTypeVariables() {

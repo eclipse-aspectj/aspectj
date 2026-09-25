@@ -510,7 +510,7 @@
 
     <ajc-test dir="bugs150/pr113066" title="possible static imports bug - 2">
         <compile files="Consts2.java,TestNPE2.java" options="-1.9">
-          <message kind="error" line="2" text="The field Consts2.a.Consts2.A_CONST is not visible"/>
+          <message kind="error" line="2" text="The field Consts2.A_CONST is not visible"/>
           <!--  message has changed with 3.3 compiler upgrade, it used to be this: -->
           <!-- message kind="error" line="2" text="The import a.Consts2.A_CONST cannot be resolved"/-->
         </compile>

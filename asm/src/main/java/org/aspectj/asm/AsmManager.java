@@ -21,11 +21,16 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.ObjectStreamClass;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -38,8 +43,11 @@ import java.util.Set;
 import org.aspectj.asm.internal.AspectJElementHierarchy;
 import org.aspectj.asm.internal.HandleProviderDelimiter;
 import org.aspectj.asm.internal.JDTLikeHandleProvider;
+import org.aspectj.asm.internal.ProgramElement;
+import org.aspectj.asm.internal.Relationship;
 import org.aspectj.asm.internal.RelationshipMap;
 import org.aspectj.bridge.ISourceLocation;
+import org.aspectj.bridge.SourceLocation;
 import org.aspectj.util.IStructureModel;
 
 /**
@@ -237,7 +245,42 @@ public class AsmManager implements IStructureModel {
 			// e.printStackTrace();
 		}
 	}
+	
+	private static final Set<String> ALLOWED_STRUCTURE_MODEL_CLASSES = new HashSet<>(Arrays.asList(
+			AspectJElementHierarchy.class.getName(),
+			ProgramElement.class.getName(),
+			ProgramElement.Kind.class.getName(),
+			RelationshipMap.class.getName(),
+			Relationship.class.getName(),
+			IProgramElement.ExtraInformation.class.getName(),
+			IProgramElement.Kind.class.getName(),
+			IRelationship.Kind.class.getName(),
+			SourceLocation.class.getName(),
+			HashMap.class.getName(),
+			ArrayList.class.getName(),
+			Collections.EMPTY_LIST.getClass().getName(),
+			Collections.EMPTY_MAP.getClass().getName(),
+			File.class.getName(),
+			char[].class.getName()
+			));
 
+	private static final class FilteringObjectInputStream extends ObjectInputStream {
+		Set<String> allowedClasses;
+
+		FilteringObjectInputStream(InputStream is, Set<String> allowedClasses) throws IOException {
+			super(is);
+			this.allowedClasses = allowedClasses;
+		}
+
+		@Override
+		protected Class<?> resolveClass(ObjectStreamClass descriptor) throws IOException, ClassNotFoundException {
+			if (!allowedClasses.contains(descriptor.getName())) {
+				System.out.println(allowedClasses+" doesnt contain "+descriptor.getName()+"?");
+				throw new InvalidClassException(descriptor.getName(),"Rejecting deserialization since not in allowed list:"+allowedClasses);
+			}
+			return super.resolveClass(descriptor);
+		}
+	}
 	/**
 	 * @param configFilePath path to an ".lst" file
 	 */
@@ -249,7 +292,7 @@ public class AsmManager implements IStructureModel {
 			} else {
 				String filePath = genExternFilePath(configFilePath);
 				FileInputStream in = new FileInputStream(filePath);
-				ObjectInputStream s = new ObjectInputStream(in);
+				ObjectInputStream s = new FilteringObjectInputStream(in, ALLOWED_STRUCTURE_MODEL_CLASSES);
 				hierarchy = (AspectJElementHierarchy) s.readObject();
 				((AspectJElementHierarchy) hierarchy).setAsmManager(this);
 				hierarchyReadOK = true;

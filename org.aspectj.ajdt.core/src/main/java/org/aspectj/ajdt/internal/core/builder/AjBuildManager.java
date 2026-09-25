@@ -945,7 +945,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		if (buildConfig.getCheckedClasspaths() == null) {
 			nameEnvironment = new FileSystem(classpaths, filenames, defaultEncoding, ClasspathLocation.BINARY, null);
 		} else {
-			nameEnvironment = new FileSystem(buildConfig.getCheckedClasspaths(), filenames, false, null);
+			nameEnvironment = new FileSystem(buildConfig.getCheckedClasspaths(), filenames, false, null, null);
 		}
 		nameEnvironment.module = buildConfig.getModuleDesc();
 		return nameEnvironment;

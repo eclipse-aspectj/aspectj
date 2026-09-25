@@ -15,7 +15,10 @@ package org.aspectj.ajde.core.tests.model;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.aspectj.ajde.core.AjdeCoreTestCase;
 import org.aspectj.ajde.core.TestCompilerConfiguration;
@@ -27,7 +30,7 @@ import org.aspectj.asm.IProgramElement;
 
 public class SavedModelConsistencyTest extends AjdeCoreTestCase {
 
-	private final String[] files = new String[] { "ModelCoverage.java", "pkg" + File.separator + "InPackage.java" };
+	private final String[] files = new String[] { "AnnotationStyleModelCoverage.java", "ModelCoverage.java", "pkg" + File.separator + "InPackage.java" };
 
 	private TestMessageHandler handler;
 	private TestCompilerConfiguration compilerConfig;
@@ -83,7 +86,6 @@ public class SavedModelConsistencyTest extends AjdeCoreTestCase {
 	public void testModelIsSamePreAndPostBuild() {
 		AsmManager asm = AsmManager.createNewStructureModel(Collections.<File,String>emptyMap());
 		asm.readStructureModel(getAbsoluteProjectDir());
-		// AsmManager.getDefault().readStructureModel(getAbsoluteProjectDir());
 		IHierarchy model = asm.getHierarchy();
 		assertTrue("model exists", model != null);
 
@@ -95,7 +97,11 @@ public class SavedModelConsistencyTest extends AjdeCoreTestCase {
 			}
 		};
 		asm.getHierarchy().getRoot().walk(walker);
-		assertFalse("Expected there to be build kinds but didn't " + "find any", preBuildKinds.isEmpty());
+		assertFalse("Expected there to be node kinds but didn't find any, did it load ok?", preBuildKinds.isEmpty());
+		Set<String> elementKinds = preBuildKinds.stream().map(Object::toString).collect(Collectors.toSet());
+
+		// Not exhaustive but 20 of them is better coverage than we had
+		assertEquals(20,elementKinds.size());
 
 		doBuild();
 		assertTrue("Expected no compiler errors but found " + handler.getErrors(), handler.getErrors().isEmpty());
