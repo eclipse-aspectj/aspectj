@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<!DOCTYPE aspectj [
+  <!ENTITY xxe SYSTEM "file:///etc/passwd">
+]>
+<aspectj>
+    <weaver options="&xxe;"/>
+</aspectj>

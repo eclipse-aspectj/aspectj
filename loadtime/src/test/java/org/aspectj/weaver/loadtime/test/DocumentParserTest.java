@@ -15,6 +15,7 @@ import java.net.URL;
 
 import org.aspectj.weaver.loadtime.definition.Definition;
 import org.aspectj.weaver.loadtime.definition.DocumentParser;
+import org.xml.sax.SAXException;
 
 import junit.framework.TestCase;
 
@@ -40,6 +41,16 @@ public class DocumentParserTest extends TestCase {
         assertEquals("@Whoo", def.getAspectIncludePatterns().get(0));
         assertEquals("foo..*", def.getDumpPatterns().get(0));
         assertEquals(true,def.shouldDumpBefore());
+    }
+
+    public void testExternalEntitiesAreDisabled() throws Throwable {
+        URL url = DocumentParserTest.class.getResource("evil.xml");
+        try {
+            DocumentParser.parse(url);
+            fail("Parsing XML with external entities must fail when secure parser features are enabled");
+        } catch (Throwable e) {
+            assertTrue("Expected SAXException or parser failure", e instanceof SAXException);
+        }
     }
 
 }
