@@ -133,6 +133,24 @@ public class AjNaiveASTFlattenerTest extends TestCase {
 		"public aspect A {\n  declare error: call(* *.*(..)) : \"error!\" ;\n}\n");
 	}
 
+	public void testDeclareWarningWithEmbeddedQuote() throws Exception {
+	    // declare warning: ... : "x\"y";
+	    check("public aspect A { declare warning: call(* *.*(..)) : \"x\\\"y\"; }",
+	            "public aspect A {\n  declare warning: call(* *.*(..)) : \"x\\\"y\" ;\n}\n");
+	}
+	
+	public void testDeclareWarningWithEmbeddedNewline() throws Exception {
+	    // declare warning: ... : "a\nb";  (scanner decodes \n to a real LF in the message)
+	    check("public aspect A { declare warning: call(* *.*(..)) : \"a\\nb\"; }",
+	            "public aspect A {\n  declare warning: call(* *.*(..)) : \"a\\nb\" ;\n}\n");
+	}
+	
+	public void testDeclareWarningWithEmbeddedBackslash() throws Exception {
+	    // declare warning: ... : "C:\\temp";  (scanner decodes \\ to a single \)
+	    check("public aspect A { declare warning: call(* *.*(..)) : \"C:\\\\temp\"; }",
+	            "public aspect A {\n  declare warning: call(* *.*(..)) : \"C:\\\\temp\" ;\n}\n");
+	}
+
 	public void testDeclareSoftDeclaration() throws Exception {
 		check("public aspect A { declare soft: X : call(* *.*(..)); }",
 		"public aspect A {\n  declare soft: X : call(* *.*(..)) ;\n}\n");
@@ -151,7 +169,6 @@ public class AjNaiveASTFlattenerTest extends TestCase {
 		AjNaiveASTFlattener visitor = new AjNaiveASTFlattener();
 		cu2.accept(visitor);
 		String result = visitor.getResult();
-		System.err.println(result);
 		assertTrue("Expected:\n"+ expectedOutput + "====Actual:\n" + result,
 				expectedOutput.equals(result));
 	}

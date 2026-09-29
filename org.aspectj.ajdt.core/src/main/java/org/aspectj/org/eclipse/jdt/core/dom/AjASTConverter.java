@@ -700,17 +700,7 @@ public class AjASTConverter extends ASTConverter {
 	}
 
 	private String updateString(String message) {
-		StringBuilder sb = new StringBuilder(message);
-		int nextQuote = sb.toString().indexOf("\"");
-		while (nextQuote != -1) {
-			sb.insert(nextQuote, "\\");
-			nextQuote = sb.toString().indexOf("\"");
-		}
-		int nextNewLine = sb.toString().indexOf("\n");
-		while (nextNewLine != -1) {
-			sb.insert(nextNewLine, "\\");
-			nextNewLine = sb.toString().indexOf("\n");
-		}
+		StringBuilder sb = new StringBuilder(message.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n"));
 		if (!sb.toString().startsWith("\"")) {
 			sb.insert(0, "\"");
 		}
