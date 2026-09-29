@@ -76,23 +76,19 @@ public final class StackMapEntry implements Cloneable {
   private StackMapType[] types_of_stack_items;
   private ConstantPool   constant_pool;
 
-  /**
-   * Construct object from file stream.
-   * @param file Input stream
-   * @throws IOException
-   */
-  StackMapEntry(DataInputStream file, ConstantPool constant_pool) throws IOException
-  {
-    this(file.readShort(), file.readShort(), null, -1, null, constant_pool);
+  StackMapEntry(DataInputStream file, ConstantPool constant_pool) throws IOException {
+    this(file.readUnsignedShort(), file.readUnsignedShort(), null, -1, null, constant_pool);
 
     types_of_locals = new StackMapType[number_of_locals];
-    for(int i=0; i < number_of_locals; i++)
-      types_of_locals[i] = new StackMapType(file, constant_pool);
+    for(int i=0; i < number_of_locals; i++) {
+    	types_of_locals[i] = new StackMapType(file, constant_pool);
+    }
 
-    number_of_stack_items = file.readShort();
+    number_of_stack_items = file.readUnsignedShort();
     types_of_stack_items = new StackMapType[number_of_stack_items];
-    for(int i=0; i < number_of_stack_items; i++)
-      types_of_stack_items[i] = new StackMapType(file, constant_pool);
+    for(int i=0; i < number_of_stack_items; i++) {
+    	types_of_stack_items[i] = new StackMapType(file, constant_pool);
+    }
   }
 
   public StackMapEntry(int byte_code_offset, int number_of_locals,

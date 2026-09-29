@@ -102,7 +102,7 @@ public final class StackMapType implements Cloneable {
 
   public void setType(byte t) {
     if((t < Constants.ITEM_Bogus) || (t > Constants.ITEM_NewObject))
-      throw new RuntimeException("Illegal type for StackMapType: " + t);
+      throw new ClassFormatException("Illegal type for StackMapType: " + t);
     type = t;
   }
 
