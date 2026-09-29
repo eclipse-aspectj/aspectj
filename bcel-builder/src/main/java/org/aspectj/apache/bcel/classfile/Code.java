@@ -98,6 +98,9 @@ public final class Code extends Attribute {
 				(Attribute[]) null, constant_pool);
 
 		int len = file.readInt();
+		if (len <= 0 || len > 65535) { // JVMSpec 4.7.3: code_length must be 0..65535
+			throw new ClassFormatException("Invalid code length: "+len);
+		}
 		code = new byte[len]; // Read byte code
 		file.readFully(code);
 
