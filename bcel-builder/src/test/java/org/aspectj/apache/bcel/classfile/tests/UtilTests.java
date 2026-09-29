@@ -40,15 +40,37 @@ public class UtilTests extends TestCase {
 	}
 
 	public void testTypeUtilMethods1() {
-	String s = Utility.toMethodSignature(Type.DOUBLE,new Type[]{Type.INT,Type.STRING,Type.SHORT});
-	System.err.println(s);
+		String s = Utility.toMethodSignature(Type.DOUBLE,new Type[]{Type.INT,Type.STRING,Type.SHORT});
+		assertEquals("(ILjava/lang/String;S)D",s);
+	}
+	
+	public void testTypeGetType_validGenericSignature() {
+	    Type t = Type.getType("Ljava/util/List<Ljava/lang/String;>;");
+	    assertTrue("expected java.util.List, got " + t, t.toString().equals("java.util.List"));
+	}
+	
+	/**
+	 * These would need manufacturing into a classfile but it is feasible, it will then crash AspectJ.
+	 */
+	public void testTypeGetType_badGenericSignature() {
+	    // '<' opened but never closed
+	    try {
+	        Type.getType("Lfoo<X;");
+	        fail("expected an exception for a malformed/unterminated generic signature");
+	    } catch (ClassFormatException expected) {
+	    }
+	    try {
+	        Type.getType("Lfoo<LBar<LBoo<I>;");
+	        fail("expected an exception for a malformed/unterminated generic signature");
+	    } catch (ClassFormatException expected) {
+	    }
 	}
 
 	public void testTypeUtilMethods2() {
-	Type s = Type.getType("Ljava/lang/String;");
-	System.err.println(s);
-	s = Type.getType("Z");
-	System.err.println(s);
+		Type s = Type.getType("Ljava/lang/String;");
+		assertEquals("java.lang.String", s.toString());
+		s = Type.getType("Z");
+		assertEquals("boolean", s.toString());
 	}
 
 	protected void tearDown() throws Exception {

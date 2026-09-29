@@ -208,6 +208,9 @@ public abstract class Type {
 				int posn = nextAngly;
 				int genericDepth = 0;
 				while (!endOfSigReached) {
+					if (posn >= signature.length()) {
+						throw new ClassFormatException("Invalid signature (generic type missing correct terminator): "+signature);
+					}
 					switch (signature.charAt(posn++)) {
 					case '<':
 						genericDepth++;
@@ -267,6 +270,9 @@ public abstract class Type {
 				int posn = nextAngly;
 				int genericDepth = 0;
 				while (!endOfSigReached) {
+					if (posn >= signature.length()) {
+						throw new ClassFormatException("Invalid signature (generic type missing correct terminator): "+signature);
+					}
 					switch (signature.charAt(posn++)) {
 					case '<':
 						genericDepth++;
