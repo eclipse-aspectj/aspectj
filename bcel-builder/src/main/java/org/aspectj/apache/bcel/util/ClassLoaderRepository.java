@@ -105,7 +105,7 @@ public class ClassLoaderRepository implements Repository {
 		System.getProperty("org.aspectj.apache.bcel.ignoreCacheClearRequests", "false").equalsIgnoreCase("true");
 
 	// Second cache for the unavailable classes
-	private static Set<String> unavailableClasses = new HashSet<String>();
+	private static Set<String> unavailableClasses = Collections.synchronizedSet(new HashSet<String>());
 
 	private static int cacheHitsShared = 0;
 	private static int missSharedEvicted = 0; // Misses in shared cache access due to reference GC
