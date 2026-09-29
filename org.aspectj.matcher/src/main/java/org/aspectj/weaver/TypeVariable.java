@@ -332,20 +332,19 @@ public class TypeVariable {
 	}
 
 	public static TypeVariable read(VersionedDataInputStream s) throws IOException {
-
-		// if (s.getMajorVersion()>=AjAttribute.WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ150) {
-
 		String name = s.readUTF();
 		UnresolvedType ubound = UnresolvedType.read(s);
 		int iboundcount = s.readInt();
 		UnresolvedType[] ibounds = UnresolvedType.NONE;
 		if (iboundcount > 0) {
+			if (iboundcount > 127) {
+				throw new BCException("Invalid type variable interface bound count: "+iboundcount+" (limit is 127)");
+			}
 			ibounds = new UnresolvedType[iboundcount];
 			for (int i = 0; i < iboundcount; i++) {
 				ibounds[i] = UnresolvedType.read(s);
 			}
 		}
-
 		TypeVariable newVariable = new TypeVariable(name, ubound, ibounds);
 		return newVariable;
 	}

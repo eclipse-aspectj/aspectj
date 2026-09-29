@@ -540,6 +540,9 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 
 			int tvcount = s.isAtLeast169() ? s.readByte() : s.readInt();
 			if (tvcount != 0) {
+				if (tvcount < 0 || tvcount > 127) {
+					throw new BCException("Invalid type variable count: "+tvcount+" (range is 0 to 127)");
+				}
 				m.typeVariables = new TypeVariable[tvcount];
 				for (int i = 0; i < tvcount; i++) {
 					m.typeVariables[i] = TypeVariable.read(s);
@@ -558,6 +561,9 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 				}
 				if (hasAGenericSignature) {
 					int ps = (s.isAtLeast169() ? pcount : s.readInt());
+					if (ps < 0 || ps > 255) {
+						throw new BCException("Invalid parameter count: "+ps+" (range is 0 to 255)");
+					}
 					UnresolvedType[] params = new UnresolvedType[ps];
 					for (int i = 0; i < params.length; i++) {
 						if (compressed) {
