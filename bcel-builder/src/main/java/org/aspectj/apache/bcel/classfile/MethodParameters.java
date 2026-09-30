@@ -42,7 +42,7 @@ public class MethodParameters extends Attribute {
 		isInPackedState = true;
 	}
 
-	private void ensureInflated() {
+	private synchronized void ensureInflated() {
 		if (names!=null) return;
 		try {
 			DataInputStream dis = new DataInputStream(new ByteArrayInputStream(data));
@@ -64,7 +64,7 @@ public class MethodParameters extends Attribute {
 		}
 	}
 
-	public void dump(DataOutputStream dos) throws IOException {
+	public synchronized void dump(DataOutputStream dos) throws IOException {
 		super.dump(dos);
 		if (isInPackedState) {
 			dos.write(data);

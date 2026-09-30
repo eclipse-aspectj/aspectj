@@ -85,7 +85,7 @@ public final class BootstrapMethods extends Attribute {
 		isInPackedState = false;
 	}
 
-	public final void setBootstrapMethods(BootstrapMethod[] bootstrapMethods) {
+	public final synchronized void setBootstrapMethods(BootstrapMethod[] bootstrapMethods) {
 		this.data = null;
 		this.isInPackedState = false;
 		this.bootstrapMethods = bootstrapMethods;
@@ -147,7 +147,7 @@ public final class BootstrapMethods extends Attribute {
 	}
 
 	// Unpacks the byte array into the table
-	private void unpack() {
+	private synchronized void unpack() {
 		if (isInPackedState) {
 			try {
 				ByteArrayInputStream bs = new ByteArrayInputStream(data);
@@ -185,7 +185,7 @@ public final class BootstrapMethods extends Attribute {
 	 * @throws IOException
 	 */
 	@Override
-	public final void dump(DataOutputStream file) throws IOException {
+	public final synchronized void dump(DataOutputStream file) throws IOException {
 		super.dump(file);
 		if (isInPackedState) {
 			file.write(data);
