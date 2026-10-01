@@ -86,7 +86,11 @@ import org.aspectj.apache.bcel.classfile.annotation.RuntimeVisTypeAnnos;
  * @see Deprecated
  * @see Signature
  */
+@SuppressWarnings("serial")
 public abstract class Attribute implements Cloneable, Node, Serializable {
+	private static final int MAX_STANDARD_ATTRIBUTE_LENGTH = 16 * 1024 * 1024;  // 16MB -- generous limit for any real JVMS-standard attribute
+	private static final int MAX_UNKNOWN_ATTRIBUTE_LENGTH = 256 * 1024 * 1024;  // 256MB -- custom attributes - UNKNOWN ones - (e.g. AspectJ's own WeaverState) can carry a full copy of the original class
+
 	public final static Attribute[] NoAttributes = new Attribute[0];
 
 	protected byte tag; // Tag to distinguish subclasses
@@ -120,6 +124,11 @@ public abstract class Attribute implements Cloneable, Node, Serializable {
 				break;
 			}
 		}
+
+	    int maxLen = (tag == Constants.ATTR_UNKNOWN) ? MAX_UNKNOWN_ATTRIBUTE_LENGTH : MAX_STANDARD_ATTRIBUTE_LENGTH;
+	    if (len < 0 || len > maxLen) {
+	        throw new ClassFormatException("Invalid attribute length: " + len + " (expected is 0.."+maxLen+")");
+	    }
 		switch (tag) {
 		case Constants.ATTR_UNKNOWN:
 			return new Unknown(idx, len, file, cpool);
