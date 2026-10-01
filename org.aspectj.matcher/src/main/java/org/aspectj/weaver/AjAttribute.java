@@ -350,6 +350,8 @@ public abstract class AjAttribute {
 	}
 
 	public static class SourceContextAttribute extends AjAttribute {
+		private static final int MAX_LINE_BREAKS = 1_000_000;
+				
 		public static final String AttributeName = "org.aspectj.weaver.SourceContext";
 
 		@Override
@@ -383,6 +385,9 @@ public abstract class AjAttribute {
 		public static SourceContextAttribute read(VersionedDataInputStream s) throws IOException {
 			String sourceFileName = s.isAtLeast169() ? s.readPath() : s.readUTF();
 			int lineBreaks = s.readInt();
+			if (lineBreaks < 0 || lineBreaks > MAX_LINE_BREAKS || lineBreaks > s.available() / 2) {
+				throw new BCException("Invalid SourceContext line break count: " + lineBreaks);
+			}
 			int[] lines = new int[lineBreaks];
 			int previous = 0;
 			for (int i = 0; i < lineBreaks; i++) {
