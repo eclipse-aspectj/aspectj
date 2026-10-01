@@ -13,6 +13,7 @@ package org.aspectj.ajde.core.tests;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -21,6 +22,7 @@ import java.util.Set;
 import java.util.jar.JarInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 import org.aspectj.ajde.core.AjdeCoreTestCase;
 import org.aspectj.ajde.core.TestCompilerConfiguration;
@@ -118,6 +120,25 @@ public class ResourceCopyTest extends AjdeCoreTestCase {
 		doBuild(true);
 		assertTrue("Expected no compiler errors or warnings but found " + handler.getMessages(), handler.getMessages().isEmpty());
 		compareInjarsToBin(injar1, "src", "bin");
+	}
+
+	public void testInjarsResourceEscapingOutputDir() throws IOException {
+		File injar = new File(getWorkingDir(), "traversal.jar");
+		try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(injar))) {
+			zos.putNextEntry(new ZipEntry("../../escaped.txt"));
+			zos.write("escaped".getBytes());
+			zos.closeEntry();
+		}
+		Set<File> injars = new HashSet<>();
+		injars.add(injar);
+		compilerConfig.setInpath(injars);
+		compilerConfig.setProjectSourceFiles(getSourceFileList(config2));
+		doBuild(true);
+
+		File escaped = new File(openFile(binDir).getParentFile().getParentFile(), "escaped.txt");
+		assertFalse("Resource was written outside the output folder: " + escaped, escaped.exists());
+		assertTrue("Expected the resource to be reported as skipped but found " + handler.getMessages(),
+				checkFor("outside the output folder"));
 	}
 
 	// BAH! keeps whinging about CVS extraneous resources

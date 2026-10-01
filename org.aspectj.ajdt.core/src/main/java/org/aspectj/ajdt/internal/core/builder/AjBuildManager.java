@@ -590,6 +590,12 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 			}
 			try {
 				File outputLocation = new File(destDir, filename);
+				if (destDir != null && !FileUtil.isContainedIn(destDir, outputLocation)) {
+					IMessage msg = new Message("skipping resource with a path outside the output folder: '" + filename + "'",
+							IMessage.ERROR, null, new SourceLocation(srcLocation, 0));
+					handler.handleMessage(msg);
+					return;
+				}
 				OutputStream fos = FileUtil.makeOutputStream(outputLocation);
 				fos.write(content);
 				fos.close();

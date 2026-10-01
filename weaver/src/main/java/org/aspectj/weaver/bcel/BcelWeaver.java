@@ -396,7 +396,15 @@ public class BcelWeaver {
 						String filename = entry.getName();
 						// System.out.println("? addJarFile() filename='" + filename
 						// + "'");
-						UnwovenClassFile classFile = new UnwovenClassFile(new File(outDir, filename).getAbsolutePath(), bytes);
+						File outFile = new File(outDir, filename);
+						if (outDir != null && !FileUtil.isContainedIn(outDir, outFile)) {
+							IMessage message = new Message("skipping jar entry with a path outside the output folder: '"
+									+ filename + "'", new SourceLocation(inFile, 0), true);
+							world.getMessageHandler().handleMessage(message);
+							inStream.close();
+							continue;
+						}
+						UnwovenClassFile classFile = new UnwovenClassFile(outFile.getAbsolutePath(), bytes);
 
 						if (filename.endsWith(".class")) {
 							ReferenceType type = this.addClassFile(classFile, false);
