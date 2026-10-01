@@ -68,12 +68,16 @@ public class AnnotationGen {
 	}
 
 	public static AnnotationGen read(DataInputStream dis, ConstantPool cpool, boolean b) throws IOException {
+		return read(dis, cpool, b, 0);
+	}
+
+	static AnnotationGen read(DataInputStream dis, ConstantPool cpool, boolean b, int depth) throws IOException {
 		AnnotationGen a = new AnnotationGen(cpool);
 		a.typeIndex = dis.readUnsignedShort();
 		int elemValuePairCount = dis.readUnsignedShort();
 		for (int i = 0; i < elemValuePairCount; i++) {
 			int nidx = dis.readUnsignedShort();
-			a.addElementNameValuePair(new NameValuePair(nidx, ElementValue.readElementValue(dis, cpool), cpool));
+			a.addElementNameValuePair(new NameValuePair(nidx, ElementValue.readElementValue(dis, cpool, depth), cpool));
 		}
 		a.isRuntimeVisible(b);
 		return a;

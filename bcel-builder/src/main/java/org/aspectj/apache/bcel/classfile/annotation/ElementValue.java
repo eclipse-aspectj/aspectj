@@ -16,10 +16,13 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import org.aspectj.apache.bcel.classfile.ClassFormatException;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 
 public abstract class ElementValue {
 
+	private static final int MAX_ANNOTATION_NESTING_DEPTH = 64;
+	
 	public static final int STRING = 's';
 	public static final int ENUM_CONSTANT = 'e';
 	public static final int CLASS = 'c';
@@ -52,6 +55,14 @@ public abstract class ElementValue {
 	public abstract void dump(DataOutputStream dos) throws IOException;
 
 	public static ElementValue readElementValue(DataInputStream dis, ConstantPool cpGen) throws IOException {
+		return readElementValue(dis, cpGen, 0);
+	}
+	
+	
+	static ElementValue readElementValue(DataInputStream dis, ConstantPool cpGen, int depth) throws IOException {
+		if (depth > MAX_ANNOTATION_NESTING_DEPTH) {
+			throw new ClassFormatException("Annotation element value nesting exceeds limit of "+MAX_ANNOTATION_NESTING_DEPTH);
+		}
 		int type = dis.readUnsignedByte();
 		switch (type) {
 		case 'B': // byte
@@ -81,13 +92,13 @@ public abstract class ElementValue {
 
 			// FIXME should this be true here? or should it be the value for the containing annotation?
 		case '@': // Annotation
-			return new AnnotationElementValue(ANNOTATION, AnnotationGen.read(dis, cpGen, true), cpGen);
+			return new AnnotationElementValue(ANNOTATION, AnnotationGen.read(dis, cpGen, true, depth + 1), cpGen);
 
 		case '[': // Array
 			int numArrayVals = dis.readUnsignedShort();
 			ElementValue[] evalues = new ElementValue[numArrayVals];
 			for (int j = 0; j < numArrayVals; j++) {
-				evalues[j] = ElementValue.readElementValue(dis, cpGen);
+				evalues[j] = ElementValue.readElementValue(dis, cpGen, depth + 1);
 			}
 			return new ArrayElementValue(ARRAY, evalues, cpGen);
 
