@@ -57,6 +57,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.aspectj.apache.bcel.Constants;
+import org.aspectj.apache.bcel.classfile.ClassFormatException;
 import org.aspectj.apache.bcel.util.ByteSequence;
 
 /**
@@ -66,6 +67,7 @@ import org.aspectj.apache.bcel.util.ByteSequence;
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see SWITCH
  */
+@SuppressWarnings("serial")
 public class TABLESWITCH extends InstructionSelect {
 
 	/**
@@ -116,7 +118,11 @@ public class TABLESWITCH extends InstructionSelect {
 		int low = bytes.readInt();
 		int high = bytes.readInt();
 
-		matchLength = high - low + 1;
+		long longMatchLength = (long)high - (long)low + 1L; // can't overflow
+		if (low > high || longMatchLength > Constants.MAX_CODE_SIZE || longMatchLength > bytes.available()/4) {
+			throw new ClassFormatException("Invalid tableswitch low/high: low="+low+" high="+high);
+		}
+		matchLength = (int) longMatchLength;
 		fixedLength = (short) (13 + matchLength * 4);
 		length = (short) (fixedLength + padding);
 

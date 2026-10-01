@@ -57,6 +57,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.aspectj.apache.bcel.Constants;
+import org.aspectj.apache.bcel.classfile.ClassFormatException;
 import org.aspectj.apache.bcel.util.ByteSequence;
 
 /**
@@ -94,8 +95,11 @@ public class LOOKUPSWITCH extends InstructionSelect {
 	 */
 	public LOOKUPSWITCH(ByteSequence bytes) throws IOException {
 		super(Constants.LOOKUPSWITCH, bytes); // reads padding
-
+		
 		matchLength = bytes.readInt();
+		if (matchLength < 0 || matchLength > Constants.MAX_CODE_SIZE || matchLength > bytes.available()/8) {
+			throw new ClassFormatException("Invalid lookupswitch npairs: "+matchLength);
+		}
 		fixedLength = (short) (9 + matchLength * 8);
 		length = (short) (fixedLength + padding);
 
