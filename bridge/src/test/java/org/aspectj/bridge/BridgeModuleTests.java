@@ -1,7 +1,5 @@
-package org.aspectj.bridge;
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation,
- *               2002 Palo Alto Research Center, Incorporated (PARC).
+ * Copyright (c) 1999-2026 Contributors
  * All rights reserved.
  * This program and the accompanying materials are made available
  * under the terms of the Eclipse Public License v 2.0
@@ -10,10 +8,9 @@ package org.aspectj.bridge;
  *
  * Contributors:
  *     Xerox/PARC     initial implementation
+ *     Andy Clement   weave message tests added
  * ******************************************************************/
-
-
-// default package
+package org.aspectj.bridge;
 
 import org.aspectj.bridge.context.CompilationAndWeavingContextTest;
 
@@ -27,6 +24,7 @@ public class BridgeModuleTests extends TestCase {
         TestSuite suite = new TestSuite(BridgeModuleTests.class.getName());
         suite.addTestSuite(CountingMessageHandlerTest.class);
         suite.addTestSuite(MessageTest.class);
+        suite.addTestSuite(WeaveMessageTest.class);
         suite.addTestSuite(VersionTest.class);
         suite.addTestSuite(CompilationAndWeavingContextTest.class);
         return suite;

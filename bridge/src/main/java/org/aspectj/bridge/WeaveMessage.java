@@ -53,6 +53,25 @@ public class WeaveMessage extends Message {
 		this.aspectName = aspectName;
 	}
 
+	private static String buildMessage(WeaveMessageKind kind, String[] inserts) {
+		StringBuilder str = new StringBuilder(kind.getMessage());
+		int pos = 0;
+		while ((pos = str.indexOf("%",pos))!=-1) {
+			if (pos + 1 >= str.length()) {
+				break; // trailing '%' with nothing after
+			}
+			int n = Character.getNumericValue(str.charAt(pos + 1));
+			if (n < 1 || n > inserts.length) {
+				pos++; // not a valid insert number
+				continue;
+			}
+			String insertValue = inserts[n - 1];
+			str.replace(pos, pos + 2, insertValue);
+			pos += insertValue.length(); // Jump to after the inserted text
+		}
+		return str.toString();
+	}
+
 	/**
 	 * Static helper method for constructing weaving messages.
 	 *
@@ -60,15 +79,10 @@ public class WeaveMessage extends Message {
 	 * @param inserts inserts for the message (inserts are marked %n in the message)
 	 * @return new weaving message
 	 */
-	public static WeaveMessage constructWeavingMessage(WeaveMessageKind kind, String[] inserts) {
-		StringBuilder str = new StringBuilder(kind.getMessage());
-		int pos = -1;
-		while ((pos = new String(str).indexOf("%")) != -1) {
-			int n = Character.getNumericValue(str.charAt(pos + 1));
-			str.replace(pos, pos + 2, inserts[n - 1]);
-		}
-		return new WeaveMessage(str.toString(), null, null, null, null);
+	public static WeaveMessage constructWeavingMessage(WeaveMessageKind kind, String[] inserts) {	
+		return new WeaveMessage(buildMessage(kind, inserts), null, null, null, null);
 	}
+	
 
 	/**
 	 * Static helper method for constructing weaving messages.
@@ -86,13 +100,7 @@ public class WeaveMessage extends Message {
 		String affectedTypeName, String aspectName,
 		ISourceLocation affectedTypeLocation, ISourceLocation aspectLocation
 	) {
-		StringBuilder str = new StringBuilder(kind.getMessage());
-		int pos = -1;
-		while ((pos = new String(str).indexOf("%")) != -1) {
-			int n = Character.getNumericValue(str.charAt(pos + 1));
-			str.replace(pos, pos + 2, inserts[n - 1]);
-		}
-		return new WeaveMessage(str.toString(), affectedTypeName, aspectName, affectedTypeLocation, aspectLocation);
+		return new WeaveMessage(buildMessage(kind, inserts), affectedTypeName, aspectName, affectedTypeLocation, aspectLocation);
 	}
 
 	/**
