@@ -565,6 +565,18 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		// Nothing to do if not writing to a zip file
 	}
 
+	File resolveOutputLocation(File destDir, String filename) throws IOException {
+		File outputLocation = new File(destDir, filename);
+		String destDirCanonical = destDir.getCanonicalPath();
+		String outputCanonical = outputLocation.getCanonicalPath();
+		if (!(outputCanonical.equals(destDirCanonical)
+				|| outputCanonical.startsWith(destDirCanonical + File.separator))) {
+			throw new IOException("Resource entry '" + filename + "' would be written outside destination directory '"
+					+ destDir + "'");
+		}
+		return outputLocation;
+	}
+
 	private void writeResource(String filename, byte[] content, File srcLocation) throws IOException {
 		if (state.hasResource(filename)) {
 			IMessage msg = new Message("duplicate resource: '" + filename + "'", IMessage.WARNING, null, new SourceLocation(
@@ -589,7 +601,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 				destDir = buildConfig.getCompilationResultDestinationManager().getOutputLocationForResource(srcLocation);
 			}
 			try {
-				File outputLocation = new File(destDir, filename);
+				File outputLocation = resolveOutputLocation(destDir, filename);
 				OutputStream fos = FileUtil.makeOutputStream(outputLocation);
 				fos.write(content);
 				fos.close();

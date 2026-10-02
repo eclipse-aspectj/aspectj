@@ -1,6 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 1999-2001 Xerox Corporation,
- *               2002 Palo Alto Research Center, Incorporated (PARC).
+ * Copyright (c) 1999-2026 Contributors
  * All rights reserved.
  * This program and the accompanying materials are made available
  * under the terms of the Eclipse Public License v 2.0
@@ -40,6 +39,7 @@ public class AjdtCoreModuleTests extends TestCase {
         suite.addTestSuite(DeclareParentsTest.class);
         suite.addTestSuite(DumpTestCase.class);
         suite.addTestSuite(AjBuildManagerTest.class);
+        suite.addTestSuite(AjBuildManagerResourceTest.class);
         suite.addTestSuite(AjBuildConfigTest.class);
 		suite.addTestSuite(AsmBuilderTest.class);
 		suite.addTestSuite(AjCompilerOptionsTest.class);
