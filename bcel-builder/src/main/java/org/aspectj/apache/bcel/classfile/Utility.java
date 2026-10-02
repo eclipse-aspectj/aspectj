@@ -861,6 +861,10 @@ public abstract class Utility {
 
 			buf.append("\tdefault = " + default_offset + ", low = " + low + ", high = " + high + "(");
 
+			long len = (long) high - (long) low + 1L;
+			if (low > high || len > Constants.MAX_CODE_SIZE || len > bytes.available() / 4) {
+				throw new ClassFormatException("Invalid tableswitch low/high: low=" + low + ", high=" + high);
+			}
 			jump_table = new int[high - low + 1];
 			for (int i = 0; i < jump_table.length; i++) {
 				jump_table[i] = offset + bytes.readInt();
@@ -879,6 +883,10 @@ public abstract class Utility {
 
 			npairs = bytes.readInt();
 			offset = bytes.getIndex() - 8 - no_pad_bytes - 1;
+
+			if (npairs < 0 || npairs > Constants.MAX_CODE_SIZE || npairs > bytes.available() / 8) {
+				throw new ClassFormatException("Invalid lookupswitch npairs: " + npairs);
+			}
 
 			match = new int[npairs];
 			jump_table = new int[npairs];
