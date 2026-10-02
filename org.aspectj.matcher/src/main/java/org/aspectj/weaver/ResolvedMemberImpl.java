@@ -584,6 +584,9 @@ public class ResolvedMemberImpl extends MemberImpl implements IHasPosition, Reso
 
 	public static ResolvedMember[] readResolvedMemberArray(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		int len = s.readInt();
+		if (len < 0 || len > 0xFFFF || len > s.available()) {
+			throw new BCException("Invalid resolved member array length: " + len);
+		}
 		ResolvedMember[] members = new ResolvedMember[len];
 		for (int i = 0; i < len; i++) {
 			members[i] = ResolvedMemberImpl.readResolvedMember(s, context);
