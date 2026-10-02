@@ -18,8 +18,11 @@ import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.ObjectStreamClass;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -198,6 +201,23 @@ public abstract class ResolvedTypeMunger {
 		}
 	}
 
+	private static final class SimpleFilteringObjectInputStream extends ObjectInputStream {
+		SimpleFilteringObjectInputStream(InputStream in) throws IOException {
+			super(in);
+		}
+
+		@Override
+		protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
+			String name = desc.getName();
+			if (!name.equals("java.lang.Boolean") && 
+				!name.equals("java.io.File") &&
+				!name.equals("java.lang.Integer") &&
+				!name.equals("java.lang.Number")) {
+				throw new InvalidClassException(name, "Rejected deserialization of disallowed class");
+			}
+			return super.resolveClass(desc);
+		}
+	}
 	protected static ISourceLocation readSourceLocation(VersionedDataInputStream s) throws IOException {
 		// Location persistence for type mungers was added after 1.2.1 was shipped...
 		if (s.getMajorVersion() < AjAttribute.WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ150) {
@@ -211,7 +231,7 @@ public abstract class ResolvedTypeMunger {
 			byte b = 0;
 			// if we aren't on 1.6.9 or we are on 1.6.9 but not compressed, then read as object stream
 			if (!s.isAtLeast169() || (b = s.readByte()) == 0) {
-				ois = new ObjectInputStream(s);
+				ois = new SimpleFilteringObjectInputStream(s);
 				boolean validLocation = (Boolean) ois.readObject();
 				if (validLocation) {
 					File f = (File) ois.readObject();
