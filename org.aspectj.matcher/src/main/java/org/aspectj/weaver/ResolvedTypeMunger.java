@@ -18,9 +18,12 @@ import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
+import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.ObjectStreamClass;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -198,6 +201,11 @@ public abstract class ResolvedTypeMunger {
 		}
 	}
 
+	// The attribute bytes come straight from class files, so only the types writeSourceLocation
+	// produces may be deserialized by readSourceLocation
+	private static final List<String> ALLOWED_SOURCE_LOCATION_CLASSES = Arrays.asList(Boolean.class.getName(),
+			File.class.getName(), Integer.class.getName(), Number.class.getName());
+
 	protected static ISourceLocation readSourceLocation(VersionedDataInputStream s) throws IOException {
 		// Location persistence for type mungers was added after 1.2.1 was shipped...
 		if (s.getMajorVersion() < AjAttribute.WeaverVersionInfo.WEAVER_VERSION_MAJOR_AJ150) {
@@ -211,7 +219,16 @@ public abstract class ResolvedTypeMunger {
 			byte b = 0;
 			// if we aren't on 1.6.9 or we are on 1.6.9 but not compressed, then read as object stream
 			if (!s.isAtLeast169() || (b = s.readByte()) == 0) {
-				ois = new ObjectInputStream(s);
+				ois = new ObjectInputStream(s) {
+					@Override
+					protected Class<?> resolveClass(ObjectStreamClass descriptor) throws IOException, ClassNotFoundException {
+						if (!ALLOWED_SOURCE_LOCATION_CLASSES.contains(descriptor.getName())) {
+							throw new InvalidClassException(descriptor.getName(),
+									"Rejecting deserialization since not in allowed list: " + ALLOWED_SOURCE_LOCATION_CLASSES);
+						}
+						return super.resolveClass(descriptor);
+					}
+				};
 				boolean validLocation = (Boolean) ois.readObject();
 				if (validLocation) {
 					File f = (File) ois.readObject();
