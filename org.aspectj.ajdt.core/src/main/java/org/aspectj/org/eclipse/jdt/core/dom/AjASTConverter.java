@@ -700,14 +700,7 @@ public class AjASTConverter extends ASTConverter {
 	}
 
 	private String updateString(String message) {
-		StringBuilder sb = new StringBuilder(message.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n"));
-		if (!sb.toString().startsWith("\"")) {
-			sb.insert(0, "\"");
-		}
-		if (!sb.toString().endsWith("\"")) {
-			sb.insert(sb.toString().length(), "\"");
-		}
-		return sb.toString();
+		return "\"" + message.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n") + "\"";
 	}
 
 	public ASTNode convert(InterTypeFieldDeclaration fieldDecl) {

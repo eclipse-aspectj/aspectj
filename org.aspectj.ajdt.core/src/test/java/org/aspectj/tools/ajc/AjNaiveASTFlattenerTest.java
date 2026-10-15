@@ -7,7 +7,7 @@
  *
  * Contributors: IBM Corporation - initial API and implementation
  * 				 Eduardo Piveta  - initial version
- *               Helen Hawkins   - ammended to fit within JUnit framework
+ *               Helen Hawkins   - amended to fit within JUnit framework
  *******************************************************************/
 package org.aspectj.tools.ajc;
 
@@ -67,7 +67,6 @@ public class AjNaiveASTFlattenerTest extends TestCase {
 				"public aspect A {\n  declare parents: X extends Y;\n}\n");
 	}
 
-
 	/*
 	 *
 	 *
@@ -98,22 +97,20 @@ public class AjNaiveASTFlattenerTest extends TestCase {
 
 	public void testDeclareParentsTypeCategory() throws Exception {
 		check("public aspect A { declare parents: B && is(AnonymousType) extends Z; }",
-		"public aspect A {\n  declare parents: B && is(AnonymousType) extends Z;\n}\n");
+				"public aspect A {\n  declare parents: B && is(AnonymousType) extends Z;\n}\n");
 
 	}
 
 	public void testDeclareParentsTypeCategoryNot() throws Exception {
 		check("public aspect A { declare parents: B && !is(InnerType) extends Z; }",
-		"public aspect A {\n  declare parents: B && !is(InnerType) extends Z;\n}\n");
+				"public aspect A {\n  declare parents: B && !is(InnerType) extends Z;\n}\n");
 	}
-
 
 	// TODO: commented until hasmethod is supported in AspectJ
 //	public void testDeclareParentsHasMember() {
 //		check("public aspect A { declare parents : A && hasmethod(void foo*(..)) extends D; }",
 //		"public aspect A {\n  declare parents : A && hasmethod(void foo*(..)) extends D;\n}\n");
 //	}
-
 
 	/*
 	 *
@@ -130,30 +127,48 @@ public class AjNaiveASTFlattenerTest extends TestCase {
 
 	public void testDeclareErrorDeclaration() throws Exception {
 		check("public aspect A { declare error: call(* *.*(..)) : \"error!\"; }",
-		"public aspect A {\n  declare error: call(* *.*(..)) : \"error!\" ;\n}\n");
+				"public aspect A {\n  declare error: call(* *.*(..)) : \"error!\" ;\n}\n");
 	}
 
 	public void testDeclareWarningWithEmbeddedQuote() throws Exception {
-	    // declare warning: ... : "x\"y";
-	    check("public aspect A { declare warning: call(* *.*(..)) : \"x\\\"y\"; }",
-	            "public aspect A {\n  declare warning: call(* *.*(..)) : \"x\\\"y\" ;\n}\n");
+		// declare warning: ... : "x\"y";
+		check("public aspect A { declare warning: call(* *.*(..)) : \"x\\\"y\"; }",
+				"public aspect A {\n  declare warning: call(* *.*(..)) : \"x\\\"y\" ;\n}\n");
 	}
-	
+
 	public void testDeclareWarningWithEmbeddedNewline() throws Exception {
-	    // declare warning: ... : "a\nb";  (scanner decodes \n to a real LF in the message)
-	    check("public aspect A { declare warning: call(* *.*(..)) : \"a\\nb\"; }",
-	            "public aspect A {\n  declare warning: call(* *.*(..)) : \"a\\nb\" ;\n}\n");
+		// declare warning: ... : "a\nb"; (scanner decodes \n to a real LF in the
+		// message)
+		check("public aspect A { declare warning: call(* *.*(..)) : \"a\\nb\"; }",
+				"public aspect A {\n  declare warning: call(* *.*(..)) : \"a\\nb\" ;\n}\n");
 	}
-	
+
+	public void testDeclareWarningEndingWithQuote() throws Exception {
+		// declare warning: ... : "x\""; (message is x" -- ends with a quote)
+		check("public aspect A { declare warning: call(* *.*(..)) : \"x\\\"\"; }",
+				"public aspect A {\n  declare warning: call(* *.*(..)) : \"x\\\"\" ;\n}\n");
+	}
+
+	public void testDeclareWarningStartingWithQuote() throws Exception {
+		// declare warning: ... : "\"x"; (message is "x -- starts with a quote)
+		check("public aspect A { declare warning: call(* *.*(..)) : \"\\\"x\"; }",
+				"public aspect A {\n  declare warning: call(* *.*(..)) : \"\\\"x\" ;\n}\n");
+	}
+
+	public void testDeclareWarningWithEmptyMessage() throws Exception {
+		check("public aspect A { declare warning: call(* *.*(..)) : \"\"; }",
+				"public aspect A {\n  declare warning: call(* *.*(..)) : \"\" ;\n}\n");
+	}
+
 	public void testDeclareWarningWithEmbeddedBackslash() throws Exception {
-	    // declare warning: ... : "C:\\temp";  (scanner decodes \\ to a single \)
-	    check("public aspect A { declare warning: call(* *.*(..)) : \"C:\\\\temp\"; }",
-	            "public aspect A {\n  declare warning: call(* *.*(..)) : \"C:\\\\temp\" ;\n}\n");
+		// declare warning: ... : "C:\\temp"; (scanner decodes \\ to a single \)
+		check("public aspect A { declare warning: call(* *.*(..)) : \"C:\\\\temp\"; }",
+				"public aspect A {\n  declare warning: call(* *.*(..)) : \"C:\\\\temp\" ;\n}\n");
 	}
 
 	public void testDeclareSoftDeclaration() throws Exception {
 		check("public aspect A { declare soft: X : call(* *.*(..)); }",
-		"public aspect A {\n  declare soft: X : call(* *.*(..)) ;\n}\n");
+				"public aspect A {\n  declare soft: X : call(* *.*(..)) ;\n}\n");
 	}
 
 	public void testDeclarePrecedenceDeclaration() throws Exception {
@@ -169,8 +184,7 @@ public class AjNaiveASTFlattenerTest extends TestCase {
 		AjNaiveASTFlattener visitor = new AjNaiveASTFlattener();
 		cu2.accept(visitor);
 		String result = visitor.getResult();
-		assertTrue("Expected:\n"+ expectedOutput + "====Actual:\n" + result,
-				expectedOutput.equals(result));
+		assertTrue("Expected:\n" + expectedOutput + "====Actual:\n" + result, expectedOutput.equals(result));
 	}
 
 }
