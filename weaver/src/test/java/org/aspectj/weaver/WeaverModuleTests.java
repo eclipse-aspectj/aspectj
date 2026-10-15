@@ -20,6 +20,7 @@ import org.aspectj.weaver.bcel.ArgsWeaveTestCase;
 import org.aspectj.weaver.bcel.AroundArgsWeaveTestCase;
 import org.aspectj.weaver.bcel.AroundWeaveTestCase;
 import org.aspectj.weaver.bcel.BcelGenericSignatureToTypeXTestCase;
+import org.aspectj.weaver.bcel.BcelWeaverOutputPathTest;
 import org.aspectj.weaver.bcel.BcelWorldReferenceTypeTest;
 import org.aspectj.weaver.bcel.BeforeWeaveTestCase;
 import org.aspectj.weaver.bcel.CheckerTestCase;
@@ -113,6 +114,7 @@ public class WeaverModuleTests extends TestCase {
         if (LangUtil.isVMGreaterOrEqual(9)) {
         	suite.addTestSuite(JImageTestCase.class);
         }
+        suite.addTestSuite(BcelWeaverOutputPathTest.class);
 		suite.addTestSuite(MegaZipTestCase.class);
 		suite.addTestSuite(MoveInstructionsWeaveTestCase.class);
 		suite.addTestSuite(NonstaticWeaveTestCase.class);

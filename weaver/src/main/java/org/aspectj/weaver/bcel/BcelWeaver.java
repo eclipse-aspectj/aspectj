@@ -16,6 +16,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -368,6 +370,29 @@ public class BcelWeaver {
 		return addedClassFiles;
 	}
 
+	private static Path toNormalizedPath(File file) {
+		return file == null ? null : file.toPath().toAbsolutePath().normalize();
+	}
+
+	private File resolveOutputFile(File outDir, Path outDirPath, String filename) throws IOException {
+		File outputFile = new File(outDir, filename);
+		if (outDirPath == null) {
+			// no output directory (eg -outjar only) - nothing on disk to escape from
+			return outputFile;
+		}
+		Path normalizedPath;
+		try {
+			normalizedPath = outDirPath.resolve(filename).normalize();
+		} catch (InvalidPathException ipe) { // e.g. nulls, C:foo
+			throw new IOException("Jar entry '"+filename+"' is not a valid path", ipe);
+		}
+		if (!normalizedPath.startsWith(outDirPath)) {
+			throw new IOException(
+					"Jar entry '" + filename + "' would be written outside destination directory '" + outDir + "'");
+		}
+		return outputFile;
+	}
+
 	/**
 	 * Adds all class files in the jar
 	 */
@@ -388,15 +413,15 @@ public class BcelWeaver {
 					addManifest(inJar.getManifest());
 					Enumeration<JarEntry> entries = inJar.entries();
 
+					Path outdirPath = toNormalizedPath(outDir);
 					while (entries.hasMoreElements()) {
 						JarEntry entry = entries.nextElement();
 						InputStream inStream = inJar.getInputStream(entry);
 
 						byte[] bytes = FileUtil.readAsByteArray(inStream);
 						String filename = entry.getName();
-						// System.out.println("? addJarFile() filename='" + filename
-						// + "'");
-						UnwovenClassFile classFile = new UnwovenClassFile(new File(outDir, filename).getAbsolutePath(), bytes);
+						
+						UnwovenClassFile classFile = new UnwovenClassFile(resolveOutputFile(outDir, outdirPath, filename).getAbsolutePath(), bytes);
 
 						if (filename.endsWith(".class")) {
 							ReferenceType type = this.addClassFile(classFile, false);
