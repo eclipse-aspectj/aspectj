@@ -566,6 +566,10 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 	}
 
 	File resolveOutputLocation(File destDir, String filename) throws IOException {
+		if (destDir == null) {
+	        // no output directory configured: resources are written relative to the working directory
+	        destDir = new File(".");
+	    }
 		File outputLocation = new File(destDir, filename);
 		String destDirCanonical = destDir.getCanonicalPath();
 		String outputCanonical = outputLocation.getCanonicalPath();
