@@ -648,10 +648,24 @@ public class AtAjAttributes {
 			NameValuePair precedence = getAnnotationElement(aspect, VALUE);
 			if (precedence != null) {
 				String precedencePattern = precedence.getValue().stringifyValue();
-				PatternParser parser = new PatternParser(precedencePattern);
-				DeclarePrecedence ajPrecedence = parser.parseDominates();
-				struct.ajAttributes.add(new AjAttribute.DeclareAttribute(ajPrecedence));
-				return true;
+				try {
+					PatternParser parser = new PatternParser(precedencePattern);
+					DeclarePrecedence ajPrecedence = parser.parseDominates();
+					struct.ajAttributes.add(new AjAttribute.DeclareAttribute(ajPrecedence));
+					return true;
+				} catch (ParserException e) {
+					reportError(
+							"Invalid @DeclarePrecedence pattern '" + abbreviate(precedencePattern) + "': "
+									+ e.toString()
+									+ (e.getLocation() == null ? "" : " at position " + e.getLocation().getStart()),
+							struct);
+				} catch (StackOverflowError e) {
+					// the pattern text comes from a class file, so it may be nested arbitrarily
+					// deeply
+					reportError("Invalid @DeclarePrecedence pattern '" + abbreviate(precedencePattern)
+							+ "': nested too deeply", struct);
+				}
+				return false;
 			}
 		}
 		return false;
@@ -1976,10 +1990,19 @@ public class AtAjAttributes {
 			// good enough
 			return pointcut;
 		} catch (ParserException e) {
-			reportError("Invalid pointcut '" + pointcutString + "': " + e.toString()
+			reportError("Invalid pointcut '" + abbreviate(pointcutString) + "': " + e.toString()
 					+ (e.getLocation() == null ? "" : " at position " + e.getLocation().getStart()), struct);
 			return null;
+		} catch (StackOverflowError e) {
+			// the pointcut text comes from a class file, so it may be nested arbitrarily
+			// deeply
+			reportError("Invalid pointcut '" + abbreviate(pointcutString) + "': nested too deeply", struct);
+			return null;
 		}
+	}
+
+	private static String abbreviate(String text) {
+		return text.length() <= 200 ? text : text.substring(0, 200) + "...";
 	}
 
 	private static boolean hasIf(Pointcut pointcut) {
@@ -1998,12 +2021,15 @@ public class AtAjAttributes {
 	private static TypePattern parseTypePattern(String patternString, AjAttributeStruct location) {
 		try {
 			TypePattern typePattern = new PatternParser(patternString).parseTypePattern();
-			typePattern.setLocation(location.context, -1, -1);// FIXME -1,-1 is
-			// not good
-			// enough
+			typePattern.setLocation(location.context, -1, -1);// FIXME -1,-1 is not good enough
 			return typePattern;
 		} catch (ParserException e) {
-			reportError("Invalid type pattern'" + patternString + "' : " + e.getLocation(), location);
+			reportError("Invalid type pattern'" + abbreviate(patternString) + "' : " + e.getLocation(), location);
+			return null;
+		} catch (StackOverflowError e) {
+			// the pattern text comes from a class file, so it may be nested arbitrarily
+			// deeply
+			reportError("Invalid type pattern'" + abbreviate(patternString) + "' : nested too deeply", location);
 			return null;
 		}
 	}

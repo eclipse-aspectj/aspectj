@@ -19,6 +19,7 @@ import org.aspectj.weaver.bcel.AfterWeaveTestCase;
 import org.aspectj.weaver.bcel.ArgsWeaveTestCase;
 import org.aspectj.weaver.bcel.AroundArgsWeaveTestCase;
 import org.aspectj.weaver.bcel.AroundWeaveTestCase;
+import org.aspectj.weaver.bcel.AtAjAttributesParseFailureTest;
 import org.aspectj.weaver.bcel.BcelGenericSignatureToTypeXTestCase;
 import org.aspectj.weaver.bcel.BcelWeaverOutputPathTest;
 import org.aspectj.weaver.bcel.BcelWorldReferenceTypeTest;
@@ -98,6 +99,7 @@ public class WeaverModuleTests extends TestCase {
 		suite.addTestSuite(TypeVariableTestCase.class);
 		suite.addTestSuite(WeaverMessagesTestCase.class);
 		suite.addTestSuite(WeavingAdaptorDumpPathTest.class);
+		suite.addTestSuite(AtAjAttributesParseFailureTest.class);
 
 		suite.addTestSuite(AfterReturningWeaveTestCase.class);
 		suite.addTestSuite(AfterThrowingWeaveTestCase.class);
