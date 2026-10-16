@@ -18,14 +18,17 @@ import junit.framework.TestSuite;
 
 public class UtilModuleTests extends TestCase {
 
-    public static Test suite() {
-        TestSuite suite = new TestSuite(UtilModuleTests.class.getName());
+	public static Test suite() {
+		TestSuite suite = new TestSuite(UtilModuleTests.class.getName());
 		suite.addTestSuite(FileUtilTest.class);
 		suite.addTestSuite(LangUtilTest.class);
 		suite.addTestSuite(GenericSignatureParserTest.class);
-        return suite;
-    }
+		suite.addTestSuite(FileUtilArrayReadTest.class);
+		return suite;
+	}
 
-    public UtilModuleTests(String name) { super(name); }
+	public UtilModuleTests(String name) {
+		super(name);
+	}
 
 }

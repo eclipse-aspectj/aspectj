@@ -9,15 +9,33 @@
  * ******************************************************************/
 package org.aspectj.matcher;
 
+import org.aspectj.matcher.tools.ReflectionWorldPointcutExpressionTest;
+import org.aspectj.weaver.AjAttributeReadLimitsTest;
+import org.aspectj.weaver.TypeFactoryTest;
+import org.aspectj.weaver.patterns.AndOrNotTestCase;
+import org.aspectj.weaver.patterns.ArgsTestCase;
+import org.aspectj.weaver.patterns.BindingTestCase;
+import org.aspectj.weaver.patterns.DeclareErrorOrWarningTestCase;
+import org.aspectj.weaver.patterns.ModifiersPatternTestCase;
+import org.aspectj.weaver.patterns.NamePatternParserTestCase;
+import org.aspectj.weaver.patterns.NamePatternTestCase;
+import org.aspectj.weaver.patterns.ParserTestCase;
+import org.aspectj.weaver.patterns.PatternDeserializationLimitsTest;
+import org.aspectj.weaver.patterns.PointcutRewriterTest;
+import org.aspectj.weaver.patterns.SignaturePatternMatchSpeedTestCase;
+import org.aspectj.weaver.patterns.SignaturePatternTestCase;
+import org.aspectj.weaver.patterns.SimpleScopeTest;
+import org.aspectj.weaver.patterns.ThisOrTargetTestCase;
+import org.aspectj.weaver.patterns.TypePatternListTestCase;
+import org.aspectj.weaver.patterns.TypePatternTestCase;
+import org.aspectj.weaver.patterns.VisitorTestCase;
+import org.aspectj.weaver.patterns.WithinTestCase;
+import org.aspectj.weaver.reflect.ReflectionWorldBasicTest;
+import org.aspectj.weaver.reflect.ReflectionWorldSpecificTest;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
-import org.aspectj.matcher.tools.ReflectionWorldPointcutExpressionTest;
-import org.aspectj.weaver.TypeFactoryTest;
-import org.aspectj.weaver.patterns.*;
-import org.aspectj.weaver.reflect.ReflectionWorldBasicTest;
-import org.aspectj.weaver.reflect.ReflectionWorldSpecificTest;
 
 public class MatcherModuleTests extends TestCase {
 
@@ -47,6 +65,7 @@ public class MatcherModuleTests extends TestCase {
 		suite.addTestSuite(ModifiersPatternTestCase.class);
 		suite.addTestSuite(TypePatternListTestCase.class);
 		suite.addTestSuite(PatternDeserializationLimitsTest.class);
+		suite.addTestSuite(AjAttributeReadLimitsTest.class);
 
 		suite.addTestSuite(ReflectionWorldSpecificTest.class);
 		suite.addTestSuite(ReflectionWorldBasicTest.class);

@@ -960,6 +960,9 @@ public class UnresolvedType implements Traceable, TypeVariableDeclaringElement {
 
 	public static UnresolvedType[] readArray(DataInputStream s) throws IOException {
 		int len = s.readShort();
+		if (len < 0) {
+			throw new IOException("Invalid array length in data: " + len);
+		}
 		if (len == 0) {
 			return UnresolvedType.NONE;
 		}

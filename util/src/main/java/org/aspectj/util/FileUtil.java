@@ -52,6 +52,8 @@ import java.util.zip.ZipFile;
  * @author Kris De Volder
  */
 public class FileUtil {
+	private static final int MAX_ARRAY_LENGTH = 0xFFFF;
+
 	/** default parent directory File when a file has a null parent */
 	public static final File DEFAULT_PARENT = new File("."); // XXX user.dir?
 
@@ -1053,11 +1055,25 @@ public class FileUtil {
 		}
 	}
 
+
+
+	/**
+	 * Reads the length prefix of an array, rejecting a value that cannot be genuine
+	 * before anything is allocated.
+	 */
+	private static int readArrayLength(DataInputStream s) throws IOException {
+		int len = s.readInt();
+		if (len < 0 || len > MAX_ARRAY_LENGTH) {
+			throw new IOException("Invalid array length in data: " + len);
+		}
+		return len;
+	}
+
 	/**
 	 * Reads a boolean array with our encoding
 	 */
 	public static boolean[] readBooleanArray(DataInputStream s) throws IOException {
-		int len = s.readInt();
+		int len = readArrayLength(s);
 		boolean[] ret = new boolean[len];
 		for (int i = 0; i < len; i++) {
 			ret[i] = s.readBoolean();
@@ -1080,7 +1096,7 @@ public class FileUtil {
 	 * Reads an int array with our encoding
 	 */
 	public static int[] readIntArray(DataInputStream s) throws IOException {
-		int len = s.readInt();
+		int len = readArrayLength(s);
 		int[] ret = new int[len];
 		for (int i = 0; i < len; i++) {
 			ret[i] = s.readInt();
@@ -1103,7 +1119,7 @@ public class FileUtil {
 	 * Reads an int array with our encoding
 	 */
 	public static String[] readStringArray(DataInputStream s) throws IOException {
-		int len = s.readInt();
+		int len = readArrayLength(s);
 		String[] ret = new String[len];
 		for (int i = 0; i < len; i++) {
 			ret[i] = s.readUTF();
