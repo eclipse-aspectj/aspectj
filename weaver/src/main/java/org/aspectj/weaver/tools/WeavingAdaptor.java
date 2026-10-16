@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Path;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -162,6 +163,16 @@ public class WeavingAdaptor implements IMessageContext {
 		// On Java9 the sun.boot.class.path won't be set. System classes accessible through JRT filesystem
 		list.addAll(0, makeClasspath(System.getProperty("sun.boot.class.path")));
 		return list;
+	}
+
+	static File resolveDumpFile(String dirName, String name) throws IOException {
+		File dumpDir = new File(dirName);
+		File file = new File(dumpDir, name.replace('.', '/') + ".class");
+		Path base = dumpDir.getCanonicalFile().toPath();
+		if (!file.getCanonicalFile().toPath().startsWith(base)) {
+			throw new IOException("Class name '" + name + "' would be dumped outside directory '" + dirName + "'");
+		}
+		return file;
 	}
 
 	private List<String> getFullAspectPath(ClassLoader loader) {
@@ -671,25 +682,15 @@ public class WeavingAdaptor implements IMessageContext {
 	 */
 	protected void dump(String name, byte[] b, boolean before) {
 		String dirName = getDumpDir();
-
 		if (before) {
 			dirName = dirName + File.separator + "_before";
 		}
-
-		String className = name.replace('.', '/');
-		final File dir;
-		if (className.indexOf('/') > 0) {
-			dir = new File(dirName + File.separator + className.substring(0, className.lastIndexOf('/')));
-		} else {
-			dir = new File(dirName);
-		}
-		dir.mkdirs();
-		String fileName = dirName + File.separator + className + ".class";
 		try {
-			// System.out.println("WeavingAdaptor.dump() fileName=" + new File(fileName).getAbsolutePath());
-			FileOutputStream os = new FileOutputStream(fileName);
-			os.write(b);
-			os.close();
+			File file = resolveDumpFile(dirName, name);
+			file.getParentFile().mkdirs();
+			try (FileOutputStream os = new FileOutputStream(file)) {
+				os.write(b);
+			}
 		} catch (IOException ex) {
 			warn("unable to dump class " + name + " in directory " + dirName, ex);
 		}
