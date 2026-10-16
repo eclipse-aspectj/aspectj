@@ -57,7 +57,7 @@ public class TypeVariablePatternList extends PatternNode {
 
 	public static TypeVariablePatternList read(VersionedDataInputStream s, ISourceContext context) throws IOException {
 		TypeVariablePatternList ret = EMPTY;
-		int length = s.readInt();
+		int length = s.checkArrayLength(s.readInt());
 		if (length > 0) {
 			TypeVariablePattern[] patterns = new TypeVariablePattern[length];
 			for (int i = 0; i < patterns.length; i++) {

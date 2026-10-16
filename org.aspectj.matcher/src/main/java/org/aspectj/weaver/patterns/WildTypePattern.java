@@ -1346,7 +1346,7 @@ public class WildTypePattern extends TypePattern {
 		if (version > VERSION) {
 			throw new BCException("WildTypePattern was written by a more recent version of AspectJ, cannot read");
 		}
-		int len = s.readShort();
+		int len = s.checkArrayLength(s.readShort());
 		NamePattern[] namePatterns = new NamePattern[len];
 		for (int i = 0; i < len; i++) {
 			namePatterns[i] = NamePattern.read(s);
@@ -1368,7 +1368,7 @@ public class WildTypePattern extends TypePattern {
 		if (s.readBoolean()) {
 			ret.lowerBound = TypePattern.read(s, context);
 		}
-		int numIfBounds = s.readInt();
+		int numIfBounds = s.checkArrayLength(s.readInt());
 		if (numIfBounds > 0) {
 			ret.additionalInterfaceBounds = new TypePattern[numIfBounds];
 			for (int i = 0; i < numIfBounds; i++) {
@@ -1379,7 +1379,7 @@ public class WildTypePattern extends TypePattern {
 	}
 
 	public static TypePattern readTypePatternOldStyle(VersionedDataInputStream s, ISourceContext context) throws IOException {
-		int len = s.readShort();
+		int len = s.checkArrayLength(s.readShort());
 		NamePattern[] namePatterns = new NamePattern[len];
 		for (int i = 0; i < len; i++) {
 			namePatterns[i] = NamePattern.read(s);

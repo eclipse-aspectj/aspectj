@@ -237,7 +237,7 @@ public class TypeVariablePattern extends PatternNode {
 		String name = s.readUTF();
 		TypePattern upperBound = TypePattern.read(s, context);
 		TypePattern[] additionalInterfaceBounds = null;
-		int numInterfaceBounds = s.readInt();
+		int numInterfaceBounds = s.checkArrayLength(s.readInt());
 		if (numInterfaceBounds > 0) {
 			additionalInterfaceBounds = new TypePattern[numInterfaceBounds];
 			for (int i = 0; i < additionalInterfaceBounds.length; i++) {

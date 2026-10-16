@@ -485,7 +485,7 @@ public class TypePatternList extends PatternNode {
 	}
 
 	public static TypePatternList read(VersionedDataInputStream s, ISourceContext context) throws IOException {
-		short len = s.readShort();
+		int len = s.checkArrayLength(s.readShort());
 		TypePattern[] arguments = new TypePattern[len];
 		for (int i = 0; i < len; i++) {
 			arguments[i] = TypePattern.read(s, context);

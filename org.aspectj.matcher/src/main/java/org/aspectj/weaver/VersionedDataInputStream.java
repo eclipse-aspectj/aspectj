@@ -1,20 +1,17 @@
 /* *******************************************************************
- * Copyright (c) 2005-2010 Contributors
- * All rights reserved.
- * This program and the accompanying materials are made available
- * under the terms of the Eclipse Public License v 2.0
- * which accompanies this distribution and is available at
+ * Copyright (c) 2005-2026 Contributors
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution, and is available at
  * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
- * Contributors:
- * Andy Clement (IBM, SpringSource)
- * ******************************************************************/
-
+ * SPDX-License-Identifier: EPL-2.0
+ *******************************************************************************/
 package org.aspectj.weaver;
 
+import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 
@@ -26,12 +23,14 @@ import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
  */
 public class VersionedDataInputStream extends DataInputStream {
 
+	private static final int MAX_ARRAY_LENGTH = 0xFFFF;
+
 	private WeaverVersionInfo version = new WeaverVersionInfo();// assume we are the latest unless something tells us otherwise...
 
 	private ConstantPoolReader constantPoolReader;
 
-	public VersionedDataInputStream(InputStream is, ConstantPoolReader constantPoolReader) {
-		super(is);
+	public VersionedDataInputStream(ByteArrayInputStream bais, ConstantPoolReader constantPoolReader) {
+		super(bais);
 		this.constantPoolReader = constantPoolReader;
 	}
 
@@ -83,5 +82,20 @@ public class VersionedDataInputStream extends DataInputStream {
 
 	public String toString() {
 		return "VersionedDataInputStream: version=" + version + " constantPoolReader?" + (constantPoolReader != null);
+	}
+
+	/**
+	 * Checks a count that has just been read from the stream and is about to be
+	 * used to size an array. Every element occupies at least one byte, so a count
+	 * that is negative, crazy large, or bigger than the number of bytes
+	 * remaining cannot be genuine and is rejected before anything is allocated.
+	 * This relies on available() being exact, which is guaranteed now the constructor
+	 * takes a ByteArrayInputStream.
+	 */
+	public int checkArrayLength(int length) throws IOException {
+		if (length < 0 || length > MAX_ARRAY_LENGTH || length > available()) {
+			throw new BCException("Invalid array length in attribute data: " + length);
+		}
+		return length;
 	}
 }

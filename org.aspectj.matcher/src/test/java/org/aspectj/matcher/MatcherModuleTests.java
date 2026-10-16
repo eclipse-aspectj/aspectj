@@ -1,13 +1,11 @@
 /* *******************************************************************
- * Copyright (c) 2002-2008 Contributors
- * All rights reserved.
- * This program and the accompanying materials are made available
- * under the terms of the Eclipse Public License v 2.0
- * which accompanies this distribution and is available at
+ * Copyright (c) 2002-2026 Contributors
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v 2.0
+ * which accompanies this distribution, and is available at
  * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
- * Contributors:
- *     PARC     initial implementation
+ * SPDX-License-Identifier: EPL-2.0
  * ******************************************************************/
 package org.aspectj.matcher;
 
@@ -48,6 +46,7 @@ public class MatcherModuleTests extends TestCase {
 		suite.addTestSuite(BindingTestCase.class);
 		suite.addTestSuite(ModifiersPatternTestCase.class);
 		suite.addTestSuite(TypePatternListTestCase.class);
+		suite.addTestSuite(PatternDeserializationLimitsTest.class);
 
 		suite.addTestSuite(ReflectionWorldSpecificTest.class);
 		suite.addTestSuite(ReflectionWorldBasicTest.class);
