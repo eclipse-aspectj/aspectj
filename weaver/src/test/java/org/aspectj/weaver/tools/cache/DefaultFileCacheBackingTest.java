@@ -13,7 +13,13 @@
 
 package org.aspectj.weaver.tools.cache;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.zip.CRC32;
 
 import org.aspectj.util.LangUtil;
@@ -156,6 +162,52 @@ public class DefaultFileCacheBackingTest extends AbstractCacheBackingTestSupport
 
 		File cachedFile = new File(root, fakeKey);
 		assertFalse("Cache file not removed", cachedFile.exists());
+	}
+
+	public void testReadIndexRejectsUnexpectedClass() throws Exception {
+		DefaultFileCacheBacking backing = DefaultFileCacheBacking.createBacking(root);
+		File indexFile = new File(root, AbstractIndexedFileCacheBacking.INDEX_FILE);
+		Gadget.deserialized = false;
+		writeObject(indexFile, new Gadget());
+
+		IndexEntry[] index = backing.readIndex(indexFile);
+
+		assertTrue("Index should be empty after rejecting a hostile entry", LangUtil.isEmpty(index));
+		assertFalse("Disallowed class was deserialized from the cache index", Gadget.deserialized);
+	}
+
+	public void testReadIndexAcceptsIndexEntryArray() throws Exception {
+		DefaultFileCacheBacking backing = DefaultFileCacheBacking.createBacking(root);
+		File indexFile = new File(root, AbstractIndexedFileCacheBacking.INDEX_FILE);
+		IndexEntry ie = new IndexEntry();
+		ie.key = fakeKey;
+		ie.crcClass = 42L;
+		writeObject(indexFile, new IndexEntry[] { ie });
+
+		IndexEntry[] index = backing.readIndex(indexFile);
+
+		assertEquals(1, index.length);
+		assertEquals(fakeKey, index[0].key);
+		assertEquals(42L, index[0].crcClass);
+	}
+
+	private static void writeObject(File file, Serializable object) throws IOException {
+		ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
+		try {
+			oos.writeObject(object);
+		} finally {
+			oos.close();
+		}
+	}
+
+	private static class Gadget implements Serializable {
+		private static final long serialVersionUID = 1L;
+		static boolean deserialized;
+
+		private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+			in.defaultReadObject();
+			deserialized = true;
+		}
 	}
 
 	private boolean indexEntryExists(AbstractIndexedFileCacheBacking cache, String key, long expectedCRC) throws Exception {
