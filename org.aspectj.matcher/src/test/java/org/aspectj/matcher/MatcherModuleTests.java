@@ -12,6 +12,7 @@ package org.aspectj.matcher;
 import org.aspectj.matcher.tools.ReflectionWorldPointcutExpressionTest;
 import org.aspectj.weaver.AjAttributeReadLimitsTest;
 import org.aspectj.weaver.TypeFactoryTest;
+import org.aspectj.weaver.WeaverStateInfoReadLimitsTest;
 import org.aspectj.weaver.patterns.AndOrNotTestCase;
 import org.aspectj.weaver.patterns.ArgsTestCase;
 import org.aspectj.weaver.patterns.BindingTestCase;
@@ -66,6 +67,7 @@ public class MatcherModuleTests extends TestCase {
 		suite.addTestSuite(TypePatternListTestCase.class);
 		suite.addTestSuite(PatternDeserializationLimitsTest.class);
 		suite.addTestSuite(AjAttributeReadLimitsTest.class);
+		suite.addTestSuite(WeaverStateInfoReadLimitsTest.class);
 
 		suite.addTestSuite(ReflectionWorldSpecificTest.class);
 		suite.addTestSuite(ReflectionWorldBasicTest.class);

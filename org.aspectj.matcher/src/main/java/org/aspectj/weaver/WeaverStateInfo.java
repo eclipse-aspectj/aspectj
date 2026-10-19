@@ -338,6 +338,10 @@ public class WeaverStateInfo {
 			byte[] classData = null;
 			// the unwovenClassFile may have been compressed:
 			if (wsi.reweavableCompressedMode) {
+				// Deflate cannot expand data by more than about 1032 times, so a larger declared size can't be right
+				if (unwovenClassFileSize<0 || unwovenClassFileSize > s.available()*1032L) {
+					throw new IOException("ERROR whilst reading compressed reweavable data, invalid size "+unwovenClassFileSize);
+				}
 				classData = new byte[unwovenClassFileSize];
 				ZipInputStream zis = new ZipInputStream(s);
 				ZipEntry zen = zis.getNextEntry();
@@ -345,6 +349,9 @@ public class WeaverStateInfo {
 				int bytesToGo = unwovenClassFileSize;
 				while (bytesToGo > 0) {
 					int amount = zis.read(classData, current, bytesToGo);
+					if (amount<0) {
+						throw new IOException("ERROR whilst reading compressed reweavable data, expected "+unwovenClassFileSize+" bytes, only found "+current);
+					}
 					current += amount;
 					bytesToGo -= amount;
 				}
@@ -354,6 +361,11 @@ public class WeaverStateInfo {
 							+ " bytes, only found " + current);
 				}
 			} else {
+				// The data is stored as is, so it cannot be larger than what remains of the
+				// attribute
+				if (unwovenClassFileSize < 0 || unwovenClassFileSize > s.available()) {
+					throw new IOException("ERROR whilst reading reweavable data, invalid size " + unwovenClassFileSize);
+				}
 				classData = new byte[unwovenClassFileSize];
 				if (unwovenClassFileSize != 0) {
 					int bytesread = s.read(classData);
@@ -513,8 +525,17 @@ public class WeaverStateInfo {
 	}
 
 	byte[] applyDiff(byte[] wovenClassFile, byte[] diff) {
-
+		if (diff.length < 6 || wovenClassFile.length < 10) {
+			throw new BCException("Invalid reweavable diff: diff is " + diff.length + " bytes, woven class is "
+					+ wovenClassFile.length + " bytes");
+		}
 		int lengthInCommon = readInt(diff, 2);
+		// the run in common is copied from the woven class file, after its first 10
+		// bytes
+		if (lengthInCommon < 0 || lengthInCommon > wovenClassFile.length - 10) {
+			throw new BCException("Invalid reweavable diff: length in common (" + lengthInCommon
+					+ ") does not fit the woven class file of " + wovenClassFile.length + " bytes");
+		}
 		byte[] unWovenClassFile = new byte[4 + diff.length + lengthInCommon];
 
 		// copy the first 8 bytes from the wovenClassFile
