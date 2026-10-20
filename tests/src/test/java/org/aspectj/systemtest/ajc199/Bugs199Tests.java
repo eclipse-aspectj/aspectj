@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2022 Contributors
+ * Copyright (c) 2022-2026 Contributors
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v 2.0
  * which accompanies this distribution, and is available at
  * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 package org.aspectj.systemtest.ajc199;
 
@@ -11,6 +13,7 @@ import io.bmuskalla.system.properties.PropertyEnvironment;
 import io.bmuskalla.system.properties.ScopedSystemProperties;
 import junit.framework.Test;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+import org.aspectj.util.LangUtil;
 
 /**
  * @author Alexander Kriegisch
@@ -118,12 +121,12 @@ public class Bugs199Tests extends XMLBasedAjcTestCase {
       return;
     }
     
-    // Check if we're on Temurin JDK 25 where ECJ rejects internal JDK modules
+    // Check if we're on Temurin JDK 25 or later where ECJ rejects internal JDK modules
     // Even though the module exists, ECJ will reject it with "invalid module name: jdk.charsets"
     // This is a known ECJ limitation documented in the test XML comment.
     String vendor = System.getProperty("java.vm.vendor", "");
     String version = System.getProperty("java.version", "");
-    if ((vendor.contains("Eclipse Adoptium") || vendor.contains("Temurin")) && version.startsWith("25")) {
+    if ((vendor.contains("Eclipse Adoptium") || vendor.contains("Temurin")) && LangUtil.isVMGreaterOrEqual(25)) {
       System.out.println("Skipping testAddModulesJDK_gh145: ECJ on " + vendor + " " + version + 
                          " rejects internal JDK modules with 'invalid module name: jdk.charsets'");
       return;
