@@ -9,7 +9,7 @@
 
 _© Copyright 2026 Contributors. All rights reserved._
 
-_Release info: 1.9.26 available Sep-2026_
+_Release info: 1.9.26 available Oct-2026_
 
 Please note that Bugzilla for issue management is deprecated and new issues should be filed as
 https://github.com/eclipse-aspectj/aspectj/issues/new[GitHub issues]. The list of issues addressed for 1.9.26 can be
@@ -40,6 +40,12 @@ Some of these are API/JVM only so don't affect the compiler and should just work
 * No major improvements
 
 == Other changes and bug fixes
+
+AspectJ 1.9.26 includes a number of changes to do more in depth verification of class files. This verification
+is intended to ensure bad data will cause AspectJ to fail with a proper exception rather than a stack overflow or
+an out of memory issue. Please raise an issue if you see anything that looks like the verification is being too strict,
+however the extra checks are not expected to cause any issues for class files resulting from typical usage of Java
+and AspectJ.
 
 Importantly with the adoption of JDT Compiler later than 22, the versions of Java 1.1 > 1.7 are considered no longer
 supported so any attempt to specify a build for any of those Java versions will now fail immediately.
