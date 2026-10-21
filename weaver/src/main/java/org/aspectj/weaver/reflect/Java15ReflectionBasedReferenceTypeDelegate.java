@@ -11,6 +11,7 @@
  * ******************************************************************/
 package org.aspectj.weaver.reflect;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Constructor;
@@ -46,6 +47,7 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends ReflectionBasedR
 
 	private AjType<?> myType;
 	private ResolvedType[] annotations;
+	private ResolvedType[] runtimeAnnotations;
 	private ResolvedMember[] pointcuts;
 	private ResolvedMember[] methods;
 	private ResolvedMember[] fields;
@@ -108,14 +110,34 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends ReflectionBasedR
 
 	@Override
 	public boolean hasAnnotation(UnresolvedType ofType) {
-		ResolvedType[] myAnns = getAnnotationTypes();
 		ResolvedType toLookFor = ofType.resolve(getWorld());
+		// An annotation with runtime retention is visible by reflection on the class this delegate already
+		// has, so the class file is only needed for one with class retention.
+		ResolvedType[] myAnns = annotations == null && toLookFor.isAnnotationWithRuntimeRetention()
+				? getDeclaredRuntimeAnnotationTypes()
+				: getAnnotationTypes();
 		for (ResolvedType myAnn : myAnns) {
 			if (myAnn == toLookFor) {
 				return true;
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * The annotations with runtime retention declared on the class, as the class file holds them: unlike
+	 * {@link Class#getAnnotations()}, without those inherited from superclasses.
+	 */
+	private ResolvedType[] getDeclaredRuntimeAnnotationTypes() {
+		if (runtimeAnnotations == null) {
+			Annotation[] declared = getBaseClass().getDeclaredAnnotations();
+			ResolvedType[] types = new ResolvedType[declared.length];
+			for (int i = 0; i < declared.length; i++) {
+				types[i] = getWorld().resolve(declared[i].annotationType().getName());
+			}
+			runtimeAnnotations = types;
+		}
+		return runtimeAnnotations;
 	}
 
 	// use the MAP to ensure that any aj-synthetic fields are filtered out
