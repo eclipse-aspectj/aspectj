@@ -14,6 +14,7 @@ package org.aspectj.weaver.loadtime.definition;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.net.URL;
 import java.util.Hashtable;
 
@@ -137,17 +138,17 @@ public class DocumentParser extends DefaultHandler {
 		xmlReader.setErrorHandler(parser);
 
 		try {
-			xmlReader.setFeature("https://xml.org/sax/features/validation", false);
+			xmlReader.setFeature("http://xml.org/sax/features/validation", false);
 		} catch (SAXException e) {
 			// fine, the parser don't do validation
 		}
 		try {
-			xmlReader.setFeature("https://xml.org/sax/features/external-general-entities", false);
+			xmlReader.setFeature("http://xml.org/sax/features/external-general-entities", false);
 		} catch (SAXException e) {
 			// fine, the parser don't do validation
 		}
 		try {
-			xmlReader.setFeature("https://xml.org/sax/features/external-parameter-entities", false);
+			xmlReader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
 		} catch (SAXException e) {
 			// fine, the parser don't do validation
 		}
@@ -173,17 +174,18 @@ public class DocumentParser extends DefaultHandler {
 	}
 
 	public InputSource resolveEntity(String publicId, String systemId) throws SAXException {
-		if (publicId.equals(DTD_PUBLIC_ID) || publicId.equals(DTD_PUBLIC_ID_ALIAS)) {
+		if (DTD_PUBLIC_ID.equals(publicId) || DTD_PUBLIC_ID_ALIAS.equals(publicId)) {
 			InputStream in = DocumentParser.class.getResourceAsStream("/aspectj_1_5_0.dtd");
 			if (in == null) {
 				System.err.println("AspectJ - WARN - could not read DTD " + publicId);
-				return null;
+				return new InputSource(new StringReader(""));
 			} else {
 				return new InputSource(in);
 			}
 		} else {
 			System.err.println("AspectJ - WARN - unknown DTD " + publicId + " - consider using " + DTD_PUBLIC_ID);
-			return null;
+			// returning null would let the parser resolve systemId itself
+			return new InputSource(new StringReader(""));
 		}
 	}
 
