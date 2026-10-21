@@ -49,6 +49,7 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends ReflectionBasedR
 	private ResolvedMember[] pointcuts;
 	private ResolvedMember[] methods;
 	private ResolvedMember[] fields;
+	private AnnotationAJ[] annotationsWithValues;
 	private TypeVariable[] typeVariables;
 	private ResolvedType superclass;
 	private ResolvedType[] superInterfaces;
@@ -77,14 +78,16 @@ public class Java15ReflectionBasedReferenceTypeDelegate extends ReflectionBasedR
 				.resolve(getWorld());
 	}
 
+	/**
+	 * The annotations with their values, as matching annotation values on a type needs them. Only read when a
+	 * pointcut matches on values, as other matching only needs the annotation types.
+	 */
 	@Override
 	public AnnotationAJ[] getAnnotations() {
-		// AMC - we seem not to need to implement this method...
-		// throw new UnsupportedOperationException(
-		// "getAnnotations on Java15ReflectionBasedReferenceTypeDelegate is not implemented yet"
-		// );
-		// FIXME is this the right implementation in the reflective case?
-		return super.getAnnotations();
+		if (annotationsWithValues == null) {
+			annotationsWithValues = annotationFinder.getAnnotationsWithValues(getBaseClass(), getWorld());
+		}
+		return annotationsWithValues;
 	}
 
 	@Override

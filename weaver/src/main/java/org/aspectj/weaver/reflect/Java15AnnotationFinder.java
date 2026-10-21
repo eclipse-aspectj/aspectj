@@ -298,6 +298,29 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 		return ret;
 	}
 
+	/**
+	 * The annotations declared on a class, with their values, as its class file holds them. Like the annotations
+	 * of members in {@link #getAnnotationOfType(UnresolvedType, Member)}, they come from the class file: matching
+	 * their values works on the representation the weaver uses.
+	 */
+	public AnnotationAJ[] getAnnotationsWithValues(Class<?> forClass, World inWorld) {
+		try {
+			JavaClass jc = getBcelRepository().loadClass(forClass);
+			AnnotationGen[] anns = jc.getAnnotations();
+			getBcelRepository().clear();
+			if (anns == null || anns.length == 0) {
+				return AnnotationAJ.EMPTY_ARRAY;
+			}
+			AnnotationAJ[] ret = new AnnotationAJ[anns.length];
+			for (int i = 0; i < anns.length; i++) {
+				ret[i] = new BcelAnnotation(anns[i], inWorld);
+			}
+			return ret;
+		} catch (ClassNotFoundException cnfEx) {
+			return AnnotationAJ.EMPTY_ARRAY;
+		}
+	}
+
 	public String[] getParameterNames(Member forMember) {
 		if (!(forMember instanceof AccessibleObject))
 			return null;
