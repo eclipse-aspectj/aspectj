@@ -60,6 +60,7 @@ import org.aspectj.weaver.tools.PointcutDesignatorHandlerTest;
 import org.aspectj.weaver.tools.PointcutExpressionTest;
 import org.aspectj.weaver.tools.PointcutParserTest;
 import org.aspectj.weaver.tools.ReadingAttributesTest;
+import org.aspectj.weaver.tools.TypeAnnotationValueMatchingTest;
 import org.aspectj.weaver.tools.TypePatternMatcherTest;
 import org.aspectj.weaver.tools.WeavingAdaptorDumpPathTest;
 import org.aspectj.weaver.tools.cache.DefaultCacheKeyResolverTest;
@@ -154,6 +155,7 @@ public class WeaverModuleTests extends TestCase {
 		suite.addTestSuite(PointcutExpressionTest.class);
 		suite.addTestSuite(PointcutParserTest.class);
 		suite.addTestSuite(ReadingAttributesTest.class);
+		suite.addTestSuite(TypeAnnotationValueMatchingTest.class);
 		suite.addTestSuite(TypePatternMatcherTest.class);
 
 		suite.addTestSuite(DefaultCacheKeyResolverTest.class);
