@@ -1,0 +1,36 @@
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"[]>
+
+<!--
+JDK 27 (https://openjdk.org/projects/jdk/27/):
+
+523:	Make G1 the Default Garbage Collector in All Environments
+527:	Post-Quantum Hybrid Key Exchange for TLS 1.3
+531:	Lazy Constants (Third Preview)
+532:	Primitive Types in Patterns, instanceof, and switch
+(Fifth Preview)
+533:	Structured Concurrency (Seventh Preview)
+534:	Compact Object Headers by Default
+536:	JFR In-Process Data Redaction
+537:	Vector API (Twelfth Incubator)
+538:	PEM Encodings of Cryptographic Objects (Third Preview)
+
+-->
+<suite>
+
+	<!-- https://openjdk.org/jeps/455 becomes JEP530 in Java26 and that becomes JEP532 in Java 27 - test moved there -->
+	<ajc-test dir="features1923/java23" vm="27" title="primitive types patterns - switch - with advice">
+		<compile files="PrimitivePatternsSwitch2.java" options="--enable-preview -27 -showWeaveInfo">
+		<message kind="weave" line="12" text="Join point 'method-call(boolean PrimitivePatternsSwitch2.isOdd(int))' in Type 'PrimitivePatternsSwitch2' (PrimitivePatternsSwitch2.java:12) advised by around advice from 'X'"/>
+		</compile>
+		<run class="PrimitivePatternsSwitch2" vmargs="- -enable-preview">
+			<stdout>
+			<!-- advice forces all the isOdd() calls to return false -->
+			<line text="no"/>
+			<line text="no"/>
+			<line text="no"/>
+			<line text="no"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+</suite>

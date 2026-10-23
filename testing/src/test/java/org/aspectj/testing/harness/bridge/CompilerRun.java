@@ -1137,7 +1137,7 @@ public class CompilerRun implements IAjcRun {
                 return checkResult(result);
             }
             // add toadd and finish result
-            ArrayList args = new ArrayList();
+            ArrayList<String> args = new ArrayList<>();
             String[] rendered = values.render();
             if (!LangUtil.isEmpty(rendered)) {
                 args.addAll(Arrays.asList(rendered));
@@ -1147,7 +1147,7 @@ public class CompilerRun implements IAjcRun {
             Option.Value source = values.firstInFamily(getFamily);
             if (null != source) {
                 String sourceVersion = source.unflatten()[1];
-                ArrayList toAdd = new ArrayList();
+                ArrayList<String> toAdd = new ArrayList<>();
                 /*String err =*/
                     updateBootclasspathForSourceVersion(
                         sourceVersion,
@@ -1403,11 +1403,11 @@ public class CompilerRun implements IAjcRun {
 
         // XXX need keys, cache...
         /** @return index of global in argList, ignoring first char */
-        protected int indexOf(String global, ArrayList argList) {
+        protected int indexOf(String global, ArrayList<String> argList) {
             int max = argList.size();
             for (int i = 0; i < max; i++) {
                 if (global
-                    .equals(((String) argList.get(i)).substring(1))) {
+                    .equals(argList.get(i).substring(1))) {
                     return i;
                 }
             }

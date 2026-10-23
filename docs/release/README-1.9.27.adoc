@@ -1,0 +1,84 @@
+= AspectJ 1.9.27
+:doctype: book
+:leveloffset: +1
+
+= AspectJ 1.9.27
+
+// AspectJ_JDK_Update: Each a.b.c release needs a new release notes document. For a.b.c.d minors, the existing a.b.c
+// document can be updated. After copying this document, remove the comment from the previous one.
+
+_© Copyright 2026 Contributors. All rights reserved._
+
+_Release info: 1.9.27 available Oct-2026_
+
+Please note that Bugzilla for issue management is deprecated and new issues should be filed as
+https://github.com/eclipse-aspectj/aspectj/issues/new[GitHub issues]. The list of issues addressed for 1.9.26 can be
+found here:
+
+* https://github.com/eclipse-aspectj/aspectj/issues?q=is%3Aissue+is%3Aclosed++milestone%3A1.9.27[GitHub 1.9.27]
+* https://bugs.eclipse.org/bugs/buglist.cgi?bug_status=RESOLVED&bug_status=VERIFIED&bug_status=CLOSED&f0=OP&f1=OP&f3=CP&f4=CP&j1=OR&list_id=16866879&product=AspectJ&query_format=advanced&target_milestone=1.9.27[Bugzilla 1.9.27]
+
+== New features
+
+AspectJ 1.9.27 supports https://openjdk.java.net/projects/jdk/27/[Java 27], its final and preview features:
+
+* 523:	Make G1 the Default Garbage Collector in All Environments
+* 527:	Post-Quantum Hybrid Key Exchange for TLS 1.3
+* 531:	Lazy Constants (Third Preview)
+* 532:	Primitive Types in Patterns, instanceof, and switch (Fifth Preview)
+* 533:	Structured Concurrency (Seventh Preview)
+* 534:	Compact Object Headers by Default
+* 536:	JFR In-Process Data Redaction
+* 537:	Vector API (Twelfth Incubator)
+* 538:	PEM Encodings of Cryptographic Objects (Third Preview)
+
+Some of these are API/JVM only so don't affect the compiler and should just work on Java 27 runtimes.
+
+== Improvements
+
+* No major improvements
+
+== Other changes and bug fixes
+
+Worth repeating - AspectJ 1.9.26 included a number of changes to do more in depth verification of class files. This verification
+is intended to ensure bad data will cause AspectJ to fail with a proper exception rather than a stack overflow or
+an out of memory issue. Please raise an issue if you see anything that looks like the verification is being too strict,
+however the extra checks are not expected to cause any issues for class files resulting from typical usage of Java
+and AspectJ.
+
+Importantly with the adoption of JDT Compiler later than 22, the versions of Java 1.1 > 1.7 are considered no longer
+supported so any attempt to specify a build for any of those Java versions will now fail immediately.
+
+== AspectJ usage hints
+
+[[ajc_build_system_requirements]]
+=== AspectJ compiler build system requirements
+
+Since 1.9.21, the AspectJ compiler `ajc` (contained in the `aspectjtools` library) no longer works on JDKs 11 to 16. The
+minimum compile-time requirement is now JDK 17 due to upstream changes in the Eclipse Java Compiler (subset of JDT
+Core), which AspectJ is a fork of. You can still compile to legacy target versions as low as Java 1.3 when compiling
+plain Java code or using plain Java ITD constructs which do not require the AspectJ runtime `aspectjrt`, but the
+compiler itself needs JDK 17+. Just like in previous AspectJ versions, both the runtime `aspectjrt` and the load-time
+weaver `aspectjweaver` still only require JRE 8+.
+
+History: Since 1.9.8, the AspectJ compiler ajc needed JDK 11+, before then JDK 8+.
+
+[[ltw_java_16]]
+=== Use LTW on Java 16+
+
+**Since AspectJ 1.9.21.1, using `--add-opens` is no longer necessary!** The additional JVM command-line option was
+necessary for LTW on JRE 16+ in all AspectJ versions up to 1.9.21. Since AspectJ 1.9.21.1, the LTW agent uses an
+alternative approach for defining new classes during weaving, which works without `--add-opens` - at least for now, i.e.
+JDKs 8 to 22. There still is no canonical solution, because link:https://bugs.openjdk.org/browse/JDK-8200559[JDK-8200559]
+is still unresolved since 2018.
+
+[[compile_with_preview]]
+=== Compile with Java preview features
+
+For features marked as preview on a given JDK, you need to compile with `ajc --enable-preview` and run with
+`java --enable-preview` on that JDK.
+
+Please note, that you cannot run code compiled with preview features on any other JDK than the one used for compilation.
+For example, records compiled with preview on JDK 15 cannot be used on JDK 16 without recompilation. This is a JVM
+limitation unrelated to AspectJ. Also, e.g. sealed classes are preview-1 on JDK 15 and preview-2 on JDK 16. You still
+need to recompile, no matter what.

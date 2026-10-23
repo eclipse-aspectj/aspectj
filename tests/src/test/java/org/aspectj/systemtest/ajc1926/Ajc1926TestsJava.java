@@ -29,8 +29,7 @@ public class Ajc1926TestsJava extends JavaVersionSpecificXMLBasedAjcTestCase {
 		return XMLBasedAjcTestCase.loadSuite(Ajc1926TestsJava.class);
 	}
 
-	public void testJep530PrimitivePatternsSwitch2() {
-		runTest("primitive types patterns - switch - with advice");
+	public void testNothing() {
 	}
 
 	@Override

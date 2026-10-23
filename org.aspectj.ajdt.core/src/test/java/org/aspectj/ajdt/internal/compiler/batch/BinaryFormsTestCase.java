@@ -66,7 +66,7 @@ public class BinaryFormsTestCase extends CommandTestCase {
 		TestUtil.runMain(getSandboxName() + File.pathSeparator + library, "client.Client");
 		TestUtil.runMain(getSandboxName() + File.pathSeparator + library, "client.Client1");
 
-		args = new ArrayList();
+		args = new ArrayList<>();
 		args.add("-aspectpath");
 		args.add(library);
 
@@ -100,7 +100,7 @@ public class BinaryFormsTestCase extends CommandTestCase {
 
 		CommandTestCase.runCompiler(args, new int[] {24, 30});
 
-		args = new ArrayList();
+		args = new ArrayList<>();
 		args.add("-classpath");
         args.add(library + File.pathSeparator + Constants.aspectjrtClasspath());
 
@@ -112,7 +112,7 @@ public class BinaryFormsTestCase extends CommandTestCase {
 
 		CommandTestCase.runCompiler(args, new int[] {15, 17, 22});
 
-		args = new ArrayList();
+		args = new ArrayList<>();
 		args.add("-classpath");
         args.add(Constants.aspectjrtClasspath() + File.pathSeparator + library);
 		args.add("-Xlint:error");

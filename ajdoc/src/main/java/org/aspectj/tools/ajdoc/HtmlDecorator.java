@@ -317,6 +317,16 @@ class HtmlDecorator {
 						fileContents.insert(classStartIndex, aspectLine);
 					}
 				}
+				// Java 27 added a title attribute to the breadcrumb link of the current page,
+				// for example
+				// <a href="ClassA.InnerAspect.html" title="Class ClassA.InnerAspect"
+				// class="current-selection">
+				// This will do nothing on < Java 27
+				String pageName = file.getName().substring(0, file.getName().length() - ".html".length());
+				String withAspectTitle = fileContents.toString().replace("title=\"Class " + pageName + "\"",
+						"title=\"Aspect " + pageName + "\"");
+				fileContents.setLength(0);
+				fileContents.append(withAspectTitle);
 			}
 		}
 		file.delete();
