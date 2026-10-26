@@ -41,6 +41,7 @@ import org.aspectj.util.FileUtil;
  * Main taskdef class for the AspectJ 1.0 compiler, <code>ajc</code>.
  * See the README and examples/build.xml for more information.
  */
+@SuppressWarnings("deprecation")
 public class Ajc10 extends MatchingTask {
 
     private static final List<String> VALID_XOPTIONS;
@@ -165,7 +166,8 @@ public class Ajc10 extends MatchingTask {
 //            this.bootclasspath.append(bootclasspath);
 //        }
     }
-    public Path createBootclasspath() {  // javac-also not-eajc docDone
+    
+	public Path createBootclasspath() {  // javac-also not-eajc docDone
         ignore("bootclasspath"); // XXX may jury-rig
         if (bootclasspath == null) {
             bootclasspath = new Path(project);

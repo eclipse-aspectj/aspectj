@@ -295,21 +295,21 @@ public class HarnessJUnitUtil {
 
     private static class EmptySuite extends AjcTest.Suite.Spec {
         static final EmptySuite ME = new EmptySuite();
-        final ArrayList children;
+        final ArrayList<IRunSpec> children;
         private EmptySuite(){
-            children = new ArrayList() {
+            children = new ArrayList<IRunSpec>() {
                 // XXX incomplete...
-                public void add(int arg0, Object arg1) { fail();}
-                public boolean addAll(int arg0, Collection arg1) { return fail();}
-                public boolean addAll(Collection o) { return fail(); }
-                public boolean add(Object o) { return fail(); }
+                public void add(int arg0, IRunSpec arg1) { fail();}
+                public boolean addAll(int arg0, Collection<? extends IRunSpec> arg1) { return fail();}
+                public boolean addAll(Collection<? extends IRunSpec> o) { return fail(); }
+                public boolean add(IRunSpec o) { return fail(); }
                 public boolean remove(Object o) { return fail(); }
                 private boolean fail() {
                     throw new Error("unmodifiable");
                 }
             };
         }
-        public ArrayList getChildren() {
+        public ArrayList<IRunSpec> getChildren() {
             return children;
         }
     }

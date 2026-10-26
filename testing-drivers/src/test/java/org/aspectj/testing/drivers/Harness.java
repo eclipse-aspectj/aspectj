@@ -99,7 +99,7 @@ public class Harness {
 
 		version = "UNKNOWN";
 		try {
-			Class c = Class.forName("org.aspectj.bridge.Version");
+			Class<?> c = Class.forName("org.aspectj.bridge.Version");
 			version = (String) c.getField("text").get(null);
 		} catch (Throwable t) {
 			// ignore
@@ -147,9 +147,7 @@ public class Harness {
 		ArrayList<String> args = new ArrayList<>();
 		//        int lineNum = 0;
 
-		try {
-			BufferedReader stream =
-					new BufferedReader(new FileReader(argFile));
+		try (BufferedReader stream = new BufferedReader(new FileReader(argFile))) {
 			String line;
 			while (null != (line = stream.readLine())) {
 				StringTokenizer st = new StringTokenizer(line);
@@ -207,7 +205,7 @@ public class Harness {
 	 *         and use "-" suffixes for variants.
 	 * @param resultList List for IRunStatus results - ignored if null
 	 */
-	public void runMain(String[] args, List resultList) {
+	public void runMain(String[] args, List<RunResult> resultList) {
 		LangUtil.throwIaxIfFalse(!LangUtil.isEmpty(args), "empty args");
 		// read arguments
 		final ArrayList<String> globals = new ArrayList<>();
@@ -320,9 +318,8 @@ public class Harness {
 	 * @param elapsed
 	 */
 	private void doEndSuite(File suiteFile, long elapsed) {
-		Collection c = features.values();
-		for (Object o : c) {
-			Feature element = (Feature) o;
+		Collection<Feature> c = features.values();
+		for (Feature element : c) {
 			if (element.listener instanceof TestCompleteListener) {
 				((TestCompleteListener) element.listener).doEndSuite(suiteFile, elapsed);
 			}
@@ -583,7 +580,7 @@ public class Harness {
 	}
 
 	/** @return unmodifiable Set of feature names */
-	protected Set listFeatureNames() {
+	protected Set<String> listFeatureNames() {
 		return Collections.unmodifiableSet(features.keySet());
 	}
 
@@ -603,7 +600,7 @@ public class Harness {
 	/** print known aliases at the end of the syntax message */
 	protected void printAliases(PrintStream out) {
 		LangUtil.throwIaxIfNull(out, "out");
-		Map props = getOptionAliases();
+		Properties props = getOptionAliases();
 		if (null == props) {
 			return;
 		}
@@ -633,7 +630,7 @@ public class Harness {
 	/** feature implemented as named IRunIterator/IRun association */
 	public static class Feature {
 		/** never null, always assignable to IRun */
-		public final Class clazz;
+		public final Class<?> clazz;
 
 		/** never null */
 		public final IRunListener listener;
@@ -644,7 +641,7 @@ public class Harness {
 		/** @throws IllegalArgumentException if any is null/empty or clazz is
 		 *           not assignable to IRun
 		 */
-		public Feature(String name, Class clazz, IRunListener listener) {
+		public Feature(String name, Class<?> clazz, IRunListener listener) {
 			LangUtil.throwIaxIfNull(clazz, "class");
 			if (!IRun.class.isAssignableFrom(clazz)
 					&& !IRunIterator.class.isAssignableFrom(clazz)) {
@@ -698,7 +695,7 @@ class FeatureHarness extends Harness {
 													"-junit" + OPTION_DELIM + "-ajctestSkipKeywords=knownLimitation,purejava"
 			};
 	static {
-		Map optionAliases = Harness.getOptionAliases();
+		Properties optionAliases = Harness.getOptionAliases();
 		if (null != optionAliases) {
 			for (int i = 1; i < ALIASES.length; i += 2) {
 				optionAliases.put(ALIASES[i-1], ALIASES[i]);

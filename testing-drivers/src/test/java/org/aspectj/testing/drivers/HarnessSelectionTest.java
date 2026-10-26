@@ -56,10 +56,10 @@ public class HarnessSelectionTest extends TestCase {
     private static final String TITLE_LIST_PLURAL
         = INC_HARNESS_DIR + "/titleListPlural.txt";
 
-    private static Hashtable SPECS = new Hashtable();
+    private static Hashtable<String, AjcTest.Suite.Spec> SPECS = new Hashtable<>();
 
     private static AjcTest.Suite.Spec getSpec(String suiteFile) {
-        AjcTest.Suite.Spec result = (AjcTest.Suite.Spec) SPECS.get(suiteFile);
+        AjcTest.Suite.Spec result = SPECS.get(suiteFile);
         if (null == result) {
             try {
                 result = AjcSpecXmlReader.getReader().readAjcSuite(new File(suiteFile));
@@ -92,7 +92,8 @@ public class HarnessSelectionTest extends TestCase {
 		}
     }
 
-    public void testIncrementalSuite() {
+    @SuppressWarnings("unused")
+	public void testIncrementalSuite() {
         System.err.println("skipping testIncrementalSuite - too long");
         if (true) return;
         if (!eclipseAvailable()) {
@@ -344,7 +345,7 @@ public class HarnessSelectionTest extends TestCase {
         }
         assertNotNull("Harness.RunResult", result);
         // XXX sync hack snooping of message text with skip messages, harness
-        final List skipList = MessageUtil.getMessages(holder, IMessage.INFO, false, "skip");
+        final List<IMessage> skipList = MessageUtil.getMessages(holder, IMessage.INFO, false, "skip");
         final int numSkipped = skipList.size();
         IRunStatus status = result.status;
         assertNotNull(status);

@@ -67,6 +67,7 @@ import org.aspectj.util.LangUtil;
  *
  * @since AspectJ 1.1, Ant 1.5
  */
+@SuppressWarnings("deprecation")
 public class AjcTask extends MatchingTask {
 	/*
 	 * This task mainly converts ant specification for ajc, verbosely ignoring improper input. It also has some special features for

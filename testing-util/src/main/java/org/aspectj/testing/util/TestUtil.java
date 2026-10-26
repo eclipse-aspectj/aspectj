@@ -388,7 +388,7 @@ public final class TestUtil {
 	}
 
 	/**
-	 * @see sun.misc.URLClassPath#pathToURLs(String)
+	 * See sun.misc.URLClassPath.pathToURLs(String)
 	 */
 	public static URL[] pathToURLs(String path) {
 		StringTokenizer st = new StringTokenizer(path, File.pathSeparator);
