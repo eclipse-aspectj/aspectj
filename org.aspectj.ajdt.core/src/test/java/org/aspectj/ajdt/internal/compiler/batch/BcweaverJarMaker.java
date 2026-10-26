@@ -9,7 +9,6 @@
  * Contributors:
  *     PARC     initial implementation
  * ******************************************************************/
-
 package org.aspectj.ajdt.internal.compiler.batch;
 
 import java.io.File;
@@ -252,7 +251,7 @@ public class BcweaverJarMaker {
 		/*
 		 * Declare error advice
 		 */
-		args = new ArrayList();
+		args = new ArrayList<>();
 		args.add("-classpath");
 		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar;../weaver/testdata/ltw-classes.jar" +
 		   File.pathSeparator + System.getProperty("aspectjrt.path"));
@@ -291,7 +290,7 @@ public class BcweaverJarMaker {
 		/*
 		 * perXXX()
 		 */
-		args = new ArrayList();
+		args = new ArrayList<>();
 		args.add("-classpath");
 		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar;../weaver/testdata/ltw-classes.jar" +
 		   File.pathSeparator + System.getProperty("aspectjrt.path"));
@@ -349,7 +348,7 @@ public class BcweaverJarMaker {
 		/*
 		 * aspectjar
 		 */
-		args = new ArrayList();
+		args = new ArrayList<>();
 		args.add("-classpath");
 		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar" +
 		   File.pathSeparator + System.getProperty("aspectjrt.path"));

@@ -61,7 +61,7 @@ public class AjTypeTest extends TestCase {
 
 	public void testGetSupertype() {
 		Class<?> stringSuper = String.class.getSuperclass();
-		AjType ajSuper = stringType.getSupertype();
+		AjType<?> ajSuper = stringType.getSupertype();
 		assertEquals(AjTypeSystem.getAjType(stringSuper),ajSuper);
 	}
 
@@ -89,12 +89,12 @@ public class AjTypeTest extends TestCase {
 	}
 
 	public void testGetEnclosingType() {
-		AjType t = AjTypeSystem.getAjType(Foo.Z.class);
+		AjType<?> t = AjTypeSystem.getAjType(Foo.Z.class);
 		assertEquals("org.aspectj.internal.lang.reflect.Foo",t.getEnclosingType().getName());
 	}
 
 	public void testGetDeclaringType() {
-		AjType t = AjTypeSystem.getAjType(Foo.Z.class);
+		AjType<?> t = AjTypeSystem.getAjType(Foo.Z.class);
 		assertEquals("org.aspectj.internal.lang.reflect.Foo",t.getDeclaringType().getName());
 	}
 
@@ -135,7 +135,7 @@ public class AjTypeTest extends TestCase {
 
 	public void testGetDeclaredAjTypes() {
 		AjType<Foo> foo = AjTypeSystem.getAjType(Foo.class);
-		AjType[] fooTypes = foo.getDeclaredAjTypes();
+		AjType<?>[] fooTypes = foo.getDeclaredAjTypes();
 		assertEquals(2,fooTypes.length);
         // Alex -> Adrian: looks like you can not make assumption on the ordering
         String s = " " + fooTypes[0].getName() + " " + fooTypes[1].getName();
@@ -144,27 +144,27 @@ public class AjTypeTest extends TestCase {
 	}
 
 	public void testGetConstructor() throws Exception {
-		Constructor c1 = String.class.getConstructor(String.class);
+		Constructor<String> c1 = String.class.getConstructor(String.class);
 		Constructor c2 = stringType.getConstructor(stringType);
 		assertEquals(c1,c2);
 	}
 
 	public void testGetConstructors() {
-		Constructor[] c1 = String.class.getConstructors();
-		Constructor[] c2 = stringType.getConstructors();
+		Constructor<?>[] c1 = String.class.getConstructors();
+		Constructor<?>[] c2 = stringType.getConstructors();
 		assertEquals(c1.length,c2.length);
 		for (int i = 0; i < c1.length; i++)
 			assertEquals(c1[i],c2[i]);
 	}
 
 	public void testGetDeclaredConstructor() throws Exception {
-		Constructor c1 = String.class.getDeclaredConstructor(String.class);
+		Constructor<String> c1 = String.class.getDeclaredConstructor(String.class);
 		Constructor c2 = stringType.getDeclaredConstructor(stringType);
 		assertEquals(c1,c2);
 	}
 
 	public void testGetDeclaredConstructors() {
-		Constructor[] c1 = String.class.getDeclaredConstructors();
+		Constructor<?>[] c1 = String.class.getDeclaredConstructors();
 		Constructor[] c2 = stringType.getDeclaredConstructors();
 		assertEquals(c1.length,c2.length);
 		for (int i = 0; i < c1.length; i++)
@@ -279,12 +279,12 @@ public class AjTypeTest extends TestCase {
 	}
 
 	public void testEquals() {
-		AjType stringTypeTwo = AjTypeSystem.getAjType(String.class);
+		AjType<String> stringTypeTwo = AjTypeSystem.getAjType(String.class);
 		assertTrue(stringType.equals(stringTypeTwo));
 	}
 
 	public void testHashCode() {
-		AjType stringTypeTwo = AjTypeSystem.getAjType(String.class);
+		AjType<String> stringTypeTwo = AjTypeSystem.getAjType(String.class);
 		assertEquals(stringType.hashCode(),stringTypeTwo.hashCode());
 	}
 
@@ -304,7 +304,7 @@ class Foo<T> {
 	}
 	public void foo() {
 		class X { int x; }
-		AjType t = AjTypeSystem.getAjType(X.class);
+		AjType<?> t = AjTypeSystem.getAjType(X.class);
 		Method m = t.getEnclosingMethod();
 		if (!m.getName().equals("foo")) throw new RuntimeException("should have been foo");
 	}
