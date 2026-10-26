@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005 Contributors.
+ * Copyright (c) 2005-2026 Contributors.
  * All rights reserved.
  * This program and the accompanying materials are made available
  * under the terms of the Eclipse Public License v 2.0
@@ -209,5 +209,25 @@ public class LTWTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 			if (value == NULL) systemProperties.remove(key);
 			else systemProperties.setProperty(key,value);
 		}
+	}
+
+	public void testGeneratedClassAgentClosure() {
+		runTest("LTW generated class - agent - closure");
+	}
+
+	public void testGeneratedClassAgentPerThis() {
+		runTest("LTW generated class - agent - perthis");
+	}
+
+	public void testGeneratedClassAgentConcreteAspect() {
+		runTest("LTW generated class - agent - concrete aspect");
+	}
+
+	public void testGeneratedClassAgentDoesNotOpenJavaLang() {
+		runTest("LTW generated class - agent - java.lang not opened to application");
+	}
+
+	public void testGeneratedClassWeavingURLClassLoaderClosure() {
+		runTest("LTW generated class - WeavingURLClassLoader - closure");
 	}
 }

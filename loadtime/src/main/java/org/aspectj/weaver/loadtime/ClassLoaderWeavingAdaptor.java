@@ -8,11 +8,13 @@
  *******************************************************************************/
 package org.aspectj.weaver.loadtime;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -59,6 +61,7 @@ import sun.misc.Unsafe;
  * @author David Knibb
  * @author John Kew
  */
+@SuppressWarnings("restriction")
 public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
 	private final static String AOP_XML = Constants.AOP_USER_XML + ";" + Constants.AOP_AJC_XML + ";" + Constants.AOP_OSGI_XML;
@@ -1027,6 +1030,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	 * {@code defineClass} methods with identical signatures. I.e., method handle {@link #defineClassMethodHandle} can be
 	 * invoked with the same set of parameters for both types.
 	 */
+	@SuppressWarnings("restriction")
 	private static Object unsafeInstance = null;
 
 	/**
@@ -1035,7 +1039,18 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	 */
 	private static MethodHandle defineClassMethodHandle;
 
-	static {
+	private static boolean defineClassInitialized = false;
+
+	/**
+	 * Determine the {@code defineClass} method handle on first use rather than in a static initializer. The approach
+	 * involves {@code sun.misc.Unsafe}, which prints warnings on JDK 24+. It is only needed for generated auxiliary
+	 * classes (e.g. around-advice closures) in class loaders which cannot accept them directly, so do not trigger it
+	 * for programs which never need it.
+	 */
+	private static synchronized void ensureDefineClassInitialized() {
+		if (defineClassInitialized)
+			return;
+		defineClassInitialized = true;
 		try {
 			createDefineClassMethodHandle();
 		}
@@ -1080,9 +1095,12 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	 * @throws Exception if anything goes wrong, trying to determine a usable {@code defineClass} method handle from any
 	 * of the inspected classes
 	 */
+	@SuppressWarnings("restriction")
 	private static synchronized void createDefineClassMethodHandle() throws Exception {
+		@SuppressWarnings("restriction")
 		Unsafe publicUnsafeInstance = null;
 		try {
+			@SuppressWarnings("restriction")
 			Field publicUnsafeField = Unsafe.class.getDeclaredField("theUnsafe");
 			publicUnsafeField.setAccessible(true);
 			publicUnsafeInstance = (Unsafe) publicUnsafeField.get(null);
@@ -1091,12 +1109,20 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 				defineClassMethodHandle =  createMethodHandle(
 					"sun.misc.Unsafe", "defineClass",
 					String.class, byte[].class, int.class, int.class, ClassLoader.class, ProtectionDomain.class
-				);
+				).bindTo(unsafeInstance);
 			}
 		}
 		catch (Exception publicUnsafeException) {
 			if (publicUnsafeInstance == null)
 				throw publicUnsafeException;
+			// Preferred on JDK 9+ in agent mode: no Unsafe involved (and so no warnings on JDK 24+)
+			MethodHandle viaInstrumentation = createDefineClassMethodHandleViaInstrumentation();
+			if (viaInstrumentation != null) {
+				synchronized (lock) {
+					defineClassMethodHandle = viaInstrumentation;
+				}
+				return;
+			}
 			long overrideOffset = getAccessibleObjectOverrideOffset(publicUnsafeInstance);
 			Class<?> internalUnsafeType = Class.forName("jdk.internal.misc.Unsafe");
 			Field internalUnsafeField = internalUnsafeType.getDeclaredField("theUnsafe");
@@ -1108,12 +1134,92 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 			publicUnsafeInstance.putBoolean(internalUnsafeDefineClassMethod, overrideOffset, true);
 			synchronized (lock) {
 				unsafeInstance = internalUnsafeField.get(null);
-				defineClassMethodHandle = createMethodHandle(internalUnsafeDefineClassMethod);
+				defineClassMethodHandle = createMethodHandle(internalUnsafeDefineClassMethod).bindTo(unsafeInstance);
 			}
 		}
 	}
 
-	private static long getAccessibleObjectOverrideOffset(Unsafe unsafe)
+	/**
+	 * If the weaver runs as a Java agent, we have an {@link java.lang.instrument.Instrumentation} instance, which
+	 * (since JDK 9) can legitimately open {@code java.base/java.lang} to a module of our choice. Plain reflection on
+	 * {@code ClassLoader.defineClass(String, byte[], int, int, ProtectionDomain)} then works. No {@code Unsafe} is
+	 * involved, hence no warnings on JDK 24+.
+	 * <p>
+	 * To limit exposure, the package is not opened to the weaver's module (which in agent mode usually is the unnamed
+	 * module of the application class loader, i.e. all application code), but only to the unnamed module of a throw-away
+	 * class loader containing nothing but {@link DefineClassOpener}. That class makes the method accessible and creates
+	 * a method handle, which is the only thing handed back. Access checks happen when the handle is created, not when
+	 * it is invoked.
+	 * <p>
+	 * Everything related to {@code Module} is done reflectively, because the weaver is compiled for Java 8.
+	 *
+	 * @return handle with the same signature as the {@code Unsafe.defineClass} handles, i.e.
+	 * {@code (String, byte[], int, int, ClassLoader, ProtectionDomain) -> Class}, or {@code null} if this approach
+	 * is not available (no agent, JDK 8, ...)
+	 */
+	private static MethodHandle createDefineClassMethodHandleViaInstrumentation() {
+		try {
+			java.lang.instrument.Instrumentation instrumentation = Agent.getInstrumentation();
+			Method getModule = Class.class.getMethod("getModule");
+			Class<?> moduleClass = Class.forName("java.lang.Module");
+			Object javaBase = getModule.invoke(Object.class);
+
+			// Load a private copy of the opener class in its own class loader, therefore in its own unnamed module
+			String openerName = DefineClassOpener.class.getName();
+			byte[] openerBytes;
+			try (InputStream input = DefineClassOpener.class.getResourceAsStream(
+				openerName.substring(openerName.lastIndexOf('.') + 1) + ".class"
+			)) {
+				Objects.requireNonNull(input);
+				ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+				byte[] buffer = new byte[4096];
+				for (int n; (n = input.read(buffer)) != -1; )
+					bytes.write(buffer, 0, n);
+				openerBytes = bytes.toByteArray();
+			}
+			Class<?> openerClass = new SingleClassLoader(openerName, openerBytes).loadClass(openerName);
+			Object openerModule = getModule.invoke(openerClass);
+
+			// Open unconditionally: on JDK 9-15, packages may already be "open" in the permissive illegal-access mode,
+			// but using them would still print an 'illegal reflective access' warning
+			java.lang.instrument.Instrumentation.class
+				.getMethod("redefineModule", moduleClass, Set.class, Map.class, Map.class, Set.class, Map.class)
+				.invoke(
+					instrumentation, javaBase,
+					Collections.emptySet(), Collections.emptyMap(),
+					Collections.singletonMap("java.lang", Collections.singleton(openerModule)),
+					Collections.emptySet(), Collections.emptyMap()
+				);
+			MethodHandle handle = (MethodHandle) openerClass.getMethod("createDefineClassHandle").invoke(null);
+			// (ClassLoader, String, byte[], int, int, ProtectionDomain) -> (String, byte[], int, int, ClassLoader, ProtectionDomain)
+			return MethodHandles.permuteArguments(
+				handle,
+				MethodType.methodType(Class.class, String.class, byte[].class, int.class, int.class, ClassLoader.class, ProtectionDomain.class),
+				4, 0, 1, 2, 3, 5
+			);
+		}
+		catch (Throwable t) {
+			return null;
+		}
+	}
+
+	/**
+	 * Only ever used from a private copy in a throw-away class loader, see
+	 * {@link #createDefineClassMethodHandleViaInstrumentation()}. Must be public, because it is called reflectively from
+	 * a different runtime package.
+	 */
+	public static class DefineClassOpener {
+		public static MethodHandle createDefineClassHandle() throws Exception {
+			Method defineClass = ClassLoader.class.getDeclaredMethod(
+				"defineClass", String.class, byte[].class, int.class, int.class, ProtectionDomain.class
+			);
+			defineClass.setAccessible(true);
+			return MethodHandles.lookup().unreflect(defineClass);
+		}
+	}
+
+	@SuppressWarnings("restriction")
+	private static long getAccessibleObjectOverrideOffset(@SuppressWarnings("restriction") Unsafe unsafe)
 		throws IOException, ClassNotFoundException, NoSuchFieldException
 	{
 		Objects.requireNonNull(unsafe);
@@ -1243,11 +1349,17 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		debug("generating class '" + name + "'");
 		Class<?> definedClass = null;
 		try {
-			if (defineClassMethodHandle == null)
-				throw new RuntimeException("no valid method to define auxiliary classes -> weaver not working");
-			definedClass = (Class<?>) defineClassMethodHandle
-				.bindTo(unsafeInstance)
-				.invokeWithArguments(name, bytes, 0, bytes.length, loader, protectionDomain);
+			if (loader instanceof WeavingURLClassLoader) {
+				// Our own class loader can define generated classes itself (without weaving them again), no Unsafe needed
+				definedClass = ((WeavingURLClassLoader) loader).defineGeneratedClass(name, bytes, protectionDomain);
+			}
+			else {
+				ensureDefineClassInitialized();
+				if (defineClassMethodHandle == null)
+					throw new RuntimeException("no valid method to define auxiliary classes -> weaver not working");
+				definedClass = (Class<?>) defineClassMethodHandle
+					.invokeWithArguments(name, bytes, 0, bytes.length, loader, protectionDomain);
+			}
 		}
 		catch (Throwable t) {
 			t.printStackTrace(System.err);

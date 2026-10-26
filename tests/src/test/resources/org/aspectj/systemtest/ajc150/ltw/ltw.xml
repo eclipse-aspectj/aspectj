@@ -513,10 +513,6 @@
 		</stdout>
 		<stderr>
 			<line text="TraceFactory.instance=" />
-  			<line text="WARNING: A terminally deprecated method in sun.misc.Unsafe has been called" vm="24+"/>
-       		<line text="WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor" vm="24+"/>
-       		<line text="WARNING: Please consider reporting this to the maintainers of class org.aspectj.weaver.loadtime.ClassLoaderWeavingAdaptor" vm="24+"/>
-       		<line text="WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release" vm="24+"/>
 		</stderr>
 	</ant>
 </ajc-test>
@@ -677,6 +673,69 @@
 	</ant>
 </ajc-test>
 
+<!-- Weaving that makes the weaver define additional classes (closure for around advice that cannot be inlined, interface
+     for per-object aspects, concrete aspects from aop.xml) must work without any output on stderr, in particular
+     without the sun.misc.Unsafe warnings of JDK 24+. -->
+<ajc-test dir="ltw" title="LTW generated class - agent - closure" keywords="ltw">
+	<compile files="GenMain.java" options="-1.8" />
+	<compile files="GenLambdaAspect.aj" options="-outxml -1.8 -Xlint:ignore" />
+	<ant file="ant.xml" target="LTW generated class - agent - closure" verbose="true">
+		<stdout>
+			<line text="lambda in advice" />
+			<line text="hi x!" />
+		</stdout>
+		<stderr/>
+	</ant>
+</ajc-test>
 
+<ajc-test dir="ltw" title="LTW generated class - agent - perthis" keywords="ltw">
+	<compile files="GenMain.java" options="-1.8" />
+	<compile files="GenPerThisAspect.aj" options="-outxml -1.8 -Xlint:ignore" />
+	<ant file="ant.xml" target="LTW generated class - agent - perthis" verbose="true">
+		<stdout>
+			<line text="perthis before" />
+			<line text="hi x" />
+		</stdout>
+		<stderr/>
+	</ant>
+</ajc-test>
+
+<ajc-test dir="ltw" title="LTW generated class - agent - concrete aspect" keywords="ltw">
+	<compile files="GenMain.java" options="-1.8" />
+	<compile files="AbstractGenAspect.aj" options="-1.8 -Xlint:ignore" />
+	<ant file="ant.xml" target="LTW generated class - agent - concrete aspect" verbose="true">
+		<stdout>
+			<line text="concrete before" />
+			<line text="hi x" />
+		</stdout>
+		<stderr/>
+	</ant>
+</ajc-test>
+
+<!-- java.lang is opened by the agent for the weaver only, not for application code (strong encapsulation: JDK 17+) -->
+<ajc-test dir="ltw" title="LTW generated class - agent - java.lang not opened to application" keywords="ltw">
+	<compile files="GenMain.java, GenProbe.java" options="-1.8" />
+	<compile files="GenLambdaAspect.aj" options="-outxml -1.8 -Xlint:ignore" />
+	<ant file="ant.xml" target="LTW generated class - agent - probe" verbose="true">
+		<stdout>
+			<line text="lambda in advice" />
+			<line text="hi x!" />
+			<line text="java.lang is not open to application code" vm="17+" />
+		</stdout>
+		<stderr/>
+	</ant>
+</ajc-test>
+
+<ajc-test dir="ltw" title="LTW generated class - WeavingURLClassLoader - closure" keywords="ltw">
+	<compile files="GenMain.java" outjar="genmain.jar" options="-1.8" />
+	<compile files="GenLambdaAspect.aj" outjar="genaspect.jar" options="-1.8 -Xlint:ignore" />
+	<run class="GenMain" ltw="aop-gen-lambda.xml">
+		<stdout>
+			<line text="lambda in advice" />
+			<line text="hi x!" />
+		</stdout>
+		<stderr/>
+	</run>
+</ajc-test>
 
 </suite>

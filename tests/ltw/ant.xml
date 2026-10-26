@@ -131,4 +131,36 @@
         </java>
     </target>
 
+    <!-- Weaving which makes the weaver define additional (generated) classes, using the agent. Aspects are
+         registered by the aop-ajc.xml created when compiling them with -outxml, except for the concrete aspect. -->
+    <target name="LTW generated class - agent - closure">
+        <java fork="yes" classname="GenMain" failonerror="yes">
+            <classpath refid="aj.path"/>
+            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+        </java>
+    </target>
+
+    <target name="LTW generated class - agent - perthis">
+        <java fork="yes" classname="GenMain" failonerror="yes">
+            <classpath refid="aj.path"/>
+            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+        </java>
+    </target>
+
+    <target name="LTW generated class - agent - concrete aspect">
+        <copy file="${aj.root}/tests/ltw/aop-gen-concrete.xml"
+              tofile="${aj.sandbox}/META-INF/aop.xml"/>
+        <java fork="yes" classname="GenMain" failonerror="yes">
+            <classpath refid="aj.path"/>
+            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+        </java>
+    </target>
+
+    <target name="LTW generated class - agent - probe">
+        <java fork="yes" classname="GenProbe" failonerror="yes">
+            <classpath refid="aj.path"/>
+            <jvmarg value="-javaagent:${aj.root}/lib/test/loadtime5.jar"/>
+        </java>
+    </target>
+
 </project>
