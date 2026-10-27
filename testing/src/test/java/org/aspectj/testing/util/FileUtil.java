@@ -29,6 +29,7 @@ import java.util.*;
 import java.util.jar.Attributes;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -126,7 +127,7 @@ public class FileUtil {
         final boolean checkExpected = !LangUtil.isEmpty(expectedPaths);
 
         // normalize sources to ignore
-        final List expected = (!checkExpected ? null : new ArrayList());
+        final List<String> expected = (!checkExpected ? null : new ArrayList<>());
         if (checkExpected) {
 			for (String srcPath : expectedPaths) {
 				if (!LangUtil.isEmpty(srcPath)) {
@@ -181,7 +182,8 @@ public class FileUtil {
                 return false;
             }
         };
-		List unexp = new ArrayList(Arrays.asList(dir.listFiles(touchedCollector)));
+        File[] files = dir.listFiles(touchedCollector);
+        List<String> unexp = Arrays.asList(files).stream().map(File::toString).collect(Collectors.toList());
 
         // report any unexpected changes
         return Diffs.makeDiffs(label, expected, unexp, String.CASE_INSENSITIVE_ORDER);
@@ -208,9 +210,9 @@ public class FileUtil {
         if (null == visitor) throw new IllegalArgumentException("null visitor");
         int index = 0;
         try {
-            Enumeration enu = zipfile.entries();
+            Enumeration<? extends ZipEntry> enu = zipfile.entries();
             while (enu.hasMoreElements()) {
-                ZipEntry entry = (ZipEntry) enu.nextElement();
+                ZipEntry entry = enu.nextElement();
                 index++;
                 if (! visitor.accept(entry.getName())) {
                     break;
@@ -320,9 +322,9 @@ public class FileUtil {
      * @throws IllegalArgumentException if null == dir
      * @return a Collection of String of paths, including paths inside jars
      */
-    public static Collection<String> directoryToString(File dir, Collection results) {
+    public static Collection<String> directoryToString(File dir, Collection<String> results) {
         if (null == dir) throw new IllegalArgumentException("null dir");
-        final Collection<String> result = (results != null? results : new Vector());
+        final Collection<String> result = (results != null? results : new Vector<>());
         if (isZipFile(dir)) {
             zipFileToString(dir, result);
         } else if (!dir.isDirectory()) {
@@ -352,14 +354,14 @@ public class FileUtil {
      * @return FileLines with string as text and
      *        canonical as string modified by any canonicalizing policies.
      */
-    public static Collection zipFileToString(final File zipfile, Collection results) {
-        Collection result = (results != null ? results : new Vector());
+    public static Collection<String> zipFileToString(final File zipfile, Collection<String> results) {
+        Collection<String> result = (results != null ? results : new Vector<>());
         ZipFile zip = null;
         try {
             zip = new ZipFile(zipfile); // ZipFile.OPEN_READ| ZipFile.OPEN_DELETE); delete is 1.3 only
-            Enumeration enu = zip.entries();
+            Enumeration<? extends ZipEntry> enu = zip.entries();
             while (enu.hasMoreElements()) {
-                results.add(renderZipEntry(zipfile, (ZipEntry) enu.nextElement()));
+                results.add(renderZipEntry(zipfile, enu.nextElement()));
             }
             zip.close();
             zip = null;

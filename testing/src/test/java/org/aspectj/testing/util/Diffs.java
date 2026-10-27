@@ -99,11 +99,11 @@ public class Diffs {
 	//    public static final Diffs NONE
 	//        = new Diffs("NONE", Collections.EMPTY_LIST, Collections.EMPTY_LIST);
 
-	public static Diffs makeDiffs(
+	public static <T> Diffs makeDiffs(
 		String label,
-		List expected,
-		List actual,
-		Comparator comparator) {
+		List<T> expected,
+		List<T> actual,
+		Comparator<T> comparator) {
 		return makeDiffs(
 			label,
 			expected,
@@ -160,11 +160,11 @@ public class Diffs {
 		} else if (LangUtil.isEmpty(actual)) {
 			missing.addAll(exp);
 		} else {
-			ListIterator expectedIterator = exp.listIterator();
+			ListIterator<IMessage> expectedIterator = exp.listIterator();
 			int lastLine = Integer.MIN_VALUE + 1;
-			List expectedFound = new ArrayList();
-			List expectedForLine = new ArrayList();
-			for (ListIterator iter = act.listIterator(); iter.hasNext();) {
+			List<IMessage> expectedFound = new ArrayList<>();
+			List<IMessage> expectedForLine = new ArrayList<>();
+			for (ListIterator<IMessage> iter = act.listIterator(); iter.hasNext();) {
 				IMessage actualMessage = (IMessage) iter.next();
 				int actualLine = getLine(actualMessage);
 				if (actualLine != lastLine) {
@@ -189,7 +189,7 @@ public class Diffs {
 				// now check actual against all expected on that line
 				boolean found = false;
 				IMessage expectedMessage = null;
-				for (Iterator iterator = expectedForLine.iterator();
+				for (Iterator<IMessage> iterator = expectedForLine.iterator();
 					!found && iterator.hasNext();
 					) {
 					expectedMessage = (IMessage) iterator.next();
@@ -214,11 +214,11 @@ public class Diffs {
 		return new Diffs(label, missing, unexpected);
 	}
 
-	public static Diffs makeDiffs(
+	public static <T> Diffs makeDiffs(
 		String label,
-		List expected,
-		List actual,
-		Comparator comparator,
+		List<T> expected,
+		List<T> actual,
+		Comparator<T> comparator,
 		Filter missingFilter,
 		Filter unexpectedFilter) {
 		label = label.trim();
@@ -228,8 +228,8 @@ public class Diffs {
 			label += ": ";
 		}
 		final String thisLabel = " " + label;
-		ArrayList miss = new ArrayList();
-		ArrayList unexpect = new ArrayList();
+		ArrayList<T> miss = new ArrayList<>();
+		ArrayList<T> unexpect = new ArrayList<>();
 
 		org.aspectj.testing.util.LangUtil.makeSoftDiffs(
 			expected,
@@ -238,14 +238,14 @@ public class Diffs {
 			unexpect,
 			comparator);
 		if (null != missingFilter) {
-			for (ListIterator iter = miss.listIterator(); iter.hasNext();) {
+			for (ListIterator<T> iter = miss.listIterator(); iter.hasNext();) {
 				if (!missingFilter.accept(iter.next())) {
 					iter.remove();
 				}
 			}
 		}
 		if (null != unexpectedFilter) {
-			for (ListIterator iter = unexpect.listIterator();
+			for (ListIterator<T> iter = unexpect.listIterator();
 				iter.hasNext();
 				) {
 				if (!unexpectedFilter.accept(iter.next())) {

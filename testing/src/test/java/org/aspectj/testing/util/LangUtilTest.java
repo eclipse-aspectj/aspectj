@@ -166,35 +166,35 @@ public class LangUtilTest extends TestCase {
     final String[] s068       = new String[] {"0", "6", "8" };
     final boolean unmodifiable = true;
     final boolean modifiable  = false;
-    final List lABCDE         = makeList(unmodifiable, sABCDE);
-    final List lABC           = makeList(unmodifiable, sABC);
-    final List lDE            = makeList(unmodifiable, sDE);
-    final List labcde         = makeList(unmodifiable, sabcde);
-    final List labc           = makeList(unmodifiable, sabc);
-    final List lde            = makeList(unmodifiable, sde);
-    final List l12345         = makeList(unmodifiable, s12345);
-    final List l13579         = makeList(unmodifiable, s13579);
-    final List l02468         = makeList(unmodifiable, s02468);
-    final List l135           = makeList(unmodifiable, s135);
-    final List l79            = makeList(unmodifiable, s79);
-    final List l24            = makeList(unmodifiable, s24);
-    final List l0             = makeList(unmodifiable, s0);
-    final List l068           = makeList(unmodifiable, s068);
-    final List rlabcde        = makeList(modifiable, sabcde);
-    final List rlabc          = makeList(modifiable, sabc);
-    final List rlde           = makeList(modifiable, sde);
-    final List rlABCDE        = makeList(modifiable, sABCDE);
-    final List rlABC          = makeList(modifiable, sABC);
-    final List rlDE           = makeList(modifiable, sDE);
-    final List rl12345        = makeList(modifiable, s12345);
-    final List rl13579        = makeList(modifiable, s13579);
-    final List rl02468        = makeList(modifiable, s02468);
-    final List rl135          = makeList(modifiable, s135);
-    final List rl79           = makeList(modifiable, s79);
-    final List rl24           = makeList(modifiable, s24);
-    final List rl0            = makeList(modifiable, s0);
-    final List rl068          = makeList(modifiable, s068);
-    final List NONE = Collections.EMPTY_LIST;
+    final List<String> lABCDE         = makeList(unmodifiable, sABCDE);
+    final List<String> lABC           = makeList(unmodifiable, sABC);
+    final List<String> lDE            = makeList(unmodifiable, sDE);
+    final List<String> labcde         = makeList(unmodifiable, sabcde);
+    final List<String> labc           = makeList(unmodifiable, sabc);
+    final List<String> lde            = makeList(unmodifiable, sde);
+    final List<String> l12345         = makeList(unmodifiable, s12345);
+    final List<String> l13579         = makeList(unmodifiable, s13579);
+    final List<String> l02468         = makeList(unmodifiable, s02468);
+    final List<String> l135           = makeList(unmodifiable, s135);
+    final List<String> l79            = makeList(unmodifiable, s79);
+    final List<String> l24            = makeList(unmodifiable, s24);
+    final List<String> l0             = makeList(unmodifiable, s0);
+    final List<String> l068           = makeList(unmodifiable, s068);
+    final List<String> rlabcde        = makeList(modifiable, sabcde);
+    final List<String> rlabc          = makeList(modifiable, sabc);
+    final List<String> rlde           = makeList(modifiable, sde);
+    final List<String> rlABCDE        = makeList(modifiable, sABCDE);
+    final List<String> rlABC          = makeList(modifiable, sABC);
+    final List<String> rlDE           = makeList(modifiable, sDE);
+    final List<String> rl12345        = makeList(modifiable, s12345);
+    final List<String> rl13579        = makeList(modifiable, s13579);
+    final List<String> rl02468        = makeList(modifiable, s02468);
+    final List<String> rl135          = makeList(modifiable, s135);
+    final List<String> rl79           = makeList(modifiable, s79);
+    final List<String> rl24           = makeList(modifiable, s24);
+    final List<String> rl0            = makeList(modifiable, s0);
+    final List<String> rl068          = makeList(modifiable, s068);
+    final List<String> NONE = Collections.emptyList();
     {
         Collections.shuffle(rlABCDE);
         Collections.shuffle(rlABC);
@@ -265,11 +265,11 @@ public class LangUtilTest extends TestCase {
     }
 
     // ---------------------- utilities
-    List makeList(boolean unmodifiable, String[] ra) {
+    List<String> makeList(boolean unmodifiable, String[] ra) {
         if (unmodifiable) {
             return Collections.unmodifiableList(Arrays.asList(ra));
         } else {
-			List list = new ArrayList(Arrays.asList(ra));
+			List<String> list = new ArrayList<>(Arrays.asList(ra));
             return list;
         }
     }

@@ -1,5 +1,5 @@
 /* *******************************************************************
- * Copyright (c) 1999-2000 Xerox Corporation.
+ * Copyright (c) 1999-2026 Contributors
  * All rights reserved.
  * This program and the accompanying materials are made available
  * under the terms of the Eclipse Public License v 2.0
@@ -9,8 +9,6 @@
  * Contributors:
  *     Xerox/PARC     initial implementation
  * ******************************************************************/
-
-
 package org.aspectj.testing.util;
 
 import java.io.File;
@@ -23,66 +21,66 @@ import java.util.List;
  * Wrap FileFilter to collect any accepted
  */
 public class CollectorFileFilter implements FileFilter {
-    /** returned from getFiles() when there are no files to get */
-    public static final List EMPTY
-        = Collections.unmodifiableList(new ArrayList(0));
+	/** returned from getFiles() when there are no files to get */
+	public static final List<File> NO_FILES = Collections.unmodifiableList(Collections.emptyList());
 
-    /** used for collecting filters */
-    protected ArrayList files;
+	/** used for collecting files */
+	protected List<File> files;
 
-    /** filter delegate - may be null */
-    protected final FileFilter filter;
+	/** filter delegate - may be null */
+	protected final FileFilter filter;
 
-    /** return false from accept only when !alwaysTrue
-     * and filter is null or fails
-     */
-    protected final boolean alwaysTrue;
+	/**
+	 * return false from accept only when !alwaysTrue and filter is null or fails
+	 */
+	protected final boolean alwaysTrue;
 
-    /** this(null, true) */
-    public CollectorFileFilter() {
-        this(null, true);
-    }
+	/** this(null, true) */
+	public CollectorFileFilter() {
+		this(null, true);
+	}
 
-    /*
-     * @param filter the FileFilter delegate - may be null
-    * @param alwaysTrue return false from accept only when !alwaysTrue
-     * and filter is null or fails
-    */
-    public CollectorFileFilter(FileFilter filter, boolean alwaysTrue){
-        this.filter = filter;
-        this.alwaysTrue = alwaysTrue;
-    }
+	/*
+	 * @param filter the FileFilter delegate - may be null
+	 * 
+	 * @param alwaysTrue return false from accept only when !alwaysTrue and filter
+	 * is null or fails
+	 */
+	public CollectorFileFilter(FileFilter filter, boolean alwaysTrue) {
+		this.filter = filter;
+		this.alwaysTrue = alwaysTrue;
+	}
 
-    /**
-     * Accept file into collection if filter is null or passes.
-     * @return false only when !alwaysTrue and filter fails.
-     */
-    public boolean accept(File f) {
-        if ((null == filter) || filter.accept(f)) {
-            add(f);
-            return true;
-        }
-        return alwaysTrue;
-    }
+	/**
+	 * Accept file into collection if filter is null or passes.
+	 * 
+	 * @return false only when !alwaysTrue and filter fails.
+	 */
+	public boolean accept(File f) {
+		if ((null == filter) || filter.accept(f)) {
+			add(f);
+			return true;
+		}
+		return alwaysTrue;
+	}
 
-    /** gather files */
-    protected synchronized void add(File f) {
-        if (null != f) {
-            if (null == files) {
-                files = new ArrayList();
-            }
-            files.add(f);
-        }
-    }
+	/** gather files */
+	protected synchronized void add(File f) {
+		if (null != f) {
+			if (null == files) {
+				files = new ArrayList<>();
+			}
+			files.add(f);
+		}
+	}
 
-    /**
-     * return clone of gathered-files
-     * @return EMPTY if no files or a clone of the collection otherwise
-     */
-    public synchronized List getFiles() {
-        if ((null == files) || (0 == files.size())) {
-            return EMPTY;
-        }
-        return (List) files.clone();
-    }
+	/**
+	 * @return EMPTY if no files or a read only view of collected files
+	 */
+	public synchronized List<File> getFiles() {
+		if ((null == files) || (0 == files.size())) {
+			return NO_FILES;
+		}
+		return Collections.unmodifiableList(this.files);
+	}
 }
