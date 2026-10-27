@@ -726,6 +726,18 @@
 	</ant>
 </ajc-test>
 
+<ajc-test dir="ltw" title="LTW generated class - embedder agent (Spring style) - closure" keywords="ltw">
+	<compile files="GenMain.java" options="-1.8" />
+	<compile files="GenLambdaAspect.aj" options="-outxml -1.8 -Xlint:ignore" />
+	<ant file="ant.xml" target="LTW generated class - embedder agent - closure" verbose="true">
+		<stdout>
+			<line text="lambda in advice" />
+			<line text="hi x!" />
+		</stdout>
+		<stderr/>
+	</ant>
+</ajc-test>
+
 <ajc-test dir="ltw" title="LTW generated class - WeavingURLClassLoader - closure" keywords="ltw">
 	<compile files="GenMain.java" outjar="genmain.jar" options="-1.8" />
 	<compile files="GenLambdaAspect.aj" outjar="genaspect.jar" options="-1.8 -Xlint:ignore" />

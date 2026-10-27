@@ -163,4 +163,21 @@
         </java>
     </target>
 
+    <!-- The weaver is not started as an agent itself, but is embedded into a framework which owns the agent, as is
+         the case for Spring's load-time weaving. Build an agent jar from the stand-in classes first. -->
+    <target name="LTW generated class - embedder agent - closure">
+        <mkdir dir="${aj.sandbox}/embedder-classes"/>
+        <javac srcdir="${aj.root}/tests/ltw/embedder" destdir="${aj.sandbox}/embedder-classes"
+               classpathref="aj.path" includeantruntime="false" debug="true"/>
+        <jar destfile="${aj.sandbox}/embedder-agent.jar" basedir="${aj.sandbox}/embedder-classes">
+            <manifest>
+                <attribute name="Premain-Class" value="SpringStyleAgent"/>
+            </manifest>
+        </jar>
+        <java fork="yes" classname="GenMain" failonerror="yes">
+            <classpath refid="aj.path"/>
+            <jvmarg value="-javaagent:${aj.sandbox}/embedder-agent.jar"/>
+        </java>
+    </target>
+
 </project>

@@ -61,7 +61,6 @@ import sun.misc.Unsafe;
  * @author David Knibb
  * @author John Kew
  */
-@SuppressWarnings("restriction")
 public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 
 	private final static String AOP_XML = Constants.AOP_USER_XML + ";" + Constants.AOP_AJC_XML + ";" + Constants.AOP_OSGI_XML;
@@ -1030,7 +1029,6 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	 * {@code defineClass} methods with identical signatures. I.e., method handle {@link #defineClassMethodHandle} can be
 	 * invoked with the same set of parameters for both types.
 	 */
-	@SuppressWarnings("restriction")
 	private static Object unsafeInstance = null;
 
 	/**
@@ -1095,12 +1093,9 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	 * @throws Exception if anything goes wrong, trying to determine a usable {@code defineClass} method handle from any
 	 * of the inspected classes
 	 */
-	@SuppressWarnings("restriction")
 	private static synchronized void createDefineClassMethodHandle() throws Exception {
-		@SuppressWarnings("restriction")
 		Unsafe publicUnsafeInstance = null;
 		try {
-			@SuppressWarnings("restriction")
 			Field publicUnsafeField = Unsafe.class.getDeclaredField("theUnsafe");
 			publicUnsafeField.setAccessible(true);
 			publicUnsafeInstance = (Unsafe) publicUnsafeField.get(null);
@@ -1159,7 +1154,9 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	 */
 	private static MethodHandle createDefineClassMethodHandleViaInstrumentation() {
 		try {
-			java.lang.instrument.Instrumentation instrumentation = Agent.getInstrumentation();
+			java.lang.instrument.Instrumentation instrumentation = findInstrumentation();
+			if (instrumentation == null)
+				return null;
 			Method getModule = Class.class.getMethod("getModule");
 			Class<?> moduleClass = Class.forName("java.lang.Module");
 			Object javaBase = getModule.invoke(Object.class);
@@ -1204,6 +1201,33 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 	}
 
 	/**
+	 * Find the {@link java.lang.instrument.Instrumentation} instance of the JVM. This is our own agent's instance if the
+	 * weaver was started as an agent. If it was not, the weaver might be embedded into a framework which owns the agent
+	 * and only registers a {@link ClassPreProcessorAgentAdapter} as a transformer. That is how Spring's load-time weaving
+	 * works with {@code spring-instrument}, so ask Spring's agent for its instance. Done reflectively by a fixed class
+	 * name, so there is no dependency on Spring, nothing happens if it is not there, and nothing external can influence
+	 * which class gets called.
+	 *
+	 * @return the instance or {@code null} if none could be found
+	 */
+	private static java.lang.instrument.Instrumentation findInstrumentation() {
+		try {
+			return Agent.getInstrumentation();
+		}
+		catch (UnsupportedOperationException notOurAgent) {
+			try {
+				Class<?> springAgent = Class.forName(
+					"org.springframework.instrument.InstrumentationSavingAgent", true, ClassLoader.getSystemClassLoader()
+				);
+				return (java.lang.instrument.Instrumentation) springAgent.getMethod("getInstrumentation").invoke(null);
+			}
+			catch (Throwable t) {
+				return null;
+			}
+		}
+	}
+
+	/**
 	 * Only ever used from a private copy in a throw-away class loader, see
 	 * {@link #createDefineClassMethodHandleViaInstrumentation()}. Must be public, because it is called reflectively from
 	 * a different runtime package.
@@ -1218,8 +1242,7 @@ public class ClassLoaderWeavingAdaptor extends WeavingAdaptor {
 		}
 	}
 
-	@SuppressWarnings("restriction")
-	private static long getAccessibleObjectOverrideOffset(@SuppressWarnings("restriction") Unsafe unsafe)
+	private static long getAccessibleObjectOverrideOffset(Unsafe unsafe)
 		throws IOException, ClassNotFoundException, NoSuchFieldException
 	{
 		Objects.requireNonNull(unsafe);

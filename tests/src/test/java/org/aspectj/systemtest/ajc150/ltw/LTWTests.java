@@ -227,6 +227,10 @@ public class LTWTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("LTW generated class - agent - java.lang not opened to application");
 	}
 
+	public void testGeneratedClassEmbedderAgentClosure() {
+		runTest("LTW generated class - embedder agent (Spring style) - closure");
+	}
+
 	public void testGeneratedClassWeavingURLClassLoaderClosure() {
 		runTest("LTW generated class - WeavingURLClassLoader - closure");
 	}
