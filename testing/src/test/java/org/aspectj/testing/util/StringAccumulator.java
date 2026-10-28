@@ -18,12 +18,10 @@
  */
 package org.aspectj.testing.util;
 
-
-
 /**
  * Accumulate String with delimiters.
  */
-public class StringAccumulator implements ObjectChecker {
+public class StringAccumulator implements ObjectChecker<String> {
 
     private final String prefix;
     private final String infix;
@@ -72,7 +70,7 @@ public class StringAccumulator implements ObjectChecker {
      * @return true
      * @see StandardObjectChecker#doIsValid(Object)
      */
-    public synchronized boolean isValid(Object input) {
+    public synchronized boolean isValid(String input) {
         if (input == null) {
             if (nullString == null) return true; // ignore
             input = nullString;

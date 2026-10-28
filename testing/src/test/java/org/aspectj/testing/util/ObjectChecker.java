@@ -16,10 +16,10 @@ package org.aspectj.testing.util;
 /**
  * Check input for validity.
  */
-public interface ObjectChecker {
+public interface ObjectChecker<T> {
 
 	/** this returns true for any input, even if null */
-	ObjectChecker ANY = new ObjectChecker() {
+	ObjectChecker<Object> ANY = new ObjectChecker<Object>() {
 		public final boolean isValid(Object input) {
 			return true;
 		}
@@ -30,7 +30,7 @@ public interface ObjectChecker {
 	};
 
 	/** this returns true for any non-null object */
-	ObjectChecker NOT_NULL = new ObjectChecker() {
+	ObjectChecker<Object> NOT_NULL = new ObjectChecker<Object>() {
 		public boolean isValid(Object input) {
 			return (null != input);
 		}
@@ -41,7 +41,7 @@ public interface ObjectChecker {
 	};
 
 	/** @return true if input is 0 Integer or any other non-Integer reference. */
-	ObjectChecker ANY_ZERO = new ObjectChecker() {
+	ObjectChecker<Object> ANY_ZERO = new ObjectChecker<Object>() {
 		public boolean isValid(Object input) {
 			if (input instanceof Integer) {
 				return (0 == (Integer) input);
@@ -61,5 +61,5 @@ public interface ObjectChecker {
 	 * @param input the Object to check
 	 * @return true if input is ok
 	 */
-	boolean isValid(Object input);
+	boolean isValid(T input);
 }
