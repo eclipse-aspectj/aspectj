@@ -1129,10 +1129,10 @@ public class Ajctest extends Task implements PropertyChangeListener {
 //        return java.executeJava();
 //    }
 
-	private static List allErrors = new Vector();
+	private static List<Failure> allErrors = new Vector<>();
 	private List<Failure> errors = new Vector<>();
 
-	private void post(Testset testset, List args, String msgs, int exit, String type) {
+	private void post(Testset testset, List<Arg> args, String msgs, int exit, String type) {
 		errors.add(new Failure(testset, args, msgs, exit, type, testId));
 		fire(type + ".fail");
 	}
@@ -1289,14 +1289,14 @@ public class Ajctest extends Task implements PropertyChangeListener {
 
 	static class Failure {
 		public final Testset testset;
-		public final List args;
+		public final List<Arg> args;
 		public final String msgs;
 		public final int exit;
 		public final String type;
 		public final long time;
 		public final String testId;
 
-		public Failure(Testset testset, List args, String msgs, int exit, String type, String testId) {
+		public Failure(Testset testset, List<Arg> args, String msgs, int exit, String type, String testId) {
 			this.testset = testset;
 			this.args = args;
 			this.msgs = msgs;
@@ -1439,9 +1439,9 @@ public class Ajctest extends Task implements PropertyChangeListener {
 		}
 	}
 
-	static List ajdocArgs(List args) {
-		List newargs = new Vector();
-		for (Iterator i = args.iterator(); i.hasNext();) {
+	static List<String> ajdocArgs(List<Arg> args) {
+		List<String> newargs = new Vector<>();
+		for (Iterator<Arg> i = args.iterator(); i.hasNext();) {
 			String arg = i.next() + "";
 			if (arg.startsWith("-X")) {
 				newargs.add(arg);
@@ -1460,7 +1460,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
 	}
 
 	private class AjdocWrapper extends JavaCommandWrapper {
-		public AjdocWrapper(Testset testset, List args) {
+		public AjdocWrapper(Testset testset, List<Arg> args) {
 			super(testset, ajdocArgs(args), true);
 			String[] cmds = testset.getAjdoc().getCommandline().getCommandline();
 			Collections.addAll(this.args, cmds);
@@ -1475,11 +1475,11 @@ public class Ajctest extends Task implements PropertyChangeListener {
 		abstract String getMainClassName();
 
 		protected Testset testset;
-		protected List args;
+		protected List<String> args;
 		protected boolean needsClasspath;
 		protected Path extraClasspath;
 
-		public JavaCommandWrapper(Testset testset, List args, boolean needsClasspath) {
+		public JavaCommandWrapper(Testset testset, List<String> args, boolean needsClasspath) {
 			this.testset = testset;
 			this.args = args;
 			this.needsClasspath = needsClasspath;
@@ -1686,6 +1686,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
 		firstTime = false;
 	}
 
+	@SuppressWarnings("serial")
 	private static class Gui extends JPanel implements PropertyChangeListener {
 		private FailurePanel fail = new FailurePanel();
 		private TablePanel table = new TablePanel();
@@ -1793,7 +1794,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
 		private class TablePanel extends TitledPanel {
 			private DefaultTableModel model = new DefaultTableModel();
 			private TJable table;
-			private List failures = new Vector();
+			private List<Failure> failures = new Vector<>();
 
 			public TablePanel() {
 				super(new BorderLayout(), "Failures");
@@ -1806,9 +1807,9 @@ public class Ajctest extends Task implements PropertyChangeListener {
 			}
 
 			private class TJable extends JTable {
-				private List list;
+				private List<Failure> list;
 
-				public TJable(TableModel model, List list) {
+				public TJable(TableModel model, List<Failure> list) {
 					super(model);
 					this.list = list;
 					setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -1860,10 +1861,10 @@ public class Ajctest extends Task implements PropertyChangeListener {
 			}
 
 			private static class InfoPanel extends JPanel {
-				Map fields = new HashMap();
+				Map<String,JTextField> fields = new HashMap<>();
 
 				public void setText(String key, Object str) {
-					((JTextField) fields.get(key)).setText(str + "");
+					fields.get(key).setText(str + "");
 				}
 
 				public InfoPanel() {

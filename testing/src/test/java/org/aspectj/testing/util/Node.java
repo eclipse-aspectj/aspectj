@@ -66,7 +66,7 @@ public class Node { // XXX render
     public final Class type;
     public final Object key;
     protected final Object[] typeArray;
-    protected final List nodes;
+    protected final List<Node> nodes;
     protected final List items;
 
     public Node() {

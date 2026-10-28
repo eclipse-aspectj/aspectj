@@ -219,7 +219,7 @@ public class LangUtilTest extends TestCase {
 	}
 
 	void checkCommaSplit(String input, String[] expected) {
-		List actual = LangUtil.commaSplit(input);
+		List<String> actual = LangUtil.commaSplit(input);
 		String a = "" + actual;
 		String e = "" + Arrays.asList(expected);
 		assertTrue(e + "==" + a, e.equals(a));

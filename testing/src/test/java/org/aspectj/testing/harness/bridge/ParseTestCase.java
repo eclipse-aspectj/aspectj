@@ -53,7 +53,7 @@ public class ParseTestCase extends TestCase {
 		RunStatus status;
         Validator validator = new Validator(handler);
         final File suiteFile = new File("../testing/testdata/suite.xml");
-		List tests = parseSuite(suiteFile);
+		List<AjcTest.Spec> tests = parseSuite(suiteFile);
         Sandbox sandbox = new Sandbox(new File("testdata"), validator);
         IRunListener listenerNULL = null;
         ISourceLocation sl = new SourceLocation(suiteFile, 0, 0,0);
@@ -71,7 +71,7 @@ public class ParseTestCase extends TestCase {
 		}
 	}
 
-	private List parseSuite(File file) throws ParserConfigurationException, IOException, SAXException{
+	private List<AjcTest.Spec> parseSuite(File file) throws ParserConfigurationException, IOException, SAXException{
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		factory.setValidating(true);
 		factory.setIgnoringElementContentWhitespace(true);
@@ -84,7 +84,7 @@ public class ParseTestCase extends TestCase {
 
 		dump(doc.getDocumentElement(), 0);
 
-		List ret = new ArrayList();
+		List<AjcTest.Spec> ret = new ArrayList<>();
 		Node suiteNode = doc.getDocumentElement();
 
 		NodeList children = suiteNode.getChildNodes();

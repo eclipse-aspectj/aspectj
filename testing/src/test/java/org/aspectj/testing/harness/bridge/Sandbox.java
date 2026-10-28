@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.aspectj.bridge.ICommand;
 import org.aspectj.bridge.IMessage;
@@ -338,7 +339,7 @@ public class Sandbox {
      * @return
      */
     File[] findFiles(final String[] names) {
-        ArrayList result = new ArrayList();
+        List<File> result = new ArrayList<>();
         NamesFilter filter = new NamesFilter(names);
         File[] bases = { testBaseDir, sandboxDir };
 		for (File base : bases) {
@@ -479,7 +480,7 @@ public class Sandbox {
         boolean includeOutput) {
         LangUtil.throwIaxIfNull(caller, "caller");
         assertState(null != compileClasspath, "classpath not set");
-        ArrayList result = new ArrayList();
+        List<File> result = new ArrayList<>();
         File[] src = compileClasspath;
 		for (File f : src) {
 			if ((null != f) && (f.isDirectory()) && (!readable || f.canRead())) {
@@ -501,7 +502,7 @@ public class Sandbox {
     File[] getClasspathJars(boolean readable, JavaRun caller) {
         LangUtil.throwIaxIfNull(caller, "caller");
         assertState(null != compileClasspath, "classpath not set");
-        ArrayList result = new ArrayList();
+        List<File> result = new ArrayList<>();
         File[][] src = new File[][] { compileClasspath, aspectpath };
 		for (File[] paths : src) {
 			int len = (null == paths ? 0 : paths.length);

@@ -18,6 +18,7 @@ import java.io.IOException;
 //import java.lang.reflect.*;
 //import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -224,7 +225,7 @@ public class AjcTaskCompileCommand implements ICommand {
             result.setMessageHolder(messages);
             // XXX argh - have to strip out "-incremental"
             // because tools.ajc.Main privileges it over tagfile
-            ArrayList newArgs = new ArrayList();
+            List<String> newArgs = new ArrayList<>();
             boolean incremental = false;
             for (int i = 0; i < args.length; i++) {
                 if ("-incremental".equals(args[i])) {

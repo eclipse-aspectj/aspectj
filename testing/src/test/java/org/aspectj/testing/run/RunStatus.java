@@ -58,7 +58,7 @@ public class RunStatus implements IRunStatus {
 	private IMessageHolder messageHolder;
 
 	/** list of any child status */
-	private ArrayList children;
+	private List<IRunStatus> children;
 
 	/** parent of this status */
 	private IRunStatus parent;
@@ -380,7 +380,7 @@ public class RunStatus implements IRunStatus {
 			throw new IllegalArgumentException("null child");
 		}
 		if (null == children) {
-			children = new ArrayList();
+			children = new ArrayList<>();
 		}
 		children.add(child);
 	}

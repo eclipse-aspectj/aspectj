@@ -1137,7 +1137,7 @@ public class CompilerRun implements IAjcRun {
                 return checkResult(result);
             }
             // add toadd and finish result
-            ArrayList<String> args = new ArrayList<>();
+            List<String> args = new ArrayList<>();
             String[] rendered = values.render();
             if (!LangUtil.isEmpty(rendered)) {
                 args.addAll(Arrays.asList(rendered));
@@ -1494,7 +1494,7 @@ public class CompilerRun implements IAjcRun {
             String seek;
 
             /** if setup completed, this has the combined global/local options */
-            List commandOptions;
+            List<String> commandOptions;
 
             public Object clone() {
                 TestSetup testSetup = new TestSetup();
@@ -1505,7 +1505,7 @@ public class CompilerRun implements IAjcRun {
                 testSetup.failureReason = failureReason;
                 testSetup.seek = seek;
                 if (null != commandOptions) {
-                    testSetup.commandOptions = new ArrayList();
+                    testSetup.commandOptions = new ArrayList<>();
                     testSetup.commandOptions.addAll(commandOptions);
                 }
                 return testSetup;
@@ -1577,11 +1577,11 @@ public class CompilerRun implements IAjcRun {
             private final Option javacOption;
             private final Option ajctaskcompilerOption;
             private final Option ajccompilerOption;
-            private final Map compilerOptionToClassname;
-            private final Set compilerOptions;
+            private final Map<Option,String> compilerOptionToClassname;
+            private final Set<Option> compilerOptions;
             // compiler verification - permit but flag ajc 1.0 options
-            private final List ajc10Options;
-            private final List invalidOptions;
+            private final List<Option> ajc10Options;
+            private final List<Option> invalidOptions;
 
             private CRSOptions() {
                 crsOptions = new Options(true);
@@ -1665,7 +1665,7 @@ public class CompilerRun implements IAjcRun {
 
                 // ajc 1.0 options
                 // workingdir above in invalid options
-                list = new ArrayList();
+                list = new ArrayList<>();
                 list.add(factory.create("usejavac"));
                 list.add(factory.create("preprocess"));
                 list.add(factory.create("nocomment"));
@@ -1782,7 +1782,7 @@ public class CompilerRun implements IAjcRun {
              * @return unmodifiable Set of options sharing the
              * family "compiler".
              */
-            Set compilerOptions() {
+            Set<Option> compilerOptions() {
                 return compilerOptions;
             }
 

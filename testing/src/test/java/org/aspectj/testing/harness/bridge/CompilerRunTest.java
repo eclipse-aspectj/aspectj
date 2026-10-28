@@ -15,6 +15,7 @@ package org.aspectj.testing.harness.bridge;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.aspectj.bridge.ICommand;
 import org.aspectj.bridge.IMessageHandler;
@@ -35,7 +36,7 @@ import junit.framework.TestCase;
 public class CompilerRunTest extends TestCase {
 
     /** String for each dummy report: {run|repeat}: [{args}] */
-    private static ArrayList dummyReports = new ArrayList();
+    private static List<String> dummyReports = new ArrayList<>();
 
     private static void dummyRunning(String[] args) {
         dummyReports.add("run: " + Arrays.asList(args));

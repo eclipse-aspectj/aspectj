@@ -60,7 +60,7 @@ public class Options {
         return sb.toString();
     }
 
-    private final List options = new ArrayList();
+    private final List<Option> options = new ArrayList();
     private final boolean stopAtFirstMatch;
     private boolean frozen = !FROZEN;
 

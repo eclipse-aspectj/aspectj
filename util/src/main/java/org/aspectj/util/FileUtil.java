@@ -1242,8 +1242,7 @@ public class FileUtil {
 	}
 
 	public static InputStream getStreamFromZip(String zipFile, String name) {
-		try {
-			ZipFile zf = new ZipFile(zipFile);
+		try (ZipFile zf = new ZipFile(zipFile)) {
 			try {
 				ZipEntry entry = zf.getEntry(name);
 				return zf.getInputStream(entry);
@@ -1328,15 +1327,16 @@ public class FileUtil {
 		FileReader fin = null;
 		try {
 			fin = new FileReader(file);
-			BufferedReader reader = new BufferedReader(fin);
-			String line;
-			while (null != (line = reader.readLine())) {
-				lineNum++;
-				int loc = line.indexOf(sought);
-				if (-1 != loc) {
-					sink.add(sourcePath + ":" + lineNum + ":" + loc);
-					if (!listAll) {
-						break;
+			try (BufferedReader reader = new BufferedReader(fin)) {
+				String line;
+				while (null != (line = reader.readLine())) {
+					lineNum++;
+					int loc = line.indexOf(sought);
+					if (-1 != loc) {
+						sink.add(sourcePath + ":" + lineNum + ":" + loc);
+						if (!listAll) {
+							break;
+						}
 					}
 				}
 			}
