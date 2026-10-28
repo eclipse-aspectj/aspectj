@@ -6,12 +6,16 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.ObjectStreamClass;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.ProtectionDomain;
 import java.util.Arrays;
 import java.util.Collections;
@@ -166,9 +170,16 @@ public class SimpleCache {
 		public static StoreableCachingMap init(String folder, int storingTimer) {
 			File file = new File(folder + File.separator + CACHENAMEIDX);
 			if (file.exists()) {
-				try (ObjectInputStream in = new ObjectInputStream(Files.newInputStream(file.toPath()))) {
+				try (ObjectInputStream in = new CacheMapInputStream(Files.newInputStream(file.toPath()))) {
 					// Deserialize the object
 					StoreableCachingMap sm = (StoreableCachingMap) in.readObject();
+					if (!folder.equals(sm.folder)) {
+						// The cache records absolute paths and the folder it belongs to. If it names another folder it was
+						// copied or tampered with, and its paths cannot be trusted.
+						Trace trace = TraceFactory.getTraceFactory().getTrace(StoreableCachingMap.class);
+						trace.error("Ignoring cache index that belongs to folder " + sm.folder + " instead of " + folder);
+						return new StoreableCachingMap(folder, storingTimer);
+					}
 					sm.initTrace();
 					return sm;
 				}
@@ -189,6 +200,11 @@ public class SimpleCache {
 					String path = (String) super.get(obj);
 					if (path.equals(SAME_BYTES_STRING)) {
 						return SAME_BYTES;
+					}
+					if (!isInsideFolder(path)) {
+						// The bytes read here end up in defineClass, so never follow a path out of the cache folder
+						trace.error("Ignoring cache entry outside the cache folder " + folder + ": " + path);
+						return null;
 					}
 					return readFromPath(path);
 				}
@@ -241,6 +257,40 @@ public class SimpleCache {
 			catch (Exception e) {
 				trace.error("Error storing cache; cache file:" + file.getAbsolutePath(), e);
 				Dump.dumpWithException(e);
+			}
+		}
+
+		private boolean isInsideFolder(String path) {
+			try {
+				return Paths.get(path).toAbsolutePath().normalize().startsWith(Paths.get(folder).toAbsolutePath().normalize());
+			}
+			catch (RuntimeException e) { // e.g. InvalidPathException
+				return false;
+			}
+		}
+
+		/**
+		 * The index file is only ever written as a {@link StoreableCachingMap} (a {@link HashMap} of strings), but it
+		 * lives in a directory that may be shared via the {@code aj.weaving.cache.dir} property. Do not let a tampered
+		 * file turn {@link ObjectInputStream#readObject()} into an arbitrary deserialization sink.
+		 */
+		private static final class CacheMapInputStream extends ObjectInputStream {
+			CacheMapInputStream(InputStream in) throws IOException {
+				super(in);
+			}
+
+			@Override
+			protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
+				String name = desc.getName();
+				if (StoreableCachingMap.class.getName().equals(name) || HashMap.class.getName().equals(name)) {
+					return super.resolveClass(desc);
+				}
+				throw new InvalidClassException(name, "unexpected class in cache index file");
+			}
+
+			@Override
+			protected Class<?> resolveProxyClass(String[] interfaces) throws IOException, ClassNotFoundException {
+				throw new InvalidClassException("proxy", "unexpected proxy class in cache index file");
 			}
 		}
 

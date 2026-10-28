@@ -12,6 +12,7 @@ package org.aspectj.weaver.tools.cache;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Set;
@@ -51,6 +52,47 @@ public class SimpleCacheFactoryTest extends TestCase {
 		Files.setPosixFilePermissions(cacheDir, PosixFilePermissions.fromString("rwx------"));
 		assertTrue("a cache directory private to its owner should be accepted",
 			SimpleCacheFactory.preparePrivateDirectory(cacheDir.toString()));
+	}
+
+	public void testRejectsDirectoryOthersCanRead() throws Exception {
+		if (!isPosix()) {
+			return;
+		}
+		// What a plain mkdir with the default umask leaves behind. Cache files inside it may be writable by others,
+		// which only the directory's own permissions keep out of reach.
+		Path cacheDir = Files.createTempDirectory("ajCacheTest");
+		Files.setPosixFilePermissions(cacheDir, PosixFilePermissions.fromString("rwxr-xr-x"));
+		assertFalse("a cache directory others can enter should be rejected",
+			SimpleCacheFactory.preparePrivateDirectory(cacheDir.toString()));
+
+		Files.setPosixFilePermissions(cacheDir, PosixFilePermissions.fromString("rwxr-x---"));
+		assertFalse("a cache directory the group can enter should be rejected",
+			SimpleCacheFactory.preparePrivateDirectory(cacheDir.toString()));
+	}
+
+	public void testRejectsGroupWritableDirectory() throws Exception {
+		if (!isPosix()) {
+			return;
+		}
+		Path cacheDir = Files.createTempDirectory("ajCacheTest");
+		Files.setPosixFilePermissions(cacheDir, PosixFilePermissions.fromString("rwxrwx---"));
+
+		assertFalse("a cache directory the owner's group can write to should be rejected",
+			SimpleCacheFactory.preparePrivateDirectory(cacheDir.toString()));
+	}
+
+	public void testRejectsDirectoryOwnedBySomebodyElse() throws Exception {
+		if (!isPosix()) {
+			return;
+		}
+		Path root = Paths.get("/");
+		Path mine = Files.createTempDirectory("ajCacheTest");
+		if (Files.getOwner(root).equals(Files.getOwner(mine))) {
+			return; // running as the owner of "/" (root), so there is no foreign directory to try
+		}
+		// Not writable by others, but not ours either: must not be trusted (nor can this process create a probe file in it)
+		assertFalse("a directory owned by somebody else should be rejected",
+			SimpleCacheFactory.preparePrivateDirectory(root.toString()));
 	}
 
 	public void testRejectsSymbolicLink() throws Exception {

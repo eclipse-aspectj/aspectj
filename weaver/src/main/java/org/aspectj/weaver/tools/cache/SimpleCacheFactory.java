@@ -36,6 +36,8 @@ public class SimpleCacheFactory {
 	public static final String PATH_DEFAULT = defaultCachePath();
 	public static final boolean BYDEFAULT= false;
 
+	// The cached bytes are read back and defined as classes. Anybody who can enter the directory could also use a
+	// cache file that happens to be writable, so group and others get no access to it at all, not just no write access.
 	private static final Set<PosixFilePermission> NON_OWNER_PERMISSIONS = EnumSet.of(
 		PosixFilePermission.GROUP_READ, PosixFilePermission.GROUP_WRITE, PosixFilePermission.GROUP_EXECUTE,
 		PosixFilePermission.OTHERS_READ, PosixFilePermission.OTHERS_WRITE, PosixFilePermission.OTHERS_EXECUTE
@@ -69,8 +71,8 @@ public class SimpleCacheFactory {
 			}
 			if (!preparePrivateDirectory(path)) {
 				System.err.println(
-					"Disabling the weaving cache: " + path + " is not a directory that only the current user can write to. " +
-					"Point " + CACHE_DIR + " at a private directory."
+					"Disabling the weaving cache: " + path + " is not a directory owned by the current user with no group or " +
+					"other access. Use a private directory (for an existing one: chmod 700 " + path + "), set with " + CACHE_DIR + "."
 				);
 				enabled = false;
 				return null;
@@ -135,12 +137,15 @@ public class SimpleCacheFactory {
 	}
 
 	/**
-	 * Create the cache directory if it is missing and check that nobody but its owner can write to it. A directory a
-	 * second local user can write to lets that user replace the cached bytes of any class, which the weaver then
-	 * defines in this JVM.
+	 * Create the cache directory if it is missing and check that it belongs to the current user and that nobody else
+	 * has any access to it (no group or other permission bits). A directory a second local user can write to, or that
+	 * a second local user owns (and so can make writable at will, which matters if this JVM runs as root), lets that
+	 * user replace the cached bytes of any class, which the weaver then defines in this JVM. Group/other read access
+	 * is refused too: only the directory is checked, so a cache file inside that others can write to would otherwise
+	 * still be usable for tampering.
 	 *
 	 * @param path cache directory to create and check
-	 * @return true if the directory exists and is private to its owner
+	 * @return true if the directory exists, is owned by the current user and is private to it
 	 */
 	static boolean preparePrivateDirectory(String path) {
 		try {
@@ -152,9 +157,27 @@ public class SimpleCacheFactory {
 				return false;
 			}
 			Set<PosixFilePermission> permissions = readPosixPermissions(dir);
-			return permissions == null || Collections.disjoint(permissions, NON_OWNER_PERMISSIONS);
+			if (permissions == null) {
+				return true; // no POSIX attributes, e.g. on Windows: nothing more we can check
+			}
+			return Collections.disjoint(permissions, NON_OWNER_PERMISSIONS) && isOwnedByCurrentUser(dir);
 		} catch (IOException | RuntimeException e) {
 			return false;
+		}
+	}
+
+	/**
+	 * Compares the owner of the directory with the owner of a file this process creates in it (that is the effective
+	 * user, however the platform names it). Unlike comparing against {@code user.name} this also works for arbitrary
+	 * user ids without a passwd entry, as used by some container platforms. A directory we cannot create a file in is
+	 * of no use as a cache either, so failing to create the probe file counts as "not ours".
+	 */
+	private static boolean isOwnedByCurrentUser(Path dir) throws IOException {
+		Path probe = Files.createTempFile(dir, "ajprobe", null);
+		try {
+			return Files.getOwner(probe, LinkOption.NOFOLLOW_LINKS).equals(Files.getOwner(dir, LinkOption.NOFOLLOW_LINKS));
+		} finally {
+			Files.deleteIfExists(probe);
 		}
 	}
 
