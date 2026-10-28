@@ -65,6 +65,7 @@ import org.aspectj.weaver.tools.WeavingAdaptorDumpPathTest;
 import org.aspectj.weaver.tools.cache.DefaultCacheKeyResolverTest;
 import org.aspectj.weaver.tools.cache.DefaultFileCacheBackingTest;
 import org.aspectj.weaver.tools.cache.FlatFileCacheBackingTest;
+import org.aspectj.weaver.tools.cache.SimpleCacheFactoryTest;
 import org.aspectj.weaver.tools.cache.SimpleClassCacheTest;
 import org.aspectj.weaver.tools.cache.WeavedClassCacheTest;
 import org.aspectj.weaver.tools.cache.ZippedFileCacheBackingTest;
@@ -159,6 +160,7 @@ public class WeaverModuleTests extends TestCase {
 		suite.addTestSuite(DefaultCacheKeyResolverTest.class);
 		suite.addTestSuite(DefaultFileCacheBackingTest.class);
 		suite.addTestSuite(FlatFileCacheBackingTest.class);
+		suite.addTestSuite(SimpleCacheFactoryTest.class);
 		suite.addTestSuite(SimpleClassCacheTest.class);
 		suite.addTestSuite(WeavedClassCacheTest.class);
 		suite.addTestSuite(ZippedFileCacheBackingTest.class);
