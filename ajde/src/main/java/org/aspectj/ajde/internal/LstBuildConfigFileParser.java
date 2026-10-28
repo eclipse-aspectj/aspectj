@@ -14,6 +14,7 @@
 package org.aspectj.ajde.internal;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,13 +25,20 @@ import org.aspectj.ajdt.ajc.ConfigParser;
  */
 public class LstBuildConfigFileParser extends ConfigParser {
 
+	private final File topLevelConfigDirectory;
 	private List<File> importedFiles = new ArrayList<>();
 	private List<String> problemEntries = new ArrayList<>();
 
 	// private String currFilePath;
 
 	public LstBuildConfigFileParser(String currFilePath) {
-		// this.currFilePath = currFilePath;
+		File canonicalConfigFile;
+		try {
+			canonicalConfigFile = new File(currFilePath).getCanonicalFile();
+		} catch (IOException e) {
+			canonicalConfigFile = new File(currFilePath).getAbsoluteFile();
+		}
+		this.topLevelConfigDirectory = canonicalConfigFile.getParentFile();
 	}
 
 	protected void showWarning(String message) {
@@ -38,9 +46,33 @@ public class LstBuildConfigFileParser extends ConfigParser {
 	}
 
 	protected void parseImportedConfigFile(String relativeFilePath) {
-		importedFiles.add(makeFile(relativeFilePath));
-		super.files.add(new File(relativeFilePath));
+		File importedFile = makeFile(relativeFilePath);
+		if (!isSafeImportedConfigFile(importedFile)) {
+			showError("imported config file outside project root directory: " + relativeFilePath);
+			return;
+		}
+		importedFiles.add(importedFile);
+		super.files.add(importedFile);
 		super.parseImportedConfigFile(relativeFilePath);
+	}
+
+	private boolean isSafeImportedConfigFile(File importedFile) {
+		if (topLevelConfigDirectory == null) {
+			return false;
+		}
+		try {
+			File safeRoot = topLevelConfigDirectory.getCanonicalFile();
+			File candidate = importedFile.getCanonicalFile();
+			while (candidate != null) {
+				if (safeRoot.equals(candidate)) {
+					return true;
+				}
+				candidate = candidate.getParentFile();
+			}
+		} catch (IOException e) {
+			// If canonicalization fails, fall back to rejecting the import.
+		}
+		return false;
 	}
 
 	protected void showError(String message) {
