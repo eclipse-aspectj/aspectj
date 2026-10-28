@@ -81,7 +81,7 @@ public class StructureModelUtil {
 	 *
 	 * @return a Map from line numbers to a List of ProgramElementNodes.
 	 */
-	public static Map getLinesToAspectMap(String sourceFilePath) {
+	public static Map<Integer,List<IProgramElement>> getLinesToAspectMap(String sourceFilePath) {
 
 		// Map annotationsMap =
 		// AsmManager.getDefault().getInlineAnnotations(
@@ -89,7 +89,7 @@ public class StructureModelUtil {
 		// true,
 		// true);
 
-		Map aspectMap = new HashMap();
+		Map<Integer,List<IProgramElement>> aspectMap = new HashMap<>();
 		// Set keys = annotationsMap.keySet();
 		// for (Iterator it = keys.iterator(); it.hasNext();) {
 		// Object key = it.next();
@@ -142,21 +142,21 @@ public class StructureModelUtil {
 	 *
 	 * @return the set of aspects with advice that affects the specified package
 	 */
-	public static Set getAspectsAffectingPackage(IProgramElement packageNode) {
+	public static Set<IProgramElement> getAspectsAffectingPackage(IProgramElement packageNode) {
 		List<IProgramElement> files = StructureModelUtil.getFilesInPackage(packageNode);
-		Set aspects = new HashSet();
+		Set<IProgramElement> aspects = new HashSet<>();
 		for (IProgramElement fileNode : files) {
-			Map adviceMap = getLinesToAspectMap(fileNode.getSourceLocation().getSourceFile().getAbsolutePath());
-			Collection values = adviceMap.values();
-			for (Object value : values) {
-				aspects.add(value);
+			Map<Integer,List<IProgramElement>> adviceMap = getLinesToAspectMap(fileNode.getSourceLocation().getSourceFile().getAbsolutePath());
+			Collection<List<IProgramElement>> values = adviceMap.values();
+			for (List<IProgramElement> value : values) {
+				aspects.addAll(value);
 			}
 		}
 		return aspects;
 	}
-
-	public static List getPackagesInModel(AsmManager modl) {
-		List packages = new ArrayList();
+	
+	public static List<Object[]> getPackagesInModel(AsmManager modl) {
+		List<Object[]> packages = new ArrayList<>();
 		IHierarchy model = modl.getHierarchy();
 		if (model.getRoot().equals(IHierarchy.NO_STRUCTURE)) {
 			return null;
@@ -165,7 +165,7 @@ public class StructureModelUtil {
 		}
 	}
 
-	private static List getPackagesHelper(IProgramElement node, IProgramElement.Kind kind, String prename, List matches) {
+	private static List<Object[]> getPackagesHelper(IProgramElement node, IProgramElement.Kind kind, String prename, List<Object[]> matches) {
 
 		if (kind == null || node.getKind().equals(kind)) {
 			if (prename == null) {

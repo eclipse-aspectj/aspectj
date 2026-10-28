@@ -40,7 +40,7 @@ public class SoftMessage implements IMessage {
 	private String details;
 	private int id;
 	private int sourceStart,sourceEnd;
-	private final List extraSourceLocations = new ArrayList();
+	private final List<ISourceLocation> extraSourceLocations = new ArrayList<>();
 
 	//private ISourceLocation pseudoSourceLocation;  // set directly
 	// collapse enclosed source location for shorter, property-based xml
@@ -363,7 +363,7 @@ public class SoftMessage implements IMessage {
 	/* (non-Javadoc)
 	 * @see org.aspectj.bridge.IMessage#getExtraSourceLocations()
 	 */
-	public List getExtraSourceLocations() {
+	public List<ISourceLocation> getExtraSourceLocations() {
 		return extraSourceLocations;
 	}
 	public void addSourceLocation(ISourceLocation location) {

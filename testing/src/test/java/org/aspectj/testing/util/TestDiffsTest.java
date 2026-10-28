@@ -68,22 +68,23 @@ public class TestDiffsTest extends TestCase {
         }
     }
 
-    List tempFiles;
+    List<File> tempFiles;
+
 	/**
 	 * Constructor for FileUtilTest.
 	 * @param arg0
 	 */
 	public TestDiffsTest(String arg0) {
 		super(arg0);
-	   tempFiles = new ArrayList();
+	   tempFiles = new ArrayList<>();
     }
 
     public void tearDown() {
-        for (ListIterator iter = tempFiles.listIterator(); iter.hasNext();) {
-            File dir = (File) iter.next();
+        for (ListIterator<File> tempFilesIterator = tempFiles.listIterator(); tempFilesIterator.hasNext();) {
+            File dir = tempFilesIterator.next();
             FileUtil.deleteContents(dir);
             dir.delete();
-            iter.remove();
+            tempFilesIterator.remove();
         }
     }
 

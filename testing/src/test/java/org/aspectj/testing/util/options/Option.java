@@ -362,10 +362,10 @@ public class Option implements Comparable {
         private final String factoryName;
 
         /** enforce uniqueness of family */
-        private final Map familyNameToFamily = new TreeMap();
+        private final Map<String,Family> familyNameToFamily = new TreeMap<>();
 
         /** enforce uniqueness of options */
-        private final List names = new ArrayList();
+        private final List<String> names = new ArrayList<>();
 
         public Factory(String factoryName) {
             this.factoryName = factoryName;

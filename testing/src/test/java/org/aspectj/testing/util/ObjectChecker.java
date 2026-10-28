@@ -17,6 +17,7 @@ package org.aspectj.testing.util;
  * Check input for validity.
  */
 public interface ObjectChecker {
+
 	/** this returns true for any input, even if null */
 	ObjectChecker ANY = new ObjectChecker() {
 		public final boolean isValid(Object input) {

@@ -14,6 +14,7 @@
 package org.aspectj.testing.harness.bridge;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
@@ -51,7 +52,7 @@ public class RunSpecIterator implements IRunIterator  {
     Sandbox sandbox;
 
     /** keep our copy to avoid recopying */
-    ArrayList childSpecs;
+    List<IRunSpec> childSpecs;
 
     /** index into child specs of next run */
     int specIndex;

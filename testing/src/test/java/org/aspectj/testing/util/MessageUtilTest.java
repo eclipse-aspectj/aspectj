@@ -70,7 +70,7 @@ public class MessageUtilTest extends TestCase {
 
     List<String> getSampleMessageTexts() {
         if (null == messageTexts) {
-			List<String> result = new ArrayList(Arrays.asList(new String[]
+			List<String> result = new ArrayList<>(Arrays.asList(new String[]
 					{"one", "two", "now is the time for all good men..."}));
             messageTexts = result;
         }
