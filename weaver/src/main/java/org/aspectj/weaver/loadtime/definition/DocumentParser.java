@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Hashtable;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -159,35 +160,60 @@ public class DocumentParser extends DefaultHandler {
 	}
 
 	private static XMLReader getXMLReader() throws SAXException, ParserConfigurationException {
-		XMLReader xmlReader = null;
-		/* Try this first for Java 5 */
-		try {
-			xmlReader = XMLReaderFactory.createXMLReader();
-		}
+	SAXParserFactory factory = SAXParserFactory.newInstance();
+	factory.setNamespaceAware(true);
+	factory.setValidating(false);
 
-		/* .. and ignore "System property ... not set" and then try this instead */
-		catch (SAXException ex) {
-			xmlReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
-		}
-		return xmlReader;
+	configureFactoryFeature(factory, XMLConstants.FEATURE_SECURE_PROCESSING, true);
+	configureFactoryFeature(factory, "http://xml.org/sax/features/external-general-entities", false);
+	configureFactoryFeature(factory, "http://xml.org/sax/features/external-parameter-entities", false);
+	configureFactoryFeature(factory, "http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+
+	XMLReader xmlReader;
+	try {
+		xmlReader = factory.newSAXParser().getXMLReader();
+	} catch (ParserConfigurationException | SAXException ex) {
+		xmlReader = XMLReaderFactory.createXMLReader();
 	}
+	configureReaderFeature(xmlReader, XMLConstants.FEATURE_SECURE_PROCESSING, true);
+	configureReaderFeature(xmlReader, "http://xml.org/sax/features/external-general-entities", false);
+	configureReaderFeature(xmlReader, "http://xml.org/sax/features/external-parameter-entities", false);
+	configureReaderFeature(xmlReader, "http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+	return xmlReader;
+}
 
-	public InputSource resolveEntity(String publicId, String systemId) throws SAXException {
-		if (publicId.equals(DTD_PUBLIC_ID) || publicId.equals(DTD_PUBLIC_ID_ALIAS)) {
-			InputStream in = DocumentParser.class.getResourceAsStream("/aspectj_1_5_0.dtd");
-			if (in == null) {
-				System.err.println("AspectJ - WARN - could not read DTD " + publicId);
-				return null;
-			} else {
-				return new InputSource(in);
-			}
-		} else {
-			System.err.println("AspectJ - WARN - unknown DTD " + publicId + " - consider using " + DTD_PUBLIC_ID);
+private static void configureFactoryFeature(SAXParserFactory factory, String feature, boolean value) {
+	try {
+		factory.setFeature(feature, value);
+	} catch (ParserConfigurationException | SAXException e) {
+		// Ignore unsupported security feature on this parser implementation
+	}
+}
+
+private static void configureReaderFeature(XMLReader reader, String feature, boolean value) {
+	try {
+		reader.setFeature(feature, value);
+	} catch (SAXException e) {
+		// Ignore unsupported security feature on this XMLReader implementation
+	}
+}
+
+public InputSource resolveEntity(String publicId, String systemId) throws SAXException {
+	if (publicId.equals(DTD_PUBLIC_ID) || publicId.equals(DTD_PUBLIC_ID_ALIAS)) {
+		InputStream in = DocumentParser.class.getResourceAsStream("/aspectj_1_5_0.dtd");
+		if (in == null) {
+			System.err.println("AspectJ - WARN - could not read DTD " + publicId);
 			return null;
+		} else {
+			return new InputSource(in);
 		}
+	} else {
+		System.err.println("AspectJ - WARN - unknown DTD " + publicId + " - consider using " + DTD_PUBLIC_ID);
+		return null;
 	}
+}
 
-	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 		if (ASPECT_ELEMENT.equals(qName)) {
 			String name = attributes.getValue(NAME_ATTRIBUTE);
 			String scopePattern = replaceXmlAnd(attributes.getValue(SCOPE_ATTRIBUTE));
