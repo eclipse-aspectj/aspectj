@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
@@ -38,7 +39,7 @@ public class SFileReader {
      * @param args String[] of fully-qualified paths to config files
      */
     public static void main(String[] args) throws IOException {
-        ArrayList result = new ArrayList();
+        List result = new ArrayList();
         ObjectChecker collector = new StandardObjectChecker(String.class, result);
         SFileReader me = new SFileReader(null);
 		for (String arg : args) {

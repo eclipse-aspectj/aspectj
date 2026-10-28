@@ -23,6 +23,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.util.ArrayList;
+import java.util.List;
 
 /** LineNumberReader which absorbs our lines and renders as file:line */
 public class LineReader extends LineNumberReader {
@@ -103,7 +104,7 @@ public class LineReader extends LineNumberReader {
     public String[] readLines(int first, int last) {
         if (0 > first) first = 0;
         if (first > last) last = first;
-        ArrayList list = new ArrayList();
+        List<String> list = new ArrayList<>();
         try {
             String line = null;
             while (getLineNumber() < first) {

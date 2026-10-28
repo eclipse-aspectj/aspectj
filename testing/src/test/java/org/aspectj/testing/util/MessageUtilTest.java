@@ -40,8 +40,8 @@ public class MessageUtilTest extends TestCase {
 
     MessageHandler samples;
     List /* Exception */ exceptions;
-    List /*ISourceLocation*/ locations;
-    List /*String */ messageTexts;
+    List<ISourceLocation> locations;
+    List<String> messageTexts;
 
 
     public void testMessageRendering() {
@@ -68,9 +68,9 @@ public class MessageUtilTest extends TestCase {
     }
 
 
-    List getSampleMessageTexts() {
+    List<String> getSampleMessageTexts() {
         if (null == messageTexts) {
-			List result = new ArrayList(Arrays.asList(new String[]
+			List<String> result = new ArrayList(Arrays.asList(new String[]
 					{"one", "two", "now is the time for all good men..."}));
             messageTexts = result;
         }
@@ -79,7 +79,7 @@ public class MessageUtilTest extends TestCase {
 
     List getSampleExceptions() {
         if (null == exceptions) {
-            List result = new ArrayList();
+            List<Throwable> result = new ArrayList<>();
             int i = 1;
             result.add(new Error("Error " + i++));
             result.add(new RuntimeException("RuntimeException " + i++));
@@ -89,9 +89,9 @@ public class MessageUtilTest extends TestCase {
         return exceptions;
     }
 
-    List getSampleLocations() {
+    List<ISourceLocation> getSampleLocations() {
         if (null == locations) {
-            List result = new ArrayList();
+            List<ISourceLocation> result = new ArrayList<>();
             File file = new File("testsrc/org/aspectj/testing/util/MessageUtilTest.java");
             result.add(new SourceLocation(file, 1, 2, 1));
             result.add(new SourceLocation(file, 100, 100, 0));

@@ -243,7 +243,7 @@ public class RunStatus implements IRunStatus {
 		if (!includeChildren) {
 			return result;
 		}
-		ArrayList sink = new ArrayList();
+		List<IMessage> sink = new ArrayList<>();
 		if (!LangUtil.isEmpty(result)) {
 			sink.addAll(Arrays.asList(result));
 		}

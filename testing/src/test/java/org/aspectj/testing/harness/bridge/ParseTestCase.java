@@ -125,9 +125,9 @@ public class ParseTestCase extends TestCase {
 	private IRunSpec parseIRun(AjcTest.Spec test, Node node, String baseDir) {
 		String kind = node.getNodeName();
 		if (kind.equals("compile")) {
-			List args = parseChildrenStrings(node, "arg");
+			List<String> args = parseChildrenStrings(node, "arg");
 			/*List files = */parseChildrenStrings(node, "file");
-			List expectedMessages = parseChildrenMessages(node);
+			List<IMessage> expectedMessages = parseChildrenMessages(node);
             CompilerRun.Spec spec = new CompilerRun.Spec();
             spec.addOptions((String[]) args.toArray(new String[0]));
             spec.addPaths((String[]) args.toArray(new String[0]));
@@ -145,8 +145,8 @@ public class ParseTestCase extends TestCase {
 		return null;
 	}
 
-	private List parseChildrenMessages(Node node) {
-		List ret = new ArrayList();
+	private List<IMessage> parseChildrenMessages(Node node) {
+		List<IMessage> ret = new ArrayList<>();
 
 		NodeList children = node.getChildNodes();
 		for (int i=0; i < children.getLength(); i++) {
@@ -183,8 +183,8 @@ public class ParseTestCase extends TestCase {
 
 
 
-	private List parseChildrenStrings(Node node, String kind) {
-		List ret = new ArrayList();
+	private List<String> parseChildrenStrings(Node node, String kind) {
+		List<String> ret = new ArrayList<>();
 
 		NodeList children = node.getChildNodes();
 		for (int i=0; i < children.getLength(); i++) {

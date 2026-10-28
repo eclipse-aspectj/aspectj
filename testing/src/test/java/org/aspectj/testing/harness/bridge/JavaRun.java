@@ -23,6 +23,7 @@ import java.net.URL;
 import java.security.Permission;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessageHandler;
@@ -167,7 +168,7 @@ public class JavaRun implements IAjcRun {
 					File[] files = sandbox.findFiles(spec.aspectpath);
 					aspectURLs = FileUtil.getFileURLs(files);
 				}
-				ArrayList classpath = new ArrayList(Arrays.asList(aspectURLs));
+				List<URL> classpath = new ArrayList<>(Arrays.asList(aspectURLs));
 				final URL[] classURLs;
 				{
 					classpath.addAll(Arrays.asList(clAndLibs));
@@ -458,7 +459,7 @@ public class JavaRun implements IAjcRun {
 		File baseDirSet = null;
 		try {
 			if (!spec.skipTester) {
-				Class tc = loader.loadClass("org.aspectj.testing.Tester");
+				Class<?> tc = loader.loadClass("org.aspectj.testing.Tester");
 				// Tester.clear();
 				Method m = tc.getMethod("clear", new Class[0]);
 				m.invoke(null, new Object[0]);

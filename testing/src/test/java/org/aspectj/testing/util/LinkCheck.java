@@ -504,7 +504,7 @@ public class LinkCheck {
                 return FALSE_CHECKER;
             }
             return new Check() {
-                final List list = Arrays.asList(input);
+                final List<String> list = Arrays.asList(input);
                 public boolean check(URL url) {
                     return (null != url) && list.contains(url.getProtocol());
                 }

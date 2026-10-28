@@ -44,7 +44,7 @@ public class IteratorWrapperTest extends TestCase {
         checkIteratorWrapper(in, exp);
 
         Object[] ra1 = new Object[] { "1" };
-        List one = Collections.unmodifiableList(Arrays.asList(ra1));
+        List<Object> one = Collections.unmodifiableList(Arrays.asList(ra1));
         in = new List[] {one};
         exp = new Object[][] { ra1 };
         checkIteratorWrapper(in, exp);
@@ -54,7 +54,7 @@ public class IteratorWrapperTest extends TestCase {
         checkIteratorWrapper(in, exp);
 
         Object[] RA_ab = new String[] { "a", "b" };
-        List List_ab = Collections.unmodifiableList(Arrays.asList(RA_ab));
+        List<Object> List_ab = Collections.unmodifiableList(Arrays.asList(RA_ab));
         in = new List[] {List_ab};
         exp = new Object[][] {
             new Object[] { "a" },
