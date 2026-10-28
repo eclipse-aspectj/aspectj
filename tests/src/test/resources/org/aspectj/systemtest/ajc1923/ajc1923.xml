@@ -73,10 +73,24 @@
 		<compile files="TheInterface.java TheAspect.java SomeAnnotation.java TheClass.java" options="-17,-Xlint:ignore">
 		</compile>
 		-->
-		<compile files="TheAspect.java SomeAnnotation.java TheClass.java TheInterface.java " options="-17,-Xlint:ignore">
+		<!-- -proc:none is what exposes the problem: annotations are then not stored, so the @Deprecated handling in the compiler is exercised (fixed in 1.9.25) -->
+		<compile files="TheAspect.java SomeAnnotation.java TheClass.java TheInterface.java " options="-17,-Xlint:ignore,-proc:none">
 		</compile>
-		<compile files="TheAspect.java SomeAnnotation.java TheClass.java TheInterface.java" options="-17,-Xlint:ignore">
+		<compile files="TheClass.java TheInterface.java TheAspect.java SomeAnnotation.java" options="-17,-Xlint:ignore,-proc:none">
 		</compile>
+	</ajc-test>
+
+	<ajc-test dir="bugs1923/gh316" vm="17" title="ajc fails when aspect is annotated with @Deprecated">
+		<!-- The abstract aspect has a javadoc @deprecated tag and the subclass has @Deprecated, it is the combination that matters.
+		     Fixed in 1.9.23 for the NPE, but until 1.9.25 the @Aspect annotation was silently dropped from the subclass. -->
+		<compile files="example/AbstractAccessRightsAspect.aj example/AccessRightsAspect.aj example/AccessRightsHelper.java example/UsesIt.aj example/Main.java" options="-17">
+		</compile>
+		<run class="example.Main">
+			<stdout>
+				<line text="deprecated=true"/>
+				<line text="aspect=true"/>
+			</stdout>
+		</run>
 	</ajc-test>
 
 

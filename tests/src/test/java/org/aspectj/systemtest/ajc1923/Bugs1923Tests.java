@@ -47,6 +47,10 @@ public class Bugs1923Tests extends XMLBasedAjcTestCase {
 	  runTest("ajc error for particular Pointcut and @Deprecated");
   }
 
+  public void testGh316_DeprecatedAspect() {
+	  runTest("ajc fails when aspect is annotated with @Deprecated");
+  }
+
   @Override
   protected java.net.URL getSpecFile() {
     return getClassResource("ajc1923.xml");
