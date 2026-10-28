@@ -275,7 +275,6 @@ public class AsmManager implements IStructureModel {
 		@Override
 		protected Class<?> resolveClass(ObjectStreamClass descriptor) throws IOException, ClassNotFoundException {
 			if (!allowedClasses.contains(descriptor.getName())) {
-				System.out.println(allowedClasses+" doesnt contain "+descriptor.getName()+"?");
 				throw new InvalidClassException(descriptor.getName(),"Rejecting deserialization since not in allowed list:"+allowedClasses);
 			}
 			return super.resolveClass(descriptor);
