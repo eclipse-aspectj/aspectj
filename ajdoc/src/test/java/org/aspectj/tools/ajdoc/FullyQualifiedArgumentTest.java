@@ -35,7 +35,7 @@ public class FullyQualifiedArgumentTest extends AjdocTestCase {
 		// check the contents of the declare detail summary
 		String[] stringsA = { "C.html#method3(java.lang.String)",
 				"C.html#method3(String)"};
-		List missing = AjdocOutputChecker.getMissingStringsInSection(
+		List<String> missing = AjdocOutputChecker.getMissingStringsInSection(
 				htmlA,stringsA,"ADVICE SUMMARY");
 		assertEquals("There should be one missing string",1,missing.size());
 		assertEquals("The fully qualified name should appear in the argument",

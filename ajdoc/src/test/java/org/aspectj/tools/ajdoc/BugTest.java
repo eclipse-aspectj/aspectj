@@ -123,7 +123,7 @@ public class BugTest extends AjdocTestCase {
 	 */
 	public void testPr148906_6() throws Exception {
 		initialiseProject("pr148906");
-		List options = new ArrayList();
+		List<String> options = new ArrayList<>();
 		options.add("-verbose");
 		runAjdoc(options);
 		assertTrue("expected the ajdoc usage message to be reported",Main.hasShownAjdocUsageMessage());

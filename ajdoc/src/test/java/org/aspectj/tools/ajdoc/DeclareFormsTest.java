@@ -64,7 +64,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 				declareSoft,
 				declarePrecedence};
 
-		List missing = AjdocOutputChecker.getMissingStringsInSection(
+		List<String> missing = AjdocOutputChecker.getMissingStringsInSection(
 				htmlFile,strings,"DECLARE DETAIL SUMMARY");
 		assertTrue(htmlFile.getName() + " should contain all declare statements in " +
 				"the Declare Detail section",missing.isEmpty());
@@ -319,7 +319,7 @@ public class DeclareFormsTest extends AjdocTestCase {
 		// check there's no return type for the declare annotation
 		// statement in the declare summary section
 		String[] returnType = {"[]"};
-		List missing = AjdocOutputChecker.getMissingStringsInSection(
+		List<String> missing = AjdocOutputChecker.getMissingStringsInSection(
 				htmlFile,returnType,"DECLARE SUMMARY");
 		assertEquals("there should be no return type for declare annotation" +
 				" in the ajdoc",1,missing.size());

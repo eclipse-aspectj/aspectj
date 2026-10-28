@@ -154,7 +154,7 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 		runTest("two pieces of advice with the same signature and pointcut");
 		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();
 		IProgramElement parent = top.findElementForLabel(top.getRoot(), IProgramElement.Kind.ASPECT, "A5");
-		List children = parent.getChildren();
+		List<IProgramElement> children = parent.getChildren();
 		String handle1 = null;
 		String handle2 = null;
 		for (Object child : children) {

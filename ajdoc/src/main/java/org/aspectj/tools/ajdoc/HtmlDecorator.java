@@ -69,11 +69,11 @@ class HtmlDecorator {
 	private static final String ITD_CONSTRUCTOR_SUMMARY = "Inter-Type Constructor Summary";
 
 	static List<String> visibleFileList = new ArrayList<>();
-	static Hashtable declIDTable = null;
+	static Hashtable<String,IProgramElement> declIDTable = null;
 	static File rootDir = null;
 	static String docVisibilityModifier;
 
-	static void decorateHTMLFromInputFiles(AsmManager model, Hashtable table, File newRootDir, File[] inputFiles, String docModifier)
+	static void decorateHTMLFromInputFiles(AsmManager model, Hashtable<String,IProgramElement> table, File newRootDir, File[] inputFiles, String docModifier)
 			throws IOException {
 		rootDir = newRootDir;
 		declIDTable = table;
@@ -100,6 +100,7 @@ class HtmlDecorator {
 	 * Depending on docModifier, can document - public: only public - protected: protected and public (default) - package: package
 	 * protected and public - private: everything
 	 */
+	@SuppressWarnings("unused")
 	static void decorateHTMLFromIPE(IProgramElement decl, String base, String docModifier, boolean exceededNestingLevel)
 			throws IOException {
 		boolean nestedClass = false;
@@ -161,18 +162,19 @@ class HtmlDecorator {
 	/**
 	 * Skips files that are public in the model but not public in the source, e.g. nested aspects.
 	 */
+	@SuppressWarnings("unused")
 	static void decorateHTMLFile(File file) throws IOException {
 		if (!file.exists())
 			return;
 
 		System.out.println("> Decorating " + file.getCanonicalPath() + "...");
-		BufferedReader reader = new BufferedReader(new FileReader(file));
-
 		StringBuilder fileContents = new StringBuilder();
-		String line = reader.readLine();
-		while (line != null) {
-			fileContents.append(line + "\n");
-			line = reader.readLine();
+		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+			String line = reader.readLine();
+			while (line != null) {
+				fileContents.append(line + "\n");
+				line = reader.readLine();
+			}
 		}
 
 		boolean isSecond = false;
@@ -333,7 +335,6 @@ class HtmlDecorator {
 		FileOutputStream fos = new FileOutputStream(file);
 		fos.write(fileContents.toString().getBytes());
 
-		reader.close();
 		fos.close();
 	}
 
@@ -382,16 +383,16 @@ class HtmlDecorator {
 		// add the 'annotated by' information against the type
 		List<String> annotatedBy = StructureUtil.getTargets(node, IRelationship.Kind.DECLARE_INTER_TYPE, "annotated by");
 		if (annotatedBy != null && annotatedBy.size() > 0) {
-			decorateDocWithRel(node, fileBuffer, index, annotatedBy, HtmlRelationshipKind.ANNOTATED_BY);
+			decorateDocWithRelHandles(node, fileBuffer, index, annotatedBy, HtmlRelationshipKind.ANNOTATED_BY);
 		}
 		// add the 'advised by' information against the type
 		List<String> advisedBy = StructureUtil.getTargets(node, IRelationship.Kind.ADVICE);
 		if (advisedBy != null && advisedBy.size() > 0) {
-			decorateDocWithRel(node, fileBuffer, index, advisedBy, HtmlRelationshipKind.ADVISED_BY);
+			decorateDocWithRelHandles(node, fileBuffer, index, advisedBy, HtmlRelationshipKind.ADVISED_BY);
 		}
 	}
 
-	static void insertDeclarationsSummary(StringBuilder fileBuffer, List decls, String kind, int index) {
+	static void insertDeclarationsSummary(StringBuilder fileBuffer, List<IProgramElement> decls, String kind, int index) {
 		if (!declsAboveVisibilityExist(decls))
 			return;
 
@@ -452,12 +453,12 @@ class HtmlDecorator {
 		insertIndex += tableTail.length();
 	}
 
-	private static boolean declsAboveVisibilityExist(List decls) {
+	private static boolean declsAboveVisibilityExist(List<IProgramElement> decls) {
 		boolean exist = false;
-		for (Object decl : decls) {
-			IProgramElement element = (IProgramElement) decl;
-			if (isAboveVisibility(element))
+		for (IProgramElement element: decls) {
+			if (isAboveVisibility(element)) {
 				exist = true;
+			}
 		}
 		return exist;
 	}
@@ -489,7 +490,7 @@ class HtmlDecorator {
 		}
 	}
 
-	static void insertDeclarationsDetails(StringBuilder fileBuffer, List decls, String kind, int index) {
+	static void insertDeclarationsDetails(StringBuilder fileBuffer, List<IProgramElement> decls, String kind, int index) {
 		if (!declsAboveVisibilityExist(decls))
 			return;
 		int insertIndex = findDetailsIndex(fileBuffer, index);
@@ -579,7 +580,26 @@ class HtmlDecorator {
 		}
 	}
 
-	static void decorateDocWithRel(IProgramElement node, StringBuilder fileContentsBuffer, int index, List targets,
+	/**
+	 * Same as {@link #decorateDocWithRel} for relationship targets that are given as handles, as
+	 * {@link StructureUtil#getTargets} returns them. A handle that no longer maps to an element is skipped.
+	 */
+	static void decorateDocWithRelHandles(IProgramElement node, StringBuilder fileContentsBuffer, int index, List<String> targetHandles,
+			HtmlRelationshipKind relKind) {
+		if (targetHandles == null) {
+			return;
+		}
+		List<IProgramElement> targets = new ArrayList<>();
+		for (String handle : targetHandles) {
+			IProgramElement target = node.getModel().getHierarchy().findElementForHandle(handle);
+			if (target != null) {
+				targets.add(target);
+			}
+		}
+		decorateDocWithRel(node, fileContentsBuffer, index, targets, relKind);
+	}
+
+	static void decorateDocWithRel(IProgramElement node, StringBuilder fileContentsBuffer, int index, List<IProgramElement> targets,
 			HtmlRelationshipKind relKind) {
 		if (targets != null && !targets.isEmpty()) {
 			StringBuilder adviceDoc = new StringBuilder("<TABLE WIDTH=\"100%\" BGCOLOR=#FFFFFF><TR>"
@@ -587,18 +607,9 @@ class HtmlDecorator {
 
 			String relativePackagePath = getRelativePathFromHere(node.getPackageName().replace('.', '/') + Config.DIR_SEP_CHAR);
 
-			List addedNames = new ArrayList();
-			for (Iterator it = targets.iterator(); it.hasNext();) {
-				Object o = it.next();
-				IProgramElement currDecl = null;
-				if (o instanceof String) {
-					String currHandle = (String) o;
-					currDecl = node.getModel().getHierarchy().findElementForHandle(currHandle);
-				} else if (o instanceof IProgramElement) {
-					currDecl = (IProgramElement) o;
-				} else {
-					return;
-				}
+			List<String> addedNames = new ArrayList<>();
+			for (Iterator<IProgramElement> it = targets.iterator(); it.hasNext();) {
+				IProgramElement currDecl = it.next();
 
 				String packagePath = "";
 				if (currDecl.getPackageName() != null && !currDecl.getPackageName().equals("")) {
@@ -619,7 +630,7 @@ class HtmlDecorator {
 				// in the case of nested classes, in order for the links to work,
 				// need to have the correct file name which is something of the
 				// form parentClass.nestedAspect.html
-				List names = new ArrayList();
+				List<String> names = new ArrayList<>();
 				IProgramElement parent = currDecl;
 				while (parent != null
 						&& parent.getParent() != null
@@ -668,16 +679,16 @@ class HtmlDecorator {
 
 	static void decorateMemberDocumentation(IProgramElement node, StringBuilder fileContentsBuffer, int index) {
 		List<String> targets = StructureUtil.getTargets(node, IRelationship.Kind.ADVICE);
-		decorateDocWithRel(node, fileContentsBuffer, index, targets, HtmlRelationshipKind.ADVISED_BY);
+		decorateDocWithRelHandles(node, fileContentsBuffer, index, targets, HtmlRelationshipKind.ADVISED_BY);
 
 		List<String> warnings = StructureUtil.getTargets(node, IRelationship.Kind.DECLARE, "matches declare");
-		decorateDocWithRel(node, fileContentsBuffer, index, warnings, HtmlRelationshipKind.MATCHES_DECLARE);
+		decorateDocWithRelHandles(node, fileContentsBuffer, index, warnings, HtmlRelationshipKind.MATCHES_DECLARE);
 
 		List<String> softenedBy = StructureUtil.getTargets(node, IRelationship.Kind.DECLARE, "softened by");
-		decorateDocWithRel(node, fileContentsBuffer, index, softenedBy, HtmlRelationshipKind.SOFTENED_BY);
+		decorateDocWithRelHandles(node, fileContentsBuffer, index, softenedBy, HtmlRelationshipKind.SOFTENED_BY);
 
 		List<String> annotatedBy = StructureUtil.getTargets(node, IRelationship.Kind.DECLARE_INTER_TYPE, "annotated by");
-		decorateDocWithRel(node, fileContentsBuffer, index, annotatedBy, HtmlRelationshipKind.ANNOTATED_BY);
+		decorateDocWithRelHandles(node, fileContentsBuffer, index, annotatedBy, HtmlRelationshipKind.ANNOTATED_BY);
 	}
 
 	/**
@@ -712,7 +723,7 @@ class HtmlDecorator {
 	 * TODO: probably want to make this the same for intros and advice.
 	 */
 	static String generateAffects(IProgramElement decl) {
-		List targets = null;
+		List<String> targets = null;
 		if (decl.getKind().isDeclare() || decl.getKind().isInterTypeMember()) {
 			targets = StructureUtil.getDeclareTargets(decl);
 		} else {
@@ -747,9 +758,9 @@ class HtmlDecorator {
 
 		String relativePackagePath = getRelativePathFromHere(decl.getPackageName().replace('.', '/') + Config.DIR_SEP_CHAR);
 
-		List addedNames = new ArrayList(); // for ensuring that we don't add duplciates
-		for (Iterator it = targets.iterator(); it.hasNext();) {
-			String currHandle = (String) it.next();
+		List<String> addedNames = new ArrayList<>(); // for ensuring that we don't add duplciates
+		for (Iterator<String> it = targets.iterator(); it.hasNext();) {
+			String currHandle = it.next();
 			IProgramElement currDecl = decl.getModel().getHierarchy().findElementForHandle(currHandle);
 			if (currDecl.getKind().equals(IProgramElement.Kind.CODE)) {
 				currDecl = currDecl.getParent(); // promote to enclosing
@@ -935,7 +946,7 @@ class HtmlDecorator {
 	static public IProgramElement[] getProgramElements(AsmManager model, String filename) {
 
 		IProgramElement file = model.getHierarchy().findElementForSourceFile(filename);
-		final List nodes = new ArrayList();
+		final List<IProgramElement> nodes = new ArrayList<>();
 		HierarchyWalker walker = new HierarchyWalker() {
 			public void preProcess(IProgramElement node) {
 				IProgramElement p = node;

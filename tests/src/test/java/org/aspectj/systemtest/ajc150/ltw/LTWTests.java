@@ -203,7 +203,7 @@ public class LTWTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
 		/* Restore system properties */
 		Properties systemProperties = System.getProperties();
-		for (Enumeration enu = savedProperties.keys(); enu.hasMoreElements(); ) {
+		for (Enumeration<Object> enu = savedProperties.keys(); enu.hasMoreElements(); ) {
 			String key = (String)enu.nextElement();
 			String value = savedProperties.getProperty(key);
 			if (value == NULL) systemProperties.remove(key);

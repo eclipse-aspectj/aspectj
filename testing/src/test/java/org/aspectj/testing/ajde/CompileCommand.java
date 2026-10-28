@@ -414,8 +414,8 @@ class MyOutputLocationManager implements IOutputLocationManager {
 		return null;
 	}
 
-	public Map getInpathMap() {
-		return Collections.EMPTY_MAP;
+	public Map<File,String> getInpathMap() {
+		return Collections.emptyMap();
 	}
 
 	public String getSourceFolderForFile(File sourceFile) {

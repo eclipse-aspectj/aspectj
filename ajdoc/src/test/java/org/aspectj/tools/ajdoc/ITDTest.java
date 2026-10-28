@@ -52,7 +52,7 @@ public class ITDTest extends AjdocTestCase {
 				"<H3>C.y</H3>",
 				"public&nbsp;</TT><B>C.C",
 				"package&nbsp;void"};
-		List missing = AjdocOutputChecker.getMissingStringsInSection(htmlA,stringsA,"DECLARE DETAIL SUMMARY");
+		List<String> missing = AjdocOutputChecker.getMissingStringsInSection(htmlA,stringsA,"DECLARE DETAIL SUMMARY");
 		assertEquals("There should be one missing string ",1,missing.size());
 		assertEquals("the 'package' and 'void' modifiers shouldn't appear in the 'Declare Detail' section of the ajdoc",
 				"package&nbsp;void", missing.get(0));
@@ -97,7 +97,7 @@ public class ITDTest extends AjdocTestCase {
 
 		// check the modifier information in the sections is correct
 		String[] stringsC = { "public", "String", "pack.A" };
-		List missing = AjdocOutputChecker.getMissingStringsInSection(htmlC,stringsC,"INTER-TYPE METHOD SUMMARY");
+		List<String> missing = AjdocOutputChecker.getMissingStringsInSection(htmlC,stringsC,"INTER-TYPE METHOD SUMMARY");
 		assertEquals("There should be one missing string",1,missing.size());
 		assertEquals("public itd methods should not have the 'public' modifier in the ajdoc",
 				"public",missing.get(0));

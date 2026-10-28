@@ -296,12 +296,11 @@ public abstract class AjdocTestCase extends TestCase {
 	/**
 	 * Run the ajdoc command with the given options
 	 */
-	public void runAjdoc(List options) {
+	public void runAjdoc(List<String> options) {
 		String[] args = new String[options.size()];
 		int i = 0;
-		for (Object option : options) {
-			String element = (String) option;
-			args[i] = element;
+		for (String option: options) {
+			args[i] = option;
 			i++;
 		}
 		org.aspectj.tools.ajdoc.Main.main(args);

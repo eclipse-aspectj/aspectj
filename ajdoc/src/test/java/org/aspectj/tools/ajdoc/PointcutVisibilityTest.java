@@ -38,7 +38,7 @@ public class PointcutVisibilityTest extends AjdocTestCase {
 		}
 		// check the contents of the pointcut summary
 		String[] strings = { "privatePointcut","protectedPointcut","publicPointcut"};
-		List missing = AjdocOutputChecker.getMissingStringsInSection(htmlFile,strings,"POINTCUT SUMMARY");
+		List<String> missing = AjdocOutputChecker.getMissingStringsInSection(htmlFile,strings,"POINTCUT SUMMARY");
 		assertEquals("There should be two missing strings",2,missing.size());
 		assertTrue("passing the 'public' argument means the private pointcut shouldn't appear in the ajdoc", missing.contains("privatePointcut"));
 		assertTrue("passing the 'public' argument means the protected pointcut shouldn't appear in the ajdoc", missing.contains("protectedPointcut"));
@@ -63,7 +63,7 @@ public class PointcutVisibilityTest extends AjdocTestCase {
 		}
 		// check the contents of the pointcut summary
 		String[] strings = { "privatePointcut","protectedPointcut","publicPointcut"};
-		List missing = AjdocOutputChecker.getMissingStringsInSection(htmlFile,strings,"POINTCUT SUMMARY");
+		List<String> missing = AjdocOutputChecker.getMissingStringsInSection(htmlFile,strings,"POINTCUT SUMMARY");
 		assertEquals("There should be one missing strings",1,missing.size());
 		assertEquals("passing the 'protected' argument means the private pointcut shouldn't appear in the ajdoc",
 				"privatePointcut", missing.get(0));
@@ -88,7 +88,7 @@ public class PointcutVisibilityTest extends AjdocTestCase {
 		}
 		// check the contents of the pointcut summary
 		String[] strings = { "privatePointcut","protectedPointcut","publicPointcut"};
-		List missing = AjdocOutputChecker.getMissingStringsInSection(htmlFile,strings,"POINTCUT SUMMARY");
+		List<String> missing = AjdocOutputChecker.getMissingStringsInSection(htmlFile,strings,"POINTCUT SUMMARY");
 		assertTrue("passing the 'private' modifier means that private, protected and public " +
 				"pointcuts should appear in the ajdoc",missing.isEmpty());
     }

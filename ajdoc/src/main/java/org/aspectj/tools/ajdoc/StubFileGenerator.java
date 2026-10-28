@@ -32,9 +32,9 @@ import org.aspectj.util.FileUtil;
  */
 class StubFileGenerator {
 
-	static Map declIDTable = null;
+	static Map<String,IProgramElement> declIDTable = null;
 
-	static void doFiles(AsmManager model, Hashtable table, File[] inputFiles, File[] signatureFiles) throws DocException {
+	static void doFiles(AsmManager model, Hashtable<String,IProgramElement> table, File[] inputFiles, File[] signatureFiles) throws DocException {
 		declIDTable = table;
 		for (int i = 0; i < inputFiles.length; i++) {
 			processFile(model, inputFiles[i], signatureFiles[i]);
@@ -82,9 +82,8 @@ class StubFileGenerator {
 	}
 
 	private static void processImportDeclaration(IProgramElement node, PrintWriter writer) throws IOException {
-		List imports = node.getChildren();
-		for (Object anImport : imports) {
-			IProgramElement importNode = (IProgramElement) anImport;
+		List<IProgramElement> imports = node.getChildren();
+		for (IProgramElement importNode: imports) {
 			writer.println(importNode.getSourceSignature());
 		}
 	}
@@ -108,11 +107,9 @@ class StubFileGenerator {
 		}
 	}
 
-	private static void processMembers(List/* IProgramElement */members, PrintWriter writer, boolean declaringTypeIsInterface)
+	private static void processMembers(List<IProgramElement> members, PrintWriter writer, boolean declaringTypeIsInterface)
 			throws DocException {
-		for (Object o : members) {
-			IProgramElement member = (IProgramElement) o;
-
+		for (IProgramElement member: members) {
 			if (member.getKind().isType()) {
 				if (!member.getParent().getKind().equals(IProgramElement.Kind.METHOD) && !StructureUtil.isAnonymous(member)) {// don't
 					// print

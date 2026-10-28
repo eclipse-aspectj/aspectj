@@ -111,6 +111,7 @@ public class StructureUtil {
 		return packageName;
 	}
 
+	@SuppressWarnings("unused")
 	public static String genSignature(IProgramElement node) {
 		StringBuilder sb = new StringBuilder();
 

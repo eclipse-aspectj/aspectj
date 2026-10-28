@@ -30,7 +30,7 @@ public class MultiProjTestOutputLocationManager implements IOutputLocationManage
 	private final String testProjectOutputPath;
 	private File classOutputLoc;
 	private File resourceOutputLoc;
-	private final Map sourceFolders = new HashMap();
+	private final Map<String,String> sourceFolders = new HashMap<>();
 	private List<File> allOutputLocations;
 
 	public MultiProjTestOutputLocationManager(String testProjectPath) {
@@ -43,7 +43,7 @@ public class MultiProjTestOutputLocationManager implements IOutputLocationManage
 	}
 
 	public Map getInpathMap() {
-		return Collections.EMPTY_MAP;
+		return Collections.emptyMap();
 	}
 
 

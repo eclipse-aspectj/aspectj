@@ -33,6 +33,7 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 import org.aspectj.asm.AsmManager;
+import org.aspectj.asm.IProgramElement;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.Version;
 import org.aspectj.util.FileUtil;
@@ -73,7 +74,7 @@ public class Main implements Config {
 	static boolean authorStandardDocletSwitch = false;
 	static boolean versionStandardDocletSwitch = false;
 	static File rootDir = null;
-	static Hashtable declIDTable = new Hashtable();
+	static Hashtable<String,IProgramElement> declIDTable = new Hashtable<>();
 	static String docDir = ".";
 
 	private static boolean deleteTempFilesOnExit = true;
@@ -97,7 +98,7 @@ public class Main implements Config {
 		verboseMode = false;
 		packageMode = false;
 		rootDir = null;
-		declIDTable = new Hashtable();
+		declIDTable = new Hashtable<>();
 		docDir = ".";
 		aborted = false;
 		deleteTempFilesOnExit = true;
@@ -527,7 +528,7 @@ public class Main implements Config {
 		return cPath;
 	}
 
-	static void parseArgs(List vargs, File currentWorkingDir) {
+	static void parseArgs(List<String> vargs, File currentWorkingDir) {
 		boolean addNextAsOption = false;
 		boolean addNextAsArgFile = false;
 		boolean addNextToAJCOptions = false;
