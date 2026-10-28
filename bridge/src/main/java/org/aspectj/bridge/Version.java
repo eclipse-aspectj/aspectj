@@ -18,6 +18,7 @@ import java.net.URL;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Properties;
 
 /** release-specific version information */
@@ -76,7 +77,7 @@ public class Version {
     		long foundTime = NOTIME;
     	    // if not DEVELOPMENT version, read time text using format used to set time
             try {
-                SimpleDateFormat format = new SimpleDateFormat(SIMPLE_DATE_FORMAT);
+                SimpleDateFormat format = new SimpleDateFormat(SIMPLE_DATE_FORMAT, Locale.US);
                 ParsePosition pos = new ParsePosition(0);
                 Date date = format.parse(time_text, pos);
                 if (date!=null) foundTime = date.getTime();
