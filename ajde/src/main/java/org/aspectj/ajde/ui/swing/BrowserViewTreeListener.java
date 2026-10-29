@@ -106,7 +106,7 @@ class BrowserViewTreeListener implements TreeSelectionListener, MouseListener {
     private void maybeShowPopup(MouseEvent e) {
         if (e.getModifiers() == InputEvent.BUTTON3_MASK && tree.getSelectionCount() > 0) {
 //            TreePath[] selectionPaths = tree.getSelectionPaths();
-            final List signatures = new ArrayList();
+            final List<IProgramElement> signatures = new ArrayList<>();
 //            for (int i = 0; i < selectionPaths.length; i++) {
 //                IProgramElement currNode = (IProgramElement)((SwingTreeViewNode)selectionPaths[i].getLastPathComponent()).getUserObject();
 ////                if (currNode instanceof LinkNode || currNode instanceof IProgramElement) {

@@ -10,9 +10,6 @@
  * Contributors:
  *     Xerox/PARC     initial implementation
  * ******************************************************************/
-
-
-
 package org.aspectj.ajde.ui;
 
 import java.util.List;
@@ -33,7 +30,7 @@ public interface UserPreferencesAdapter {
 	/**
 	 * Retrieves a global IDE option.
 	 */
-	List getGlobalMultivalPreference(String name);
+	List<String> getGlobalMultivalPreference(String name);
 
 	/**
 	 * Sets a global IDE option with a single value.
@@ -43,7 +40,7 @@ public interface UserPreferencesAdapter {
 	/**
 	 * Sets a global IDE option with multiple values.
 	 */
-	void setGlobalMultivalPreference(String name, List values);
+	void setGlobalMultivalPreference(String name, List<String> values);
 
 	/**
 	 * Retrieves an option for the currently active project.
@@ -53,7 +50,7 @@ public interface UserPreferencesAdapter {
 	/**
 	 * Retrieves an option for the currently active project.
 	 */
-	List getProjectMultivalPreference(String name);
+	List<String> getProjectMultivalPreference(String name);
 
 	/**
 	 * Sets an option for the currently active project.
@@ -63,5 +60,5 @@ public interface UserPreferencesAdapter {
 	/**
 	 * Sets an option for the currently active project.
 	 */
-	void setProjectMultivalPreference(String name, List values);
+	void setProjectMultivalPreference(String name, List<String> values);
 }

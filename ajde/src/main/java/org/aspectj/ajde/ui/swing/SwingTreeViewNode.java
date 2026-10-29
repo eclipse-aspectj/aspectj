@@ -40,7 +40,7 @@ public class SwingTreeViewNode extends DefaultMutableTreeNode implements IStruct
 	/**
 	 * Create a declaration node.
 	 */
-	public SwingTreeViewNode(IProgramElement programElement, AbstractIcon icon, List children) {
+	public SwingTreeViewNode(IProgramElement programElement, AbstractIcon icon, List<IStructureViewNode> children) {
 		super(programElement, true);
 		this.programElement = programElement;
 		this.icon = icon;

@@ -21,6 +21,7 @@ import org.aspectj.ajde.Ajde;
 import org.aspectj.ajde.ui.GlobalStructureView;
 import org.aspectj.ajde.ui.GlobalViewProperties;
 import org.aspectj.ajde.ui.StructureViewProperties;
+import org.aspectj.asm.IProgramElement;
 
 /**
  * Responsible for displaying and controlling the configuration and output of a
@@ -59,7 +60,7 @@ public class BrowserViewManager {
         return browserPanel;
     }
 
-    public void extractAndInsertSignatures(java.util.List signatures, boolean calls) {
+    public void extractAndInsertSignatures(java.util.List<IProgramElement> signatures, boolean calls) {
         PointcutWizard pointcutWizard = new PointcutWizard(signatures);
         pointcutWizard.setVisible(true);
         pointcutWizard.setLocation(Ajde.getDefault().getRootFrame().getX()+100, Ajde.getDefault().getRootFrame().getY()+100);

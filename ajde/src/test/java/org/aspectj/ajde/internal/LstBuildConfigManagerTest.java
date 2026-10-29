@@ -41,14 +41,14 @@ public class LstBuildConfigManagerTest extends AjdeTestCase {
 
 	public void testConfigParserErrorMessages() {
 		doBuild("dir-entry.lst");
-		List messages = getMessages("dir-entry.lst");
-		TestMessage message = (TestMessage)messages.get(0);
+		List<TestMessage> messages = getMessages("dir-entry.lst");
+		TestMessage message = messages.get(0);
 
 		assertEquals(message.getContainedMessage().getSourceLocation().getSourceFile().getAbsolutePath(), openFile("dir-entry.lst").getAbsolutePath());
 
 		doBuild("bad-injar.lst");
 		messages = getMessages("bad-injar.lst");
-		message = (TestMessage)messages.get(0);
+		message = messages.get(0);
 		assertTrue(message.getContainedMessage().getMessage().contains("skipping missing, empty or corrupt inpath entry"));
 	}
 

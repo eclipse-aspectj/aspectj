@@ -215,7 +215,7 @@ public class SimpleStructureViewToolPanel extends JPanel {
 		if (hideNonAJEnabled) {
 			hideNonAJ_button.setBorder(AjdeWidgetStyles.DEFAULT_BORDER);
 			hideNonAJEnabled = false;
-			currentView.getViewProperties().setFilteredMemberKinds(new ArrayList());
+			currentView.getViewProperties().setFilteredMemberKinds(new ArrayList<>());
 		} else {
 			hideNonAJ_button.setBorder(AjdeWidgetStyles.LOWERED_BEVEL_BORDER);
 			hideNonAJEnabled = true;
@@ -232,7 +232,7 @@ public class SimpleStructureViewToolPanel extends JPanel {
 		} else {
 			hideAssociations_button.setBorder(AjdeWidgetStyles.LOWERED_BEVEL_BORDER);
 			hideAssociationsEnabled = true;
-			currentView.getViewProperties().setRelations(new ArrayList());
+			currentView.getViewProperties().setRelations(new ArrayList<>());
 		}
 		Ajde.getDefault().getStructureViewManager().refreshView(currentView);
 	}

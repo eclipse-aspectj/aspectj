@@ -28,7 +28,7 @@ public class TestOutputLocationManager implements IOutputLocationManager {
 	private String testProjectOutputPath;
 	private File classOutputLoc;
 	private File resourceOutputLoc;
-	private List allOutputLocations;
+	private List<File> allOutputLocations;
 
 	public TestOutputLocationManager(String testProjectPath) {
 		this.testProjectOutputPath = testProjectPath + File.separator + "bin";
@@ -41,8 +41,8 @@ public class TestOutputLocationManager implements IOutputLocationManager {
 		return testProjectOutputPath;
 	}
 
-	public Map getInpathMap() {
-		return Collections.EMPTY_MAP;
+	public Map<File,String> getInpathMap() {
+		return Collections.emptyMap();
 	}
 
 	public File getOutputLocationForClass(File compilationUnit) {
@@ -64,9 +64,9 @@ public class TestOutputLocationManager implements IOutputLocationManager {
 		resourceOutputLoc = f;
 	}
 
-	public List getAllOutputLocations() {
+	public List<File> getAllOutputLocations() {
 		if (allOutputLocations == null) {
-			allOutputLocations = new ArrayList();
+			allOutputLocations = new ArrayList<>();
 			initLocations();
 			allOutputLocations.add(classOutputLoc);
 			if (!classOutputLoc.equals(resourceOutputLoc)) {

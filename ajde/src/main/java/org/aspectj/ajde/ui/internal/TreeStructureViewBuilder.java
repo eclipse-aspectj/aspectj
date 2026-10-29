@@ -106,7 +106,7 @@ public class TreeStructureViewBuilder {
 
 	private IStructureViewNode createViewNode(IProgramElement node, StructureViewProperties properties) {
 		if (node == null) return null;
-		List children = new ArrayList();
+		List<IStructureViewNode> children = new ArrayList<>();
 		//		IProgramElement pNode = node;
 		//		if (node.getRelations() != null) {
 		//			for (Iterator it = node.getRelations().iterator(); it.hasNext(); ) {
@@ -206,15 +206,15 @@ public class TreeStructureViewBuilder {
 		IProgramElement rootNode = model.getRoot();
 		IStructureViewNode treeNode = nodeFactory.createNode(rootNode);
 
-		List rootNodes = new ArrayList();
+		List<IProgramElement> rootNodes = new ArrayList<>();
 		getRoots(rootNode, rootNodes, view.getGlobalViewProperties().getHierarchy());
 
-		for (Iterator it = rootNodes.iterator(); it.hasNext(); ) {
+		for (Iterator<IProgramElement> rootNodeIterator = rootNodes.iterator(); rootNodeIterator.hasNext(); ) {
 			if (view.getGlobalViewProperties().getHierarchy().equals(StructureViewProperties.Hierarchy.CROSSCUTTING)) {
-				treeNode.add(getCrosscuttingChildren((IProgramElement)it.next()));
+				treeNode.add(getCrosscuttingChildren(rootNodeIterator.next()));
 			} else if (view.getGlobalViewProperties().getHierarchy().equals(StructureViewProperties.Hierarchy.INHERITANCE)) {
 				treeNode.add(getInheritanceChildren(
-						(IProgramElement)it.next(),
+						rootNodeIterator.next(),
 						view.getViewProperties().getRelations())
 						);
 			}
@@ -222,7 +222,7 @@ public class TreeStructureViewBuilder {
 		return treeNode;
 	}
 
-	private void getRoots(IProgramElement rootNode, List roots, StructureViewProperties.Hierarchy hierarchy) {
+	private void getRoots(IProgramElement rootNode, List<IProgramElement> roots, StructureViewProperties.Hierarchy hierarchy) {
 		//        if (rootNode != null && rootNode.getChildren() != null) {
 		//            for (Iterator it = rootNode.getChildren().iterator(); it.hasNext(); ) {
 		//                IProgramElement node = (IProgramElement)it.next();

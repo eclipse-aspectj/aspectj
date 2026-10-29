@@ -120,11 +120,11 @@ public abstract class AjdeTestCase extends TestCase {
 		return Ajde.getDefault().getCompilerForConfigFile(projectDir + File.separator + configFileName);
 	}
 
-	public List getErrorMessages(String configFileName) {
+	public List<TestMessageHandler.TestMessage> getErrorMessages(String configFileName) {
 		return ((TestMessageHandler) getCompilerForConfigFileWithName(configFileName).getMessageHandler()).getErrors();
 	}
 
-	public List getMessages(String configFileName) {
+	public List<TestMessageHandler.TestMessage> getMessages(String configFileName) {
 		return ((TestMessageHandler) getCompilerForConfigFileWithName(configFileName).getMessageHandler()).getMessages();
 	}
 

@@ -36,7 +36,7 @@ public abstract class StructureViewNodeFactory {
 		return createNode(node, null);
 	}
 
-	public IStructureViewNode createNode(IProgramElement node, List children) {
+	public IStructureViewNode createNode(IProgramElement node, List<IStructureViewNode> children) {
 		AbstractIcon icon = iconRegistry.getStructureIcon(node.getKind(), node.getAccessibility());
 
 		IStructureViewNode svNode = createDeclaration(node, icon, children);
@@ -85,7 +85,7 @@ public abstract class StructureViewNodeFactory {
 	/**
 	 * Implementors must override this method in order to create new nodes.
 	 */
-	protected abstract IStructureViewNode createDeclaration(IProgramElement node, AbstractIcon icon, List children);
+	protected abstract IStructureViewNode createDeclaration(IProgramElement node, AbstractIcon icon, List<IStructureViewNode> children);
 
 	/**
 	 * Don't show code elements under types since they show under the corresponding initializers.

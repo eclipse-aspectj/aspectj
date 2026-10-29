@@ -48,7 +48,7 @@ public class JavaCompilerWarningsOptionsPanel extends OptionsPanel {
 
 	private JavaBuildOptions javaBuildOptions;
 
-	private Map/*String --> JComboBox*/ warningComboBoxes = new HashMap();
+	private Map<String,JComboBox<String>> warningComboBoxes = new HashMap<>();
 
 	public JavaCompilerWarningsOptionsPanel(JavaBuildOptions javaBuildOptions) {
 		this.javaBuildOptions = javaBuildOptions;
@@ -65,11 +65,11 @@ public class JavaCompilerWarningsOptionsPanel extends OptionsPanel {
 	}
 
 	public void saveOptions() throws IOException {
-		Set<Entry<String, JComboBox>> s = warningComboBoxes.entrySet();
-		for (Entry<String, JComboBox> entry : s) {
+		Set<Entry<String, JComboBox<String>>> s = warningComboBoxes.entrySet();
+		for (Entry<String, JComboBox<String>> entry : s) {
 			String javaOption = entry.getKey();
-			JComboBox combo = entry.getValue();
-			String value = (String) combo.getSelectedItem();
+			JComboBox<String> combo = entry.getValue();
+			String value = (String)combo.getSelectedItem();
 			javaBuildOptions.setOption(javaOption, value);
 		}
 	}
@@ -105,7 +105,7 @@ public class JavaCompilerWarningsOptionsPanel extends OptionsPanel {
 		label.setText(labelText);
 		panel.add(label,BorderLayout.WEST);
 
-		JComboBox warnings = new JComboBox(ignoreOrWarning);
+		JComboBox<String> warnings = new JComboBox<>(ignoreOrWarning);
 		String value = javaBuildOptions.getJavaBuildOptionsMap().get(javaOptionToSet);
 		if (value.equals(JavaOptions.IGNORE)) {
 			warnings.setSelectedIndex(0);

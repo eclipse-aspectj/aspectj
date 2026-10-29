@@ -27,6 +27,7 @@ import javax.swing.JPanel;
 
 //import org.aspectj.asm.IRelationship;
 import org.aspectj.ajde.ui.StructureViewProperties;
+import org.aspectj.asm.IProgramElement;
 
 /**
  * @author Mik Kersten
@@ -54,9 +55,9 @@ class PointcutWizard extends JFrame {
     JButton ok_button = new JButton();
     JPanel jPanel5 = new JPanel();
 
-    public PointcutWizard(java.util.List signatures) {
+    public PointcutWizard(java.util.List<IProgramElement> signatures) {
  //       this.signatures = signatures;
-        List views = new ArrayList();
+        List<StructureViewProperties.Hierarchy> views = new ArrayList<>();
         views.add(StructureViewProperties.Hierarchy.INHERITANCE);
 //        typeTreeView = new BrowserViewPanel(AjdeUIManager.getDefault().getIconRegistry(), views, StructureViewProperties.Hierarchy.INHERITANCE);
 

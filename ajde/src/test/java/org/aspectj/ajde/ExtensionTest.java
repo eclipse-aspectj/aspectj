@@ -94,9 +94,8 @@ public class ExtensionTest extends AjcTestCase {
 			return;
 		}
 		if (ipe.getChildren() != null) {
-			List kids = ipe.getChildren();
-			for (Object kid : kids) {
-				IProgramElement element = (IProgramElement) kid;
+			List<IProgramElement> kids = ipe.getChildren();
+			for (IProgramElement element : kids) {
 				findChild(s, element);
 			}
 		}
@@ -110,9 +109,8 @@ public class ExtensionTest extends AjcTestCase {
 			if (debugTests)
 				System.out.println(ipe.toLabelString());// getName());
 			if (ipe.getChildren() != null) {
-				List kids = ipe.getChildren();
-				for (Object kid : kids) {
-					IProgramElement element = (IProgramElement) kid;
+				List<IProgramElement> kids = ipe.getChildren();
+				for (IProgramElement element : kids) {
 					walkit(element, indent + 2);
 				}
 			}

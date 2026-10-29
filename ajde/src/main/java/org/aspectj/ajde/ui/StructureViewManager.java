@@ -35,18 +35,18 @@ public class StructureViewManager {
 	// private String buildConfigFilePath = null;
 
 	private final NavigationHistoryModel historyModel = new NavigationHistoryModel();
-	private final List structureViews = new ArrayList();
+	private final List<StructureView> structureViews = new ArrayList<>();
 	private FileStructureView defaultFileView = null;
 
 	private static final StructureViewProperties DEFAULT_VIEW_PROPERTIES;
-	private static final List AVAILABLE_RELATIONS;
+	private static final List<IRelationship.Kind> AVAILABLE_RELATIONS;
 
 	public final IHierarchyListener VIEW_LISTENER = new IHierarchyListener() {
 		public void elementsUpdated(IHierarchy model) {
 			// updating structure views:
 
-			for (Object structureView : structureViews) {
-				treeViewBuilder.buildView((StructureView) structureView, (AspectJElementHierarchy) model);
+			for (StructureView structureView : structureViews) {
+				treeViewBuilder.buildView(structureView, (AspectJElementHierarchy) model);
 			}
 		}
 	};
@@ -148,7 +148,7 @@ public class StructureViewManager {
 	/**
 	 * Returns the list of all available relations.
 	 */
-	public List getAvailableRelations() {
+	public List<IRelationship.Kind> getAvailableRelations() {
 		return AVAILABLE_RELATIONS;
 	}
 
@@ -193,7 +193,7 @@ public class StructureViewManager {
 	}
 
 	static {
-		AVAILABLE_RELATIONS = new ArrayList();
+		AVAILABLE_RELATIONS = new ArrayList<>();
 		AVAILABLE_RELATIONS.add(IRelationship.Kind.ADVICE);
 		AVAILABLE_RELATIONS.add(IRelationship.Kind.DECLARE);
 

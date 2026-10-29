@@ -96,7 +96,7 @@ public class UserPreferencesStore implements UserPreferencesAdapter {
 	}
 
 	@Override
-	public List getGlobalMultivalPreference(String name) {
+	public List<String> getGlobalMultivalPreference(String name) {
 		return getProjectMultivalPreference(name);
 	}
 

@@ -36,7 +36,7 @@ public class SwingTreeViewNodeFactory extends StructureViewNodeFactory {
 	protected IStructureViewNode createDeclaration(
 		IProgramElement node,
 		AbstractIcon icon,
-		List children) {
+		List<IStructureViewNode> children) {
 		return new SwingTreeViewNode(node, icon, children);
 	}
 
