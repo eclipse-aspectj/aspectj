@@ -19,6 +19,7 @@ import java.util.Set;
 
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.util.LangUtil;
+import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ResolvedMember;
 import org.aspectj.weaver.ResolvedType;
@@ -76,7 +77,14 @@ public abstract class ReflectionBasedReferenceTypeDelegateTest extends TestCase 
 	}
 
 	public void testGetAnnotations() {
-		assertEquals("no entries", 0, objectType.getAnnotations().length);
+		AnnotationAJ[] annotations = objectType.getAnnotations();
+		if (LangUtil.isVMGreaterOrEqual(26)) {
+			// The annotation hint on Object, as in testGetAnnotationTypes
+			assertEquals("should be one entry", 1, annotations.length);
+			assertEquals("jdk.internal.vm.annotation.AOTSafeClassInitializer", annotations[0].getTypeName());
+		} else {
+			assertEquals("no entries", 0, annotations.length);
+		}
 	}
 
 	public void testGetAnnotationTypes() {
