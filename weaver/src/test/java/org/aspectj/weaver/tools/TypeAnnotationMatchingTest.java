@@ -48,6 +48,27 @@ public class TypeAnnotationMatchingTest extends TestCase {
 	}
 
 	/**
+	 * A type can have both kinds. The runtime one is read by reflection and the class one from the class file; the
+	 * answer for one must not depend on the other having been asked for first. Both questions go to the same
+	 * parser, so that they are answered from the same type, with whatever it has remembered by then.
+	 */
+	public void testRuntimeThenClassRetentionAnnotationOnTheSameType() throws Exception {
+		PointcutParser parser = newParser();
+		assertTrue(matches(parser, "within(@" + PREFIX + "RuntimeAnnotation *)", BothAnnotated.class));
+		assertTrue(matches(parser, "within(@" + PREFIX + "ClassFileAnnotation *)", BothAnnotated.class));
+		assertTrue(matches(parser, "within(@" + PREFIX + "RuntimeAnnotation *)", BothAnnotated.class));
+		assertFalse(matches(parser, "within(@" + PREFIX + "InheritedAnnotation *)", BothAnnotated.class));
+	}
+
+	public void testClassRetentionThenRuntimeRetentionAnnotationOnTheSameType() throws Exception {
+		PointcutParser parser = newParser();
+		assertTrue(matches(parser, "within(@" + PREFIX + "ClassFileAnnotation *)", BothAnnotated.class));
+		assertTrue(matches(parser, "within(@" + PREFIX + "RuntimeAnnotation *)", BothAnnotated.class));
+		assertTrue(matches(parser, "within(@" + PREFIX + "ClassFileAnnotation *)", BothAnnotated.class));
+		assertFalse(matches(parser, "within(@" + PREFIX + "InheritedAnnotation *)", BothAnnotated.class));
+	}
+
+	/**
 	 * Before, reading a type's annotations always parsed its class file, although reflection on the
 	 * loaded class answers for an annotation with runtime retention.
 	 */
@@ -63,9 +84,17 @@ public class TypeAnnotationMatchingTest extends TestCase {
 		assertEquals("class files read", new ArrayList<String>(), loader.classFilesOf(TypeAnnotationMatchingTest.class));
 	}
 
-	private boolean matches(String expression, Class<?> type) throws Exception {
-		PointcutParser parser = PointcutParser
+	private PointcutParser newParser() {
+		return PointcutParser
 				.getPointcutParserSupportingAllPrimitivesAndUsingSpecifiedClassloaderForResolution(getClass().getClassLoader());
+	}
+
+	/** Each call uses a parser of its own, so nothing is remembered from an earlier question. */
+	private boolean matches(String expression, Class<?> type) throws Exception {
+		return matches(newParser(), expression, type);
+	}
+
+	private boolean matches(PointcutParser parser, String expression, Class<?> type) throws Exception {
 		Method method = type.getMethod("run");
 		ShadowMatch match = parser.parsePointcutExpression(expression).matchesMethodExecution(method);
 		assertFalse(expression + " on " + type.getSimpleName() + " should be decided statically", match.maybeMatches()
@@ -129,6 +158,13 @@ public class TypeAnnotationMatchingTest extends TestCase {
 
 	public static class NotInheritingSubclass extends RuntimeAnnotated {
 		@Override
+		public void run() {
+		}
+	}
+
+	@RuntimeAnnotation
+	@ClassFileAnnotation
+	public static class BothAnnotated {
 		public void run() {
 		}
 	}
