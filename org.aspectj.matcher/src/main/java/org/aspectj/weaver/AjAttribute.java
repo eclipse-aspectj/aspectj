@@ -16,6 +16,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
+import java.io.File;
 import java.io.IOException;
 
 import org.aspectj.bridge.MessageUtil;
@@ -38,6 +39,34 @@ import org.aspectj.weaver.patterns.Pointcut;
  * @author Jim Hugunin
  */
 public abstract class AjAttribute {
+
+	/**
+	 * The name of the file at the end of the given path, without the directories before it. The path usually comes from the
+	 * machine we are running on, but can also have been written by a machine with other conventions (it can be read back from
+	 * a class file and written out again).
+	 * <p>
+	 * A '/' always separates. A '\\' separates on Windows, and in paths that look like Windows paths (a drive letter or a
+	 * network share), but elsewhere it is an ordinary character that may be part of the name of a file.
+	 */
+	static String fileNameOnly(String path) {
+		if (path == null) {
+			return null;
+		}
+		int lastSeparator = path.lastIndexOf('/');
+		if (File.separatorChar == '\\' || looksLikeWindowsPath(path)) {
+			lastSeparator = Math.max(lastSeparator, path.lastIndexOf('\\'));
+		}
+		String name = path.substring(lastSeparator + 1);
+		return name.isEmpty() ? path : name; // not the path of a file, leave it alone
+	}
+
+	private static boolean looksLikeWindowsPath(String path) {
+		if (path.startsWith("\\\\")) { // \\server\share
+			return true;
+		}
+		return path.length() > 2 && Character.isLetter(path.charAt(0)) && path.charAt(1) == ':'
+				&& (path.charAt(2) == '\\' || path.charAt(2) == '/'); // C:\ or C:/
+	}
 
 	public static final String AttributePrefix = "org.aspectj.weaver";
 
@@ -369,10 +398,13 @@ public abstract class AjAttribute {
 
 		@Override
 		public void write(CompressingDataOutputStream s) throws IOException {
+			// Only the file name is recorded: the directory the aspect happened to be built in differs from machine to
+			// machine, which makes the class file differ for no good reason.
+			String name = fileNameOnly(sourceFileName);
 			if (s.canCompress()) {
-				s.writeCompressedPath(sourceFileName);
+				s.writeCompressedPath(name);
 			} else {
-				s.writeUTF(sourceFileName);
+				s.writeUTF(name);
 			}
 			s.writeInt(lineBreaks.length);
 			int previous = 0;

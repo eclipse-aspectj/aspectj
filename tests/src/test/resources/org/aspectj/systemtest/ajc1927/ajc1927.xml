@@ -33,4 +33,14 @@ JDK 27 (https://openjdk.org/projects/jdk/27/):
 		</run>
 	</ajc-test>
 
+	<!--
+	https://github.com/eclipse-aspectj/aspectj/issues/373
+	The source file of an aspect was recorded with the directory it was built in (the SourceContext attribute of the aspect
+	and the source location of an inter-type declaration), so building the same sources somewhere else gave different class
+	files. Only the file name is recorded now.
+	-->
+	<ajc-test dir="bugs1927/gh373" vm="8" title="class files of an aspect do not record the directory of its source file">
+		<compile files="Audit.aj Target.java" options="-1.8"/>
+	</ajc-test>
+
 </suite>

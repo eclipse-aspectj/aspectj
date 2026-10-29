@@ -272,7 +272,7 @@ public abstract class ResolvedTypeMunger {
 		if (s.canCompress()) {
 			s.writeByte(1 + (location == null ? 0 : 1)); // 1==compressed no location 2==compressed with location
 			if (location != null) {
-				s.writeCompressedPath(location.getSourceFile().getPath());
+				s.writeCompressedPath(AjAttribute.fileNameOnly(location.getSourceFile().getPath()));
 				s.writeInt(location.getLine());
 				s.writeInt(location.getOffset());
 			}
