@@ -11,6 +11,7 @@ package org.aspectj.matcher;
 
 import org.aspectj.matcher.tools.ReflectionWorldPointcutExpressionTest;
 import org.aspectj.weaver.AjAttributeReadLimitsTest;
+import org.aspectj.weaver.ResolvedTypeMungerDeserializationTest;
 import org.aspectj.weaver.TypeFactoryTest;
 import org.aspectj.weaver.WeaverStateInfoReadLimitsTest;
 import org.aspectj.weaver.patterns.AndOrNotTestCase;
@@ -47,6 +48,7 @@ public class MatcherModuleTests extends TestCase {
 	public static Test suite() {
 		TestSuite suite = new TestSuite(MatcherModuleTests.class.getName());
 		suite.addTestSuite(ReflectionWorldPointcutExpressionTest.class);
+		suite.addTestSuite(ResolvedTypeMungerDeserializationTest.class);
 		suite.addTestSuite(TypeFactoryTest.class);
 		suite.addTestSuite(ThisOrTargetTestCase.class);
 		suite.addTestSuite(ParserTestCase.class);
