@@ -44,7 +44,7 @@ jobs:
           ant -version
 
       - name: Set up cache for ~./m2/repository
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.m2/repository
