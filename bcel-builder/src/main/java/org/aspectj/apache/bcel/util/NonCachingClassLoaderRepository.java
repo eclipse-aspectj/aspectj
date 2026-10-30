@@ -164,10 +164,7 @@ public class NonCachingClassLoaderRepository implements Repository {
 			SpecialValue value = map.remove(k);
 			if (value == null)
 				return null;
-			if (value.get() != null) {
-				return value.get();
-			}
-			return null;
+			return value.get();
 		}
 	}
 
