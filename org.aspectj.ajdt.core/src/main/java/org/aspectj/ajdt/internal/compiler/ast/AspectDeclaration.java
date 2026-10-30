@@ -1208,6 +1208,13 @@ public class AspectDeclaration extends TypeDeclaration {
 
 	public void buildInterTypeAndPerClause(ClassScope classScope) {
 		factory = EclipseFactory.fromScopeLookupEnvironment(scope);
+
+		// Aspects are public in the class file (see generateCode), but the binding would only become so once the code of the
+		// aspect is generated. By then the methods of types compiled earlier have been verified, and the verification adds a
+		// bridge method to a public type for a public method it inherits from a type that is not public. So whether
+		// concrete aspects got a bridge for the methods of their abstract aspect depended on the order of the files (#357).
+		binding.modifiers = AstUtil.makePublic(binding.modifiers);
+
 		if (isPrivileged) {
 			binding.privilegedHandler = new PrivilegedHandler(this);
 		}

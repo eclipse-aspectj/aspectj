@@ -12,6 +12,7 @@ package org.aspectj.systemtest.ajc1927;
 import java.util.List;
 
 import org.aspectj.apache.bcel.classfile.JavaClass;
+import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.weaver.AjAttribute;
 import org.aspectj.weaver.ConcreteTypeMunger;
@@ -62,6 +63,28 @@ public class Bugs1927Tests extends XMLBasedAjcTestCase {
 		assertEquals(1, woven.getTypeMungers(target).size());
 		for (ConcreteTypeMunger munger : woven.getTypeMungers(target)) {
 			assertEquals("Audit.aj", munger.getMunger().getSourceLocation().getSourceFile().getPath());
+		}
+	}
+
+	public void testGh357_NoBridgesInConcreteAspects_AbstractAspectLast() throws Exception {
+		runTest("no bridge methods in concrete aspects - abstract aspect last");
+		assertNoBridgesForTheAbstractAspect();
+	}
+
+	public void testGh357_NoBridgesInConcreteAspects_AbstractAspectInTheMiddle() throws Exception {
+		runTest("no bridge methods in concrete aspects - abstract aspect in the middle");
+		assertNoBridgesForTheAbstractAspect();
+	}
+
+	/**
+	 * AbstractAudit is not public in the source but is in the class file, so no concrete aspect needs a bridge for its public
+	 * method, whichever order the files were compiled in.
+	 */
+	private void assertNoBridgesForTheAbstractAspect() throws Exception {
+		for (String aspect : new String[] { "ConcreteA", "ConcreteB", "ConcreteC" }) {
+			for (Method method : getClassFrom(ajc.getSandboxDirectory(), aspect).getMethods()) {
+				assertFalse(aspect + " has a bridge for the method of AbstractAudit: " + method, method.getName().equals("setInterceptor"));
+			}
 		}
 	}
 

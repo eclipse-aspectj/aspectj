@@ -43,4 +43,18 @@ JDK 27 (https://openjdk.org/projects/jdk/27/):
 		<compile files="Audit.aj Target.java" options="-1.8"/>
 	</ajc-test>
 
+	<!--
+	https://github.com/eclipse-aspectj/aspectj/issues/357
+	A public class that inherits a public method from a non-public class gets a bridge method for it. Aspects are public in
+	the class file, but only became so when their code was generated, so whether the concrete aspects got the bridge for
+	the methods of their (package visible) abstract aspect depended on the order the files were compiled in.
+	-->
+	<ajc-test dir="bugs1927/gh357" vm="8" title="no bridge methods in concrete aspects - abstract aspect last">
+		<compile files="Target.java ConcreteA.aj ConcreteB.aj ConcreteC.aj AbstractAudit.aj" options="-1.8"/>
+	</ajc-test>
+
+	<ajc-test dir="bugs1927/gh357" vm="8" title="no bridge methods in concrete aspects - abstract aspect in the middle">
+		<compile files="Target.java ConcreteA.aj AbstractAudit.aj ConcreteB.aj ConcreteC.aj" options="-1.8"/>
+	</ajc-test>
+
 </suite>
