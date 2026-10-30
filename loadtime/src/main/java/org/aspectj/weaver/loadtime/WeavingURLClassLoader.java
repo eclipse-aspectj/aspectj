@@ -42,7 +42,7 @@ public class WeavingURLClassLoader extends ExtensibleURLClassLoader implements W
 	private URL[] aspectURLs;
 	private WeavingAdaptor adaptor;
 	private boolean initializingAdaptor;
-	private Map generatedClasses = new HashMap(); /* String -> byte[] */
+	private Map<String,byte[]> generatedClasses = new HashMap<>();
 
 	private static Trace trace = TraceFactory.getTraceFactory().getTrace(WeavingURLClassLoader.class);
 

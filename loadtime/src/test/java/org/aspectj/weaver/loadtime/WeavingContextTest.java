@@ -17,6 +17,7 @@ import java.net.URLClassLoader;
 import java.util.Enumeration;
 import java.util.List;
 
+import org.aspectj.weaver.loadtime.definition.Definition;
 import org.aspectj.weaver.tools.WeavingAdaptor;
 
 import junit.framework.TestCase;
@@ -36,7 +37,7 @@ public class WeavingContextTest extends TestCase {
 		URLClassLoader loader = new URLClassLoader(new URL[] {},null);
 		IWeavingContext context = new TestWeavingContext(loader) {
 
-			public Enumeration getResources(String name) throws IOException {
+			public Enumeration<URL> getResources(String name) throws IOException {
 				called = true;
 				return super.getResources(name);
 			}
@@ -124,9 +125,9 @@ public class WeavingContextTest extends TestCase {
 		URLClassLoader loader = new URLClassLoader(new URL[] { fileURL },null);
 		IWeavingContext context = new TestWeavingContext(loader) {
 
-			public List getDefinitions(ClassLoader loader, WeavingAdaptor adaptor) {
+			public List<Definition> getDefinitions(ClassLoader loader, WeavingAdaptor adaptor) {
 				called = true;
-		        return super.getDefinitions(loader,adaptor);
+				return super.getDefinitions(loader,adaptor);
 			}
 
 		};
@@ -162,7 +163,7 @@ public class WeavingContextTest extends TestCase {
 			return "Id";
 		}
 
-		public Enumeration getResources(String name) throws IOException {
+		public Enumeration<URL> getResources(String name) throws IOException {
 			return loader.getResources(name);
 		}
 
@@ -181,8 +182,8 @@ public class WeavingContextTest extends TestCase {
 	        return isLocallyDefined;
 		}
 
-		public List getDefinitions(ClassLoader loader, WeavingAdaptor adaptor) {
-	        return ((ClassLoaderWeavingAdaptor)adaptor).parseDefinitions(loader);
+		public List<Definition> getDefinitions(ClassLoader loader, WeavingAdaptor adaptor) {
+			return ((ClassLoaderWeavingAdaptor)adaptor).parseDefinitions(loader);
 		}
 	}
 

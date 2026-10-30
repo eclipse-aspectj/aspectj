@@ -129,7 +129,6 @@ public class CustomMungerExtensionTest extends AjdeInteractionTestbed {
 		}
 
 		public ConcreteTypeMunger parameterizeWith(Map parameterizationMap, World world) {
-			// TODO Auto-generated method stub
 			return null;
 		}
 	}

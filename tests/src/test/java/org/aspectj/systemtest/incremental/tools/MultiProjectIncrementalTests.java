@@ -63,6 +63,7 @@ import org.aspectj.weaver.World;
  * of new files onto the current set (adding new files/changing existing ones) - you can then drive a new build and check it behaves
  * as expected.
  */
+@SuppressWarnings("unused")
 public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementalAjdeInteractionTestbed {
 
 	public void testIncremental_344326() throws Exception {

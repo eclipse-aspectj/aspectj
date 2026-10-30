@@ -137,13 +137,14 @@ public abstract class ModelTestCase extends XMLBasedAjcTestCase {
 			// String sandboxDir = ajc.getSandboxDirectory().getAbsolutePath();
 			String modelOutput = modelFilename;
 			// Load the file with the expected output
-			BufferedReader expect = new BufferedReader(new FileReader(expectedF));
-			// String tempDir = expect.readLine();
-			String expectedLine = null;
-			while ((expectedLine = expect.readLine()) != null) {
-				// Remove trailing whitespace
-				expectedLine = expectedLine.replaceAll("[\t ]+$", "");
-				fileContents.add(expectedLine);
+			try (BufferedReader expect = new BufferedReader(new FileReader(expectedF))) {
+				// String tempDir = expect.readLine();
+				String expectedLine = null;
+				while ((expectedLine = expect.readLine()) != null) {
+					// Remove trailing whitespace
+					expectedLine = expectedLine.replaceAll("[\t ]+$", "");
+					fileContents.add(expectedLine);
+				}
 			}
 			List<String> expectedFileContents = new ArrayList<>(fileContents);
 

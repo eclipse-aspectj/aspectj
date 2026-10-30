@@ -21,14 +21,23 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.ProtectionDomain;
-import java.util.*;
-import java.util.Map.Entry;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.Constants;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.LangUtil;
-import org.aspectj.weaver.IUnwovenClassFile;
 import org.aspectj.weaver.Lint;
 import org.aspectj.weaver.Lint.Kind;
 import org.aspectj.weaver.ResolvedType;
@@ -48,10 +57,14 @@ import org.aspectj.weaver.tools.Trace;
 import org.aspectj.weaver.tools.TraceFactory;
 import org.aspectj.weaver.tools.WeavingAdaptor;
 import org.aspectj.weaver.tools.cache.WeavedClassCache;
-
-import org.objectweb.asm.*;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.commons.ClassRemapper;
 import org.objectweb.asm.commons.Remapper;
+
 import sun.misc.Unsafe;
 
 /**

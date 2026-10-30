@@ -7,10 +7,9 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc198;
 
-import io.bmuskalla.system.properties.PropertyEnvironment;
-import io.bmuskalla.system.properties.ScopedSystemProperties;
-import junit.framework.Test;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+
+import junit.framework.Test;
 
 /**
  * @author Alexander Kriegisch
