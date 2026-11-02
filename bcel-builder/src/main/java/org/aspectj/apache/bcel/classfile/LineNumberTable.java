@@ -110,7 +110,7 @@ public final class LineNumberTable extends Attribute {
 	}
 
 	// Unpacks the byte array into the table
-	private void unpack() {
+	private synchronized void unpack() {
 		if (isInPackedState) {
 			try {
 				ByteArrayInputStream bs = new ByteArrayInputStream(data);
@@ -148,7 +148,7 @@ public final class LineNumberTable extends Attribute {
 	 * @throws IOException
 	 */
 	@Override
-	public final void dump(DataOutputStream file) throws IOException {
+	public final synchronized void dump(DataOutputStream file) throws IOException {
 		super.dump(file);
 		if (isInPackedState) {
 			file.write(data);
@@ -171,7 +171,7 @@ public final class LineNumberTable extends Attribute {
 	/**
 	 * @param line_number_table.
 	 */
-	public final void setLineNumberTable(LineNumber[] line_number_table) {
+	public final synchronized void setLineNumberTable(LineNumber[] line_number_table) {
 		this.data = null;
 		this.isInPackedState = false;
 		this.table = line_number_table;
@@ -272,5 +272,17 @@ public final class LineNumberTable extends Attribute {
 	public final int getTableLength() {
 		unpack();
 		return tableLength;
+	}
+
+	/**
+	 * Returns copy of this attribute using same packed state. Used in unit tests.
+	 */
+	public synchronized LineNumberTable copyFromPackedState() {
+		if (!isInPackedState) throw new IllegalStateException("No in packed state");
+		try {
+			return new LineNumberTable(nameIndex, length, new DataInputStream(new ByteArrayInputStream(data)), getConstantPool());
+		} catch (IOException e) {
+			throw new RuntimeException("Failed to unpack clone", e);
+		}
 	}
 }
