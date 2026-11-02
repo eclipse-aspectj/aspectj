@@ -186,6 +186,8 @@ public abstract class Attribute implements Cloneable, Node, Serializable {
 			return new NestHost(idx, len, file, cpool);
 		case Constants.ATTR_NEST_MEMBERS:
 			return new NestMembers(idx, len, file, cpool);
+		case Constants.ATTR_PERMITTED_SUBCLASSES:
+			return new PermittedSubclasses(idx, len, file, cpool);
 		default:
 			throw new IllegalStateException();
 		}

@@ -711,7 +711,10 @@ public interface Constants {
 	byte ATTR_NEST_HOST = 26;
 	byte ATTR_NEST_MEMBERS = 27;
 
-	short KNOWN_ATTRIBUTES = 28;
+	// J17:
+	byte ATTR_PERMITTED_SUBCLASSES = 28;
+
+	short KNOWN_ATTRIBUTES = 29;
 
 	String[] ATTRIBUTE_NAMES = {
 			"SourceFile", "ConstantValue", "Code", "Exceptions", "LineNumberTable", "LocalVariableTable",
@@ -719,7 +722,7 @@ public interface Constants {
 			"RuntimeVisibleAnnotations", "RuntimeInvisibleAnnotations", "RuntimeVisibleParameterAnnotations",
 			"RuntimeInvisibleParameterAnnotations", "LocalVariableTypeTable", "EnclosingMethod",
 			"AnnotationDefault","BootstrapMethods", "RuntimeVisibleTypeAnnotations", "RuntimeInvisibleTypeAnnotations",
-			"MethodParameters", "Module", "ModulePackages", "ModuleMainClass", "NestHost", "NestMembers"
+			"MethodParameters", "Module", "ModulePackages", "ModuleMainClass", "NestHost", "NestMembers", "PermittedSubclasses"
 	};
 
 	/**

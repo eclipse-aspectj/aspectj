@@ -57,4 +57,44 @@ JDK 27 (https://openjdk.org/projects/jdk/27/):
 		<compile files="Target.java ConcreteA.aj AbstractAudit.aj ConcreteB.aj ConcreteC.aj" options="-1.8"/>
 	</ajc-test>
 
+	<!--
+	https://github.com/eclipse-aspectj/aspectj/issues/383
+	The class files must not depend on the order of the source files. A public class gets bridge methods for the public
+	methods of a binary non-public parent, whose order depended on whether an earlier file had caused the methods of the
+	parent to be sorted. The permitted subclasses of an enum with constant bodies depended on the order the constants
+	were bound in, which another file referring to the enum can change.
+	-->
+	<ajc-test dir="bugs1927/gh383" vm="8" title="order of bridge methods does not depend on file order - class first">
+		<compile files="lib/I.java lib/P.java lib/S.java" options="-1.8"/>
+		<compile files="app/C.java app/D.java" classpath="$sandbox" options="-1.8"/>
+	</ajc-test>
+
+	<ajc-test dir="bugs1927/gh383" vm="8" title="order of bridge methods does not depend on file order - class last">
+		<compile files="lib/I.java lib/P.java lib/S.java" options="-1.8"/>
+		<compile files="app/D.java app/C.java" classpath="$sandbox" options="-1.8"/>
+	</ajc-test>
+
+	<ajc-test dir="bugs1927/gh383" vm="17" title="order of permitted subclasses of an enum does not depend on file order - enum first">
+		<compile files="e/E.java e/U.java" options="-17"/>
+	</ajc-test>
+
+	<ajc-test dir="bugs1927/gh383" vm="17" title="order of permitted subclasses of an enum does not depend on file order - enum last">
+		<compile files="e/U.java e/E.java" options="-17"/>
+	</ajc-test>
+
+	<!--
+	A class that is sealed has a PermittedSubclasses attribute. Weaving rewrites the class, so check it is kept and can be read.
+	-->
+	<ajc-test dir="bugs1927/permitted" vm="17" title="PermittedSubclasses attribute of a woven class is kept">
+		<compile files="Shape.java Circle.java Square.java Logging.aj Main.java" options="-17"/>
+		<run class="Main">
+			<stdout>
+				<line text="before describe"/>
+				<line text="Circle"/>
+				<line text="before describe"/>
+				<line text="Square"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
 </suite>

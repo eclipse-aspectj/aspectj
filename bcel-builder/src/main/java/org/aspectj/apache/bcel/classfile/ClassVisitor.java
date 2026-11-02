@@ -177,4 +177,7 @@ public interface ClassVisitor {
 	// J11:
 	void visitNestHost(NestHost nestHost);
 	void visitNestMembers(NestMembers nestMembers);
+
+	// J17:
+	void visitPermittedSubclasses(PermittedSubclasses permittedSubclasses);
 }
