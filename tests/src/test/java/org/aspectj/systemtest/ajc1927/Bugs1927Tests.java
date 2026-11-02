@@ -136,6 +136,10 @@ public class Bugs1927Tests extends XMLBasedAjcTestCase {
 		assertEquals(Arrays.asList("Circle", "Square"), Arrays.asList(((PermittedSubclasses) permitted).getClassesNames()));
 	}
 
+	public void testGh353_AnonymousClassWithFieldsButNoMethods() {
+		runTest("anonymous classes with fields but no methods");
+	}
+
 	@Override
 	protected java.net.URL getSpecFile() {
 		return getClassResource("ajc1927.xml");

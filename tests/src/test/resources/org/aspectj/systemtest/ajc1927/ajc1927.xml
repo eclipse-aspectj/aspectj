@@ -97,4 +97,19 @@ JDK 27 (https://openjdk.org/projects/jdk/27/):
 		</run>
 	</ajc-test>
 
+	<!--
+	https://github.com/eclipse-aspectj/aspectj/issues/353
+	An anonymous class that declares fields but no methods crashed the compiler (NullPointerException in
+	SourceTypeBinding.resolveTypeFor) because FieldBinding.sourceField() gave up when the class had no methods.
+	-->
+	<ajc-test dir="bugs1927/gh353" vm="8" title="anonymous classes with fields but no methods">
+		<compile files="Marker.java Anonymous.java" options="-1.8"/>
+		<run class="Anonymous">
+			<stdout>
+				<line text="initialized"/>
+				<line text="done"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
 </suite>
