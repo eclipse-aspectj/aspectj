@@ -9,10 +9,10 @@
 
 _© Copyright 2026 Contributors. All rights reserved._
 
-_Release info: 1.9.27 available Oct-2026_
+_Release info: 1.9.27 available Nov-2026_
 
 Please note that Bugzilla for issue management is deprecated and new issues should be filed as
-https://github.com/eclipse-aspectj/aspectj/issues/new[GitHub issues]. The list of issues addressed for 1.9.26 can be
+https://github.com/eclipse-aspectj/aspectj/issues/new[GitHub issues]. The list of issues addressed for 1.9.27 can be
 found here:
 
 * https://github.com/eclipse-aspectj/aspectj/issues?q=is%3Aissue+is%3Aclosed++milestone%3A1.9.27[GitHub 1.9.27]
@@ -20,7 +20,7 @@ found here:
 
 == New features
 
-AspectJ 1.9.27 supports https://openjdk.java.net/projects/jdk/27/[Java 27], its final and preview features:
+AspectJ 1.9.27 supports https://openjdk.java.net/projects/jdk/27/[Java 27], the final and preview features:
 
 * 523:	Make G1 the Default Garbage Collector in All Environments
 * 527:	Post-Quantum Hybrid Key Exchange for TLS 1.3
@@ -36,9 +36,48 @@ Some of these are API/JVM only so don't affect the compiler and should just work
 
 == Improvements
 
-* No major improvements
+=== Reproducible builds
+
+The class files produced by `ajc` are now more independent of the order in which the source files are processed, which helps
+builds of the same sources to produce identical class files on different machines and in different build runs:
+
+* Aspect class files record just the name of their source file, so they are the same wherever the sources are checked
+  out (#373).
+* Bridge methods in concrete aspects are generated consistently, whatever the order of the source files (#357).
+* Bridge methods, and the permitted subclasses of enums with constant bodies, are written in a fixed order (#383, in the
+  Eclipse compiler that AspectJ builds on).
+
+To be clear, the class files produced before were valid (in Java spec terms), but depending on factors like the
+order the build tool passed the source files sometimes the output class files varied slightly.
+
+If two builds of the same sources still differ, please raise an issue and attach the differing class files.
+
+=== Hardening
+
+Following the class file verification added in 1.9.26, AspectJ continues to tighten how it handles external input and
+files on disk:
+
+* `aop.xml` files are parsed with external entity resolution disabled.
+* The shared weaving cache (`aj.weaving.cache.impl=shared`) is more careful about the directory it uses and what it reads
+  back. If a cache directory is not accepted, the message explains what to change.
+
+=== Load-time weaving and runtime matching
+
+* Fewer `sun.misc.Unsafe` warnings on JDK 24+ when load-time weaving defines the classes it generates (for example for
+  around advice), including when the weaver runs inside Spring's instrumentation agent.
+* Matching annotations on types by reflection, as used by Spring AOP, is cheaper at startup because runtime-retention
+  annotations are read by reflection instead of parsing the class files again, and matching on annotation values of
+  types is more robust (#371, #372).
 
 == Other changes and bug fixes
+
+* Anonymous classes that declare fields but no methods (including enum constants with a body and fields) are compiled
+  correctly again (#353).
+* The BCEL classes understand the `PermittedSubclasses` attribute, and lazily unpacked class file attributes are safe to
+  use from several threads (#364).
+* The version time is parsed with a fixed locale (#362).
+* The handling of `@Deprecated` reported in #316 and #322 works correctly with the updated Eclipse compiler, and
+  regression tests were added.
 
 Worth repeating - AspectJ 1.9.26 included a number of changes to do more in depth verification of class files. This verification
 is intended to ensure bad data will cause AspectJ to fail with a proper exception rather than a stack overflow or
@@ -82,3 +121,14 @@ Please note, that you cannot run code compiled with preview features on any othe
 For example, records compiled with preview on JDK 15 cannot be used on JDK 16 without recompilation. This is a JVM
 limitation unrelated to AspectJ. Also, e.g. sealed classes are preview-1 on JDK 15 and preview-2 on JDK 16. You still
 need to recompile, no matter what.
+
+== Thanks
+
+Thank you to everyone who contributed to this release, by reporting issues, providing reproducers and sending changes:
+
+* https://github.com/nabhan06[nabhan06] for improvements to the weaving cache, `aop.xml` parsing and class file
+  attribute handling (#359, #360, #361, #364)
+* https://github.com/tommyk-gears[tommyk-gears] for the improvements to annotation matching by reflection (#371, #372)
+* https://github.com/alamar[alamar] (#357), https://github.com/saicharanvennapusa[saicharanvennapusa] (#353),
+  https://github.com/lprimak[lprimak] (#362), https://github.com/lefou[lefou] (#316) and
+  https://github.com/zuckel[zuckel] (#322) for reporting issues that were fixed in this release
