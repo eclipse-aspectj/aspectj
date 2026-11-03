@@ -61,13 +61,11 @@ public class Ajc186Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		}
 
 		public boolean couldMatchJoinPointsInType(Class aClass) {
-			System.out.println("wubble?");
 			return true;
 		}
 
 		public boolean couldMatchJoinPointsInType(Class aClass,
 				MatchingContext context) {
-			System.out.println("wibble?");
 			if (this.beanNamePattern.equals(context.getBinding("beanName"))) {
 				return true;
 			} else {
