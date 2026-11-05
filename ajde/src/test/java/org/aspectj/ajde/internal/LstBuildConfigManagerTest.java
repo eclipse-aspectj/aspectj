@@ -57,8 +57,8 @@ public class LstBuildConfigManagerTest extends AjdeTestCase {
 		assertFalse("expected there to be error messages because the build failed but didn't" +
 				" find any", getErrorMessages("invalid-entry.lst").isEmpty());
 
-		List messages = getMessages("invalid-entry.lst");
-		TestMessage message = (TestMessage)messages.get(0);
+		List<TestMessage> messages = getMessages("invalid-entry.lst");
+		TestMessage message = messages.get(0);
 		assertTrue(message.getContainedMessage().getMessage(), message.getContainedMessage().getMessage().contains("aaa.bbb"));
 
 	}

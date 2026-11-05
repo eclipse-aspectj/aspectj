@@ -10,8 +10,6 @@
  * Contributors:
  *     Xerox/PARC     initial implementation
  * ******************************************************************/
-
-
 package org.aspectj.testing.run;
 
 import org.aspectj.bridge.IMessage;

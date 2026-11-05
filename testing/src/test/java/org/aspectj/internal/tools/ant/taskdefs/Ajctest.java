@@ -812,7 +812,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
 			}
 		}
 		if (!goodCompile) {
-			post(testset, new Vector(), "couldn't run classes " + testset.testclasses + "due to failed compile", -1,
+			post(testset, new Vector<>(), "couldn't run classes " + testset.testclasses + "due to failed compile", -1,
 					"run");
 
 		} else if (!isSet("norun")) {
@@ -822,7 +822,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
 					testclass.setClassesDir(destdir.getAbsolutePath());
 				}
 				if ((exit = testclass.executeJava()) != 0) {
-					post(testset, new Vector(), testclass.msgs, exit, "run");
+					post(testset, new Vector<>(), testclass.msgs, exit, "run");
 				} else {
 					fire("run.good");
 				}
@@ -1258,24 +1258,20 @@ public class Ajctest extends Task implements PropertyChangeListener {
 						filename += "-" + t.nextToken().trim();
 					}
 					filename += ".txt";
-					PrintWriter out = null;
 					File file = new File(filename);
 					System.err.println("dumping results to " + file);
-					try {
-						out = new PrintWriter(new FileWriter(file));
+					try (PrintWriter out = new PrintWriter(new FileWriter(file))) {
 						out.println(multiLine);
 						out.println(oneLine);
 						System.err.println("dumped results to " + file);
 					} catch (IOException ioe) {
-						if (out != null)
-							out.close();
 					}
 				}
 			}
 		}));
 	}
 
-	private static String w(List list) {
+	private static String w(List<Failure> list) {
 		return a(list, "were", "was");
 	}
 
@@ -1414,7 +1410,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
 	}
 
 	private class AjcWrapper extends JavaCommandWrapper {
-		public AjcWrapper(Testset testset, List args) {
+		public AjcWrapper(Testset testset, List<Arg> args) {
 			super(testset, args, false);
 			if (testset.noclean) {
 				setExtraclasspath(new Path(project, destdir.getAbsolutePath()));
@@ -1427,7 +1423,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
 	}
 
 	private class EAjcWrapper extends JavaCommandWrapper {
-		public EAjcWrapper(Testset testset, List args) {
+		public EAjcWrapper(Testset testset, List<Arg> args) {
 			super(testset, args, false);
 			if (testset.noclean) {
 				setExtraclasspath(new Path(project, destdir.getAbsolutePath()));
@@ -1439,23 +1435,32 @@ public class Ajctest extends Task implements PropertyChangeListener {
 		}
 	}
 
-	static List<String> ajdocArgs(List<Arg> args) {
-		List<String> newargs = new Vector<>();
-		for (Iterator<Arg> i = args.iterator(); i.hasNext();) {
-			String arg = i.next() + "";
-			if (arg.startsWith("-X")) {
-				newargs.add(arg);
-			} else if (arg.equals("-public") || arg.equals("-package") || arg.equals("-protected")
-					|| arg.equals("-private")) {
-				newargs.add(arg);
-			} else if (arg.equals("-d") || arg.equals("-classpath") || arg.equals("-cp") || arg.equals("-sourcepath")
-					|| arg.equals("-bootclasspath") || arg.equals("-argfile")) {
-				newargs.add(arg);
-				newargs.add(i.next() + "");
-			} else if (arg.startsWith("@")) {
+	static List<Arg> ajdocArgs(List<Arg> args) {
+		List<Arg> newargs = new Vector<>();
+		for (Arg arg: args) {
+			String name = arg.name;
+			if (name.startsWith("-X") || name.startsWith("@") || name.equals("-public") || name.equals("-package")
+					|| name.equals("-protected") || name.equals("-private") || name.equals("-d")
+					|| name.equals("-classpath") || name.equals("-cp") || name.equals("-sourcepath")
+					|| name.equals("-bootclasspath") || name.equals("-argfile")) {
 				newargs.add(arg);
 			}
 		}
+//		for (Iterator<Arg> i = args.iterator(); i.hasNext();) {
+//			String arg = i.next() + "";
+//			if (arg.startsWith("-X")) {
+//				newargs.add(arg);
+//			} else if (arg.equals("-public") || arg.equals("-package") || arg.equals("-protected")
+//					|| arg.equals("-private")) {
+//				newargs.add(arg);
+//			} else if (arg.equals("-d") || arg.equals("-classpath") || arg.equals("-cp") || arg.equals("-sourcepath")
+//					|| arg.equals("-bootclasspath") || arg.equals("-argfile")) {
+//				newargs.add(arg);
+//				newargs.add(i.next() + "");
+//			} else if (arg.startsWith("@")) {
+//				newargs.add(arg);
+//			}
+//		}
 		return newargs;
 	}
 
@@ -1463,7 +1468,9 @@ public class Ajctest extends Task implements PropertyChangeListener {
 		public AjdocWrapper(Testset testset, List<Arg> args) {
 			super(testset, ajdocArgs(args), true);
 			String[] cmds = testset.getAjdoc().getCommandline().getCommandline();
-			Collections.addAll(this.args, cmds);
+			for (String cmd: cmds) {
+				this.args.add(new Arg(cmd, "", false));
+			}
 		}
 
 		String getMainClassName() {
@@ -1475,11 +1482,11 @@ public class Ajctest extends Task implements PropertyChangeListener {
 		abstract String getMainClassName();
 
 		protected Testset testset;
-		protected List<String> args;
+		protected List<Arg> args;
 		protected boolean needsClasspath;
 		protected Path extraClasspath;
 
-		public JavaCommandWrapper(Testset testset, List<String> args, boolean needsClasspath) {
+		public JavaCommandWrapper(Testset testset, List<Arg> args, boolean needsClasspath) {
 			this.testset = testset;
 			this.args = args;
 			this.needsClasspath = needsClasspath;
@@ -1528,7 +1535,7 @@ public class Ajctest extends Task implements PropertyChangeListener {
 			cmd.createArgument().setValue(getMainClassName());
 			boolean alreadySetDestDir = false;
 			boolean alreadySetClasspath = false;
-			for (Object o : args) {
+			for (Arg o : args) {
 				Arg arg = (Arg) o;
 				if (!arg.isj) {
 					cmd.createArgument().setValue(arg.name);

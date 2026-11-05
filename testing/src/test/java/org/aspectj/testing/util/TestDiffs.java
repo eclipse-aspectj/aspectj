@@ -175,43 +175,36 @@ public class TestDiffs { // XXX pretty dumb implementation
      * (produced by Harness option <tt>-traceTestsmin</tt>).
      * @return ArrayList of TestResult, one for every -traceTestsMin line in File
      */
-    private static ArrayList<TestResult> readTestResults(File file, String config) throws IOException {
-        LangUtil.throwIaxIfNull(file, "file");
-        if (null == config) {
-            config = file.getPath();
-        }
-        ArrayList<TestResult> result = new ArrayList<TestResult>();
-        FileReader in = null;
-        try {
-            in = new FileReader(file);
-            BufferedReader input = new BufferedReader(in);
-            String line;
-            // XXX handle stream interleaving more carefully
-            // XXX clip trailing ()
-            // XXX fix elision in test name rendering by -traceTestsMin?
-            while (null != (line = input.readLine())) {
-                boolean pass = line.startsWith("PASS");
-                boolean fail = false;
-                if (!pass) {
-                    fail = line.startsWith("FAIL");
-                }
-                if (pass || fail) {
-                    String test = line.substring(4).trim();
-                    result.add(new TestResult(test, config, pass));
-                }
-            }
-        } finally {
-            if (null != in) {
-                try { in.close(); }
-                catch (IOException e) {} // ignore
-            }
-        }
-        return result;
-    }
+	private static ArrayList<TestResult> readTestResults(File file, String config) throws IOException {
+		LangUtil.throwIaxIfNull(file, "file");
+		if (null == config) {
+			config = file.getPath();
+		}
+		ArrayList<TestResult> result = new ArrayList<TestResult>();
+		try (FileReader in = new FileReader(file)) {
+			BufferedReader input = new BufferedReader(in);
+			String line;
+			// XXX handle stream interleaving more carefully
+			// XXX clip trailing ()
+			// XXX fix elision in test name rendering by -traceTestsMin?
+			while (null != (line = input.readLine())) {
+				boolean pass = line.startsWith("PASS");
+				boolean fail = false;
+				if (!pass) {
+					fail = line.startsWith("FAIL");
+				}
+				if (pass || fail) {
+					String test = line.substring(4).trim();
+					result.add(new TestResult(test, config, pass));
+				}
+			}
+		}
+		return result;
+	}
 
     private static List<TestResult> safeList(List<TestResult> list) {
         return (null == list
-            ? Collections.EMPTY_LIST
+            ? Collections.emptyList()
             : Collections.unmodifiableList(list));
     }
 
@@ -296,8 +289,8 @@ public class TestDiffs { // XXX pretty dumb implementation
 
     /** results of a test */
     public static class TestResult {
-        public static final Comparator BY_PASSNAME = new Comparator() {
-            public int compare(Object o1, Object o2) {
+        public static final Comparator<TestResult> BY_PASSNAME = new Comparator<TestResult>() {
+            public int compare(TestResult o1, TestResult o2) {
                 if (o1 == o2) {
                     return 0;
                 }
@@ -308,13 +301,13 @@ public class TestDiffs { // XXX pretty dumb implementation
                     : (lhs.pass ? 1 : -1 ));
             }
 
-            public boolean equals(Object lhs, Object rhs) {
+            public boolean equals(TestResult lhs, TestResult rhs) {
                 return (0 == compare(lhs, rhs));
             }
         };
 
-        public static final Comparator BY_NAME = new Comparator() {
-            public int compare(Object o1, Object o2) {
+        public static final Comparator<TestResult> BY_NAME = new Comparator<TestResult>() {
+            public int compare(TestResult o1, TestResult o2) {
                 if (o1 == o2) {
                     return 0;
                 }
@@ -323,7 +316,7 @@ public class TestDiffs { // XXX pretty dumb implementation
                 return lhs.test.compareTo(rhs.test);
             }
 
-            public boolean equals(Object lhs, Object rhs) {
+            public boolean equals(TestResult lhs, TestResult rhs) {
                 return (0 == compare(lhs, rhs));
             }
         };

@@ -71,7 +71,6 @@ public class CompileCommand implements ICommand {
 	public boolean runCommand(String[] args, IMessageHandler handler) {
 		setup(args);
 		myHandler.start();
-		long startTime = System.currentTimeMillis();
 		try {
 			compiler.buildFresh();
 		} finally {
@@ -82,7 +81,6 @@ public class CompileCommand implements ICommand {
 
 	public boolean repeatCommand(IMessageHandler handler) {
 		myHandler.start();
-		long startTime = System.currentTimeMillis();
 		// System.err.println("recompiling...");
 		if (buildNextFresh) {
 			buildNextFresh = false;
@@ -245,7 +243,7 @@ class LoggingInvocationHandler implements InvocationHandler {
 		return null;
 	}
 
-	public static String render(Class c) {
+	public static String render(Class<?> c) {
 		if (null == c) {
 			return "(Class) null";
 		}
@@ -265,7 +263,7 @@ class LoggingInvocationHandler implements InvocationHandler {
 		sb.append(" ");
 		sb.append(method.getName());
 		sb.append("(");
-		Class[] parmTypes = method.getParameterTypes();
+		Class<?>[] parmTypes = method.getParameterTypes();
 		int parmTypesLength = (null == parmTypes ? 0 : parmTypes.length);
 		int argsLength = (null == args ? 0 : args.length);
 		boolean doType = (parmTypesLength == argsLength);
@@ -291,16 +289,16 @@ class LoggingInvocationHandler implements InvocationHandler {
 
 class MyCompilerConfig implements ICompilerConfiguration {
 
-	private Set inpath;
-	private Set aspectPath;
+	private Set<File> inpath;
+	private Set<File> aspectPath;
 	private String outJar;
 	private IOutputLocationManager locationMgr;
 
-	public Set getAspectPath() {
+	public Set<File> getAspectPath() {
 		return aspectPath;
 	}
 
-	public void setAspectPath(Set path) {
+	public void setAspectPath(Set<File> path) {
 		aspectPath = path;
 	}
 
@@ -308,20 +306,20 @@ class MyCompilerConfig implements ICompilerConfiguration {
 		return Globals.S_aspectjrt_jar;
 	}
 
-	public Set getInpath() {
+	public Set<File> getInpath() {
 		return inpath;
 	}
 
-	public void setInpath(Set input) {
+	public void setInpath(Set<File> input) {
 		inpath = input;
 	}
 
-	public Map getJavaOptionsMap() {
+	public Map<String,String> getJavaOptionsMap() {
 		return JavaOptions.getDefaultJavaOptions();
 	}
 
-	public List getProjectXmlConfigFiles() {
-		return Collections.EMPTY_LIST;
+	public List<String> getProjectXmlConfigFiles() {
+		return Collections.emptyList();
 	}
 
 	public String getOutJar() {
@@ -346,15 +344,15 @@ class MyCompilerConfig implements ICompilerConfiguration {
 		return null;
 	}
 
-	public List getProjectSourceFiles() {
+	public List<String> getProjectSourceFiles() {
 		return null;
 	}
 
-	public List getProjectSourceFilesChanged() {
+	public List<File> getProjectSourceFilesChanged() {
 		return null;
 	}
 
-	public Map getSourcePathResources() {
+	public Map<String,File> getSourcePathResources() {
 		return null;
 	}
 
@@ -362,7 +360,7 @@ class MyCompilerConfig implements ICompilerConfiguration {
 		return ICompilerConfiguration.EVERYTHING;
 	}
 
-	public List getClasspathElementsWithModifiedContents() {
+	public List<String> getClasspathElementsWithModifiedContents() {
 		return null;
 	}
 
@@ -380,13 +378,11 @@ class MyCompilerConfig implements ICompilerConfiguration {
 
 	@Override
 	public String getModulepath() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public String getModuleSourcepath() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -394,7 +390,7 @@ class MyCompilerConfig implements ICompilerConfiguration {
 
 class MyOutputLocationManager implements IOutputLocationManager {
 
-	public List getAllOutputLocations() {
+	public List<File> getAllOutputLocations() {
 		return null;
 	}
 

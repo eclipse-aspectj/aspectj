@@ -10,8 +10,6 @@
  * Contributors:
  *     Xerox/PARC     initial implementation
  * ******************************************************************/
-
-
 package org.aspectj.ajde.ui.internal;
 
 import java.util.Stack;
@@ -23,35 +21,37 @@ import org.aspectj.asm.IProgramElement;
  */
 public class NavigationHistoryModel {
 
-    private IProgramElement currNode = null;
-    private Stack backHistory = new Stack();
-    private Stack forwardHistory = new Stack();
+	private IProgramElement currNode = null;
+	private Stack<IProgramElement> backHistory = new Stack<>();
+	private Stack<IProgramElement> forwardHistory = new Stack<>();
 
-    /**
-     * @return 	null if the history is empty
-     */
+	/**
+	 * @return null if the history is empty
+	 */
 	public IProgramElement navigateBack() {
-		if (backHistory.isEmpty() || currNode == null) return null;
+		if (backHistory.isEmpty() || currNode == null)
+			return null;
 
 		forwardHistory.push(currNode);
-		currNode = (IProgramElement)backHistory.pop();
+		currNode = (IProgramElement) backHistory.pop();
 		return currNode;
 	}
 
-    /**
-     * @return 	null if the history is empty
-     */
+	/**
+	 * @return null if the history is empty
+	 */
 	public IProgramElement navigateForward() {
-		if (forwardHistory.isEmpty() || currNode == null) return null;
+		if (forwardHistory.isEmpty() || currNode == null)
+			return null;
 
 		backHistory.push(currNode);
-		currNode = (IProgramElement)forwardHistory.pop();
+		currNode = (IProgramElement) forwardHistory.pop();
 		return currNode;
 	}
 
-
-    public void navigateToNode(IProgramElement toNode) {
-    	if (currNode != null) backHistory.push(currNode);
-    	currNode = toNode;
-    }
+	public void navigateToNode(IProgramElement toNode) {
+		if (currNode != null)
+			backHistory.push(currNode);
+		currNode = toNode;
+	}
 }

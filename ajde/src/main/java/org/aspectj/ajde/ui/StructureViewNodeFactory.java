@@ -46,10 +46,9 @@ public abstract class StructureViewNodeFactory {
 		if (nodeHandle != null && !node.getKind().equals(IProgramElement.Kind.FIELD)) {
 			AsmManager manager = Ajde.getDefault().getModel();
 			IRelationshipMap relMap = (manager == null ? null : manager.getRelationshipMap());
-			List relationships = (relMap == null ? null : relMap.get(nodeHandle));
+			List<IRelationship> relationships = (relMap == null ? null : relMap.get(nodeHandle));
 			if (relationships != null) {
-				for (Object relationship : relationships) {
-					IRelationship rel = (IRelationship) relationship;
+				for (IRelationship rel : relationships) {
 					if (rel != null && rel.getTargets().size() > 0) {
 						IStructureViewNode relNode = createRelationship(rel, iconRegistry.getIcon(rel.getKind()));
 						if (relNode != null) {

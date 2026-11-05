@@ -39,7 +39,7 @@ public class MessageUtilTest extends TestCase {
     }
 
     MessageHandler samples;
-    List /* Exception */ exceptions;
+    List<Throwable> exceptions;
     List<ISourceLocation> locations;
     List<String> messageTexts;
 

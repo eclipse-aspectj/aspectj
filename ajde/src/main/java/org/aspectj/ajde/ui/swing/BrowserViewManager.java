@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import org.aspectj.ajde.Ajde;
 import org.aspectj.ajde.ui.GlobalStructureView;
 import org.aspectj.ajde.ui.GlobalViewProperties;
+import org.aspectj.ajde.ui.StructureView;
 import org.aspectj.ajde.ui.StructureViewProperties;
 import org.aspectj.asm.IProgramElement;
 
@@ -49,7 +50,7 @@ public class BrowserViewManager {
     private final GlobalViewProperties INHERITANCE_VIEW_PROPERTIES;
 
     public BrowserViewManager() {
-		java.util.List<GlobalStructureView> views = new ArrayList<>();
+		java.util.List<StructureView> views = new ArrayList<>();
 		views.add(DECLARATION_VIEW);
 		views.add(CROSSCUTTING_VIEW);
 		views.add(INHERITANCE_VIEW);

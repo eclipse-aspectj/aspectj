@@ -30,7 +30,7 @@ import org.aspectj.util.LangUtil;
  * and EOL comments # or //.
  * This duplicates ConfigFileUtil in some sense.
   */
-public class SFileReader {
+public class SFileReader<T> {
     // XXX move into LineReader, but that forces util to depend on AbortException?
     // Formerly in SuiteReader
 
@@ -39,11 +39,11 @@ public class SFileReader {
      * @param args String[] of fully-qualified paths to config files
      */
     public static void main(String[] args) throws IOException {
-        List result = new ArrayList();
-        ObjectChecker collector = new StandardObjectChecker(String.class, result);
-        SFileReader me = new SFileReader(null);
+        List<String> result = new ArrayList<>();
+        ObjectChecker<String> collector = new StandardObjectChecker<>(String.class, result);
+        SFileReader<String> me = new SFileReader<String>(null);
 		for (String arg : args) {
-			Node node = me.readNodes(new File(arg), null, true, System.err);
+			Node<String> node = me.readNodes(new File(arg), null, true, System.err);
 			if (!Node.visit(node, collector, null)) {
 				System.err.println("halted during copy of " + arg);
 			} else {
@@ -64,10 +64,10 @@ public class SFileReader {
     /** pass this to protected methods requiring String[] if you have none */
     protected static final String[] NONE = new String[0];
 
-    final Maker maker;
+    final Maker<T> maker;
 
     /** @param maker the Maker factory to use - if null, use Maker.ECHO */
-    public SFileReader(Maker maker) {
+    public SFileReader(Maker<T> maker) {
         this.maker = (null == maker ? Maker.ECHO : maker);
     }
 
@@ -86,13 +86,13 @@ public class SFileReader {
      *          and sub-suite Node available from getNodes()
      * @throws Error on any read error if abortOnReadError (default)
      */
-    public Node readNodes(
+    public Node<T> readNodes(
         final File file,
-        final ObjectChecker selector,
+        final ObjectChecker<? super T> selector,
         final boolean abortOnReadError,
         final PrintStream err)
         throws IOException {
-        final Node result = new Node(file.getPath(), maker.getType());
+        final Node<T> result = new Node<>(file.getPath());
         if (null == file) {
             throw new IllegalArgumentException("null file");
         } else if (!file.isAbsolute()) {
@@ -116,7 +116,7 @@ public class SFileReader {
                         if (!newFile.isAbsolute()) {
                             newFile = new File(baseDir, newFilePath);
                         }
-                        Node node = readNodes(newFile, selector, abortOnReadError, err);
+                        Node<T> node = readNodes(newFile, selector, abortOnReadError, err);
                         if (!result.addNode(node)) {
                             // XXX signal error?
                             System.err.println("warning: unable to add node: " + node);
@@ -125,7 +125,7 @@ public class SFileReader {
                     }
                 } else {
                     try {
-                        Object made = maker.make(reader);
+                        T made = maker.make(reader);
                         if ((null == selector) || (selector.isValid(made))) {
                             if (!result.add(made)) {
                                break;  // XXX signal error?
@@ -162,15 +162,15 @@ public class SFileReader {
     }
 
     /** factory produces objects by reading LineReader */
-    public interface Maker {
+    public interface Maker<T> {
         /**
          * Make the result using the input from the LineReader,
          * starting with lastLine().
          */
-        Object make(UtilLineReader reader) throws AbortException, IOException;
+        T make(UtilLineReader reader) throws AbortException, IOException;
 
         /** @return type of the Object made */
-        Class getType();
+        Class<T> getType();
 
         /** This echoes each line, prefixed by the reader.
          * @return file:line: {line}

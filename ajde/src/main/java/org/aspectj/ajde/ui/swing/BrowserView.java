@@ -59,7 +59,7 @@ class BrowserView extends JPanel {
     private BorderLayout borderLayout2 = new BorderLayout();
     JPanel mainToolBar_panel = new JPanel();
     JToolBar config_toolBar = new JToolBar();
-    JComboBox configs_comboBox = null;
+    JComboBox<String> configs_comboBox = null;
     BorderLayout borderLayout3 = new BorderLayout();
     JToolBar nav_toolBar = new JToolBar();
     JButton forward_button = new JButton();
@@ -76,7 +76,7 @@ class BrowserView extends JPanel {
  //           this.masterView = masterView;
             this.slaveView = slaveView;
             this.icons = icons;
-            configs_comboBox = new JComboBox(Ajde.getDefault().getBuildConfigManager().getAllBuildConfigFiles().toArray());
+            configs_comboBox = new JComboBox<>((String[])Ajde.getDefault().getBuildConfigManager().getAllBuildConfigFiles().toArray());
             configs_comboBox.setRenderer(new ConfigsCellRenderer());
 //            configs_comboBox.addItemListener(new ItemListener() {
 //            	public void itemStateChanged(ItemEvent e) {
@@ -118,9 +118,9 @@ class BrowserView extends JPanel {
         return slaveViewVisible;
     }
 
-    public void updateConfigs(java.util.List configsList) {
+    public void updateConfigs(java.util.List<String> configsList) {
         configs_comboBox.removeAllItems();
-		for (Object o : configsList) {
+		for (String o : configsList) {
 			configs_comboBox.addItem(o);
 		}
     }

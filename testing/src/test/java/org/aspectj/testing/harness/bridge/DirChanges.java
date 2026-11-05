@@ -221,7 +221,7 @@ public class DirChanges {
     protected boolean exists(
         String label,
         boolean exists,
-        List pathList,
+        List<String> pathList,
         boolean doCompare) {
 //        boolean expectStartEarlier = true;
       	return exists(label, exists, pathList,doCompare, true);
@@ -229,7 +229,7 @@ public class DirChanges {
     protected boolean exists(
         String label,
         boolean exists,
-        List pathList,
+        List<String> pathList,
         boolean doCompare,
         boolean expectStartEarlier) {
         boolean result = true;
@@ -237,9 +237,7 @@ public class DirChanges {
 //            final File expDir = ((!doCompare || (null == spec.expDir))
 //                ? null
 //                : new File(baseDir, spec.expDir));
-			for (Object o : pathList) {
-				final String entry = (String) o;
-				String path = entry;
+			for (String path : pathList) {
 				if (null != spec.defaultSuffix) {
 					if (".class".equals(spec.defaultSuffix)) {
 						path = path.replace('.', '/');

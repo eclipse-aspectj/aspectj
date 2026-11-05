@@ -590,7 +590,7 @@ public class CompilerRun implements IAjcRun {
                         IMessage.INFO,
                         System.err,
                         slopPrefix);
-                List found =
+                List<String> found =
                     FileUtil.lineSeek(
                         setupResult.seek,
                         arguments,

@@ -260,7 +260,7 @@ public class LangUtil {
 	 * @throws IllegalArgumentException if any components bad
 	 * @see #invalidComponents(Object[], Class)
 	 */
-	public static final void throwIaxIfComponentsBad(final Object[] input, final String name, final Class superType) {
+	public static final void throwIaxIfComponentsBad(final Object[] input, final String name, final Class<?> superType) {
 		String errs = invalidComponents(input, superType);
 		if (null != errs) {
 			String err = name + " invalid entries: " + errs;

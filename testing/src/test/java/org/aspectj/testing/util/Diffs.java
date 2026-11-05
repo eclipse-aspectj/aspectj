@@ -50,14 +50,12 @@ public class Diffs {
 	/**
 	 * Sort ISourceLocation based on line, file path.
 	 */
-	public static final Comparator SORT_SOURCELOC = new Comparator() {
+	public static final Comparator<ISourceLocation> SORT_SOURCELOC = new Comparator<ISourceLocation>() {
 		/**
 		 * Compare ISourceLocation based on line, file path.
 		 * @throws NullPointerException if anything is null
 		 */
-		public int compare(Object lhs, Object rhs) {
-			ISourceLocation l = (ISourceLocation) lhs;
-			ISourceLocation r = (ISourceLocation) rhs;
+		public int compare(ISourceLocation l, ISourceLocation r) {
 			int result = getLine(l) - getLine(r);
 			if (0 != result) {
 				return result;

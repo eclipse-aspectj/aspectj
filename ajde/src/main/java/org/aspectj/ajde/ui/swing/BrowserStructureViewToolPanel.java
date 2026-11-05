@@ -57,21 +57,21 @@ public class BrowserStructureViewToolPanel extends JPanel {
     BorderLayout borderLayout2 = new BorderLayout();
     BorderLayout borderLayout3 = new BorderLayout();
     JPanel view_panel = new JPanel();
-    JComboBox view_comboBox = null;
+    JComboBox<StructureView> view_comboBox = null;
     JLabel view_label = new JLabel();
     BorderLayout borderLayout4 = new BorderLayout();
 
 	public BrowserStructureViewToolPanel(
-		java.util.List structureViews,
+		java.util.List<StructureView> structureViews,
 		StructureView currentView,
 		StructureViewPanel viewPanel) {
 
 		this.currentView = currentView;
 		this.viewPanel = viewPanel;
-		view_comboBox = new JComboBox();
+		view_comboBox = new JComboBox<>();
 		view_comboBox.setFont(AjdeWidgetStyles.DEFAULT_LABEL_FONT);
 
-		for (Object structureView : structureViews) {
+		for (StructureView structureView : structureViews) {
 			view_comboBox.addItem(structureView);
 		}
 
@@ -147,7 +147,7 @@ public class BrowserStructureViewToolPanel extends JPanel {
 	private JPopupMenu createRelationsMenu() {
 		JPopupMenu relationsMenu = new JPopupMenu();
 
-		java.util.List relations = Ajde.getDefault().getStructureViewManager().getAvailableRelations();
+		java.util.List<IRelationship.Kind> relations = Ajde.getDefault().getStructureViewManager().getAvailableRelations();
 		for (Object o : relations) {
 			IRelationship.Kind relation = (IRelationship.Kind) o;
 			CheckBoxSelectionMenuButton menuItem = new CheckBoxSelectionMenuButton(relation);

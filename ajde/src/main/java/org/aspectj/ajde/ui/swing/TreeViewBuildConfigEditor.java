@@ -61,7 +61,7 @@ public class TreeViewBuildConfigEditor extends JPanel implements BuildConfigEdit
 //	private ConfigTreeNode currNode;
 	private BuildConfigModel model = null;
 
-    private static java.util.List selectedEntries = new ArrayList();
+    private static java.util.List<String> selectedEntries = new ArrayList<>();
 //    private String configFile = null;
 //    private File sourcePath = null;
     //private BuildConfigModelBuilder configTreeBuilder = new BuildConfigModelBuilder();

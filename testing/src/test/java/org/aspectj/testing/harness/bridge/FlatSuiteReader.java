@@ -38,10 +38,10 @@ import org.aspectj.util.LangUtil;
  * SFileReader.Maker implementation to read tests
  * XXX supports iterative but not yet incremental compiles
  */
-public class FlatSuiteReader implements SFileReader.Maker {
+public class FlatSuiteReader implements SFileReader.Maker<AjcTest.Spec> {
 	public static final String[] RA_String = new String[0];
 	public static final FlatSuiteReader ME = new FlatSuiteReader();
-	private static final SFileReader READER = new SFileReader(ME);
+	private static final SFileReader<AjcTest.Spec> READER = new SFileReader<>(ME);
 
 	static boolean isNumber(String s) { // XXX costly
 		if ((null == s) || (0 == s.length())) {
@@ -64,7 +64,7 @@ public class FlatSuiteReader implements SFileReader.Maker {
 	/**
 	 * @see org.aspectj.testing.harness.bridge.SFileReader.Maker#getType()
 	 */
-	public Class getType() {
+	public Class<AjcTest.Spec> getType() {
 		return AjcTest.Spec.class;
 	}
 
@@ -75,7 +75,7 @@ public class FlatSuiteReader implements SFileReader.Maker {
 	 * @return the next AjcTest in reader, or null
 	 * @see org.aspectj.testing.harness.bridge.SFileReader.Maker#make(UtilLineReader)
 	 */
-	public Object make(final UtilLineReader reader)
+	public AjcTest.Spec make(final UtilLineReader reader)
 		throws AbortException, IOException {
 		final AjcTest.Spec result = new AjcTest.Spec();
 		boolean usingEclipse = false; // XXX
@@ -351,11 +351,11 @@ public class FlatSuiteReader implements SFileReader.Maker {
 		if (!suiteFile.isAbsolute()) {
 			suiteFile = suiteFile.getAbsoluteFile();
 		}
-        final AjcTest.Suite.Spec result = new AjcTest.Suite.Spec();
-        result.setSuiteDirFile(suiteFile.getParentFile());
-		ObjectChecker collector = new StandardObjectChecker(IRunSpec.class) {
-			public boolean doIsValid(Object o) {
-                result.addChild((IRunSpec) o);
+		final AjcTest.Suite.Spec result = new AjcTest.Suite.Spec();
+		result.setSuiteDirFile(suiteFile.getParentFile());
+		ObjectChecker<IRunSpec> collector = new StandardObjectChecker<IRunSpec>(IRunSpec.class) {
+			public boolean doIsValid(IRunSpec o) {
+				result.addChild(o);
 				return true;
 			}
 		};

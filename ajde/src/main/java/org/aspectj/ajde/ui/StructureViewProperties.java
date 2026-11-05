@@ -10,8 +10,6 @@
  * Contributors:
  *     Xerox/PARC     initial implementation
  * ******************************************************************/
-
-
 package org.aspectj.ajde.ui;
 
 import java.io.ObjectStreamException;
@@ -48,11 +46,11 @@ public class StructureViewProperties {
     private Sorting sorting = Sorting.DECLARATIONAL;
 	private Granularity granularity = StructureViewProperties.Granularity.DECLARED_ELEMENTS;
 
-    public List getRelations() {
+    public List<IRelationship.Kind> getRelations() {
         return relations;
     }
 
-    public void setRelations(List relations) {
+    public void setRelations(List<IRelationship.Kind> relations) {
     	this.relations = relations;
     }
 

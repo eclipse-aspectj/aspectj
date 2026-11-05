@@ -123,12 +123,12 @@ public class LstBuildConfigManager implements BuildConfigManager {
 	}
 
 	@Override
-	public void addFilesToConfig(String configFilePath, List paths) {
+	public void addFilesToConfig(String configFilePath, List<String> paths) {
 
 	}
 
 	@Override
-	public void removeFilesFromConfig(String configFilePath, List files) {
+	public void removeFilesFromConfig(String configFilePath, List<String> files) {
 
 	}
 
@@ -151,7 +151,7 @@ public class LstBuildConfigManager implements BuildConfigManager {
 	// }
 	// }
 
-	private void buildDirTree(BuildConfigNode node, String rootPath, List importedFiles, String configFileName) {
+	private void buildDirTree(BuildConfigNode node, String rootPath, List<File> importedFiles, String configFileName) {
 		File[] dirs = new File(node.getResourcePath()).listFiles(DIR_FILTER);
 		if (dirs == null)
 			return;
@@ -172,8 +172,7 @@ public class LstBuildConfigManager implements BuildConfigManager {
 			}
 			node.addChild(dir);
 			// boolean foundMatch = false;
-			for (Object file : importedFiles) {
-				File importedFile = (File) file;
+			for (File importedFile : importedFiles) {
 				if (importedFile.getParentFile().getAbsolutePath().equals(dir2.getAbsolutePath())) {
 					// foundMatch = true;
 					BuildConfigNode importedFileNode = new BuildConfigNode(importedFile.getName(), BuildConfigNode.Kind.FILE_LST,
@@ -213,9 +212,8 @@ public class LstBuildConfigManager implements BuildConfigManager {
 		}
 	}
 
-	private void addFilesToDirTree(BuildConfigModel model, List configFiles, List badEntries) {
-		for (Object configFile : configFiles) {
-			String path = (String) configFile;
+	private void addFilesToDirTree(BuildConfigModel model, List<String> configFiles, List<String> badEntries) {
+		for (String path : configFiles) {
 			if (path.startsWith("..")) {
 				File file = new File(path);
 				BuildConfigNode node = new BuildConfigNode(file.getName(), BuildConfigNode.Kind.FILE_JAVA, path);

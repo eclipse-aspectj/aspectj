@@ -59,13 +59,12 @@ public class StructureViewPanel extends JPanel implements StructureViewRenderer 
 		init();
 	}
 
-	public StructureViewPanel(java.util.List structureViews) {
+	public StructureViewPanel(java.util.List<StructureView> structureViews) {
 //		this.structureViews = structureViews;
-
-		for (Object structureView : structureViews) {
-			initView((StructureView) structureView);
+		for (StructureView structureView : structureViews) {
+			initView(structureView);
 		}
-		currentView = (StructureView)structureViews.get(0);
+		currentView = structureViews.get(0);
 		structureToolBar_panel = new BrowserStructureViewToolPanel(structureViews, currentView, this);
 		init();
 	}

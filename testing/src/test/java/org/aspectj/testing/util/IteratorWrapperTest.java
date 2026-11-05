@@ -70,7 +70,7 @@ public class IteratorWrapperTest extends TestCase {
         checkIteratorWrapper(in, exp);
 
         Object[] RA_cd = new String[] { "c", "d" };
-        List List_cd = Collections.unmodifiableList(Arrays.asList(RA_cd));
+        List<Object> List_cd = Collections.unmodifiableList(Arrays.asList(RA_cd));
 
         in = new List[] {List_ab, List_cd};
         exp = new Object[][] {

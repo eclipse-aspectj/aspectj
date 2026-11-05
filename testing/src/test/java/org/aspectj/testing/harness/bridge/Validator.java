@@ -497,13 +497,13 @@ public class Validator {
 	 */
 	public void deleteTempFiles(boolean reportFailures) {
 		if (null == locker) {
-			for (ListIterator iter = tempFiles.listIterator(); iter.hasNext();) {
-				if (deleteFile((File) iter.next(), reportFailures)) {
+			for (ListIterator<File> iter = tempFiles.listIterator(); iter.hasNext();) {
+				if (deleteFile(iter.next(), reportFailures)) {
 					iter.remove();
 				}
 			}
-			for (ListIterator iter = sandboxes.listIterator(); iter.hasNext();) {
-				Sandbox sandbox = (Sandbox) iter.next();
+			for (ListIterator<Sandbox> iter = sandboxes.listIterator(); iter.hasNext();) {
+				Sandbox sandbox = iter.next();
 				// XXX assumes all dirs are in sandboxDir
 				if (deleteFile(sandbox.sandboxDir, reportFailures)) {
 					iter.remove();

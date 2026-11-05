@@ -50,7 +50,7 @@ public class StructureSearchManagerTest extends AjdeTestCase {
 	}
 
 	public void testFindNonExistent() {
-		List matches = Ajde.getDefault().getStructureSearchManager().findMatches(
+		List<IProgramElement> matches = Ajde.getDefault().getStructureSearchManager().findMatches(
 			"mumbleNodeDesNotExist",
 			null
 		);

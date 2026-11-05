@@ -28,19 +28,19 @@ import java.util.List;
  * Subclasses may instead implement doIsValid().
  * @author isberg
  */
-public class StandardObjectChecker implements ObjectChecker {
+public class StandardObjectChecker<T> implements ObjectChecker<T> {
 
-    public final Class type;
-    private final ObjectChecker delegate;
-    private final List collector;
+    public final Class<? extends T> type;
+    private final ObjectChecker<? super T> delegate;
+    private final List<? super T> collector;
     private final boolean collectionResult;
 
     /**
      * Create one with no delegate.
      * @param type the Class of the type required of the input
      */
-    public StandardObjectChecker(Class type) {
-        this(type, ANY, (List) null, true);
+    public StandardObjectChecker(Class<? extends T> type) {
+        this(type, ANY, null, true);
     }
 
     /**
@@ -48,7 +48,7 @@ public class StandardObjectChecker implements ObjectChecker {
      * @param delegate the ObjectChecker to delegate to after
      *         checking for non-null input of the correct type.
      */
-    public StandardObjectChecker(Class type, ObjectChecker delegate) {
+    public StandardObjectChecker(Class<? extends T> type, ObjectChecker<? super T> delegate) {
         this(type, delegate, null, true);
     }
 
@@ -57,7 +57,7 @@ public class StandardObjectChecker implements ObjectChecker {
      * @param type the Class of the type required of the input
      * @param collector the list to collect valid entries
      */
-    public StandardObjectChecker(Class type, List collector) {
+    public StandardObjectChecker(Class<? extends T> type, List<? super T> collector) {
         this(type, ANY, collector, true);
     }
 
@@ -66,7 +66,7 @@ public class StandardObjectChecker implements ObjectChecker {
      * @param collector the list to collect valid entries
      * @param collectionResult the value to return when entry was added
      */
-    public StandardObjectChecker(Class type, List collector, boolean collectionResult) {
+    public StandardObjectChecker(Class<? extends T> type, List<? super T> collector, boolean collectionResult) {
         this(type, ANY, collector, collectionResult);
     }
 
@@ -74,8 +74,8 @@ public class StandardObjectChecker implements ObjectChecker {
      * @param type the Class of the type required of the input
      * @param collector the list to collect valid entries
      */
-    public StandardObjectChecker(Class type, ObjectChecker delegate,
-                                List collector, boolean collectionResult) {
+    public StandardObjectChecker(Class<? extends T> type, ObjectChecker<? super T> delegate,
+                                List<? super T> collector, boolean collectionResult) {
         if (null == type) throw new IllegalArgumentException("null type");
         this.type = type;
         this.delegate = delegate;
@@ -93,7 +93,7 @@ public class StandardObjectChecker implements ObjectChecker {
      *          or if one of subclass (doIsValid(..)) or delegates
      *          (list, collector) returns false.
      */
-    public final boolean isValid(Object input) {
+    public final boolean isValid(T input) {
         if ((null == input) || (!(type.isAssignableFrom(input.getClass())))) {
             return false;
         } else if (null != delegate) {
@@ -120,7 +120,7 @@ public class StandardObjectChecker implements ObjectChecker {
      * This implementation returns true;
      * @return true
      */
-    public boolean doIsValid(Object input) {
+    public boolean doIsValid(T input) {
         return true;
     }
 

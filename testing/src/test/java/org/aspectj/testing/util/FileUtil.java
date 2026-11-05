@@ -13,6 +13,7 @@
 
 package org.aspectj.testing.util;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
@@ -21,11 +22,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.io.StringBufferInputStream;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Vector;
 import java.util.jar.Attributes;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
@@ -454,7 +460,7 @@ public class FileUtil {
             String entry = "Manifest-Version: 1.0\n"
                 + mainKey + ": " + mainClass + "\n";
             try {
-                result = new Manifest(new StringBufferInputStream(entry));
+                result = new Manifest(new ByteArrayInputStream(entry.getBytes(StandardCharsets.UTF_8)));
                 Attributes attributes = result.getMainAttributes();
                 String main = attributes.getValue(mainKey);
                 if (null == main) {

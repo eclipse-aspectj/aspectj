@@ -77,7 +77,7 @@ public interface BuildConfigManager {
 	 * @param configFilePath	full path to the configuration file
 	 * @param files			list of full paths to the files to be added
 	 */
-	void addFilesToConfig(String configFilePath, List files);
+	void addFilesToConfig(String configFilePath, List<String> files);
 
 	/**
 	 * Remove files from a configuration.
@@ -85,13 +85,13 @@ public interface BuildConfigManager {
 	 * @param configFilePath	full path to the configuration file
 	 * @param files			list of full paths to the files to be removed
 	 */
-	void removeFilesFromConfig(String configFilePath, List files);
+	void removeFilesFromConfig(String configFilePath, List<String> files);
 
 
 	/**
 	 * @return list (of Strings) of all build configuration files
 	 * found so far
 	 */
-	List /*String*/ getAllBuildConfigFiles();
+	List<String> getAllBuildConfigFiles();
 
 }

@@ -13,6 +13,7 @@
 
 package org.aspectj.testing.harness.bridge;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,14 +37,14 @@ import org.aspectj.util.LangUtil;
 public class AjcMessageHandler extends MessageHandler {
 
 	/** Comparator for enclosed IMessage diffs */
-	public static final Comparator COMP_IMessage =
+	public static final Comparator<IMessage> COMP_IMessage =
 		BridgeUtil.Comparators.MEDIUM_IMessage;
 
 	/** Comparator for enclosed File diffs */
-	public static final Comparator COMP_File = BridgeUtil.Comparators.WEAK_File;
+	public static final Comparator<File> COMP_File = BridgeUtil.Comparators.WEAK_File;
 
 	/** unmodifiable list of IMessage messages of any type */
-	private final List expectedMessagesAsList;
+	private final List<IMessage> expectedMessagesAsList;
 
 	/** IMessageHolder variant of expectedMessagesAsList */
 	private final IMessageHolder expectedMessages;
@@ -55,14 +56,14 @@ public class AjcMessageHandler extends MessageHandler {
 	private final boolean expectingCommandTrue;
 
 	/** unmodifiable list of File expected to be recompiled */
-	private final List expectedRecompiled;
+	private final List<File> expectedRecompiled;
 	// Unused now, but reinstate when supported
 
 	/** if true, ignore warnings when calculating diffs and passed() */
 	private final boolean ignoreWarnings;
 
 	/** list of File actually recompiled */
-	private List actualRecompiled;
+	private List<File> actualRecompiled;
 
 	/** cache expected/actual diffs, nullify if any new message */
 	private transient CompilerDiffs diffs;
@@ -79,7 +80,7 @@ public class AjcMessageHandler extends MessageHandler {
 		LangUtil.throwIaxIfNull(messages, "messages");
 		this.expectedMessages = expectedMessages;
 		expectedMessagesAsList = expectedMessages.getUnmodifiableListView();
-		expectedRecompiled = Collections.EMPTY_LIST;
+		expectedRecompiled = Collections.emptyList();
 		this.ignoreWarnings = ignoreWarnings;
 		int fails = 0;
 		int errors = 0;
@@ -122,7 +123,7 @@ public class AjcMessageHandler extends MessageHandler {
 	 * @param List of File recompiled - may be null; adopted but not modified
 	 * @throws IllegalStateException if they have been set already.
 	 */
-	public void setRecompiled(List list) {
+	public void setRecompiled(List<File> list) {
 		if (null != actualRecompiled) {
 			throw new IllegalStateException("actual recompiled already set");
 		}
@@ -247,7 +248,7 @@ public class AjcMessageHandler extends MessageHandler {
 	private boolean expecting(IMessage message) {
 		boolean match = false;
 		if (null != message) {
-			for (Object o : expectedMessagesAsList) {
+			for (IMessage o : expectedMessagesAsList) {
 				// amc - we have to compare against all messages to consume multiple
 				// text matches on same line. Return true if any matches.
 				if (0 == COMP_IMessage.compare(message, o)) {
@@ -288,8 +289,7 @@ public class AjcMessageHandler extends MessageHandler {
 	 * @return true if actual message is matched in the expected messages
 	 */
 	private boolean expectedMessagesHasMatchFor(IMessage actual) {
-		for (Object o : expectedMessagesAsList) {
-			IMessage expected = (IMessage) o;
+		for (IMessage expected: expectedMessagesAsList) {
 			if (0 == COMP_IMessage.compare(expected, actual)) {
 				return true;
 			}
@@ -298,18 +298,18 @@ public class AjcMessageHandler extends MessageHandler {
 	}
 
 	/** @return immutable list of a given kind - use  null for all kinds */
-	private List getList(IMessage.Kind kind) {
+	private List<IMessage> getList(IMessage.Kind kind) {
 		if ((null == kind) || (0 == numMessages(kind, IMessageHolder.EQUAL))) {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
 		return Arrays.asList(getMessages(kind, IMessageHolder.EQUAL));
 	}
 
 	/** @return "" if no items or {prefix}{item}{suffix}... otherwise */
-	private void render(// LangUtil instead?
-	StringBuffer result, String prefix, String suffix, List items) {
+	private <T> void render(// LangUtil instead?
+	StringBuffer result, String prefix, String suffix, List<T>  items) {
 		if ((null != items)) {
-			for (Object item : items) {
+			for (T item : items) {
 				result.append(prefix + item + suffix);
 			}
 		}
