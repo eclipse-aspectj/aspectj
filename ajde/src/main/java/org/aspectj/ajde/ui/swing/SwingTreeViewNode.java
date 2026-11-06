@@ -96,9 +96,9 @@ public class SwingTreeViewNode extends DefaultMutableTreeNode implements IStruct
 		super.remove((DefaultMutableTreeNode)child);
 	}
 
-	public List getChildren() {
+	public List<IStructureViewNode> getChildren() {
 		if (children == null) {
-			return new ArrayList();
+			return new ArrayList<>();
 		} else {
 			return children;
 		}
