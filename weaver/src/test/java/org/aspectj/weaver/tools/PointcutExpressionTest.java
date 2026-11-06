@@ -19,10 +19,10 @@ import junit.framework.TestCase;
 public class PointcutExpressionTest extends TestCase {
 
 	PointcutParser p;
-	Constructor asCons;
-	Constructor bsCons;
-	Constructor bsStringCons;
-	Constructor clientCons;
+	Constructor<A> asCons;
+	Constructor<B> bsCons;
+	Constructor<B> bsStringCons;
+	Constructor<Client> clientCons;
 	Method a;
 	Method aa;
 	Method aaa;

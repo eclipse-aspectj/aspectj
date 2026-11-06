@@ -262,21 +262,21 @@ public final class TestUtil {
 		return result;
 	}
 
-	public static File aspectjrtJarFile() {
-		return (File) LIB_ENTRIES.get(ASPECTJRT_KEY + ".file");
-	}
-
-	public static URL aspectjrtJarURL() {
-		return (URL) LIB_ENTRIES.get(ASPECTJRT_KEY + ".url");
-	}
-
-	public static File testingClientJarFile() {
-		return (File) LIB_ENTRIES.get(TESTING_CLIENT_KEY + ".file");
-	}
-
-	public static URL testingClientJarURL() {
-		return (URL) LIB_ENTRIES.get(TESTING_CLIENT_KEY + ".url");
-	}
+//	public static File aspectjrtJarFile() {
+//		return (File) LIB_ENTRIES.get(ASPECTJRT_KEY + ".file");
+//	}
+//
+//	public static URL aspectjrtJarURL() {
+//		return (URL) LIB_ENTRIES.get(ASPECTJRT_KEY + ".url");
+//	}
+//
+//	public static File testingClientJarFile() {
+//		return (File) LIB_ENTRIES.get(TESTING_CLIENT_KEY + ".file");
+//	}
+//
+//	public static URL testingClientJarURL() {
+//		return (URL) LIB_ENTRIES.get(TESTING_CLIENT_KEY + ".url");
+//	}
 
 	/**
 	 *
@@ -375,10 +375,9 @@ public final class TestUtil {
 
 	public static Object runMethod(String classPath, String className, String methodName, Object[] args) {
 		classPath += File.pathSeparator + System.getProperty("java.class.path");
-
+		@SuppressWarnings("resource")
 		ClassLoader loader = new URLClassLoader(pathToURLs(classPath), null);
-
-		Class c = null;
+		Class<?> c = null;
 		try {
 			c = loader.loadClass(className);
 		} catch (ClassNotFoundException e) {
@@ -688,7 +687,7 @@ public final class TestUtil {
 		Throwable thrown = null;
 		try {
 			ClassLoader loader = sink.getClass().getClassLoader();
-			Class sourceClass = loader.loadClass(sourceName);
+			Class<?> sourceClass = loader.loadClass(sourceName);
 			if (!Modifier.isPublic(sourceClass.getModifiers())) {
 				errorSuite(sink, sourceName, "not public class");
 				return;

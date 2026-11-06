@@ -22,13 +22,14 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.problem.AbortCompilation;
 import org.aspectj.weaver.IClassFileProvider;
 import org.aspectj.weaver.IUnwovenClassFile;
 import org.aspectj.weaver.IWeaveRequestor;
+import org.aspectj.weaver.bcel.UnwovenClassFile;
 import org.eclipse.core.runtime.OperationCanceledException;
 
 /**
  * @author colyer This class provides the weaver with a source of class files to weave (via the iterator and IClassFileProvider
  *         interfaces). It receives results back from the weaver via the IWeaveRequestor interface.
  */
-public class WeaverAdapter implements IClassFileProvider, IWeaveRequestor, Iterator {
+public class WeaverAdapter implements IClassFileProvider, IWeaveRequestor, Iterator<UnwovenClassFile> {
 
 	private final AbstractCompilerAdapter compilerAdapter;
 	private Iterator<InterimCompilationResult> resultIterator;
@@ -59,7 +60,7 @@ public class WeaverAdapter implements IClassFileProvider, IWeaveRequestor, Itera
 	 *
 	 * @see org.aspectj.weaver.IClassFileProvider#getClassFileIterator()
 	 */
-	public Iterator getClassFileIterator() {
+	public Iterator<UnwovenClassFile> getClassFileIterator() {
 		classFileIndex = 0;
 		localIteratorCounter = 0;
 		nowProcessing = null;
@@ -122,7 +123,7 @@ public class WeaverAdapter implements IClassFileProvider, IWeaveRequestor, Itera
 	 *
 	 * @see java.util.Iterator#next()
 	 */
-	public Object next() {
+	public UnwovenClassFile next() {
 		if (!hasNext())
 			return null; // sets up indices correctly
 		if (finalPhase) {

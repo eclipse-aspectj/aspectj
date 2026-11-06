@@ -62,7 +62,7 @@ public class AjMethodDeclaration extends MethodDeclaration {
 	    return generateInfoAttributes(classFile,false);
 	}
 
-	protected void addDeclarationStartLineAttribute(List extraAttributeList, ClassFile classFile) {
+	protected void addDeclarationStartLineAttribute(List<IAttribute> extraAttributeList, ClassFile classFile) {
 		if ((classFile.codeStream.generateAttributes & ClassFileConstants.ATTR_LINES)==0) return;
 
 		int[] separators = compilationResult().lineSeparatorPositions;

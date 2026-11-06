@@ -109,7 +109,7 @@ public class InterTypeScope extends ClassScope {
 		}
 	}
 
-	public Map getRecoveryAliases() {
+	public Map<TypeVariableBinding, String> getRecoveryAliases() {
 		return usedAliases;
 	}
 

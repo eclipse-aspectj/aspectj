@@ -86,7 +86,7 @@ public class PatternWeaveTestCase extends WeaveTestCase {
 		Pointcut rp = sp.resolve(new SimpleScope(world, FormalBinding.NONE));
 		Pointcut cp = rp.concretize(ResolvedType.MISSING, ResolvedType.MISSING, 0);
 
-		final List l = new ArrayList();
+		final List<Shadow> l = new ArrayList<>();
 		BcelAdvice p = new BcelAdvice(null, cp, null, 0, -1, -1, null, null) {
 			public boolean implementOn(Shadow shadow) {
 				l.add(shadow);

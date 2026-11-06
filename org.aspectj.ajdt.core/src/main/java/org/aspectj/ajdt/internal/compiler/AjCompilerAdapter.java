@@ -84,7 +84,7 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 	public AjCompilerAdapter(Compiler compiler, boolean isBatchCompile, BcelWorld world, BcelWeaver weaver,
 			EclipseFactory eFactory, IIntermediateResultsRequestor intRequestor, IProgressListener progressListener,
 			IOutputClassFileNameProvider outputFileNameProvider, IBinarySourceProvider binarySourceProvider,
-			Map fullBinarySourceEntries, /* fileName |-> List<UnwovenClassFile> */
+			Map<String,List<UnwovenClassFile>> fullBinarySourceEntries,
 			boolean isXterminateAfterCompilation, boolean proceedOnError, boolean noAtAspectJProcessing, boolean reflectable,
 			AjState incrementalCompilationState) {
 		this.compiler = compiler;
@@ -338,7 +338,7 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 		// to be filled in...
 	}
 
-	public List getResultsPendingWeave() {
+	public List<InterimCompilationResult> getResultsPendingWeave() {
 		return resultsPendingWeave;
 	}
 

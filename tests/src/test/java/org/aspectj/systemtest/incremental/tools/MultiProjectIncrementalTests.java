@@ -1925,7 +1925,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		checkCompileWeaveCount("pr240360", 5, 4);
 		assertTrue("There should be an error:\n" + getErrorMessages("pr240360"), !getErrorMessages("pr240360").isEmpty());
 
-		Set s = getModelFor("pr240360").getRelationshipMap().getEntries();
+		Set<String> s = getModelFor("pr240360").getRelationshipMap().getEntries();
 		int relmapLength = s.size();
 
 		// Delete the erroneous type
@@ -2133,7 +2133,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		stime = System.currentTimeMillis();
 		try {
 			ZipFile zf = new ZipFile("c:/jvms/jdk1.6.0_06/jre/lib/rt.jar");
-			Enumeration e = zf.entries();
+			Enumeration<? extends ZipEntry> e = zf.entries();
 			while (e.hasMoreElements()) {
 				ZipEntry ze = (ZipEntry) e.nextElement();
 				String n = ze.getName();
@@ -3593,7 +3593,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		// JDTLikeHandleProvider());
 		initialiseProject("PR158573");
 		build("PR158573");
-		List warnings = getWarningMessages("PR158573");
+		List<IMessage> warnings = getWarningMessages("PR158573");
 		assertTrue("There should be no warnings:\n" + warnings, warnings.isEmpty());
 		alter("PR158573", "inc1");
 		build("PR158573");

@@ -225,7 +225,7 @@ public class AstUtil {
 		return CharOperation.concat(CharOperation.concat(PREFIX, new char[] { '$' }, kind), '$', p, '$', name);
 	}
 
-	public static List getAjSyntheticAttribute() {
+	public static List<IAttribute> getAjSyntheticAttribute() {
 		List<IAttribute> ret = new ArrayList<>(1);
 		ret.add(new EclipseAttributeAdapter(new AjAttribute.AjSynthetic()));
 		return ret;

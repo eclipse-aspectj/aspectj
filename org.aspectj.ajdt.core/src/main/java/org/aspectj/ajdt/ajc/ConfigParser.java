@@ -395,6 +395,7 @@ public class ConfigParser {
 		}
 	}
 
+	@SuppressWarnings("serial")
 	public static class ParseException extends RuntimeException {
 		private Location location;
 

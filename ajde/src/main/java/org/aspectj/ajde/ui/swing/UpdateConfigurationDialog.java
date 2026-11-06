@@ -74,14 +74,14 @@ public class UpdateConfigurationDialog extends JFrame {
     private JPanel jPanel3 = new JPanel();
     private GridLayout gridLayout1 = new GridLayout();
     private JScrollPane jScrollPane1 = new JScrollPane();
-    private JList updatedFilesList = new JList();
+    private JList<String> updatedFilesList = new JList<>();
     private JScrollPane jScrollPane2 = new JScrollPane();
-    private JList buildConfigList = new JList();
+    private JList<String> buildConfigList = new JList<>();
     private Box box2;
     private JLabel messageLabel1 = new JLabel();
     private JLabel messageLabel2 = new JLabel();
 
-    public UpdateConfigurationDialog(Vector filesToUpdate, Vector buildConfigFiles, boolean addToConfiguration, Component parentComponent) {
+    public UpdateConfigurationDialog(Vector<String> filesToUpdate, Vector<String> buildConfigFiles, boolean addToConfiguration, Component parentComponent) {
         try {
 //            this.buildConfigFiles = buildConfigFiles;
 //            this.filesToUpdate = filesToUpdate;
@@ -178,7 +178,7 @@ public class UpdateConfigurationDialog extends JFrame {
     }
 }
 
-class CheckListCellRenderer extends JCheckBox implements ListCellRenderer {
+class CheckListCellRenderer extends JCheckBox implements ListCellRenderer<String> {
 	private static final long serialVersionUID = -9183012434083509581L;
 
 	public CheckListCellRenderer() {
@@ -186,8 +186,8 @@ class CheckListCellRenderer extends JCheckBox implements ListCellRenderer {
         setOpaque(true);
     }
 
-    public Component getListCellRendererComponent(JList list,
-                                                  Object value,
+    public Component getListCellRendererComponent(JList<? extends String> list,
+                                                  String value,
                                                   int index,
                                                   boolean isSelected,
                                                   boolean cellHasFocus) {
@@ -205,9 +205,9 @@ class CheckListCellRenderer extends JCheckBox implements ListCellRenderer {
 
 class CheckListener implements MouseListener, KeyListener {
 
-    protected JList list;
+    protected JList<String> list;
 
-    public CheckListener(JList list) {
+    public CheckListener(JList<String> list) {
         this.list = list;
     }
 

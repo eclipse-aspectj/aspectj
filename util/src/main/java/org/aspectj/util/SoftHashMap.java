@@ -16,7 +16,7 @@ import java.util.Map;
 
 public class SoftHashMap<K,V> extends AbstractMap<K,V> {
 	private Map<K, SpecialValue> map;
-	private ReferenceQueue<? super V> rq = new ReferenceQueue();
+	private ReferenceQueue<? super V> rq = new ReferenceQueue<>();
 
 	public SoftHashMap() {
 		this.map = new HashMap<>();

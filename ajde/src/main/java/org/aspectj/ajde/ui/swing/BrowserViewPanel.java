@@ -48,7 +48,7 @@ public class BrowserViewPanel extends JPanel implements StructureViewRenderer {
 	private StructureTreeManager treeManager;
     //private StructureView structureView = null;
     //private int depthSliderVal = 0;
-    private JComboBox view_comboBox = null;
+    private JComboBox<StructureViewProperties.Hierarchy> view_comboBox = null;
 
     private BorderLayout borderLayout1 = new BorderLayout();
     private JToolBar view_toolBar = new JToolBar();
@@ -63,7 +63,7 @@ public class BrowserViewPanel extends JPanel implements StructureViewRenderer {
 //		}
 //	};
 
-    public BrowserViewPanel(IconRegistry icons, java.util.List views, StructureViewProperties.Hierarchy visibleViewHierarchy) {
+    public BrowserViewPanel(IconRegistry icons, java.util.List<StructureViewProperties.Hierarchy> views, StructureViewProperties.Hierarchy visibleViewHierarchy) {
         try {
             view_comboBox = new JComboBox(views.toArray());
 			for (Object view : views) {

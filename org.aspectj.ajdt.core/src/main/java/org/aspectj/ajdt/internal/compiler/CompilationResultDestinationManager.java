@@ -54,7 +54,7 @@ public interface CompilationResultDestinationManager {
 	/**
 	 * Return a list of all output locations handled by this OutputLocationManager
 	 */
-	List /* File */getAllOutputLocations();
+	List<File> getAllOutputLocations();
 
 	/**
 	 * Return the default output location (for example, &lt;my_project&gt;/bin). This is where classes which are on the inpath will be
@@ -76,7 +76,7 @@ public interface CompilationResultDestinationManager {
 	 */
 	void reportFileRemove(String outputfile, int filetype);
 
-	Map getInpathMap();
+	Map<File,String> getInpathMap();
 
 	int discoverChangesSince(File dir, long buildtime);
 

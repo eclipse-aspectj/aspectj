@@ -73,10 +73,10 @@ public class UserPreferencesStore implements UserPreferencesAdapter {
 	}
 
 	@Override
-	public void setProjectMultivalPreference(String name, List values) {
+	public void setProjectMultivalPreference(String name, List<String> values) {
 		StringBuilder valuesString = new StringBuilder();
-		for (Object value : values) {
-			valuesString.append((String)value).append(';');
+		for (String value : values) {
+			valuesString.append(value).append(';');
 		}
 		properties.setProperty(name, valuesString.toString());
 		saveProperties();
@@ -106,7 +106,7 @@ public class UserPreferencesStore implements UserPreferencesAdapter {
 	}
 
 	@Override
-	public void setGlobalMultivalPreference(String name, List values) {
+	public void setGlobalMultivalPreference(String name, List<String> values) {
 		setProjectMultivalPreference(name, values);
 	}
 	private void loadProperties(String path) {

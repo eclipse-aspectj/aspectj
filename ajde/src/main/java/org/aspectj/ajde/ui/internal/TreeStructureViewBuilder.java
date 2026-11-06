@@ -196,8 +196,7 @@ public class TreeStructureViewBuilder {
 	private void sortView(IStructureViewNode node, Comparator<IStructureViewNode> comparator) {
 		if (node == null || node.getChildren() == null) return;
 		node.getChildren().sort(comparator);
-		for (Object o : node.getChildren()) {
-			IStructureViewNode nextNode = (IStructureViewNode) o;
+		for (IStructureViewNode nextNode : node.getChildren()) {
 			if (nextNode != null) sortView(nextNode, comparator);
 		}
 	}

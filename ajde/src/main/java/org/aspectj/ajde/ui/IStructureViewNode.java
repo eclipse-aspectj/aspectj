@@ -47,7 +47,7 @@ public interface IStructureViewNode {
 	/**
 	 * @return	an empty list if there are no children
 	 */
-	List getChildren();
+	List<IStructureViewNode> getChildren();
 
 	Kind getKind();
 

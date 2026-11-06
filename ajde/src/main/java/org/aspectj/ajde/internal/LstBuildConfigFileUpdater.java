@@ -54,9 +54,9 @@ class LstBuildConfigFileUpdater {
 	/**
 	 * Adds an entry to multiple build configuration files.
 	 */
-	public void updateBuildConfigFiles(List buildConfigFiles, List<String> filesToUpdate, boolean addToConfiguration) {
-		for (Object buildConfigFile : buildConfigFiles) {
-			List<String> fileContents = readConfigFile((String) buildConfigFile);
+	public void updateBuildConfigFiles(List<String> buildConfigFiles, List<String> filesToUpdate, boolean addToConfiguration) {
+		for (String buildConfigFile : buildConfigFiles) {
+			List<String> fileContents = readConfigFile(buildConfigFile);
 			if (addToConfiguration) {
 				for (String s : filesToUpdate) {
 					fileContents.add(s);

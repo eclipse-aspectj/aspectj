@@ -84,14 +84,14 @@ public class GenericITDsDesign extends XMLBasedAjcTestCase {
 	}
 
 	private BcelTypeMunger getMungerFromLine(String classname, int linenumber) {
-		List allMungers = getTypeMunger(classname);
-		for (Object munger : allMungers) {
+		List<ConcreteTypeMunger> allMungers = getTypeMunger(classname);
+		for (ConcreteTypeMunger munger : allMungers) {
 			BcelTypeMunger element = (BcelTypeMunger) munger;
 			if (element.getMunger().getSourceLocation().getLine() == linenumber) {
 				return element;
 			}
 		}
-		for (Object allMunger : allMungers) {
+		for (ConcreteTypeMunger allMunger : allMungers) {
 			BcelTypeMunger element = (BcelTypeMunger) allMunger;
 			System.err.println("Line: " + element.getMunger().getSourceLocation().getLine() + "  > " + element);
 		}
@@ -227,7 +227,8 @@ public class GenericITDsDesign extends XMLBasedAjcTestCase {
 	// Verifying what gets into a class when an interface it implements was targetted with a field ITD
 	public void testDesignG() {
 		runTest("generic itds - design G");
-		Hashtable<String,Field> fields = getMeTheFields("C");
+//		Hashtable<String,Field> fields = 
+		getMeTheFields("C");
 
 		// The ITDs are targetting an interface. That interface is generic and is parameterized with
 		// 'String' when implemented in the class C. This means the fields that make it into C should

@@ -270,7 +270,7 @@ public class FileUtilTest extends TestCase {
 		checkCopyFiles(fromDir, toDir, null, true);
 	}
 
-	void checkCopyFiles(File from, File to, Class exceptionClass, boolean clean) {
+	void checkCopyFiles(File from, File to, Class<?> exceptionClass, boolean clean) {
 		try {
 			FileUtil.copyFile(from, to);
 			assertTrue(null == exceptionClass);

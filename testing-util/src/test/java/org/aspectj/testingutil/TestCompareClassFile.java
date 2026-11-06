@@ -25,6 +25,7 @@ import org.aspectj.util.LangUtil;
  * checked in under the testdata directory.
  * It has no other purpose.
  */
+@SuppressWarnings("unused")
 public class TestCompareClassFile implements Runnable {
     public static final String STATIC_CONST = "STATIC_CONST";
 	public static void main(String[] args) {
@@ -41,7 +42,7 @@ public class TestCompareClassFile implements Runnable {
     protected static void protectedRunStatic() {
     }
 
-    private long privateLong;
+	private long privateLong;
     private final Object privateFinalObject;
 
     private TestCompareClassFile() {
@@ -91,7 +92,7 @@ public class TestCompareClassFile implements Runnable {
      * @throws IllegalArgumentException if source is null
      */
     public static final Object[] copy(Object[] source) {
-        final Class c = source.getClass().getComponentType();
+        final Class<?> c = source.getClass().getComponentType();
         Object[] result = (Object[]) Array.newInstance(c, source.length);
         System.arraycopy(source, 0, result, 0, result.length);
         return result;
@@ -107,7 +108,7 @@ public class TestCompareClassFile implements Runnable {
         if ((null == stack) || (0 == stack.length())) {
             return;
         }
-        final LinkedList lines = new LinkedList();
+        final LinkedList<String> lines = new LinkedList<>();
         StringTokenizer st = new StringTokenizer(stack.toString(),"\n\r");
         while (st.hasMoreTokens() && (0 < --maxLines)) {
             lines.add(st.nextToken());

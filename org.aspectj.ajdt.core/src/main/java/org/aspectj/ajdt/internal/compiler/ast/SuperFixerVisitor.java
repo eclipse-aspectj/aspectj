@@ -45,7 +45,7 @@ import org.aspectj.weaver.ResolvedMember;
  */
 
 public class SuperFixerVisitor extends ASTVisitor {
-	Set superMethodsCalled = new HashSet();
+	Set<ResolvedMember> superMethodsCalled = new HashSet<>();
 	AbstractMethodDeclaration method;
 	ReferenceBinding targetClass;
 	private int depthCounter = 0; // Keeps track of whether we are inside any nested local type declarations

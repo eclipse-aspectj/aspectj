@@ -304,7 +304,7 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 
 	private void addInpathEntry(String entry) {
 		if (entry == null) {
-			configureInPath("inpathTesting", (Set)null);
+			configureInPath("inpathTesting", (Set<File>)null);
 			return;
 		}
 		File f = new File(entry);

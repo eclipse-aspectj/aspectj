@@ -46,7 +46,7 @@ public class ExtensionTest extends AjcTestCase {
 	public void testMessageID() {
 		String[] args = new String[] { "UnusedImport.java", "-warn:unusedImport" };
 		CompilationResult result = ajc(baseDir, args);
-		List l = result.getWarningMessages();
+		List<IMessage> l = result.getWarningMessages();
 		IMessage m = ((IMessage) l.get(0));
 		assertTrue("Expected ID of message to be " + IProblem.UnusedImport + " (UnusedImport) but found an ID of " + m.getID(),
 				m.getID() == IProblem.UnusedImport);

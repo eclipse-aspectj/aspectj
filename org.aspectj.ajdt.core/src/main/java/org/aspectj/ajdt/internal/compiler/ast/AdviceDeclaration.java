@@ -25,6 +25,7 @@ import org.aspectj.org.eclipse.jdt.core.Flags;
 import org.aspectj.org.eclipse.jdt.core.compiler.CharOperation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
+import org.aspectj.org.eclipse.jdt.internal.compiler.IAttribute;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ast.LocalDeclaration;
@@ -82,7 +83,7 @@ public class AdviceDeclaration extends AjMethodDeclaration {
 
 	// override
 	protected int generateInfoAttributes(ClassFile classFile) {
-		List<EclipseAttributeAdapter> l = new ArrayList<>(1);
+		List<IAttribute> l = new ArrayList<>(1);
 		l.add(new EclipseAttributeAdapter(makeAttribute()));
 		addDeclarationStartLineAttribute(l, classFile);
 		return classFile.generateMethodInfoAttributes(binding, l);

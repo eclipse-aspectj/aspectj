@@ -462,7 +462,7 @@ public class BuildArgParser extends Main {
 			this.handler = handler;
 		}
 
-		public List getUnparsedArgs() {
+		public List<String> getUnparsedArgs() {
 			return unparsedArgs;
 		}
 
@@ -475,8 +475,8 @@ public class BuildArgParser extends Main {
 		 * mode. Signals warnings or errors through handler set in constructor.
 		 */
 		@Override
-		public void parseOption(String arg, LinkedList<Arg> args) { // XXX use ListIterator.remove()
-			int nextArgIndex = args.indexOf(arg) + 1; // XXX assumes unique
+		public void parseOption(String arg, LinkedList<Arg> args) {
+			int nextArgIndex = 0;
 			// trim arg?
 			buildConfig.setXlazyTjp(true); // now default - MINOR could be pushed down and made default at a lower level
 			if (LangUtil.isEmpty(arg)) {
@@ -486,7 +486,6 @@ public class BuildArgParser extends Main {
 			} else if (arg.equals("-inpath")) {
 				if (args.size() > nextArgIndex) {
 					// buildConfig.getAjOptions().put(AjCompilerOptions.OPTION_Inpath, CompilerOptions.PRESERVE);
-
 					StringTokenizer st = new StringTokenizer(args.get(nextArgIndex).getValue(),
 							File.pathSeparator);
 					boolean inpathChange = false;
@@ -513,7 +512,6 @@ public class BuildArgParser extends Main {
 			} else if (arg.equals("-injars")) {
 				if (args.size() > nextArgIndex) {
 					// buildConfig.getAjOptions().put(AjCompilerOptions.OPTION_InJARs, CompilerOptions.PRESERVE);
-
 					StringTokenizer st = new StringTokenizer(args.get(nextArgIndex).getValue(),
 							File.pathSeparator);
 					while (st.hasMoreTokens()) {
@@ -834,9 +832,9 @@ public class BuildArgParser extends Main {
 			}
 		}
 
-		protected void dirLookahead(String arg, LinkedList argList, int nextArgIndex) {
+		protected void dirLookahead(String arg, LinkedList<ConfigParser.Arg> argList, int nextArgIndex) {
 			unparsedArgs.add(arg);
-			ConfigParser.Arg next = (ConfigParser.Arg) argList.get(nextArgIndex);
+			ConfigParser.Arg next = argList.get(nextArgIndex);
 			String value = next.getValue();
 			if (!LangUtil.isEmpty(value)) {
 				if (new File(value).isDirectory()) {

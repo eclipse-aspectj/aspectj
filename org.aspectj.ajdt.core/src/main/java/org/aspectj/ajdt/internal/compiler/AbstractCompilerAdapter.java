@@ -24,7 +24,7 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
  */
 public abstract class AbstractCompilerAdapter implements ICompilerAdapter {
 
-	public abstract List /*InterimResult*/ getResultsPendingWeave();
+	public abstract List<InterimCompilationResult> getResultsPendingWeave();
 
 	public abstract void acceptResult(CompilationResult result);
 

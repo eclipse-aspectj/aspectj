@@ -146,28 +146,28 @@ public abstract class ModelTestCase extends XMLBasedAjcTestCase {
 					fileContents.add(expectedLine);
 				}
 			}
-			List<String> expectedFileContents = new ArrayList<>(fileContents);
 
 			// Load the file with the output from this test run
-			BufferedReader found = new BufferedReader(new FileReader(new File(modelOutput)));
-			String foundLine = null;
 			List<String> foundFileContents = new ArrayList<>();
-			while ((foundLine = found.readLine()) != null) {
-				// Remove trailing whitespace
-				foundLine = foundLine.replaceAll("[\t ]+$", "");
-				// int i = foundLine.indexOf(sandboxDir);
-				// if (i == -1) {
-				// int j = foundLine.indexOf("(targets=");
-				// if (j == -1) {
-				foundFileContents.add(foundLine);
-				// } else {
-				// foundFileContents.add(foundLine.substring(j));
-				// }
-				// } else {
-				// String newLine = foundLine.substring(0,i) + tempDir
-				// + foundLine.substring(i + sandboxDir.length());
-				// foundFileContents.add(newLine);
-				// }
+			try (BufferedReader found = new BufferedReader(new FileReader(new File(modelOutput)))) {
+				String foundLine = null;
+				while ((foundLine = found.readLine()) != null) {
+					// Remove trailing whitespace
+					foundLine = foundLine.replaceAll("[\t ]+$", "");
+					// int i = foundLine.indexOf(sandboxDir);
+					// if (i == -1) {
+					// int j = foundLine.indexOf("(targets=");
+					// if (j == -1) {
+					foundFileContents.add(foundLine);
+					// } else {
+					// foundFileContents.add(foundLine.substring(j));
+					// }
+					// } else {
+					// String newLine = foundLine.substring(0,i) + tempDir
+					// + foundLine.substring(i + sandboxDir.length());
+					// foundFileContents.add(newLine);
+					// }
+				}
 			}
 
 			// iterate over what we found

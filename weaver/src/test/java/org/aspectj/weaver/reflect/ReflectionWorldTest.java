@@ -75,7 +75,7 @@ public class ReflectionWorldTest extends TestCase {
 
 		Field declaredField = ReflectionWorld.class.getDeclaredField("rworlds");
 		declaredField.setAccessible(true);
-		Map worlds = (Map)declaredField.get(null);
+		Map<WeakClassLoaderReference, ReflectionWorld> worlds = (Map<WeakClassLoaderReference, ReflectionWorld>)declaredField.get(null);
 		assertEquals(2, worlds.size());
 
 		cl2 = null;

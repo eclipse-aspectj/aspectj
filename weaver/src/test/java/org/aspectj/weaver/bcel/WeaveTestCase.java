@@ -29,6 +29,7 @@ import org.aspectj.testing.util.TestUtil;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
 import org.aspectj.weaver.Advice;
+import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
 import org.aspectj.weaver.WeaverTestCase;
 import org.aspectj.weaver.patterns.FormalBinding;
@@ -297,11 +298,11 @@ public abstract class WeaveTestCase extends TestCase {
 	}
 
 	// XXX cut-and-paster from IdWeaveTestCase
-	public void checkShadowSet(List l, String[] ss) {
+	public void checkShadowSet(List<Shadow> l, String[] ss) {
 		outer:
 		for (String s : ss) {
 			// inner:
-			for (Iterator j = l.iterator(); j.hasNext(); ) {
+			for (Iterator<Shadow> j = l.iterator(); j.hasNext(); ) {
 				BcelShadow shadow = (BcelShadow) j.next();
 				String shadowString = shadow.toString();
 				if (shadowString.equals(s)) {

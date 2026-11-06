@@ -37,7 +37,6 @@ public class ClassFileBasedByteCodeProvider
 
 	public static UnwovenClassFile[] unwovenClassFilesFor(CompilationResult result,
 										            IOutputClassFileNameProvider nameProvider) {
-		ClassFile[] cfs = result.getClassFiles();
 		UnwovenClassFile[] ret = new UnwovenClassFile[result.compiledTypes.size()];
 		int i=0;
 		for (Object o : result.compiledTypes.keySet()) {
