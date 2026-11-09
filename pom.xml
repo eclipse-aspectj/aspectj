@@ -140,7 +140,6 @@
 		<module>loadtime</module>
 		<module>org.aspectj.ajdt.core</module>
 		<module>ajde.core</module>
-		<module>ajde</module>
 		<module>ajdoc</module>
 		<module>taskdefs</module>
 		<module>testing</module>

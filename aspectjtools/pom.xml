@@ -417,11 +417,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.aspectj</groupId>
-			<artifactId>ajde</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.aspectj</groupId>
 			<artifactId>ajde.core</artifactId>
 			<version>${project.version}</version>
 		</dependency>

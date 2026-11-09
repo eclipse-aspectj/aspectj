@@ -8,11 +8,12 @@
  * Contributors:
  *     Andy Clement - initial implementation
  *******************************************************************************/
-package org.aspectj.ajde;
+package org.aspectj.ajdt.internal.core.builder;
 
 import java.io.File;
 import java.util.List;
 
+import org.aspectj.ajdt.ajc.Constants;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.bridge.IMessage;
@@ -26,14 +27,14 @@ import org.aspectj.tools.ajc.CompilationResult;
  */
 public class ExtensionTest extends AjcTestCase {
 
-	public static final String PROJECT_DIR = "extensions";
+	public static final String PROJECT_DIR = "ExtensionTest";
 	private static final boolean debugTests = false;
 	private File baseDir;
 
 	protected void setUp() throws Exception {
 		super.setUp();
 		// TODO-path
-		baseDir = new File("../ajde/testdata", PROJECT_DIR);
+		baseDir = new File(Constants.TESTDATA_PATH, PROJECT_DIR);
 	}
 
 	/**

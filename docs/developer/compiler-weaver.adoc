@@ -258,7 +258,7 @@ Run the existing test suite. I currently do this in four steps:
 
 * weaver/testsrc/BcWeaverModuleTests.java
 * org.aspectj.ajdt.core/testsrc/EajcModuleTests.java
-* ajde/testsrc/AjdeModuleTests.java
+* ajde.core/testsrc/AjdeCoreModuleTests.java
 * Harness on ajctests.xml -- at least under 1.4, preferably under both
 1.3 and 1.4.
 

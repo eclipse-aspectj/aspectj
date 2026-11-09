@@ -59,10 +59,6 @@
 
 		<!-- Tools -->
 		<fileSet>
-			<directory>../ajde/src/main/java</directory>
-			<outputDirectory>.</outputDirectory>
-		</fileSet>
-		<fileSet>
 			<directory>../ajde.core/src/main/java</directory>
 			<outputDirectory>.</outputDirectory>
 		</fileSet>

@@ -16,21 +16,18 @@ build outside of Eclipse.)
 |===
 | *Module* | *Dependencies* | *Description*
 
-| ajde | asm, bridge, org.aspectj.ajdt.core, org.eclipse.jdt.core, util | Hides the details of accessing the AspectJ
+| ajde.core | asm, bridge, org.aspectj.ajdt.core, org.eclipse.jdt.core, util | Hides the details of accessing the AspectJ
 compiler and interpreting compilation results (error messages, structure model, etc.) from other applications (typically
-IDEs) that need to invoke it programmatically. Changing any public interface in ajde can break all the IDE integration
-projects and should be done with care. +
- +
-It also contains a library of common swing user interface components that can be used by any swing based IDE. The
-non-eclipse IDE integration projects use this library (except for the emacs support).
+IDEs) that need to invoke it programmatically. Changing any public interface in ajde.core can break all the IDE integration
+projects and should be done with care.
 
 | asm | bridge | Contains the Abstract Structure Model, which represents the result of an aspectj compilation. Clients
-of ajde are returned an instance of the structure model which allows them to navigate and interpret the static structure
+of ajde.core are returned an instance of the structure model which allows them to navigate and interpret the static structure
 of an aspectj program.
 
 | bridge | util | Contains an interface and implementation of classes realted to compiler messages including: source
 locations, handling, and formatting. Intended to minimize dependencies between testing, the compiler, and
-ajde.
+ajde.core.
 
 | org.aspectj.ajdt.core | asm, bridge, org.eclipse.jdt.core, runtime, testing-util, util, weaver | Front-end of the
 AspectJ compiler and extension of Eclipse's JDT compiler. Extends the JDT compiler's parsing and name resolution to
@@ -73,5 +70,5 @@ classfiles as input.
 |===
 | *Plug-in* | *Dependencies* | *Description*
 | org.eclipse.ajdt.ui | org.aspectj.ajde | AspectJ IDE support for Eclipse
-| org.aspectj.ajde | ajde, asm, bridge | AspectJ libraries plug-in
+| org.aspectj.ajde | ajde.core, asm, bridge | AspectJ libraries plug-in
 |===

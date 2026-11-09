@@ -307,10 +307,10 @@ public class BcweaverJarMaker {
 		args.add("-classpath");
 		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar"  +
 				 File.pathSeparator + System.getProperty("aspectjrt.path") +
-				 (deps!=null?File.pathSeparator + "../ajde/testdata/WeaveInfoMessagesTest/"+deps:""));
+				 (deps!=null?File.pathSeparator + "../ajde.core/testdata/WeaveInfoMessagesTest/"+deps:""));
 		args.add("-outjar");
-		args.add("../ajde/testdata/WeaveInfoMessagesTest/"+outjar);
-		args.add("../ajde/testdata/WeaveInfoMessagesTest/"+input);
+		args.add("../ajde.core/testdata/WeaveInfoMessagesTest/"+outjar);
+		args.add("../ajde.core/testdata/WeaveInfoMessagesTest/"+input);
 
 		System.err.println(args);
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
@@ -341,7 +341,7 @@ public class BcweaverJarMaker {
 		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar" +
 		   File.pathSeparator + System.getProperty("aspectjrt.path"));
 		args.add("-outjar");
-		args.add("../ajde/testdata/DuplicateManifestTest/injar.jar");
+		args.add("../ajde.core/testdata/DuplicateManifestTest/injar.jar");
 		args.add(Constants.TESTDATA_PATH + "/src1/Hello.java");
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
 
@@ -353,7 +353,7 @@ public class BcweaverJarMaker {
 		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar" +
 		   File.pathSeparator + System.getProperty("aspectjrt.path"));
 		args.add("-outjar");
-		args.add("../ajde/testdata/DuplicateManifestTest/aspectjar.jar");
+		args.add("../ajde.core/testdata/DuplicateManifestTest/aspectjar.jar");
 		args.add(Constants.TESTDATA_PATH + "/src1/Trace.java");
 		args.add(Constants.TESTDATA_PATH + "/src1/TraceHello.java");
 		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);
@@ -428,7 +428,7 @@ public class BcweaverJarMaker {
 //		args.add("../lib/test/aspectjrt.jar;../lib/test/testing-client.jar" +
 //		   File.pathSeparator + System.getProperty("aspectjrt.path"));
 //		args.add("-outjar");
-//		args.add("../ajde/testdata/DuplicateManifestTest/aspectjar.jar");
+//		args.add("../ajde.core/testdata/DuplicateManifestTest/aspectjar.jar");
 //		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/Trace.java");
 //		args.add(AjdtAjcTests.TESTDATA_PATH + "/src1/TraceHello.java");
 //		CommandTestCase.runCompiler(args, CommandTestCase.NO_ERRORS);

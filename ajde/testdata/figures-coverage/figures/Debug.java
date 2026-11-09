@@ -1,7 +1,0 @@
-
-package figures;
-
-aspect Debug {
-
-}
-

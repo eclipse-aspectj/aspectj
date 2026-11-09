@@ -1,4 +1,0 @@
-
-package editor;
-
-class Editor { }

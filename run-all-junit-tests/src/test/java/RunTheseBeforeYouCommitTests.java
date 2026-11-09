@@ -7,7 +7,6 @@
  * https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt
  *
  * ******************************************************************/
-import org.aspectj.ajde.AjdeModuleTests;
 import org.aspectj.ajde.core.AjdeCoreModuleTests;
 import org.aspectj.ajdt.AjdtCoreModuleTests;
 import org.aspectj.asm.AsmModuleTests;
@@ -40,7 +39,6 @@ public class RunTheseBeforeYouCommitTests {
 		// Main modules
 		suite.addTest(UtilModuleTests.suite());
 		suite.addTest(AjdeCoreModuleTests.suite());
-		suite.addTest(AjdeModuleTests.suite());
 		suite.addTest(AsmModuleTests.suite());
 		suite.addTest(BridgeModuleTests.suite());
 		suite.addTest(LoadtimeModuleTests.suite());

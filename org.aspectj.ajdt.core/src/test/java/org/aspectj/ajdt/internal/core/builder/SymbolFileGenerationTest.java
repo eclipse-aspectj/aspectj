@@ -11,11 +11,12 @@
  *     Xerox/PARC     initial implementation
  * ******************************************************************/
 
-package org.aspectj.ajde;
+package org.aspectj.ajdt.internal.core.builder;
 
 import java.io.File;
 import java.io.FileFilter;
 
+import org.aspectj.ajdt.ajc.Constants;
 import org.aspectj.tools.ajc.AjcTestCase;
 import org.aspectj.util.FileUtil;
 
@@ -23,7 +24,7 @@ import org.aspectj.util.FileUtil;
  * @author Mik Kersten
  */
 public class SymbolFileGenerationTest extends AjcTestCase {
-	private static final String DIR = "../ajde/testdata/examples/coverage";
+	private static final String DIR = Constants.TESTDATA_PATH + "/SymbolFileGenerationTest";
 
 	protected File dir = new File(DIR);
 	protected File configFile = new File(DIR + "/coverage.lst");

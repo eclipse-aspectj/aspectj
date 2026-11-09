@@ -44,6 +44,8 @@ public class AjdtCoreModuleTests extends TestCase {
 		suite.addTestSuite(AsmBuilderTest.class);
 		suite.addTestSuite(AjCompilerOptionsTest.class);
 		suite.addTestSuite(AjStateTest.class);
+		suite.addTestSuite(ExtensionTest.class);
+		suite.addTestSuite(SymbolFileGenerationTest.class);
 		suite.addTestSuite(OutjarTest.class);
 
         suite.addTestSuite(MainTest.class);
