@@ -75,12 +75,6 @@
 			<artifactId>aspectjtools</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<!-- Executable JAR installer classes -->
-		<dependency>
-			<groupId>org.aspectj</groupId>
-			<artifactId>build</artifactId>
-			<version>${project.version}</version>
-		</dependency>
 		<!-- AspectJ documentation, created by Asciidoctor in aj-build/dist/docs -->
 		<dependency>
 			<groupId>org.aspectj</groupId>
@@ -97,6 +91,54 @@
 
 	<build>
 		<plugins>
+
+			<!-- Timestamps (build.date etc.) used when filtering the installer resources -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>build.date</id>
+						<goals>
+							<goal>timestamp-property</goal>
+						</goals>
+						<configuration>
+							<!-- Timestamp format: Thu Apr 8, 2021 -->
+							<name>build.date</name>
+							<pattern>E MMM d, YYYY</pattern>
+							<timeZone>America/Los_Angeles</timeZone>
+							<locale>en_US</locale>
+						</configuration>
+					</execution>
+					<execution>
+						<id>build.time</id>
+						<goals>
+							<goal>timestamp-property</goal>
+						</goals>
+						<configuration>
+							<!-- Timestamp format: Thursday Apr 8, 2021 at 20:20:16 PDT -->
+							<name>build.time</name>
+							<pattern>EEEE MMM d, yyyy 'at' HH:mm:ss z</pattern>
+							<timeZone>America/Los_Angeles</timeZone>
+							<locale>en_US</locale>
+						</configuration>
+					</execution>
+					<execution>
+						<id>year</id>
+						<goals>
+							<goal>timestamp-property</goal>
+						</goals>
+						<configuration>
+							<!-- Timestamp format: 2021 -->
+							<name>build.year</name>
+							<pattern>YYYY</pattern>
+							<timeZone>America/Los_Angeles</timeZone>
+							<locale>en_US</locale>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
 
 			<!-- Skip creation of main + test JARs -->
 			<plugin>
@@ -166,6 +208,12 @@
 			</plugin>
 
 		</plugins>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
 		<pluginManagement>
 			<plugins>
 				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
@@ -189,6 +237,27 @@
 										</versionRange>
 										<goals>
 											<goal>flatten</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.codehaus.mojo
+										</groupId>
+										<artifactId>
+											build-helper-maven-plugin
+										</artifactId>
+										<versionRange>
+											[1.9.1,)
+										</versionRange>
+										<goals>
+											<goal>
+												timestamp-property
+											</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>

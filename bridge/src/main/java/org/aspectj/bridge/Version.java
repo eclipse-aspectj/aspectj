@@ -26,7 +26,6 @@ public class Version {
 
     /** default version value for development version */
     public static final String DEVELOPMENT = "DEVELOPMENT";
-    // VersionUptodate.java depends on this value
 
     /** default time value for development version */
     public static final long NOTIME = 0L;
@@ -36,7 +35,6 @@ public class Version {
 
     /** set by build script */
     private static String text;// = "DEVELOPMENT";
-    // VersionUptodate.java scans for "static final String text = "
 
     /**
       * Time text set by build script using SIMPLE_DATE_FORMAT.

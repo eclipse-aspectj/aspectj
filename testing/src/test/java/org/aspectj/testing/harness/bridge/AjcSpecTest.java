@@ -159,7 +159,6 @@ public class AjcSpecTest extends TestCase {
 	//     * <li>keyword compare is disabled since keywords are generated during xml reading.</li>
 	//     * <li>description compare is normalized by stripping bug ids</li>
 	//     * <li>String and arrays are equal when empty (null or 0-length)</li>
-	//     * @see Ajctest#stripBugId(String)
 	//     */
 	//    public static void sameAjcTest(AjcTest lhs, AjcTest rhs, Assert reporter) {
 	//        Assert a = reporter;

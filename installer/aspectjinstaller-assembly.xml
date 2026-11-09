@@ -19,11 +19,8 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>../build/target/classes</directory>
+			<directory>target/classes</directory>
 			<outputDirectory>.</outputDirectory>
-			<excludes>
-				<exclude>org/**</exclude>
-			</excludes>
 		</fileSet>
 		<fileSet>
 			<directory>../aj-build/dist/docs</directory>

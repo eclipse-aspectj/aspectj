@@ -1,5 +1,4 @@
 installer.main.class: $installer$.org.aspectj.ToolsInstaller
-installer.basedir: aspectj${build.version.majorminor}
 build.version.long: ${project.version}
 build.version.short: ${project.version}
 build.date: ${build.date}

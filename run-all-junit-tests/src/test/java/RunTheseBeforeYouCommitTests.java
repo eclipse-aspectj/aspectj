@@ -12,7 +12,6 @@ import org.aspectj.ajde.core.AjdeCoreModuleTests;
 import org.aspectj.ajdt.AjdtCoreModuleTests;
 import org.aspectj.asm.AsmModuleTests;
 import org.aspectj.bridge.BridgeModuleTests;
-import org.aspectj.build.BuildModuleTests;
 import org.aspectj.loadtime.LoadtimeModuleTests;
 import org.aspectj.matcher.MatcherModuleTests;
 import org.aspectj.runtime.RuntimeModuleTests;
@@ -58,7 +57,6 @@ public class RunTheseBeforeYouCommitTests {
 		suite.addTest(TestingClientModuleTests.suite());
 		suite.addTest(TestingDriversModuleTests.suite());
 		suite.addTest(TestingUtilModuleTests.suite());
-		suite.addTest(BuildModuleTests.suite());
 
 		// Compiler tests
 		suite.addTest(TestsModuleTests.suite());

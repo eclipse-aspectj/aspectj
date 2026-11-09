@@ -146,7 +146,6 @@
 		<module>testing</module>
 		<module>testing-drivers</module>
 		<module>tests</module>
-		<module>build</module>
 		<module>run-all-junit-tests</module>
 		<module>docs</module>
 

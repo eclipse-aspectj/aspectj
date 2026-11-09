@@ -100,7 +100,7 @@ public class SwingTreeViewNode extends DefaultMutableTreeNode implements IStruct
 		if (children == null) {
 			return new ArrayList<>();
 		} else {
-			return children;
+			return (List)children;
 		}
 	}
 
