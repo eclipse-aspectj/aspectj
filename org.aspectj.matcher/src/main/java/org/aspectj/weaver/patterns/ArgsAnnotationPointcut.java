@@ -61,7 +61,7 @@ public class ArgsAnnotationPointcut extends NameBindingPointcut {
 		return Shadow.ALL_SHADOW_KINDS_BITS; // empty args() matches jps with no args
 	}
 
-	public Pointcut parameterizeWith(Map typeVariableMap, World w) {
+	public Pointcut parameterizeWith(Map<String,UnresolvedType> typeVariableMap, World w) {
 		ArgsAnnotationPointcut ret = new ArgsAnnotationPointcut(arguments.parameterizeWith(typeVariableMap, w));
 		ret.copyLocationFrom(this);
 		return ret;

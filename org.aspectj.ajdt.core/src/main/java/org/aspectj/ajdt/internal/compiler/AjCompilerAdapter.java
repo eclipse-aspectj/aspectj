@@ -57,7 +57,7 @@ public class AjCompilerAdapter extends AbstractCompilerAdapter {
 	private IOutputClassFileNameProvider outputFileNameProvider;
 	private IBinarySourceProvider binarySourceProvider;
 	private WeaverMessageHandler weaverMessageHandler;
-	private Map /* fileName |-> List<UnwovenClassFile> */binarySourceSetForFullWeave = new HashMap();
+	private Map<String,List<UnwovenClassFile>> binarySourceSetForFullWeave = new HashMap<>();
 
 	private ContextToken processingToken = null;
 	private ContextToken resolvingToken = null;

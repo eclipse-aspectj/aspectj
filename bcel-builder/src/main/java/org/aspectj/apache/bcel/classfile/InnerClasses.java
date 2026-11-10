@@ -68,6 +68,7 @@ import org.aspectj.apache.bcel.Constants;
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see Attribute
  */
+@SuppressWarnings("serial")
 public final class InnerClasses extends Attribute {
 	private InnerClass[] inner_classes;
 	private int number_of_classes;

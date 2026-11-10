@@ -63,7 +63,7 @@ public class HandlerPointcut extends Pointcut {
 		return exceptionType.matches(shadow.getSignature().getParameterTypes()[0].resolve(shadow.getIWorld()), TypePattern.STATIC);
 	}
 
-	public Pointcut parameterizeWith(Map typeVariableMap, World w) {
+	public Pointcut parameterizeWith(Map<String,UnresolvedType> typeVariableMap, World w) {
 		HandlerPointcut ret = new HandlerPointcut(exceptionType.parameterizeWith(typeVariableMap, w));
 		ret.copyLocationFrom(this);
 		return ret;

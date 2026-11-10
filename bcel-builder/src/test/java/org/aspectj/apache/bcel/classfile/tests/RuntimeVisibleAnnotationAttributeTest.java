@@ -9,7 +9,6 @@
  * Contributors:
  *     Andy Clement -     initial implementation
  * ******************************************************************/
-
 package org.aspectj.apache.bcel.classfile.tests;
 
 import java.io.File;
@@ -33,9 +32,8 @@ import org.aspectj.apache.bcel.classfile.annotation.SimpleElementValue;
 import org.aspectj.apache.bcel.generic.ClassGen;
 import org.aspectj.apache.bcel.util.SyntheticRepository;
 
-
+@SuppressWarnings("unused")
 public class RuntimeVisibleAnnotationAttributeTest extends BcelTestCase {
-
 
 	protected void setUp() throws Exception {
 		super.setUp();

@@ -22,6 +22,7 @@ import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.IntMap;
 import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.Shadow;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
@@ -57,7 +58,7 @@ public class WithincodePointcut extends Pointcut {
 		return matchedShadowKinds;
 	}
 
-	public Pointcut parameterizeWith(Map typeVariableMap, World w) {
+	public Pointcut parameterizeWith(Map<String,UnresolvedType> typeVariableMap, World w) {
 		WithincodePointcut ret = new WithincodePointcut(signature.parameterizeWith(typeVariableMap, w));
 		ret.copyLocationFrom(this);
 		return ret;

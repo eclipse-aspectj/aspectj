@@ -17,8 +17,6 @@ package org.aspectj.weaver;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.aspectj.util.GenericSignature;
 import org.aspectj.util.GenericSignature.ClassSignature;

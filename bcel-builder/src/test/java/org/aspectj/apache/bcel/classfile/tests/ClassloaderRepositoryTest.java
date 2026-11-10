@@ -13,6 +13,7 @@ import junit.framework.TestCase;
  * 
  * @author Andy Clement
  */
+@SuppressWarnings("unused")
 public class ClassloaderRepositoryTest extends TestCase {
 
 	private ClassLoaderRepository rep1,rep2;

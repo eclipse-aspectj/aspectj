@@ -20,6 +20,7 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.weaver.CompressingDataOutputStream;
 import org.aspectj.weaver.ISourceContext;
 import org.aspectj.weaver.ResolvedType;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
 import org.aspectj.weaver.World;
@@ -47,7 +48,7 @@ public class DeclarePrecedence extends Declare {
 		return ret;
 	}
 
-	public Declare parameterizeWith(Map typeVariableBindingMap, World w) {
+	public Declare parameterizeWith(Map<String,UnresolvedType> typeVariableBindingMap, World w) {
 		DeclarePrecedence ret = new DeclarePrecedence(this.patterns.parameterizeWith(typeVariableBindingMap, w));
 		ret.copyLocationFrom(this);
 		return ret;

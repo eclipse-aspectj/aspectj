@@ -177,23 +177,23 @@ public class MissingResolvedTypeWithKnownSignature extends ResolvedType {
 	}
 
 	@Override
-	public List getInterTypeMungers() {
-		return Collections.EMPTY_LIST;
+	public List<ConcreteTypeMunger> getInterTypeMungers() {
+		return Collections.emptyList();
 	}
 
 	@Override
-	public List getInterTypeMungersIncludingSupers() {
-		return Collections.EMPTY_LIST;
+	public List<ConcreteTypeMunger> getInterTypeMungersIncludingSupers() {
+		return Collections.emptyList();
 	}
 
 	@Override
-	public List getInterTypeParentMungers() {
-		return Collections.EMPTY_LIST;
+	public List<ConcreteTypeMunger> getInterTypeParentMungers() {
+		return Collections.emptyList();
 	}
 
 	@Override
-	public List getInterTypeParentMungersIncludingSupers() {
-		return Collections.EMPTY_LIST;
+	public List<ConcreteTypeMunger> getInterTypeParentMungersIncludingSupers() {
+		return Collections.emptyList();
 	}
 
 	@Override

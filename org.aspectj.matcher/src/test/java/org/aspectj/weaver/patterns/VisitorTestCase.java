@@ -18,9 +18,6 @@ import java.util.Set;
 import java.io.LineNumberReader;
 import java.io.FileReader;
 
-import org.aspectj.weaver.patterns.DumpPointcutVisitor;
-import org.aspectj.weaver.patterns.PatternParser;
-import org.aspectj.weaver.patterns.TypePattern;
 
 /**
  * @author <a href="mailto:alex AT gnilux DOT com">Alexandre Vasseur</a>

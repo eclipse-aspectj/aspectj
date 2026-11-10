@@ -352,7 +352,7 @@ public class JoinPointSignature implements ResolvedMember {
 		realMember.evictWeavingState();
 	}
 
-	public ResolvedMember parameterizedWith(Map m, World w) {
+	public ResolvedMember parameterizedWith(Map<String,UnresolvedType> m, World w) {
 		return realMember.parameterizedWith(m, w);
 	}
 

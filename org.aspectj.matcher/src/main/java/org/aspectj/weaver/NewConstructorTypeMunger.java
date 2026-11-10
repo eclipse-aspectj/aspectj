@@ -24,7 +24,7 @@ public class NewConstructorTypeMunger extends ResolvedTypeMunger {
 	private ResolvedMember explicitConstructor;
 
 	public NewConstructorTypeMunger(ResolvedMember signature, ResolvedMember syntheticConstructor,
-			ResolvedMember explicitConstructor, Set superMethodsCalled, List typeVariableAliases) {
+			ResolvedMember explicitConstructor, Set<ResolvedMember> superMethodsCalled, List<String> typeVariableAliases) {
 		super(Constructor, signature);
 		this.syntheticConstructor = syntheticConstructor;
 		this.typeVariableAliases = typeVariableAliases;

@@ -49,7 +49,7 @@ public class DeclareSoft extends Declare {
 	}
 
 	@Override
-	public Declare parameterizeWith(Map typeVariableBindingMap, World w) {
+	public Declare parameterizeWith(Map<String,UnresolvedType> typeVariableBindingMap, World w) {
 		DeclareSoft ret = new DeclareSoft(exception.parameterizeWith(typeVariableBindingMap, w), pointcut.parameterizeWith(
 				typeVariableBindingMap, w));
 		ret.copyLocationFrom(this);

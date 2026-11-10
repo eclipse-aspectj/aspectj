@@ -14,11 +14,6 @@ package org.aspectj.weaver.patterns;
 
 import org.aspectj.bridge.AbortException;
 import org.aspectj.weaver.World;
-import org.aspectj.weaver.patterns.BindingTypePattern;
-import org.aspectj.weaver.patterns.Bindings;
-import org.aspectj.weaver.patterns.PatternParser;
-import org.aspectj.weaver.patterns.Pointcut;
-import org.aspectj.weaver.patterns.TestScope;
 import org.aspectj.weaver.reflect.ReflectionWorld;
 
 public class BindingTestCase extends PatternsTestCase {

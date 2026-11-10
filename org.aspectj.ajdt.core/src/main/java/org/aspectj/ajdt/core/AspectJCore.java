@@ -47,7 +47,7 @@ public class AspectJCore extends JavaCore {
 	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.core.JavaCore#getCompilerOptions()
 	 */
-	protected Map getCompilerOptions() {
+	protected Map<String,String> getCompilerOptions() {
 		return new AjCompilerOptions().getMap();
 	}
 }

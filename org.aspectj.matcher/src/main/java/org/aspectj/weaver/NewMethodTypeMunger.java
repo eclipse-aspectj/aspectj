@@ -21,7 +21,7 @@ import org.aspectj.bridge.ISourceLocation;
 
 public class NewMethodTypeMunger extends ResolvedTypeMunger {
 
-	public NewMethodTypeMunger(ResolvedMember signature, Set superMethodsCalled, List typeVariableAliases) {
+	public NewMethodTypeMunger(ResolvedMember signature, Set<ResolvedMember> superMethodsCalled, List<String> typeVariableAliases) {
 		super(Method, signature);
 		this.typeVariableAliases = typeVariableAliases;
 		this.setSuperMethodsCalled(superMethodsCalled);
