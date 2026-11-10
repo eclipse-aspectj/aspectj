@@ -28,6 +28,7 @@ import org.aspectj.ajdt.internal.core.builder.AjState;
 import org.aspectj.ajdt.internal.core.builder.IncrementalStateManager;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessage;
+import org.aspectj.testing.util.FileTimestamps;
 import org.aspectj.testing.util.TestUtil;
 
 import junit.framework.TestCase;
@@ -193,7 +194,7 @@ public class AjdeInteractionTestbed extends TestCase {
 		resetCompilerRecords(compiler);
 		addSourceFilesToBuild(projectName, compiler);
 		// addXmlConfigFilesToBuild(projectName, compiler);
-		pause(1000); // delay to allow previous runs build stamps to be OK
+		FileTimestamps.settle(sandboxDir); // see FileTimestamps: instead of sleeping
 		lognoln("Building project '" + projectName + "'");
 		compiler.build();
 		log("");
@@ -214,7 +215,7 @@ public class AjdeInteractionTestbed extends TestCase {
 		resetCompilerRecords(compiler);
 		addSourceFilesToBuild(projectName, compiler);
 		addXmlConfigFilesToBuild(projectName, compiler);
-		pause(1000); // delay to allow previous runs build stamps to be OK
+		FileTimestamps.settle(sandboxDir); // see FileTimestamps: instead of sleeping
 		lognoln("Building project '" + projectName + "'");
 		compiler.buildFresh();
 		log("");
@@ -370,13 +371,6 @@ public class AjdeInteractionTestbed extends TestCase {
 			}
 		}
 		fail("Didn't find the error message:\n'" + anError + "'.\nErrors that occurred:\n" + messages);
-	}
-
-	private void pause(int millis) {
-		try {
-			Thread.sleep(millis);
-		} catch (InterruptedException ie) {
-		}
 	}
 
 	// Methods for querying what happened during a build and accessing information

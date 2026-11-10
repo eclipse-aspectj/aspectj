@@ -36,6 +36,7 @@ import org.aspectj.apache.bcel.classfile.LocalVariableTable;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.apache.bcel.util.ClassPath;
 import org.aspectj.apache.bcel.util.SyntheticRepository;
+import org.aspectj.testing.util.FileTimestamps;
 import org.aspectj.tools.ajc.AjcTestCase;
 import org.aspectj.tools.ajc.CompilationResult;
 import org.aspectj.util.FileUtil;
@@ -296,7 +297,7 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 		super.setUp();
 		if (!suiteLoaded) {
 			testMap = new HashMap<>();
-			System.out.println("LOADING SUITE: " + getSpecFile().getPath());
+			System.out.println("Loading suite: " + getSpecFile().getPath());
 			Digester d = getDigester();
 			try {
 				InputStreamReader isr = new InputStreamReader(getSpecFile().openConnection().getInputStream());
@@ -311,10 +312,8 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 	protected long nextIncrement(boolean doWait) {
 		long time = System.currentTimeMillis();
 		if (doWait) {
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException intEx) {
-			}
+			// instead of sleeping so that earlier writes are outside the incremental compiler's one second window
+			FileTimestamps.settle(ajc == null ? null : ajc.getSandboxDirectory());
 		}
 		return time;
 	}

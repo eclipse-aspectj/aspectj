@@ -33,6 +33,7 @@ import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.MessageHandler;
 import org.aspectj.bridge.context.CompilationAndWeavingContext;
+import org.aspectj.testing.util.FileTimestamps;
 import org.aspectj.testing.util.TestUtil;
 import org.aspectj.util.FileUtil;
 
@@ -89,7 +90,19 @@ public class Ajc {
 	private boolean shouldEmptySandbox = true;
 	private final AjcCommandController controller;
 	public static boolean verbose = System.getProperty("aspectj.tests.verbose", "true").equals("true");
+	/**
+	 * Quicker local runs: with -Daspectj.tests.procNone=true compiles that do not ask for annotation processing are run with
+	 * -proc:none. Off by default so that the tests compile the way users do (CI does not set it).
+	 */
+	private static final boolean procNone = Boolean.getBoolean("aspectj.tests.procNone");
 
+	static {
+		if (procNone) {
+			System.out.println(
+					"Ajc: aspectj.tests.procNone is set, compiles that do not ask for annotation processing use -proc:none");
+		}
+	}
+	
 	/**
 	 * Constructs a new Ajc instance, with a new AspectJ compiler inside.
 	 */
@@ -188,15 +201,16 @@ public class Ajc {
 				sandbox = TestUtil.createEmptySandbox();
 			}
 			args = adjustToSandbox(args, !isIncremental);
+			if (procNone && !isIncremental) {
+				args = withoutAnnotationProcessingUnlessRequested(args);
+			}
 			MessageHandler holder = new MessageHandler();
 			holder.setInterceptor(new AbortInterceptor());
 			main.setHolder(holder);
 			if (incrementalStage == 10 && hasSpecifiedIncremental(args)) {
-				// important to sleep after preparing the sandbox on first incremental stage (see notes in pr90806)
-				try {
-					Thread.sleep(1000);
-				} catch (Exception e) {
-				}
+				// important that the prepared sandbox is not seen as modified on the first incremental stage (see notes in pr90806);
+				// this used to sleep for a second
+				FileTimestamps.settle(sandbox);
 			}
 			if (isIncremental) {
 				controller.doIncremental(holder);
@@ -221,6 +235,24 @@ public class Ajc {
 			System.out.println(result);
 		}
 		return result;
+	}
+
+	/**
+	 * Every compile otherwise sets up annotation processing (which walks the whole JDK module image twice), and that is most of
+	 * the CPU time of a typical test. Switch it off unless the test asks for anything to do with annotation processing.
+	 * Only used when the aspectj.tests.procNone system property is set.
+	 */
+	private static String[] withoutAnnotationProcessingUnlessRequested(String[] args) {
+		for (String arg : args) {
+			if (arg.startsWith("-proc") || arg.startsWith("-A") || arg.equals("-s") || arg.startsWith("-implicit")
+					|| arg.startsWith("-XprintProcessorInfo") || arg.startsWith("-XprintRounds")) {
+				return args;
+			}
+		}
+		String[] withProcNone = new String[args.length + 1];
+		withProcNone[0] = "-proc:none";
+		System.arraycopy(args, 0, withProcNone, 1, args.length);
+		return withProcNone;
 	}
 
 	private boolean hasSpecifiedIncremental(String[] args) {

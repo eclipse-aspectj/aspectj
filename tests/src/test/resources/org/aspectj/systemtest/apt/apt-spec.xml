@@ -98,4 +98,19 @@
         </compile>
     </ajc-test>
 
+    <ajc-test dir="apt/test2" title="annotation processor found through the services file, no processing options">
+        <!-- no -processor: DemoProcessor is only found because demo_service_description.jar lists it in META-INF/services.
+             -s is there because the test harness switches annotation processing off for compiles that do not ask for it -->
+        <compile options="-1.8" files="DemoProcessor.java Marker.java" outjar="processor.jar"/>
+        <compile options="-1.8 -s generated -showWeaveInfo" files="Code.java"
+                 classpath="processor.jar,demo_service_description.jar">
+            <message kind="warning" text="Generated aspect to advise too"/>
+            <message kind="warning" text="Generated aspect to advise boo"/>
+            <message kind="weave"
+                     text="Join point 'method-execution(void Code.boo())' in Type 'Code' (Code.java:6) advised by before advice from 'Advise_boo' (Advise_boo.java:2)"/>
+            <message kind="weave"
+                     text="Join point 'method-execution(void Code.too())' in Type 'Code' (Code.java:9) advised by before advice from 'Advise_too' (Advise_too.java:2)"/>
+        </compile>
+    </ajc-test>
+
 </suite>

@@ -51,6 +51,13 @@ public class AptTests extends XMLBasedAjcTestCase {
     runTest("annotation processing generating java files with aspects");
   }
 
+  /**
+   * The processor is found only through META-INF/services, which is the default way of discovering processors.
+   */
+  public void testAptProcessorDiscoveredWithoutProcessingOptions() {
+    runTest("annotation processor found through the services file, no processing options");
+  }
+
   public static Test suite() {
     return XMLBasedAjcTestCase.loadSuite(AptTests.class);
   }
