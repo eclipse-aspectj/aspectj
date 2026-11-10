@@ -42,7 +42,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.util.Enumeration;
-import java.util.Map;
 import java.util.Properties;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -516,7 +515,7 @@ abstract class Installer {
  *****/
 
 class InstallContext {
-	public InstallContext(Map properties) {
+	public InstallContext(Properties properties) {
 		this.properties = properties;
 		properties.put("user.home", System.getProperty("user.home"));
 		//System.out.println("new install context");
@@ -526,7 +525,6 @@ class InstallContext {
 
 	public void setOutputDir(File outputDir) {
 		this.outputDir = outputDir;
-
 		properties.put("installer.output.dir", outputDir.getAbsolutePath());
 		properties.put("installer.output.dir.bin", new File(outputDir, "bin").getAbsolutePath());
 		properties.put("installer.output.dir.doc", new File(outputDir, "doc").getAbsolutePath());
@@ -544,7 +542,7 @@ class InstallContext {
 
 	public Installer installer;
 
-	private Map<String,String> properties;
+	private Properties properties;
 
 	public boolean hasGui() {
 		return hasGui;
@@ -648,7 +646,7 @@ class InstallContext {
 		return overwriteState == OVERWRITE_YES || overwriteState == OVERWRITE_ALL;
 	}
 
-	public Map<String,String> getProperties() {
+	public Properties getProperties() {
 		return properties;
 	}
 }
@@ -708,7 +706,7 @@ abstract class WizardPane {
 												 * + "}</head>\n";
 												 */
 
-	public static String applyProperties(String text, Map<String,String> map) {
+	public static String applyProperties(String text,Properties map) {
 		// ${name} -> map.get(name).toString()
 		int lastIndex = 0;
 		StringBuilder buf = new StringBuilder();
@@ -723,7 +721,7 @@ abstract class WizardPane {
 			buf.append(text.substring(lastIndex, startIndex));
 			String key = text.substring(startIndex + 2, endIndex);
 			lastIndex = endIndex + 1;
-			String replaceText = (map == null ? null : map.get(key));
+			String replaceText = (String)(map == null ? null : map.get(key));
 			//System.out.println("key: " + key + " -> " + replaceText);
 			if (replaceText == null) {
 				replaceText = "NOT_FOUND";

@@ -18,7 +18,7 @@ import junit.framework.Test;
  */
 public class Ajc1923TestsJava extends JavaVersionSpecificXMLBasedAjcTestCase {
 
-	private static final Constants.ClassFileVersion classFileVersion = Constants.ClassFileVersion.of(23);
+//	private static final Constants.ClassFileVersion classFileVersion = Constants.ClassFileVersion.of(23);
 
 	public Ajc1923TestsJava() {
 		super(23);

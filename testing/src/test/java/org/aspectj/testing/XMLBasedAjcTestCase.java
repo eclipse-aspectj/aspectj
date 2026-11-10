@@ -161,8 +161,12 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 			}
 		} finally {
 			if (print) {
-				System.out.println("SYSOUT");
-				System.out.println(ajc.getLastCompilationResult().getStandardOutput());
+				String sysoutData = ajc.getLastCompilationResult().getStandardOutput();
+				if (sysoutData.length()>0) {
+					System.out.println("SYSOUT vvvvvv");
+					System.out.println(sysoutData);
+					System.out.println("SYSOUT ^^^^^^");
+				}
 			}
 		}
 	}

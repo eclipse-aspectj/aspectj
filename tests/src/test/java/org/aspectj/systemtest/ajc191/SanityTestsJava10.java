@@ -52,7 +52,7 @@ public class SanityTestsJava10 extends XMLBasedAjcTestCase {
 	}
 
 	public void testSimpleCode_H() {
-		runTest("simple - h", true);
+		runTest("simple - h");
 	}
 
 	public void testSimpleCode_I() {

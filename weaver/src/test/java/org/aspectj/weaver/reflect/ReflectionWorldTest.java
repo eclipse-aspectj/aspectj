@@ -132,7 +132,7 @@ public class ReflectionWorldTest extends TestCase {
 //		world.lookupOrCreateName(UnresolvedType.forName(AbstractTestClass.class.getName()));
 //		ResolvedType resolvedType = world.resolve(AbstractTestClass.class);
 		JavaLangTypeToResolvedTypeConverter converter = new JavaLangTypeToResolvedTypeConverter(world);
-		ResolvedType resolvedType2 = converter.fromType(ConcreteClass.class);
+		converter.fromType(ConcreteClass.class);
 	}
 
 	public void xtestTypeConversions_509327() throws Exception {
@@ -212,7 +212,7 @@ public class ReflectionWorldTest extends TestCase {
 		assertEquals("Lorg/aspectj/weaver/reflect/ReflectionWorldTest$TestClass2$Inner;",bType_Inner.getSignature());
 
 		assertEquals(UnresolvedType.TypeKind.SIMPLE,bType_Inner.getTypekind());
-		ResolvedType bType_Outer = bType_Inner.getOuterClass();
+		bType_Inner.getOuterClass();
 
 		// Fields seem to lose it too, although the backinggenericmember has the info
 //		ResolvedMember bField_f = findField(bResolved_TestClass2,"f");

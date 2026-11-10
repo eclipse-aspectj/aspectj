@@ -48,6 +48,7 @@ import test.A2AnnotatedType;
  * Test parameter pointcut parsing.  Extended by Andy Clement to cover parameter annotation matching.
  *
  */
+@SuppressWarnings("unused") // there are test fixtures in here that shouldn't warn
 public class Java15PointcutExpressionTest extends TestCase {
 
 	public static Test suite() {

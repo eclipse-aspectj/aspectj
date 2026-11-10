@@ -58,7 +58,7 @@ public class SanityTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	}
 
 	public void testSimpleCode_H() {
-		runTest("simple - h", true);
+		runTest("simple - h");
 	}
 
 	public void testSimpleCode_I() {

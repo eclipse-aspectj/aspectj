@@ -58,7 +58,7 @@ public class SanityTestsJava13 extends JavaVersionSpecificXMLBasedAjcTestCase {
 	}
 
 	public void testSimpleCode_H() {
-		runTest("simple - h", true);
+		runTest("simple - h");
 	}
 
 	public void testSimpleCode_I() {

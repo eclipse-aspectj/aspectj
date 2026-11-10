@@ -29,13 +29,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -58,14 +54,10 @@ import junit.framework.TestSuite;
 public final class TestUtil {
 	private static final String SANDBOX_NAME = "ajcSandbox";
 	private static final boolean JAVA_5_VM;
-	private static final String ASPECTJRT_KEY = "aspectjrt";
-	private static final String TESTING_CLIENT_KEY = "testing-client";
-	public static final URL BAD_URL;
 	private static final File LIB_DIR;
-	private static final Properties LIB_RPATHS;
-	private static final Map LIB_ENTRIES;
 	private static File ASPECTJRT_PATH;
 	private static File ASPECTJRTJAR_PATH;
+
 	static {
 		{
 			String[] paths = {
@@ -86,15 +78,6 @@ public final class TestUtil {
 			JAVA_5_VM = j5;
 		}
 		{
-			URL url = null;
-			try {
-				url = new URL("https://eclipse.org/BADURL");
-			} catch (MalformedURLException e) {
-				// ignore - hopefully never
-			}
-			BAD_URL = url;
-		}
-		{
 			File file = new File("lib");
 			if (!isLibDir(file)) {
 				File cur = new File(".").getAbsoluteFile();
@@ -112,31 +95,6 @@ public final class TestUtil {
 			}
 			LIB_DIR = file;
 		}
-
-		LIB_RPATHS = new Properties();
-		LIB_RPATHS.setProperty(ASPECTJRT_KEY, "tests/aspectjrt.jar");
-		LIB_RPATHS.setProperty(TESTING_CLIENT_KEY, "tests/testing-client.jar");
-		// TODO support others loaded dynamically
-
-		Map<String,Object> map = new HashMap<>();
-		for (Object o : LIB_RPATHS.keySet()) {
-			String key = (String) o;
-			String path = LIB_RPATHS.getProperty(key);
-			File file = null;
-			URL url = null;
-			try {
-				file = libFile(path);
-				url = libURL(path);
-			} catch (IllegalArgumentException e) {
-				file = new File(path + " not found");
-				url = BAD_URL;
-			} finally {
-				map.put(key + ".file", file);
-				map.put(key + ".url", url);
-			}
-		}
-		// TODO support changing entries, etc.
-		LIB_ENTRIES = Collections.unmodifiableMap(map);
 	}
 
 	private static boolean isLibDir(File lib) {
@@ -450,7 +408,7 @@ public final class TestUtil {
 		}
 	}
 
-	private static void showContext(List lines) {
+	private static void showContext(List<String> lines) {
 		int n = lines.size();
 		for (int i = Math.max(0, n - 8); i < n; i++) {
 			System.err.println(lines.get(i));
@@ -781,6 +739,7 @@ public final class TestUtil {
 	/**
 	 * Nested exception - remove when using 1.4 or later.
 	 */
+	@SuppressWarnings("serial")
 	public static class TestError extends Error {
 		private Throwable thrown;
 

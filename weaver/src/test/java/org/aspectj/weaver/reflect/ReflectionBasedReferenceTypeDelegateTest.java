@@ -274,11 +274,11 @@ public abstract class ReflectionBasedReferenceTypeDelegateTest extends TestCase 
 		ResolvedMember[] rms1 = rawType.getDelegate().getDeclaredMethods();
 		ResolvedMember[] rms2 = rawReflectType.getDelegate().getDeclaredMethods();
 		StringBuilder errors = new StringBuilder();
-		Set one = new HashSet();
+		Set<String> one = new HashSet<>();
 		for (ResolvedMember item : rms1) {
 			one.add(item.toString());
 		}
-		Set two = new HashSet();
+		Set<String> two = new HashSet<>();
 		for (ResolvedMember value : rms2) {
 			two.add(value.toString());
 		}

@@ -53,7 +53,7 @@ public class SanityTests19 extends XMLBasedAjcTestCase {
 	}
 
 	public void testSimpleCode_H() {
-		runTest("simple - h", true);
+		runTest("simple - h");
 	}
 
 	public void testSimpleCode_I() {

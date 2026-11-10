@@ -8,7 +8,6 @@
 package org.aspectj.systemtest.ajc1922;
 
 import junit.framework.Test;
-import org.aspectj.systemtest.ajc10x.Ajc10xTests;
 import org.aspectj.testing.JavaVersionSpecificXMLBasedAjcTestCase;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 

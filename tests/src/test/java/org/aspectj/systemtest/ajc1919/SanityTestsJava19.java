@@ -26,7 +26,8 @@ public class SanityTestsJava19 extends JavaVersionSpecificXMLBasedAjcTestCase {
 		super(19);
 	}
 
-	// Incredibly trivial test programs that check the compiler works at all (these are easy-ish to debug)
+	// Incredibly trivial test programs that check the compiler works at all (these
+	// are easy-ish to debug)
 	public void testSimpleJava_A() {
 		runTest("simple - a");
 	}
@@ -56,7 +57,7 @@ public class SanityTestsJava19 extends JavaVersionSpecificXMLBasedAjcTestCase {
 	}
 
 	public void testSimpleCode_H() {
-		runTest("simple - h", true);
+		runTest("simple - h");
 	}
 
 	public void testSimpleCode_I() {
