@@ -17,6 +17,7 @@ import org.aspectj.internal.lang.reflect.AjTypeWithAspectsTest;
 import org.aspectj.internal.lang.reflect.InterTypeTest;
 import org.aspectj.runtime.reflect.JoinPointImplTest;
 import org.aspectj.runtime.reflect.SignatureTest;
+import org.aspectj.runtime.reflect.StringMakerTest;
 
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -28,6 +29,7 @@ public class RuntimeModuleTests extends TestCase {
 		suite.addTestSuite(RuntimeTest.class);
 		suite.addTestSuite(SignatureTest.class);
 		suite.addTestSuite(JoinPointImplTest.class);
+		suite.addTestSuite(StringMakerTest.class);
 		// suite.addTestSuite(RuntimePerformanceTest.class);
 		suite.addTestSuite(AjTypeTest.class);
 		suite.addTestSuite(AjTypeWithAspectsTest.class);

@@ -93,10 +93,43 @@ class StringMaker {
         	Class<?> componentType = type.getComponentType();
         	return makeTypeName(componentType, componentType.getName(), shortName) + "[]";
         }
-        if (shortName) {
-            return stripPackageName(typeName).replace('$', '.');
-        } else {
-            return typeName.replace('$', '.');
+        String name = nestingSeparatorsAsDots(type, typeName);
+        return shortName ? stripPackageName(typeName, name) : name;
+    }
+
+    /** As stripPackageName(String) but for name, which is typeName with some '$' replaced, so the package is found in typeName. */
+    private static String stripPackageName(String typeName, String name) {
+        return name.substring(typeName.lastIndexOf('.') + 1);
+    }
+
+    /**
+     * The binary name of a nested class is the binary name of the class it is nested in, then a '$', then its own name
+     * (Outer$Inner is shown as Outer.Inner). Those are the only '$' that are replaced: a '$' can be anywhere else in a name too
+     * (package names, the names of the classes, generated classes such as JDK and CGLIB proxies and lambdas) and has to be kept.
+     * <p>
+     * Only the class itself can tell what is nested in what. Names without a '$' (nearly all of them) do not need to ask, and
+     * generated classes have no enclosing class so asking does not load anything. For a nested class the classes it is nested
+     * in are loaded (not initialized), if they were not already.
+     */
+    private static String nestingSeparatorsAsDots(Class<?> type, String name) {
+        if (name.indexOf('$') == -1) return name;
+        try {
+            char[] chars = null;
+            for (Class<?> c = type.getEnclosingClass(); c != null; c = c.getEnclosingClass()) {
+                // the name should be the name of c, a '$', then the rest of the name: the '$' there is the one to replace
+                String outerName = c.getName();
+                int separator = outerName.length();
+                boolean nameIsOuterNameThenDollar = name.startsWith(outerName) && name.length() > separator
+                        && name.charAt(separator) == '$';
+                if (!nameIsOuterNameThenDollar) {
+                    return name.replace('$', '.'); // the name is not that of the class: do what has always been done
+                }
+                if (chars == null) chars = name.toCharArray();
+                chars[separator] = '.';
+            }
+            return chars == null ? name : new String(chars);
+        } catch (LinkageError | SecurityException e) {
+            return name.replace('$', '.'); // cannot tell (an outer class is not available, say): do what has always been done
         }
     }
 
