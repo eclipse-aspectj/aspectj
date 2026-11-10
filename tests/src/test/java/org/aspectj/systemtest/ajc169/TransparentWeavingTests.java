@@ -202,7 +202,7 @@ public class TransparentWeavingTests extends org.aspectj.testing.XMLBasedAjcTest
 				}
 				return f;
 			}
-			System.out.println(f.getGenericSignature());
+//			System.out.println(f.getGenericSignature());
 		}
 		fail("Did not find method " + name + " in class " + clazzname + ".  Found methods: " + methods.toString());
 		return null;
@@ -218,10 +218,10 @@ public class TransparentWeavingTests extends org.aspectj.testing.XMLBasedAjcTest
 		runTest("three");
 
 		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(), "Three");
-		Field[] fs = jc.getFields();
-		for (Field f : fs) {
-			System.out.println(f);
-		}
+//		Field[] fs = jc.getFields();
+//		for (Field f : fs) {
+//			System.out.println(f);
+//		}
 
 		// public int ajc$interField$X$xPrivate [RuntimeVisibleAnnotations]
 		// public Integer ajc$interField$$yDefault [RuntimeVisibleAnnotations]
