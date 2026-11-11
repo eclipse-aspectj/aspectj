@@ -28,7 +28,7 @@ import org.aspectj.util.LangUtil;
 public class Globals {
 
 	/** map from String version to String class implemented in that version or later */
-    private static final Map VM_CLASSES;
+    private static final Map<String,String> VM_CLASSES;
 
     public static final String FORK_NAME = "harness.fork";
     // XXX in testing-drivers/../package.htm
@@ -71,7 +71,7 @@ public class Globals {
                 && FileUtil.canReadFile(F_aspectjrt_jar)
                 && FileUtil.canReadFile(J2SE13_RTJAR)
                 && FileUtil.canReadFile(J2SE14_RTJAR));
-        Map map = new HashMap();
+        Map<String,String> map = new HashMap<>();
         map.put("1.2", "java.lang.ref.Reference");
         map.put("1.3", "java.lang.reflect.Proxy");
         map.put("1.4", "java.nio.Buffer");

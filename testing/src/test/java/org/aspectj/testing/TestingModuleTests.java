@@ -21,7 +21,6 @@ import org.aspectj.testing.harness.bridge.ParseTestCase;
 import org.aspectj.testing.taskdefs.AjcTaskCompileCommandTest;
 import org.aspectj.testing.util.BridgeUtilTest;
 import org.aspectj.testing.util.FileUtilTest;
-import org.aspectj.testing.util.IteratorWrapperTest;
 import org.aspectj.testing.util.LangUtilTest;
 import org.aspectj.testing.util.MessageUtilTest;
 import org.aspectj.testing.util.StreamGrabberTest;
@@ -47,7 +46,6 @@ public class TestingModuleTests extends TestCase {
         suite.addTestSuite(StructureModelUtilTest.class);
         suite.addTestSuite(FileUtilTest.class);
         suite.addTestSuite(BridgeUtilTest.class);
-        suite.addTestSuite(IteratorWrapperTest.class);
         suite.addTestSuite(StreamGrabberTest.class);
         suite.addTestSuite(TestDiffsTest.class);
         suite.addTestSuite(LangUtilTest.class);

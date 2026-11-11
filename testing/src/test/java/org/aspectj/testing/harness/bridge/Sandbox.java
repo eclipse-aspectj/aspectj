@@ -255,7 +255,7 @@ public class Sandbox {
         String[] expectedSources) {
         LangUtil.throwIaxIfFalse(0 < classesDirStartTime, "0 >= " + classesDirStartTime);
         boolean acceptPrefixes = true;
-        Diffs diffs = org.aspectj.testing.util.FileUtil.dirDiffs(
+        Diffs<String> diffs = org.aspectj.testing.util.FileUtil.dirDiffs(
             "classes",
             classesDir,
             classesDirStartTime,

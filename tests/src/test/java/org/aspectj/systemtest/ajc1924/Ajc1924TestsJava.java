@@ -7,7 +7,6 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc1924;
 
-import org.aspectj.apache.bcel.Constants;
 import org.aspectj.testing.JavaVersionSpecificXMLBasedAjcTestCase;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 
@@ -18,7 +17,7 @@ import junit.framework.Test;
  */
 public class Ajc1924TestsJava extends JavaVersionSpecificXMLBasedAjcTestCase {
 
-	private static final Constants.ClassFileVersion classFileVersion = Constants.ClassFileVersion.of(24);
+//	private static final Constants.ClassFileVersion classFileVersion = Constants.ClassFileVersion.of(24);
 
 	public Ajc1924TestsJava() {
 		super(24);

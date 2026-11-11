@@ -13,7 +13,6 @@
 
 package org.aspectj.testing.harness.bridge;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.aspectj.bridge.IMessage;

@@ -60,7 +60,7 @@ public class AjcTest extends RunSpecIterator {
     /** Unwrap initial CompilerRun.Spec from an AjcTest.Spec */
     public static CompilerRun.Spec unwrapCompilerRunSpec(Spec spec) {
         if (null != spec) {
-            List kids = spec.getChildren();
+            List<IRunSpec> kids = spec.getChildren();
             if (0 < kids.size()) {
                 Object o = kids.get(0);
                 if (o instanceof CompilerRun.Spec) {

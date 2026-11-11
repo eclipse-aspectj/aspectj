@@ -7,18 +7,18 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc1922;
 
-import junit.framework.Test;
-import org.aspectj.apache.bcel.Constants;
 import org.aspectj.systemtest.ajc10x.Ajc10xTests;
 import org.aspectj.testing.JavaVersionSpecificXMLBasedAjcTestCase;
 import org.aspectj.testing.XMLBasedAjcTestCase;
+
+import junit.framework.Test;
 
 /**
  * @author Alexander Kriegisch
  */
 public class Ajc1922TestsJava extends JavaVersionSpecificXMLBasedAjcTestCase {
 
-  private static final Constants.ClassFileVersion classFileVersion = Constants.ClassFileVersion.of(22);
+//  private static final Constants.ClassFileVersion classFileVersion = Constants.ClassFileVersion.of(22);
 
   public Ajc1922TestsJava() {
     super(22);

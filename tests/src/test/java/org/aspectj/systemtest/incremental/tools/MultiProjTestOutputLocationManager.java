@@ -42,7 +42,7 @@ public class MultiProjTestOutputLocationManager implements IOutputLocationManage
 		return classOutputLoc;
 	}
 
-	public Map getInpathMap() {
+	public Map<File,String> getInpathMap() {
 		return Collections.emptyMap();
 	}
 

@@ -121,7 +121,7 @@ public class FileUtil {
      *         differs from an expected file name only by a suffix
      *         (which need not begin with ".").
      */
-    public static Diffs dirDiffs( // XXX too complicated, weak prefix checking
+    public static Diffs<String> dirDiffs( // XXX too complicated, weak prefix checking
         final String label,
         final File dir,
         final long startTime,

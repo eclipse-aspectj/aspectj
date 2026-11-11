@@ -7,7 +7,6 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc1923;
 
-import org.aspectj.apache.bcel.Constants;
 import org.aspectj.testing.JavaVersionSpecificXMLBasedAjcTestCase;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 

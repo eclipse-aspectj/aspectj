@@ -146,7 +146,7 @@ public class AjcMessageHandler extends MessageHandler {
 			}
 			// we ignore unexpected info messages,
 			// but we do test for expected ones
-			final Diffs messages;
+			final Diffs<IMessage> messages;
             boolean usingNew = true; // XXX extract old API's after shake-out period
             if (usingNew) {
                 final IMessage.Kind[] NOSKIPS = new IMessage.Kind[0];
@@ -159,8 +159,8 @@ public class AjcMessageHandler extends MessageHandler {
                 }
                 messages = Diffs.makeDiffs(
                     "message",
-                    (IMessage[]) expected.toArray(new IMessage[0]),
-                    (IMessage[]) actual.toArray(new IMessage[0]),
+                    expected.toArray(new IMessage[0]),
+                    actual.toArray(new IMessage[0]),
                     NOSKIPS,
                     skipActual);
             } else {
@@ -172,7 +172,7 @@ public class AjcMessageHandler extends MessageHandler {
                     Diffs.ACCEPT_ALL,
                     CompilerDiffs.SKIP_UNEXPECTED_INFO);
             }
-			Diffs recompiled =
+			Diffs<File> recompiled =
 				Diffs.makeDiffs(
 					"recompiled",
 					expectedRecompiled,
@@ -318,16 +318,16 @@ public class AjcMessageHandler extends MessageHandler {
 	/** compiler results for errors, warnings, and recompiled files */
 	public static class CompilerDiffs {
 		/** Skip info messages when reporting unexpected messages */
-		static final Diffs.Filter SKIP_UNEXPECTED_INFO = new Diffs.Filter() {
-			public boolean accept(Object o) {
-				return ((o instanceof IMessage) && !((IMessage) o).isInfo());
+		static final Diffs.Filter<IMessage> SKIP_UNEXPECTED_INFO = new Diffs.Filter<IMessage>() {
+			public boolean accept(IMessage message) {
+				return ((message != null) && !message.isInfo());
 			}
 		};
-		public final Diffs messages;
-		public final Diffs recompiled;
+		public final Diffs<IMessage> messages;
+		public final Diffs<File> recompiled;
 		public final boolean different;
 
-		public CompilerDiffs(Diffs messages, Diffs recompiled) {
+		public CompilerDiffs(Diffs<IMessage> messages, Diffs<File> recompiled) {
 			this.recompiled = recompiled;
 			this.messages = messages;
 			different = (messages.different || recompiled.different);

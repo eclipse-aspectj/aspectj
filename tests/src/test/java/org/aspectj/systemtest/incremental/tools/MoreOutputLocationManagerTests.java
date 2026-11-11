@@ -318,8 +318,8 @@ public class MoreOutputLocationManagerTests extends AbstractMultiProjectIncremen
 	 */
 	private static class SingleDirOutputLocMgr implements IOutputLocationManager {
 
-		private File classOutputLoc;
-		private File resourceOutputLoc;
+//		private File classOutputLoc;
+//		private File resourceOutputLoc;
 		private String testProjectOutputPath;
 		private List<File> allOutputLocations;
 		private File outputLoc;

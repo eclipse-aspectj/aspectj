@@ -79,13 +79,13 @@ public class TestDiffs { // XXX pretty dumb implementation
             reading = actual;
             act = TestDiffs.readTestResults(actual, actual.getPath());
 
-            Diffs tests = Diffs.makeDiffs("tests", exp, act, TestResult.BY_NAME);
+            Diffs<TestResult> tests = Diffs.makeDiffs("tests", exp, act, TestResult.BY_NAME);
             // remove missing/unexpected (removed, added) tests from results
             // otherwise, unexpected-[pass|fail] look like [fixes|broken]
             List<TestResult> expResults = trimByName(exp, tests.missing);
             List<TestResult> actResults = trimByName(act, tests.unexpected);
 
-            Diffs results = Diffs.makeDiffs("results", expResults, actResults, TestResult.BY_PASSNAME);
+            Diffs<TestResult> results = Diffs.makeDiffs("results", expResults, actResults, TestResult.BY_PASSNAME);
 
             // broken tests show up in results as unexpected-fail or missing-pass
             //  fixed tests show up in results as unexpected-pass or missing-fail

@@ -116,7 +116,7 @@ public class NewFeatures extends org.aspectj.testing.XMLBasedAjcTestCase {
 		try {
 			JavaClass myClass = getMyClass("B");
 			Method preClinitMethod = getPreClinitMethod(myClass);
-			System.out.println(preClinitMethod.getCode().toString());
+//			System.out.println(preClinitMethod.getCode().toString());
 			NewFeatures.assertTrue("MakedMethodSig required",
 					preClinitMethod.getCode().toString().contains("50:   ldc		\"java.lang.String\" (108)"));
 		} catch (Exception e) {

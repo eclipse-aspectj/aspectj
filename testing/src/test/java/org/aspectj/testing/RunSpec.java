@@ -21,7 +21,6 @@ import java.util.StringTokenizer;
 
 import org.aspectj.tools.ajc.AjcTestCase;
 import org.aspectj.util.FileUtil;
-import org.aspectj.util.LangUtil;
 
 /**
  * @author Adrian Colyer

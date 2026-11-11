@@ -408,7 +408,6 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 	protected Method getMethodStartsWith(JavaClass jc, String prefix, int whichone) {
 		Method[] meths = jc.getMethods();
 		for (Method method : meths) {
-			System.out.println(method);
 			if (method.getName().startsWith(prefix)) {
 				whichone--;
 				if (whichone == 0) {

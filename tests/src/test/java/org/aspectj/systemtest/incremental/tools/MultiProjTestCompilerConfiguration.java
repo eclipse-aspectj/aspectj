@@ -75,7 +75,7 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 			+ System.getProperty("aspectjrt.path") + File.pathSeparator
 			+ "../lib/junit/junit.jar" + File.pathSeparator
 			+ ".." + File.separator + "lib" + File.separator + "test" + File.separator + "aspectjrt.jar";
-		verifyClasspath(cp);
+//		verifyClasspath(cp);
 		if (LangUtil.isVMGreaterOrEqual(9)) {
 			cp = LangUtil.getJrtFsFilePath() + File.pathSeparator + cp;
 		}
@@ -94,7 +94,7 @@ public class MultiProjTestCompilerConfiguration implements ICompilerConfiguratio
 		StringTokenizer st = new StringTokenizer(cp,File.pathSeparator);
 		while (st.hasMoreElements()) {
 			String cpElement = st.nextToken();
-//			System.out.println("Checking: "+cpElement+" exists? "+new File(cpElement).exists());
+			System.out.println("Checking: "+cpElement+" exists? "+new File(cpElement).exists());
 		}
 	}
 

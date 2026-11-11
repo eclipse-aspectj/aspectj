@@ -71,7 +71,7 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		runTest("aspectpath model");
 		AsmManager model = AsmManager.lastActiveStructureModel;
 		IHierarchy top = model.getHierarchy();
-		printModel(model);
+//		printModel(model);
 		IProgramElement ipe = null;
 
 		// ITD METHOD
@@ -312,7 +312,7 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		if (m.getLocalVariableTable() == null) {
 			fail("Local variable table should not be null");
 		}
-		System.out.println(m.getLocalVariableTable());
+//		System.out.println(m.getLocalVariableTable());
 		LocalVariable[] lvt = m.getLocalVariableTable().getLocalVariableTable();
 		assertEquals(8, lvt.length);
 		// private static final void method_aroundBody1$advice(Service, long,

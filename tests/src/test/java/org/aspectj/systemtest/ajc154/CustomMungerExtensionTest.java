@@ -28,6 +28,7 @@ import org.aspectj.weaver.ResolvedType;
 import org.aspectj.weaver.ResolvedTypeMunger;
 import org.aspectj.weaver.Shadow;
 import org.aspectj.weaver.ShadowMunger;
+import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.World;
 import org.aspectj.weaver.patterns.DeclareErrorOrWarning;
 import org.aspectj.weaver.patterns.IfPointcut;
@@ -128,7 +129,7 @@ public class CustomMungerExtensionTest extends AjdeInteractionTestbed {
 			return false;
 		}
 
-		public ConcreteTypeMunger parameterizeWith(Map parameterizationMap, World world) {
+		public ConcreteTypeMunger parameterizeWith(Map<String,UnresolvedType> parameterizationMap, World world) {
 			return null;
 		}
 	}

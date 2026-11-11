@@ -10,7 +10,6 @@
  * Contributors:
  *     Xerox/PARC     initial implementation
  * ******************************************************************/
-
 package org.aspectj.testing.util;
 
 import java.io.File;
@@ -33,20 +32,21 @@ import org.aspectj.util.LangUtil;
 /**
  * Result struct for expected/actual diffs for Collection
  */
-public class Diffs {
+public class Diffs<T> {
 
 	/**
 	 * Compare IMessage.Kind based on kind priority.
 	 */
-	public static final Comparator KIND_PRIORITY = new Comparator() {
+	public static final Comparator<IMessage.Kind> KIND_PRIORITY = new Comparator<IMessage.Kind>() {
 		/**
 		 * Compare IMessage.Kind based on kind priority.
 		 * @throws NullPointerException if anything is null
 		 */
-		public int compare(Object lhs, Object rhs) {
-			return ((IMessage.Kind) lhs).compareTo((IMessage.Kind) rhs);
+		public int compare(IMessage.Kind lhs, IMessage.Kind rhs) {
+			return lhs.compareTo(rhs);
 		}
 	};
+
 	/**
 	 * Sort ISourceLocation based on line, file path.
 	 */
@@ -88,7 +88,7 @@ public class Diffs {
 			return result;
 		}
 	};
-	public static final Filter ACCEPT_ALL = new Filter() {
+	public static final Filter<Object> ACCEPT_ALL = new Filter<Object>() {
 		public boolean accept(Object o) {
 			return true;
 		}
@@ -97,7 +97,7 @@ public class Diffs {
 	//    public static final Diffs NONE
 	//        = new Diffs("NONE", Collections.EMPTY_LIST, Collections.EMPTY_LIST);
 
-	public static <T> Diffs makeDiffs(
+	public static <T> Diffs<T> makeDiffs(
 		String label,
 		List<T> expected,
 		List<T> actual,
@@ -111,7 +111,7 @@ public class Diffs {
 			ACCEPT_ALL);
 	}
 
-	public static Diffs makeDiffs(
+	public static Diffs<IMessage> makeDiffs(
 		String label,
 		IMessage[] expected,
 		IMessage[] actual) {
@@ -141,7 +141,7 @@ public class Diffs {
         return result;
     }
 
-	public static Diffs makeDiffs(
+	public static Diffs<IMessage> makeDiffs(
 		String label,
 		IMessage[] expected,
 		IMessage[] actual,
@@ -163,7 +163,7 @@ public class Diffs {
 			List<IMessage> expectedFound = new ArrayList<>();
 			List<IMessage> expectedForLine = new ArrayList<>();
 			for (ListIterator<IMessage> iter = act.listIterator(); iter.hasNext();) {
-				IMessage actualMessage = (IMessage) iter.next();
+				IMessage actualMessage = iter.next();
 				int actualLine = getLine(actualMessage);
 				if (actualLine != lastLine) {
 					// new line - get all messages expected for it
@@ -173,8 +173,7 @@ public class Diffs {
 					lastLine = actualLine;
 					expectedForLine.clear();
 					while (expectedIterator.hasNext()) {
-						IMessage curExpected =
-							(IMessage) expectedIterator.next();
+						IMessage curExpected = expectedIterator.next();
                         int curExpectedLine = getLine(curExpected);
 						if (actualLine == curExpectedLine) {
 							expectedForLine.add(curExpected);
@@ -190,7 +189,7 @@ public class Diffs {
 				for (Iterator<IMessage> iterator = expectedForLine.iterator();
 					!found && iterator.hasNext();
 					) {
-					expectedMessage = (IMessage) iterator.next();
+					expectedMessage = iterator.next();
 					found = expectingMessage(expectedMessage, actualMessage);
 				}
 				if (found) {
@@ -209,16 +208,16 @@ public class Diffs {
 			exp.removeAll(expectedFound);
 			missing.addAll(exp);
 		}
-		return new Diffs(label, missing, unexpected);
+		return new Diffs<>(label, missing, unexpected);
 	}
 
-	public static <T> Diffs makeDiffs(
+	public static <T> Diffs<T> makeDiffs(
 		String label,
 		List<T> expected,
 		List<T> actual,
 		Comparator<T> comparator,
-		Filter missingFilter,
-		Filter unexpectedFilter) {
+		Filter<? super T> missingFilter,
+		Filter<? super T> unexpectedFilter) {
 		label = label.trim();
 		if (null == label) {
 			label = ": ";
@@ -251,7 +250,7 @@ public class Diffs {
 				}
 			}
 		}
-		return new Diffs(thisLabel, miss, unexpect);
+		return new Diffs<>(thisLabel, miss, unexpect);
 	}
 
 	//    /**
@@ -470,10 +469,10 @@ public class Diffs {
 		return sink;
 	}
 
-	private static List harden(List list) {
+	private static <T> List<T> harden(List<T> list) {
 		return (
 			LangUtil.isEmpty(list)
-				? Collections.EMPTY_LIST
+				? Collections.emptyList()
 				: Collections.unmodifiableList(list));
 	}
 
@@ -481,10 +480,10 @@ public class Diffs {
 	public final String label;
 
 	/** immutable List */
-	public final List<TestResult> missing;
+	public final List<T> missing;
 
 	/** immutable List */
-	public final List<TestResult> unexpected;
+	public final List<T> unexpected;
 
 	/** true if there are any missing or unexpected */
 	public final boolean different;
@@ -496,7 +495,7 @@ public class Diffs {
 	 * @param missing the List of missing elements
 	 * @param unexpected the List of unexpected elements
 	 */
-	public Diffs(String label, List missing, List unexpected) {
+	public Diffs(String label, List<T> missing, List<T> unexpected) {
 		this.label = label;
 		this.missing = harden(missing);
 		this.unexpected = harden(unexpected);
@@ -519,15 +518,18 @@ public class Diffs {
 		LangUtil.throwIaxIfNull(handler, "handler");
 		LangUtil.throwIaxIfNull(kind, "kind");
 		if (different) {
-			for (Object value : missing) {
-				String s = MessageUtil.renderMessage((IMessage) value);
-				MessageUtil.fail(handler, "missing " + label + ": " + s);
+			for (T value : missing) {
+				MessageUtil.fail(handler, "missing " + label + ": " + render(value));
 			}
-			for (Object o : unexpected) {
-				String s = MessageUtil.renderMessage((IMessage) o);
-				MessageUtil.fail(handler, "unexpected " + label + ": " + s);
+			for (T value : unexpected) {
+				MessageUtil.fail(handler, "unexpected " + label + ": " + render(value));
 			}
 		}
+	}
+
+	/** @return the message rendering of an IMessage, otherwise toString() */
+	private static String render(Object value) {
+		return value instanceof IMessage ? MessageUtil.renderMessage((IMessage) value) : String.valueOf(value);
 	}
 
 	/** @return "{label}: (unexpected={#}, missing={#})" */
@@ -539,8 +541,8 @@ public class Diffs {
 			+ missing.size()
 			+ ")";
 	}
-	public interface Filter {
+	public interface Filter<T> {
 		/** @return true to keep input in list of messages */
-		boolean accept(Object input);
+		boolean accept(T input);
 	}
 }

@@ -271,9 +271,8 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 				.getHandleIdentifier();
 		assertFalse("expected the two advice nodes to have unique handles but" + " did not", handle1.equals(handle2));
 		try {
-			AsmManager.lastActiveStructureModel.dumptree(AsmManager.lastActiveStructureModel.getHierarchy().getRoot(), 0);
+			AsmManager.dumptree(AsmManager.lastActiveStructureModel.getHierarchy().getRoot(), 0);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -403,7 +402,7 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 		runTest("initialization same as jdt");
 		IHierarchy top = AsmManager.lastActiveStructureModel.getHierarchy();
 		IProgramElement parent = top.findElementForLabel(top.getRoot(), IProgramElement.Kind.CLASS, "Demo");
-		List children = parent.getChildren();
+		List<IProgramElement> children = parent.getChildren();
 		String handle1 = null;
 		String handle2 = null;
 		for (Object child : children) {

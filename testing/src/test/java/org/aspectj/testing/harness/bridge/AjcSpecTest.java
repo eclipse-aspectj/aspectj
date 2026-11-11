@@ -38,8 +38,8 @@ public class AjcSpecTest extends TestCase {
 			Assert a) {
 		assertNotNull(lhsSpec);
 		assertNotNull(rhsSpec);
-		Iterator lhs = lhsSpec.getChildren().iterator();
-		Iterator rhs = rhsSpec.getChildren().iterator();
+		Iterator<IRunSpec> lhs = lhsSpec.getChildren().iterator();
+		Iterator<IRunSpec> rhs = rhsSpec.getChildren().iterator();
 		while (lhs.hasNext() && rhs.hasNext()) {
 			AjcTest.Spec lhsTest = (AjcTest.Spec) lhs.next();
 			AjcTest.Spec rhsTest = (AjcTest.Spec) rhs.next();
@@ -117,11 +117,11 @@ public class AjcSpecTest extends TestCase {
 	}
 
 	/** @return normal form for list items */
-	static String normal(List list) {
+	static <T> String normal(List<T> list) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("[");
 		boolean first = true;
-		for (Object o : list) {
+		for (T o : list) {
 			if (!first) {
 				sb.append(", ");
 			} else {
@@ -134,7 +134,7 @@ public class AjcSpecTest extends TestCase {
 	}
 
 	/** @return true if both are empty (null or no entries) or if all match after trimming */
-	public static void sameListSize(List lhs, List rhs) {
+	public static <T> void sameListSize(List<T> lhs, List<T> rhs) {
 		if (null == lhs) {
 			assertTrue((null == rhs) || (0 == rhs.size()));
 		} else if (null == rhs) {
@@ -145,7 +145,7 @@ public class AjcSpecTest extends TestCase {
 	}
 
 	/** @return true if both are empty (null or no entries) or if all match after trimming */
-	public static void sameList(List lhs, List rhs, Assert a) {
+	public static <T> void sameList(List<T> lhs, List<T> rhs, Assert a) {
 		sameListSize(lhs, rhs);
 		String l = normal(lhs);
 		String r = normal(rhs);
@@ -282,8 +282,8 @@ public class AjcSpecTest extends TestCase {
 			return;
 		}
 		// order matters here
-		ListIterator lhs = one.getUnmodifiableListView().listIterator();
-		ListIterator rhs = two.getUnmodifiableListView().listIterator();
+		ListIterator<IMessage> lhs = one.getUnmodifiableListView().listIterator();
+		ListIterator<IMessage> rhs = two.getUnmodifiableListView().listIterator();
 		while (lhs.hasNext() && rhs.hasNext()) {
 			sameMessage((IMessage) lhs.next(), (IMessage) rhs.next(), a);
 		}
@@ -304,14 +304,14 @@ public class AjcSpecTest extends TestCase {
 		sameSourceLocation(lhs.getSourceLocation(), rhs.getSourceLocation());
 		sameSourceLocations(lhs.getExtraSourceLocations(), rhs.getExtraSourceLocations());
 	}
-	public static void sameSourceLocations(List lhs, List rhs) {
+	public static void sameSourceLocations(List<ISourceLocation> lhs, List<ISourceLocation> rhs) {
 		sameListSize(lhs, rhs);
 		if ((null == lhs) || (0 == lhs.size())) {
 			return;
 		}
 		// ok, do order-dependent check..
-		ListIterator iterLeft = lhs.listIterator();
-		ListIterator iterRight = rhs.listIterator();
+		ListIterator<ISourceLocation> iterLeft = lhs.listIterator();
+		ListIterator<ISourceLocation> iterRight = rhs.listIterator();
 		while (iterLeft.hasNext() && iterRight.hasNext()) {
 			ISourceLocation left = (ISourceLocation) iterLeft.next();
 			ISourceLocation right = (ISourceLocation) iterRight.next();
