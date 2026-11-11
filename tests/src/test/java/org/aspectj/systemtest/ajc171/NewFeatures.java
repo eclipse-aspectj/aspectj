@@ -22,7 +22,8 @@ public class NewFeatures extends org.aspectj.testing.XMLBasedAjcTestCase {
 
 	public void testSharedCache() {
 		this.runTest("Test Shared Cache");
-		File cacheFolder =  new File(ajc.getSandboxDirectory().getAbsolutePath() + File.separator + "panenka.cache");
+		// the shared cache only uses a directory that is private to the user, so it gets its own directory in the sandbox
+		File cacheFolder =  new File(ajc.getSandboxDirectory().getAbsolutePath() + File.separator + "sharedcache" + File.separator + "panenka.cache");
 		assertTrue("Cache folder should be written when using share cache", cacheFolder.exists());
 		//Delete the cache from the ajc sandbox
 		deleteFolder(cacheFolder);

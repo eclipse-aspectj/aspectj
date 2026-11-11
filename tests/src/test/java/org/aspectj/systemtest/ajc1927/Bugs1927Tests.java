@@ -9,9 +9,13 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc1927;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.JavaClass;
@@ -138,6 +142,22 @@ public class Bugs1927Tests extends XMLBasedAjcTestCase {
 
 	public void testGh353_AnonymousClassWithFieldsButNoMethods() {
 		runTest("anonymous classes with fields but no methods");
+	}
+
+	public void testGh314_WeavingCacheWithAroundAdvice() throws Exception {
+		runTest("weaving cache with around advice, second run uses the cache");
+		// the cache was used (the aspect is in it), but the woven class whose weaving generated a closure class was not stored
+		List<String> cached = new ArrayList<>();
+		try (Stream<Path> files = Files.walk(new File(ajc.getSandboxDirectory(), "cache").toPath())) {
+			files.filter(Files::isRegularFile).forEach(file -> cached.add(file.getFileName().toString()));
+		}
+		assertTrue(cached.toString(), cached.stream().anyMatch(name -> name.startsWith("MyAspect.") && name.endsWith(".weaved")));
+		assertFalse(cached.toString(), cached.stream().anyMatch(name -> name.startsWith("Foo.") && name.endsWith(".weaved")));
+	}
+
+	public void testGh314_SharedWeavingCacheWithAroundAdvice() {
+		runTest("shared weaving cache with around advice, second run uses the cache");
+		assertTrue("The shared cache should have been used", new File(ajc.getSandboxDirectory(), "sharedcache/panenka.cache").exists());
 	}
 
 	@Override

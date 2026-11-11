@@ -99,6 +99,7 @@ public class WeavingAdaptor implements IMessageContext {
 
 	private boolean haveWarnedOnJavax = false;
     protected WeavedClassCache cache;
+    private volatile boolean warnedAboutClassesThatCannotBeCached;
 
 	private int weavingSpecialTypes = 0;
 	private static final int INITIALIZED = 0x1;
@@ -436,6 +437,10 @@ public class WeavingAdaptor implements IMessageContext {
 							// as ignored.
 							if (newBytes == null) {
 								cache.ignore(cacheKey, bytes);
+							} else if (generatedClasses.containsKey(name)) {
+								// Weaving generated other classes (the closures of around advice). The cache cannot give those
+								// back when the woven class comes from the cache, so the class would fail to run (#314).
+								classCannotBeCached(name);
 							} else {
 								cache.put(cacheKey, bytes, newBytes);
 							}
@@ -456,6 +461,16 @@ public class WeavingAdaptor implements IMessageContext {
 			return newBytes;
 		} finally {
 			weaverRunning.remove();
+		}
+	}
+
+	private void classCannotBeCached(String name) {
+		info("not caching '" + name + "', weaving it generated other classes (around advice closures) which the cache cannot restore");
+		if (!warnedAboutClassesThatCannotBeCached) {
+			warnedAboutClassesThatCannotBeCached = true;
+			warn("The weaving cache does not support classes for which weaving generates other classes (around advice closures), "
+					+ "so they are woven each time and not cached, the first one is '" + name + "'. "
+					+ "Use -D" + WeavedClassCache.CACHE_IMPL + "=" + SimpleCache.IMPL_NAME + " if these classes should be cached.");
 		}
 	}
 

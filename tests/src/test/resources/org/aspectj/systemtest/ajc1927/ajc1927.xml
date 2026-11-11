@@ -112,4 +112,52 @@ JDK 27 (https://openjdk.org/projects/jdk/27/):
 		</run>
 	</ajc-test>
 
+	<!--
+	https://github.com/eclipse-aspectj/aspectj/issues/314
+	Around advice makes the weaver generate a closure class (Foo$AjcClosure1) next to the woven class. The weaving cache
+	stored the woven Foo but not a way to get the closure back, so the second run with the same cache failed with
+	NoClassDefFoundError: Foo$AjcClosure1. Both runs use the same cache directory (in the sandbox).
+	-->
+	<ajc-test dir="bugs1927/gh314" title="weaving cache with around advice, second run uses the cache">
+		<compile files="Foo.java" options="-1.8"/>
+		<compile files="MyAspect.aj" options="-1.8 -Xlint:ignore"/>
+		<run class="Foo" ltw="aop.xml" usefullltw="true" vmargs="-Daj.weaving.cache.enabled=true -Daj.weaving.cache.dir=./cache">
+			<stdout>
+				<line text="before bar"/>
+				<line text="around bar"/>
+				<line text="inside bar"/>
+			</stdout>
+		</run>
+		<run class="Foo" ltw="aop.xml" usefullltw="true" vmargs="-Daj.weaving.cache.enabled=true -Daj.weaving.cache.dir=./cache">
+			<stdout>
+				<line text="before bar"/>
+				<line text="around bar"/>
+				<line text="inside bar"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<!--
+	The shared cache does restore the generated classes, so classes with around advice are cached by it (and the weaver
+	suggests using it when the default cache cannot cache a class).
+	-->
+	<ajc-test dir="bugs1927/gh314" title="shared weaving cache with around advice, second run uses the cache">
+		<compile files="Foo.java" options="-1.8"/>
+		<compile files="MyAspect.aj" options="-1.8 -Xlint:ignore"/>
+		<run class="Foo" ltw="aop.xml" usefullltw="true" vmargs="-Daj.weaving.cache.enabled=true -Daj.weaving.cache.dir=./sharedcache -Daj.weaving.cache.impl=shared">
+			<stdout>
+				<line text="before bar"/>
+				<line text="around bar"/>
+				<line text="inside bar"/>
+			</stdout>
+		</run>
+		<run class="Foo" ltw="aop.xml" usefullltw="true" vmargs="-Daj.weaving.cache.enabled=true -Daj.weaving.cache.dir=./sharedcache -Daj.weaving.cache.impl=shared">
+			<stdout>
+				<line text="before bar"/>
+				<line text="around bar"/>
+				<line text="inside bar"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
 </suite>

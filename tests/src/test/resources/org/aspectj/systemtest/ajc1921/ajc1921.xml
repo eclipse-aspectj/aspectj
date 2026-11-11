@@ -379,7 +379,7 @@
 	<ajc-test dir="bugs1921/github_285" title="shared cache negative test">
 		<compile files="Unwoven.java" options="-1.8"/>
 		<run class="Unwoven" ltw="aop.xml" usefullltw="true"
-			vmargs="-Daj.weaving.cache.enabled=true -Daj.weaving.cache.dir=./ -Daj.weaving.cache.impl=shared">
+			vmargs="-Daj.weaving.cache.enabled=true -Daj.weaving.cache.dir=./sharedcache -Daj.weaving.cache.impl=shared">
 			<stdout>
 				<line text="Hello world"/>
 			</stdout>

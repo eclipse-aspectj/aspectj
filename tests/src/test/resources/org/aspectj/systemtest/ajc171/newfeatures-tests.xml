@@ -5,7 +5,7 @@
   <ajc-test dir="features171/pr386341" title="Test Shared Cache">
     <compile files="A.java" options="-1.8"/>
     <compile files="X.aj" options="-1.8 -Xlint:ignore" />
-    <run class="A" ltw="aop.xml" usefullltw="true" vmargs="-Daj.weaving.cache.enabled=true -Daj.weaving.cache.dir=./ -Daj.weaving.cache.impl=shared" > 
+    <run class="A" ltw="aop.xml" usefullltw="true" vmargs="-Daj.weaving.cache.enabled=true -Daj.weaving.cache.dir=./sharedcache -Daj.weaving.cache.impl=shared" > 
     <stdout>
 	    <line text="It Worked-before"/>
 	   	<line text="It Worked-after"/>

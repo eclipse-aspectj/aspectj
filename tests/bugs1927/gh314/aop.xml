@@ -1,0 +1,9 @@
+<aspectj>
+	<aspects>
+		<aspect name="MyAspect"/>
+	</aspects>
+	<weaver options="">
+		<include within="Foo"/>
+		<include within="MyAspect"/>
+	</weaver>
+</aspectj>
