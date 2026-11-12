@@ -47,7 +47,7 @@ import org.aspectj.util.LangUtil;
  * members (esp. constructors) that can be used within relations.
  * Most of these classes are immutable.
  */
-public class Option implements Comparable {
+public class Option implements Comparable<Option> {
     public static final Prefix ON = new Prefix("-", "on", true, false);
     public static final Prefix NONE = new Prefix("", "none", true, false);
     public static final Prefix FORCE_ON =
@@ -139,8 +139,7 @@ public class Option implements Comparable {
         optionIdentifier = family.familyName + "." + name;
     }
 
-    public int compareTo(Object other) {
-        Option option = (Option) other;
+    public int compareTo(Option option) {
         int diff = family.compareTo(option.family);
         if (0 == diff) {
             diff = name.compareTo(option.name);
@@ -247,10 +246,10 @@ public class Option implements Comparable {
     }
 
     private Prefix hasPrefix(String value) {
-        for (Iterator iter = permittedPrefixes.iterator();
+        for (Iterator<Prefix> iter = permittedPrefixes.iterator();
             iter.hasNext();
             ) {
-            Prefix prefix = (Prefix) iter.next();
+            Prefix prefix = iter.next();
             if (-1 != prefix.prefixLength(value)) {
                 return prefix;
             }
@@ -273,7 +272,7 @@ public class Option implements Comparable {
      * This relies on Factory to ensure that familyName is
      * a unique identifier for the factory.
      */
-    public static class Family implements Comparable {
+    public static class Family implements Comparable<Family> {
 
         /** unique String identifier for this family */
         private final String familyName;
@@ -288,8 +287,7 @@ public class Option implements Comparable {
             this.permitMultipleFamilyValues = permitMultipleFamilyValues;
         }
 
-        public int compareTo(Object arg0) {
-            Family family = (Family) arg0;
+        public int compareTo(Family family) {
             return familyName.compareTo(family.familyName);
         }
 
@@ -615,10 +613,10 @@ public class Option implements Comparable {
      * A bunch of prefixes.
      */
     public static class Prefixes {
-        final List list;
+        final List<Prefix> list;
         private Prefixes(Prefix[] prefixes) {
             if (LangUtil.isEmpty(prefixes)) {
-                list = Collections.EMPTY_LIST;
+                list = Collections.emptyList();
             } else {
                 list =
                     Collections.unmodifiableList(
@@ -626,7 +624,7 @@ public class Option implements Comparable {
                             LangUtil.safeCopy(prefixes, new Prefix[0])));
             }
         }
-        public Iterator iterator() {
+        public Iterator<Prefix> iterator() {
             return list.iterator();
         }
     }
@@ -692,7 +690,8 @@ public class Option implements Comparable {
      * Thrown when an Option specifies required arguments,
      * but the arguments are not available.
      */
-    public static class InvalidInputException extends Exception {
+    @SuppressWarnings("serial")
+	public static class InvalidInputException extends Exception {
         public final String err;
         public final String input;
         public final Option option;

@@ -965,7 +965,7 @@ public class CompilerRun implements IAjcRun {
          */
         public static final Object[] copy(Object[] source) {
             LangUtil.throwIaxIfNull(source, "source");
-            final Class c = source.getClass().getComponentType();
+            final Class<?> c = source.getClass().getComponentType();
             Object[] result = (Object[]) Array.newInstance(c, source.length);
             System.arraycopy(source, 0, result, 0, result.length);
             return result;
@@ -1534,7 +1534,7 @@ public class CompilerRun implements IAjcRun {
             static final String AJCTASK_COMPILER =
                 AjcTaskCompileCommand.class.getName();
 
-            private final Map compilerOptionToLoadable = new TreeMap();
+            private final Map<Option,Object> compilerOptionToLoadable = new TreeMap<>();
             /*
             * The options field in a compiler test permits some arbitrary
             * command-line options to be set.  It does not permit things

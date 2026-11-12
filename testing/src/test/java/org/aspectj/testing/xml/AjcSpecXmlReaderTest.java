@@ -20,7 +20,6 @@ import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.aspectj.testing.harness.bridge.AjcSpecTest;
@@ -126,15 +125,15 @@ public class AjcSpecXmlReaderTest extends TestCase {
 
         AjcTest.Suite.Spec suite2 = writer.readAjcSuite(file1);
         assertNotNull(suite2);
-        AjcSpecTest.sameAjcSuiteSpec(suite1, suite2, this);
+        AjcSpecTest.sameAjcSuiteSpec(suite1, suite2);
 
         // check clone while we're here
         try {
             Object clone = (AjcTest.Suite.Spec) suite1.clone();
-            AjcSpecTest.sameAjcSuiteSpec(suite1, (AjcTest.Suite.Spec) clone, this);
+            AjcSpecTest.sameAjcSuiteSpec(suite1, (AjcTest.Suite.Spec) clone);
             clone = (AjcTest.Suite.Spec) suite2.clone();
-            AjcSpecTest.sameAjcSuiteSpec(suite2, (AjcTest.Suite.Spec) clone, this);
-            AjcSpecTest.sameAjcSuiteSpec(suite1, (AjcTest.Suite.Spec) clone, this);
+            AjcSpecTest.sameAjcSuiteSpec(suite2, (AjcTest.Suite.Spec) clone);
+            AjcSpecTest.sameAjcSuiteSpec(suite1, (AjcTest.Suite.Spec) clone);
         } catch (CloneNotSupportedException e) {
             e.printStackTrace(System.err);
             assertTrue("CloneNotSupportedException: " + e.getMessage(), false);
@@ -183,7 +182,7 @@ public class AjcSpecXmlReaderTest extends TestCase {
         assertNotNull(suite1);
         //System.err.println("----------------------- suite1 " + xmlPath);
         //suite0.printAll(System.err, "");
-        AjcSpecTest.sameAjcSuiteSpec(suite0, suite1, this);
+        AjcSpecTest.sameAjcSuiteSpec(suite0, suite1);
 
         // same for second-generation xml
         file1 = new File(xml2Path);
@@ -197,8 +196,8 @@ public class AjcSpecXmlReaderTest extends TestCase {
         AjcTest.Suite.Spec suite2 = writer.readAjcSuite(file1);
         assertNotNull(suite2);
         //System.err.println("----------------------- suite2 " + xml2Path);
-        AjcSpecTest.sameAjcSuiteSpec(suite1, suite2, this);
-        AjcSpecTest.sameAjcSuiteSpec(suite0, suite2, this);
+        AjcSpecTest.sameAjcSuiteSpec(suite1, suite2);
+        AjcSpecTest.sameAjcSuiteSpec(suite0, suite2);
 
 		for (File file : toDelete) {
 			file.delete();

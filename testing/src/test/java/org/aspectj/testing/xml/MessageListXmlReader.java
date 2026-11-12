@@ -192,7 +192,7 @@ public class MessageListXmlReader {
     /** a list of messages */
     public static class MessageList {
         public static final String XMLNAME = "message-list";
-        private List messages = new ArrayList();
+        private List<IMessage> messages = new ArrayList<>();
         public void addMessage(IMessage message) {
             messages.add(message);
         }

@@ -14,6 +14,7 @@
 package org.aspectj.testing.xml;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import junit.framework.TestCase;
 
@@ -33,6 +34,19 @@ public class XMLWriterTest extends TestCase {
         checkUnflattenList(" 1 2 ", new String[] {"1 2"});
         checkUnflattenList(" 1 , 2 ", new String[] {"1", "2"});
         checkUnflattenList("1,2,3,4", new String[] {"1", "2", "3", "4"});
+    }
+
+    public void testFlattenList() {
+        assertEquals("", XMLWriter.flattenList(Collections.<String>emptyList()));
+        assertEquals("a", XMLWriter.flattenList(Arrays.asList("a")));
+        assertEquals("a,b,c", XMLWriter.flattenList(Arrays.asList("a", "b", "c")));
+        assertEquals("a,b,c", XMLWriter.flattenList(new String[] {"a", "b", "c"}));
+        try {
+            XMLWriter.flattenList(Arrays.asList("a", "b,c"));
+            fail("comma in item");
+        } catch (IllegalArgumentException e) {
+            assertEquals("comma in b,c", e.getMessage());
+        }
     }
 
     void checkUnflattenList(String input, String[] expected) {

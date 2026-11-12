@@ -30,6 +30,7 @@ import org.aspectj.testing.util.options.OptionsTest;
 import org.aspectj.testing.util.options.ValuesTest;
 import org.aspectj.testing.xml.AjcSpecXmlReaderTest;
 import org.aspectj.testing.xml.MessageListXmlReaderTest;
+import org.aspectj.testing.xml.SoftMessageTest;
 import org.aspectj.testing.xml.XMLWriterTest;
 
 import junit.framework.Test;
@@ -51,6 +52,7 @@ public class TestingModuleTests extends TestCase {
         suite.addTestSuite(LangUtilTest.class);
         suite.addTestSuite(MessageUtilTest.class);
         suite.addTestSuite(XMLWriterTest.class);
+        suite.addTestSuite(SoftMessageTest.class);
         suite.addTestSuite(AjcSpecXmlReaderTest.class);
         suite.addTestSuite(MessageListXmlReaderTest.class);
         suite.addTestSuite(CompilerRunTest.class);

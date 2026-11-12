@@ -412,9 +412,9 @@ public class AjcSpecXmlReader {
 
     /** hold class/properties association for testing */
     static class BProps {
-        final Class cl;
+        final Class<?> cl;
         final String[] props;
-        BProps(Class cl, String[] props) {
+        BProps(Class<?> cl, String[] props) {
             this.cl = cl;
             this.props = props;
         }

@@ -133,7 +133,7 @@ public class IncCompilerRun implements IAjcRun {
 
 
     private void doStaging(final Validator validator, final String toSuffix,
-    					   final intHolder holder,final List copied)
+    					   final intHolder holder,final List<File> copied)
 	throws IOException
 	{
     	final String fromSuffix = "." + spec.tag + toSuffix;

@@ -67,13 +67,13 @@ public class XMLWriter {
     }
 
     /** same as flattenList, except also normalize \ -> / */
-    public static String flattenFiles(List paths) {
+    public static String flattenFiles(List<String> paths) {
         return flattenList(paths).replace('\\', '/');
     }
 
     /**
      * Expand comma-delimited String into list of values, without trimming
-     * @param list List of items to print - null is silently ignored,
+     * @param sink List of items to print - null is silently ignored,
      *         so for empty items use ""
      * @return String[]{} for null input, String[] {input} for input without comma,
      *          or new String[] {items..} otherwise
@@ -84,7 +84,7 @@ public class XMLWriter {
     }
 
     /** flatten input and add to list */
-    public static void addFlattenedItems(List list, String input) {
+    public static void addFlattenedItems(List<String> list, String input) {
         LangUtil.throwIaxIfNull(list, "list");
         if (null != input) {
             String[] items = XMLWriter.unflattenList(input);
@@ -105,11 +105,11 @@ public class XMLWriter {
      * @return item{,item}...
      * @throws IllegalArgumentException if {any item}.toString() contains a comma
      */
-    public static String flattenList(List list) {
+    public static String flattenList(List<String> list) {
         if ((null == list) || (0 == list.size())) {
             return "";
         }
-        return flattenList(list.toArray());
+        return flattenList(list.toArray(new String[0]));
     }
 
 
@@ -120,7 +120,7 @@ public class XMLWriter {
      * @return item{,item}...
      * @throws IllegalArgumentException if list[i].toString() contains a comma
      */
-    public static String flattenList(Object[] list) {
+    public static String flattenList(String[] list) {
         StringBuilder sb = new StringBuilder();
         if (null != list) {
             boolean printed = false;
@@ -146,7 +146,7 @@ public class XMLWriter {
     PrintWriter out;
 
     /** stack of String element names */
-    Stack stack = new Stack();
+    Stack<StackElement> stack = new Stack<>();
 
     /** false if doing attributes */
     boolean attributesDone = true;

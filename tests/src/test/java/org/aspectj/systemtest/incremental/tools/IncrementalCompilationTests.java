@@ -147,14 +147,12 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 		AspectJElementHierarchy model = (AspectJElementHierarchy) getModelFor(p).getHierarchy();
 		IProgramElement ipe = null;
 		ipe = model.findElementForHandleOrCreate("=annoRemoval<a{Code.java>Remover´declare \\@field", false);
-		System.out.println(ipe);
 		assertTrue(ipe.isAnnotationRemover());
 		String[] annos = ipe.getRemovedAnnotationTypes();
 		assertEquals(1, annos.length);
 		assertEquals("a.Anno", annos[0]);
 		assertNull(ipe.getAnnotationType());
 		ipe = model.findElementForHandleOrCreate("=annoRemoval<a{Code.java>Remover´declare \\@field!2", false);
-		System.out.println(ipe);
 		assertFalse(ipe.isAnnotationRemover());
 		assertEquals("a.Anno", ipe.getAnnotationType());
 		assertNull(ipe.getRemovedAnnotationTypes());
@@ -575,9 +573,6 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 		assertEquals("void com.Meths.m()", methods[1].toString());
 		assertEquals("java.util.List com.Meths.n(int, long, java.util.List)", methods[2].toString());
 
-		System.out.println(stringify(methods[0].getAnnotations()));
-		System.out.println(stringify(methods[1].getAnnotations()));
-		System.out.println(stringify(methods[2].getAnnotations()));
 		assertEquals("[Anno[Lcom/Anno; rVis]]", stringify(methods[1].getAnnotations()));
 		// assertNotNull(fields[2].getAnnotationOfType(UnresolvedType.forSignature("Lcom/Anno;")));
 		// assertNull(fields[2].getAnnotationOfType(UnresolvedType.forSignature("Lcom/Anno2;")));
@@ -712,7 +707,6 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 		// this has a well known one and a non-well known one
 		rt = w.resolveToReferenceType("com.foo.Anno3");
 		delegate = rt.getDelegate();
-		System.out.println(stringify(delegate.getAnnotations()));
 		assertEquals(
 				"[Anno[Lcom/foo/Anno; rVis] Anno[Ljava/lang/annotation/Retention; rVis value=E(Ljava/lang/annotation/RetentionPolicy; SOURCE)]]",
 				stringify(delegate.getAnnotations()));

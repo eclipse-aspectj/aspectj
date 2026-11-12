@@ -57,7 +57,7 @@ public class RunValidator implements IRunValidator {
 
     /** expect finished(IRunStatus.FAIL) */
     public static final IRunValidator FAIL
-            = new RunValidator(new ObjectChecker() {
+            = new RunValidator(new ObjectChecker<Object>() {
                 public boolean isValid(Object o) {
                     return (o == IRunStatus.FAIL);
                 }
@@ -68,10 +68,10 @@ public class RunValidator implements IRunValidator {
 
     // XXX replace two exc. classes with one, plus boolean for how to interpret?
     /** if non-null, passed() permits any thrown assignable to this class */
-    private Class permittedExceptionsClass;
+    private Class<?> permittedExceptionsClass;
 
     /** if non-null, passed() requires some thrown assignable to this class */
-    private Class requiredExceptionsClass;
+    private Class<?> requiredExceptionsClass;
 
     /** Create result validator that expects a certain int status */
     public RunValidator(ObjectChecker resultChecker) {
@@ -83,7 +83,7 @@ public class RunValidator implements IRunValidator {
      * a Throwable assignable to the specified class.
      * @throws illegalArgumentException if requiredExceptionsClass is not Throwable
      */
-    public RunValidator(Class requiredExceptionsClass) {
+    public RunValidator(Class<?> requiredExceptionsClass) {
         this(null, null, requiredExceptionsClass);
     }
 
@@ -108,8 +108,8 @@ public class RunValidator implements IRunValidator {
      */
     protected RunValidator(
         ObjectChecker resultChecker,
-        Class permittedExceptionsClass,
-        Class requiredExceptionsClass) {
+        Class<?> permittedExceptionsClass,
+        Class<?> requiredExceptionsClass) {
         init(resultChecker,permittedExceptionsClass, requiredExceptionsClass);
     }
 
@@ -122,8 +122,8 @@ public class RunValidator implements IRunValidator {
     /** subclasses may use this to re-initialize this for re-use */
     protected void init(
         ObjectChecker resultChecker,
-        Class permittedExceptionsClass,
-        Class requiredExceptionsClass) {
+        Class<?> permittedExceptionsClass,
+        Class<?> requiredExceptionsClass) {
         this.permittedExceptionsClass = permittedExceptionsClass;
         this.requiredExceptionsClass = requiredExceptionsClass;
 
@@ -184,7 +184,7 @@ public class RunValidator implements IRunValidator {
                 return false;
             }
         } else {
-            Class c = thrown.getClass();
+            Class<?> c = thrown.getClass();
             // at most one of the ExceptionsClass set
             if (null != requiredExceptionsClass) {
                 if (!requiredExceptionsClass.isAssignableFrom(c)) {

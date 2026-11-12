@@ -23,7 +23,6 @@ import org.aspectj.bridge.IMessageHolder;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.MessageUtil;
 
-import junit.framework.Assert;
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
@@ -34,8 +33,7 @@ public class AjcSpecTest extends TestCase {
 	public static final String NOTSAME = " != ";
 	public static void sameAjcSuiteSpec(
 			AjcTest.Suite.Spec lhsSpec,
-			AjcTest.Suite.Spec rhsSpec,
-			Assert a) {
+			AjcTest.Suite.Spec rhsSpec) {
 		assertNotNull(lhsSpec);
 		assertNotNull(rhsSpec);
 		Iterator<IRunSpec> lhs = lhsSpec.getChildren().iterator();
@@ -43,7 +41,7 @@ public class AjcSpecTest extends TestCase {
 		while (lhs.hasNext() && rhs.hasNext()) {
 			AjcTest.Spec lhsTest = (AjcTest.Spec) lhs.next();
 			AjcTest.Spec rhsTest = (AjcTest.Spec) rhs.next();
-			AjcSpecTest.sameAjcTestSpec(lhsTest, rhsTest, a);
+			AjcSpecTest.sameAjcTestSpec(lhsTest, rhsTest);
 		}
 		assertTrue(!lhs.hasNext());
 		assertTrue(!rhs.hasNext());
@@ -51,35 +49,33 @@ public class AjcSpecTest extends TestCase {
 
 	public static void sameAjcTestSpec(
 			AjcTest.Spec lhsTest,
-			AjcTest.Spec rhsTest,
-			Assert a) {
+			AjcTest.Spec rhsTest) {
 		assertNotNull(lhsTest);
 		assertNotNull(rhsTest);
 		assertEquals(lhsTest.getBugId(), rhsTest.getBugId());
 		assertEquals(lhsTest.getTestDirOffset(), rhsTest.getTestDirOffset());
 		// XXX suiteDir varies by run..
 		// description, options, paths, comments, keywords
-		sameAbstractRunSpec(lhsTest, rhsTest, a);
+		sameAbstractRunSpec(lhsTest, rhsTest);
 	}
 
 	public static void sameAbstractRunSpec(
 			AbstractRunSpec lhs,
-			AbstractRunSpec rhs,
-			Assert a) {
+			AbstractRunSpec rhs) {
 		assertEquals(lhs.description, rhs.description);
 		// XXX keywords added in .txt reading -
 		//sameList(lhs.getKeywordsList(), rhs.getKeywordsList(), a);
 		// XXX sameList(lhs.globalOptions, rhs.globalOptions, a);
-		sameList(lhs.getOptionsList(), rhs.getOptionsList(), a);
-		sameList(lhs.getPathsList(), rhs.getPathsList(), a);
+		sameList(lhs.getOptionsList(), rhs.getOptionsList());
+		sameList(lhs.getPathsList(), rhs.getPathsList());
 		assertEquals(lhs.isStaging(), rhs.isStaging());
-		sameList(lhs.keywords, rhs.keywords, a);
+		sameList(lhs.keywords, rhs.keywords);
 		assertEquals(lhs.comment, rhs.comment);
 		assertEquals(lhs.badInput, rhs.badInput);
 		// xml adds sourceloc?
 		//sameSourceLocation(lhs.getSourceLocation(), rhs.getSourceLocation(), a);
 		// XXX also sourceLocations?
-		sameMessages(lhs.getMessages(), rhs.getMessages(), a);
+		sameMessages(lhs.getMessages(), rhs.getMessages());
 	}
 
 	/** @return normal form - null is "", "" is "", and others are {fully.qualified.class}.toString().trim() */
@@ -92,14 +88,14 @@ public class AjcSpecTest extends TestCase {
 	}
 
 	/** @return true if these match after normalizing */
-	public static void same(Object lhs, Object rhs, Assert a) {
+	public static void same(Object lhs, Object rhs) {
 		lhs = normal(lhs);
 		rhs = normal(rhs);
 		assertTrue(lhs + NOTSAME + rhs, lhs.equals(rhs));
 	}
 
 	/** @return true if both are empty (null or no entries) or if all match */
-	public static void sameRA(String[] lhs, String[] rhs, Assert a) {
+	public static void sameRA(String[] lhs, String[] rhs) {
 		if (null == lhs) {
 			assertTrue((null == rhs) || (0 == rhs.length));
 		} else if (null == rhs) {
@@ -145,7 +141,7 @@ public class AjcSpecTest extends TestCase {
 	}
 
 	/** @return true if both are empty (null or no entries) or if all match after trimming */
-	public static <T> void sameList(List<T> lhs, List<T> rhs, Assert a) {
+	public static <T> void sameList(List<T> lhs, List<T> rhs) {
 		sameListSize(lhs, rhs);
 		String l = normal(lhs);
 		String r = normal(rhs);
@@ -189,11 +185,11 @@ public class AjcSpecTest extends TestCase {
 	//        assertTrue(label, !rhs.hasNextRun());
 	//    }
 
-	public static void sameIAjcRun(IAjcRun lhs, IAjcRun rhs, Assert reporter) {
+	public static void sameIAjcRun(IAjcRun lhs, IAjcRun rhs) {
 		//        Assert a = reporter;
 		assertTrue(lhs != null);
 		assertTrue(rhs != null);
-		Class c = lhs.getClass();
+		Class<? extends IAjcRun> c = lhs.getClass();
 		assertTrue(c == rhs.getClass());
 		AbstractRunSpec lhsSpec;
 		AbstractRunSpec rhsSpec;
@@ -233,22 +229,22 @@ public class AjcSpecTest extends TestCase {
 			assertTrue(lhs.equals(rhs));
 			return;
 		}
-		sameSpec(lhsSpec, rhsSpec, reporter);
+		sameSpec(lhsSpec, rhsSpec);
 	}
 
-	public static void sameSpec(AbstractRunSpec lhs, AbstractRunSpec rhs, Assert a) {
+	public static void sameSpec(AbstractRunSpec lhs, AbstractRunSpec rhs) {
 		if ((null == lhs) && (null == rhs)) {
 			return;
 		}
 		assertTrue(lhs != null);
 		assertTrue(rhs != null);
 		assertEquals(""+lhs.getOptionsList(), ""+rhs.getOptionsList());
-		sameList(lhs.getPathsList(), rhs.getPathsList(), a);
-		sameMessages(lhs.getMessages(), rhs.getMessages(), a);
-		sameDirChangesList(lhs.dirChanges, rhs.dirChanges, a);
+		sameList(lhs.getPathsList(), rhs.getPathsList());
+		sameMessages(lhs.getMessages(), rhs.getMessages());
+		sameDirChangesList(lhs.dirChanges, rhs.dirChanges);
 	}
 
-	public static void sameDirChangesList(List<DirChanges.Spec> lhs, List<DirChanges.Spec> rhs, Assert a) {
+	public static void sameDirChangesList(List<DirChanges.Spec> lhs, List<DirChanges.Spec> rhs) {
 		if ((null == lhs) && (null == rhs)) {
 			return;
 		}
@@ -258,11 +254,11 @@ public class AjcSpecTest extends TestCase {
 		Iterator<DirChanges.Spec> lhsIter = lhs.iterator();
 		Iterator<DirChanges.Spec> rhsIter = rhs.iterator();
 		while (lhsIter.hasNext() && rhsIter.hasNext()) {
-			sameDirChangesSpec(lhsIter.next(), rhsIter.next(), a);
+			sameDirChangesSpec(lhsIter.next(), rhsIter.next());
 		}
 	}
 
-	public static void sameDirChangesSpec(DirChanges.Spec lhs, DirChanges.Spec rhs, Assert a) {
+	public static void sameDirChangesSpec(DirChanges.Spec lhs, DirChanges.Spec rhs) {
 		if ((null == lhs) && (null == rhs)) {
 			return;
 		}
@@ -272,12 +268,12 @@ public class AjcSpecTest extends TestCase {
 		assertEquals(lhs.dirToken, rhs.dirToken);
 		assertEquals(lhs.fastFail, rhs.fastFail);
 		assertEquals(lhs.expDir, rhs.expDir); // XXX normalize?
-		sameList(lhs.updated, rhs.updated, a);
-		sameList(lhs.removed, rhs.removed, a);
-		sameList(lhs.added, rhs.added, a);
+		sameList(lhs.updated, rhs.updated);
+		sameList(lhs.removed, rhs.removed);
+		sameList(lhs.added, rhs.added);
 	}
 
-	public static void sameMessages(IMessageHolder one, IMessageHolder two, Assert a) {
+	public static void sameMessages(IMessageHolder one, IMessageHolder two) {
 		if ((null == one) && (null == two)) {
 			return;
 		}
@@ -285,21 +281,21 @@ public class AjcSpecTest extends TestCase {
 		ListIterator<IMessage> lhs = one.getUnmodifiableListView().listIterator();
 		ListIterator<IMessage> rhs = two.getUnmodifiableListView().listIterator();
 		while (lhs.hasNext() && rhs.hasNext()) {
-			sameMessage((IMessage) lhs.next(), (IMessage) rhs.next(), a);
+			sameMessage((IMessage) lhs.next(), (IMessage) rhs.next());
 		}
 		assertTrue(!lhs.hasNext());
 		assertTrue(!rhs.hasNext());
 	}
 
-	public static void sameMessage(IMessage lhs, IMessage rhs, Assert a) {
+	public static void sameMessage(IMessage lhs, IMessage rhs) {
 		if ((null == lhs) && (null == rhs)) {
 			return;
 		}
 		assertTrue(lhs != null);
 		assertTrue(rhs != null);
 		assertTrue(lhs.getKind() == rhs.getKind());
-		same(lhs.getMessage(), rhs.getMessage(), a);
-		same(lhs.getDetails(), rhs.getDetails(), a);
+		same(lhs.getMessage(), rhs.getMessage());
+		same(lhs.getDetails(), rhs.getDetails());
 		assertEquals(lhs.getThrown(), rhs.getThrown());
 		sameSourceLocation(lhs.getSourceLocation(), rhs.getSourceLocation());
 		sameSourceLocations(lhs.getExtraSourceLocations(), rhs.getExtraSourceLocations());
@@ -347,7 +343,7 @@ public class AjcSpecTest extends TestCase {
 		AjcTest.Spec one = new AjcTest.Spec();
 		AjcTest.Spec two = new AjcTest.Spec();
 		// empty/identity tests
-		sameAjcTestSpec(one, two, this);
+		sameAjcTestSpec(one, two);
 
 		one.addOption("-one");
 		one.addKeyword("keyword");
@@ -360,13 +356,13 @@ public class AjcSpecTest extends TestCase {
 		one.addDirChanges(dcspec);
 
 		// full/identity tests
-		sameAjcTestSpec(one, one, this);
+		sameAjcTestSpec(one, one);
 		// XXX need to clone...
 
 		// XXX need to test that more differences are detected
 		boolean passed = false;
 		try {
-			sameAjcTestSpec(one, two, this);
+			sameAjcTestSpec(one, two);
 		} catch (AssertionFailedError e) {
 			passed = true;
 		}

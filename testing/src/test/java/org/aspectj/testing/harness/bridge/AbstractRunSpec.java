@@ -410,8 +410,8 @@ abstract public class AbstractRunSpec implements IRunSpec {
 				return false;
 			}
 			int i = 0;
-			for (ListIterator iter = children.listIterator(); iter.hasNext(); i++) {
-				IRunSpec child = (IRunSpec) iter.next();
+			for (ListIterator<IRunSpec> iter = children.listIterator(); iter.hasNext(); i++) {
+				IRunSpec child = iter.next();
 				if (child instanceof AbstractRunSpec) {
 					AbstractRunSpec arsChild = (AbstractRunSpec) child;
 					if (!arsChild.adoptParentValues(runtime, handler)) {

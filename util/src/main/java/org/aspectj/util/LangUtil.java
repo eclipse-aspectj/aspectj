@@ -683,7 +683,8 @@ public class LangUtil {
 	 * @return an array with the same component type as sink containing any assignable elements in source (in the same order).
 	 * @throws IllegalArgumentException if either is null
 	 */
-	public static Object[] safeCopy(Object[] source, Object[] sink) {
+	@SuppressWarnings("unchecked")
+	public static <T> T[] safeCopy(Object[] source, T[] sink) {
 		final Class<?> sinkType = (null == sink ? Object.class : sink.getClass().getComponentType());
 		final int sourceLength = (null == source ? 0 : source.length);
 		final int sinkLength = (null == sink ? 0 : sink.length);
@@ -702,7 +703,7 @@ public class LangUtil {
 			resultSize = result.size();
 		}
 		if (resultSize != sinkLength) {
-			sink = (Object[]) Array.newInstance(sinkType, result.size());
+			sink = (T[]) Array.newInstance(sinkType, result.size());
 		}
 		if (0 < resultSize) {
 			sink = result.toArray(sink);

@@ -29,13 +29,13 @@ import org.aspectj.bridge.MessageUtil;
  * as "{prefix} [addingChild|runStarting|runCompleted]({IRunStatus})"
  */
 public class RunListener implements IRunListener {
-    protected final List list;
+    protected final List<IRunStatus> sink;
     protected final IRun selector;
     protected final PrintWriter writer;
     protected final String prefix;
 
     protected RunListener() {
-        this((List) null, (IRun) null, (PrintWriter) null, (String) null);
+        this(null, null, null, null);
     }
 
     /**
@@ -45,7 +45,7 @@ public class RunListener implements IRunListener {
      *                  perhaps to select those to be accumulated
      *                  (should NOT throw Exception)
      */
-    public RunListener(List sink, IRun selector) {
+    public RunListener(List<IRunStatus> sink, IRun selector) {
         this(sink, selector, (PrintWriter) null, (String) null);
     }
 
@@ -54,7 +54,7 @@ public class RunListener implements IRunListener {
      * @param prefix the String prefixing any printing - if null, ""
      */
     public RunListener(PrintWriter writer, String prefix) {
-        this((List) null, (IRun) null, writer, prefix);
+        this(null, null, writer, prefix);
     }
 
     /**
@@ -66,11 +66,11 @@ public class RunListener implements IRunListener {
      * @param writer the PrintWriter to print events to - may be null
      * @param prefix the String prefixing any printing - if null, ""
      */
-    public RunListener(List sink, IRun selector, PrintWriter writer, String prefix) {
-        this.prefix = (null == prefix ? "" : prefix);
-        this.writer = writer;
+    public RunListener(List<IRunStatus> sink, IRun selector, PrintWriter writer, String prefix) {
+        this.sink = sink;
         this.selector = selector;
-        list = sink;
+        this.writer = writer;
+        this.prefix = (null == prefix ? "" : prefix);
     }
 
     /**
@@ -104,8 +104,8 @@ public class RunListener implements IRunListener {
             writer.println(prefix + " runCompleted(\"" + run + "\")");
         }
         try {
-            if (((null == selector) || selector.run(run)) && (null != list)) {
-                list.add(run);
+            if (((null == selector) || selector.run(run)) && (null != sink)) {
+                sink.add(run);
             }
         } catch (Throwable e) {
             String m = "Selectors should not throw exceptions!";

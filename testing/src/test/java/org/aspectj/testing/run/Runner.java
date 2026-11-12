@@ -94,11 +94,11 @@ public class Runner {
      */
     public boolean run(IRun run, IRunStatus status,
                              IRunListener listener) {
-        return run(run, status, listener, (Class) null);
+        return run(run, status, listener, null);
     }
 
     public boolean run(IRun run, IRunStatus status,
-                             IRunListener listener, Class exceptionClass) {
+                             IRunListener listener, Class<?> exceptionClass) {
         if (!precheck(run, status)) {
             return false;
         }
@@ -134,7 +134,7 @@ public class Runner {
                                  IRunStatus parentStatus,
                                  IRunStatus childStatus,
                                  IRunListener listener,
-                                 Class exceptionClass) {
+                                 Class<?> exceptionClass) {
         if (!precheck(child, parentStatus)) {
             return false;
         }
@@ -252,7 +252,7 @@ public class Runner {
      *              - ignored if null, must be assignable to IRunIterator
      * @see IRunIterator#abortOnFailure()
      */
-    public void registerFastFailIteratorTypes(Class iteratorType) { // XXX unimplemented
+    public void registerFastFailIteratorTypes(Class<?> iteratorType) {
         throw new UnsupportedOperationException("ignoring " + iteratorType);
     }
 
@@ -260,7 +260,7 @@ public class Runner {
      * Register a run listener for any run assignable to type.
      * @throws IllegalArgumentException if either is null
      */
-    public void registerListener(Class type, IRunListener listener) { // XXX unregister
+    public void registerListener(Class<?> type, IRunListener listener) {
         if (null == type) {
             throw new IllegalArgumentException("null type");
         }
@@ -294,7 +294,7 @@ public class Runner {
         if (null == run) {
             throw new IllegalArgumentException("null run");
         }
-        Class runClass = run.getClass();
+        Class<?> runClass = run.getClass();
         if (runClass == IteratorWrapper.class) {
             IRunIterator it = ((IteratorWrapper) run).iterator;
             if (null != it) {
@@ -329,7 +329,7 @@ public class Runner {
 
     /** This assumes precheck has happened and listeners have been obtained */
     private boolean runPrivate(IRun run, IRunStatus status,
-                             RunListeners listeners, Class exceptionClass) {
+                             RunListeners listeners, Class<?> exceptionClass) {
         IRunListener listener = listeners;
         if (null != listener) {
             try {
@@ -464,22 +464,24 @@ public class Runner {
 
     /** per-class collection of IRun */
     static class ClassListeners extends RunListeners {
-        private static final Hashtable known = new Hashtable();
+        private static final Hashtable<Class<?>,RunListeners> known = new Hashtable<>();
 
-        static RunListeners getListeners(Class c) { // XXX costly and stupid
-            Enumeration keys = known.keys();
+        Class<?> clazz;
+
+        static RunListeners getListeners(Class<?> c) { // XXX costly and stupid
+            Enumeration<Class<?>> keys = known.keys();
             RunListeners many = new RunListeners();
             while (keys.hasMoreElements()) {
-                Class kc = (Class) keys.nextElement();
+                Class<?> kc = keys.nextElement();
                 if (kc.isAssignableFrom(c)) {
-                    many.addListener((IRunListener) known.get(kc));
+                    many.addListener(known.get(kc));
                 }
             }
             return many;
         }
 
-        private static RunListeners makeListeners(Class c) {
-            RunListeners result = (ClassListeners) known.get(c);
+        private static RunListeners makeListeners(Class<?> c) {
+            RunListeners result = known.get(c);
             if (null == result) {
                 result = new ClassListeners(c);
                 known.put(c, result);
@@ -487,7 +489,7 @@ public class Runner {
             return result;
         }
 
-        static void addListener(Class c, IRunListener listener) {
+        static void addListener(Class<?> c, IRunListener listener) {
             if (null == listener) {
                 throw new IllegalArgumentException("null listener");
             }
@@ -497,9 +499,7 @@ public class Runner {
             makeListeners(c).addListener(listener);
         }
 
-        Class clazz;
-
-        ClassListeners(Class clazz) {
+        ClassListeners(Class<?> clazz) {
             this.clazz = clazz;
         }
 

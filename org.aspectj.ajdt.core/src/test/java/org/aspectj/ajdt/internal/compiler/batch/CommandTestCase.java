@@ -112,7 +112,7 @@ public abstract class CommandTestCase extends TestCase {
 		MessageHandler myHandler = new MessageHandler();
 		myHandler.setInterceptor(org.aspectj.tools.ajc.Main.MessagePrinter.TERSE);
 		boolean result = command.runCommand((String[]) args.toArray(new String[0]), myHandler);
-		System.out.println("result: " + result);
+//		System.out.println("result: " + result);
 		// System.out.println("errors: " + Arrays.asList(myHandler.getErrors()));
 		// System.out.println("warnings: " + Arrays.asList(myHandler.getWarnings()));
 
@@ -125,11 +125,11 @@ public abstract class CommandTestCase extends TestCase {
 		} else if (expectedErrors == TOP_ERROR) { // ?? what is this?
 			assertTrue("expected error", nErrors > 0);
 		} else {
-			List errors = new ArrayList(Arrays.asList(myHandler.getErrors()));
+			List<IMessage> errors = new ArrayList<>(Arrays.asList(myHandler.getErrors()));
 			for (int line : expectedErrors) {
 				boolean found = false;
-				for (Iterator iter = errors.iterator(); iter.hasNext(); ) {
-					IMessage m = (IMessage) iter.next();
+				for (Iterator<IMessage> iter = errors.iterator(); iter.hasNext(); ) {
+					IMessage m = iter.next();
 					if (m.getSourceLocation() != null && m.getSourceLocation().getLine() == line) {
 						found = true;
 						iter.remove();

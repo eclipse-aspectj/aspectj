@@ -142,10 +142,10 @@ public class Validator {
 	 * <li>{null check} list<li>
 	 * <li>{null check} {message}[#}<li>
 	 */
-	public boolean nullcheck(Collection list, String message) {
+	public <T> boolean nullcheck(Collection<T> list, String message) {
 		if (nullcheck((Object) list, message + " list")) {
 			int i = 0;
-			for (Object o : list) {
+			for (T o : list) {
 				if (!nullcheck(o, message + "[" + i++ + "]")) {
 					return false;
 				}
@@ -267,7 +267,7 @@ public class Validator {
 	 * <li>"#: not a File {file}"<li>
 	 * <li>{canRead} {message}[#}<li>
 	 */
-	public boolean canReadFiles(Object[] dirs, String message) {
+	public boolean canReadFiles(File[] dirs, String message) {
 		return ((nullcheck((Object) dirs, message + " dir array"))
 				&& canReadFiles(Arrays.asList(dirs), message));
 	}
@@ -278,14 +278,11 @@ public class Validator {
 	 * <li>"#: not a File {file}"<li>
 	 * <li>{canRead} {message}[#}<li>
 	 */
-	public boolean canReadFiles(Collection dirs, String message) {
-		if (nullcheck((Object) dirs, message + " files")) {
+	public boolean canReadFiles(Collection<File> files, String message) {
+		if (nullcheck((Object) files, message + " files")) {
 			int i = 0;
-			for (Object o : dirs) {
-				if (!(o instanceof File)) {
-					fail(i + ": not a file " + o);
-				}
-				if (!canRead((File) o, message + "[" + i++ + "]")) {
+			for (File f : files) {
+				if (!canRead(f, message + "[" + i++ + "]")) {
 					return false;
 				}
 			}
@@ -299,7 +296,7 @@ public class Validator {
 	 * <li>"#: not a File {file}"<li>
 	 * <li>{canReadDir} {message}[#}<li>
 	 */
-	public boolean canReadDirs(Object[] dirs, String message) {
+	public boolean canReadDirs(File[] dirs, String message) {
 		return ((nullcheck((Object) dirs, message + " dir array"))
 				&& canReadDirs(Arrays.asList(dirs), message));
 	}
@@ -310,7 +307,7 @@ public class Validator {
 	 * <li>"#: not a File {file}"<li>
 	 * <li>{canReadDir} {message}[#}<li>
 	 */
-	public boolean canReadDirs(Collection dirs, String message) {
+	public boolean canReadDirs(Collection<File> dirs, String message) {
 		if (nullcheck((Object) dirs, message + " dirs")) {
 			int i = 0;
 			for (Object o : dirs) {
@@ -332,7 +329,7 @@ public class Validator {
 	 * <li>"#: not a File {file}"<li>
 	 * <li>{canWrite} {message}[#}<li>
 	 */
-	public boolean canWriteFiles(Object[] dirs, String message) {
+	public boolean canWriteFiles(File[] dirs, String message) {
 		return ((nullcheck((Object) dirs, message + " dir array"))
 				&& canWriteFiles(Arrays.asList(dirs), message));
 	}
@@ -343,14 +340,11 @@ public class Validator {
 	 * <li>"#: not a File {file}"<li>
 	 * <li>{canWrite} {message}[#}<li>
 	 */
-	public boolean canWriteFiles(Collection dirs, String message) {
-		if (nullcheck((Object) dirs, message + " files")) {
+	public boolean canWriteFiles(Collection<File> files, String message) {
+		if (nullcheck((Object) files, message + " files")) {
 			int i = 0;
-			for (Object o : dirs) {
-				if (!(o instanceof File)) {
-					fail(i + ": not a file " + o);
-				}
-				if (!canWrite((File) o, message + "[" + i++ + "]")) {
+			for (File f: files) {
+				if (!canWrite(f, message + "[" + i++ + "]")) {
 					return false;
 				}
 			}
@@ -365,7 +359,7 @@ public class Validator {
 	 * <li>"#: not a File {file}"<li>
 	 * <li>{canWriteDir} {message}[#}<li>
 	 */
-	public boolean canWriteDirs(Object[] dirs, String message) {
+	public boolean canWriteDirs(File[] dirs, String message) {
 		return ((nullcheck((Object) dirs, message + " dir array"))
 				&& canWriteDirs(Arrays.asList(dirs), message));
 	}
@@ -376,14 +370,11 @@ public class Validator {
 	 * <li>"#: not a File {file}"<li>
 	 * <li>{canWriteDir} {message}[#}<li>
 	 */
-	public boolean canWriteDirs(Collection dirs, String message) {
+	public boolean canWriteDirs(Collection<File> dirs, String message) {
 		if (nullcheck((Object) dirs, message + " dirs")) {
 			int i = 0;
-			for (Object o : dirs) {
-				if (!(o instanceof File)) {
-					fail(i + ": not a file " + o);
-				}
-				if (!canWriteDir((File) o, message + "[" + i++ + "]")) {
+			for (File d : dirs) {
+				if (!canWriteDir(d, message + "[" + i++ + "]")) {
 					return false;
 				}
 			}

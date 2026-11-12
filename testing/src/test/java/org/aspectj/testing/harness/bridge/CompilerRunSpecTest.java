@@ -200,7 +200,7 @@ public class CompilerRunSpecTest extends TestCase {
     public void testCompilerOptions() {
         checkCompilerOption(null, CompilerRun.Spec.DEFAULT_COMPILER);
         CRSOptions crsOptions = CompilerRun.Spec.testAccessToCRSOptions();
-        Set options = crsOptions.compilerOptions();
+        Set<Option> options = crsOptions.compilerOptions();
         assertTrue(null != options);
         StringBuilder notLoaded = new StringBuilder();
 		for (Object option : options) {
@@ -209,7 +209,7 @@ public class CompilerRunSpecTest extends TestCase {
 				notLoaded.append(" " + compilerOption);
 			} else {
 				String className = crsOptions.compilerClassName(compilerOption);
-				String argValue = compilerOption.toString(); // XXX snoop
+				String argValue = compilerOption.toString();
 				String arg = Option.ON.render(argValue);
 				checkCompilerOption(arg, className);
 			}

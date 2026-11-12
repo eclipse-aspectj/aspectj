@@ -44,7 +44,7 @@ public class AbstractRunSpecTest extends TestCase {
     public void testSetOptions() {
         AbstractRunSpec spec = new TestSpec();
         spec.setOptions("1,2");
-        List options = spec.getOptionsList();
+        List<String> options = spec.getOptionsList();
         String s = "" + options;
         assertTrue(s, "[1, 2]".equals(s));
     }

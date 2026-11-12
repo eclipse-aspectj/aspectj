@@ -62,9 +62,9 @@ public class SoftMessage implements IMessage {
 			|| (0 == messages.numMessages(null, true))) {
 			return;
 		}
-		List list = messages.getUnmodifiableListView();
-		for (Object o : list) {
-			writeXml(out, (IMessage) o);
+		List<IMessage> list = messages.getUnmodifiableListView();
+		for (IMessage o : list) {
+			writeXml(out, o);
 		}
 	}
 
@@ -121,12 +121,11 @@ public class SoftMessage implements IMessage {
                 out.printAttribute("file", value);
 			}
 		}
-        List extras = message.getExtraSourceLocations();
+        List<ISourceLocation> extras = message.getExtraSourceLocations();
         if (!LangUtil.isEmpty(extras)) {
             out.endAttributes();
-			for (Object extra : extras) {
-				/*ISourceLocation element = (ISourceLocation)*/
-				SoftSourceLocation.writeXml(out, sl);
+			for (ISourceLocation extra : extras) {
+				SoftSourceLocation.writeXml(out, extra);
 			}
         }
 		out.endElement(elementName);

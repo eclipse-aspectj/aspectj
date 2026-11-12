@@ -149,7 +149,7 @@ public class JavaRun implements IAjcRun {
 			oldErr = System.err;
 			System.setErr(new PrintStream(errSnoop, true));
 		}
-		Class targetClass = null;
+		Class<?> targetClass = null;
 		try {
 			final URL[] clAndLibs;
 			{
@@ -886,7 +886,7 @@ public class JavaRun implements IAjcRun {
 		@Override
 		public void checkListen(int arg0) {
 		}
-		public void checkMemberAccess(Class arg0, int arg1) {
+		public void checkMemberAccess(Class<?> arg0, int arg1) {
 		}
 		@Override
 		public void checkMulticast(InetAddress arg0) {

@@ -176,7 +176,7 @@ public class SFileReader<T> {
          * @return file:line: {line}
          */
 		Maker ECHO = new Maker() {
-            public Object make(UtilLineReader reader) {
+            public String make(UtilLineReader reader) {
                 return reader + ": " + reader.lastLine();
             }
             public Class getType() { return String.class; }
