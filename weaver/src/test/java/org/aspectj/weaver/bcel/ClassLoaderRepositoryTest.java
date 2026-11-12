@@ -24,6 +24,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.aspectj.apache.bcel.util.ClassLoaderRepository;
+import org.aspectj.apache.bcel.util.ClassLoaderRepository.SoftHashMap;
+import org.aspectj.weaver.bcel.ClassPathManager.ZipFileEntry;
 
 import junit.framework.TestCase;
 
@@ -31,8 +33,8 @@ import junit.framework.TestCase;
 public class ClassLoaderRepositoryTest extends TestCase {
 	private File f;
 	private ZipFile zf;
-	private Enumeration entries;
-	private Map map;
+	private Enumeration<? extends ZipEntry> entries;
+	private SoftHashMap map;
 
 	public void setUp() throws Exception {
     	f = new File("../lib/aspectj/lib/aspectjtools.jar");
@@ -110,7 +112,7 @@ public class ClassLoaderRepositoryTest extends TestCase {
 
 	 private class TestThread extends Thread {
 		 public Throwable failure = null;
-		 Enumeration entries;
+		 Enumeration<? extends ZipEntry> entries;
 
 		 // ensure the threads are loading DIFFERENT shared classes at the same time...
 		 public TestThread(int skip) {
@@ -206,8 +208,8 @@ public class ClassLoaderRepositoryTest extends TestCase {
 		return field;
 	}
 
-	private Map getSharedMap() throws Exception {
-		return (Map)getSharedMapField() .get(null);
+	private SoftHashMap getSharedMap() throws Exception {
+		return (SoftHashMap)getSharedMapField() .get(null);
 	}
 }
 

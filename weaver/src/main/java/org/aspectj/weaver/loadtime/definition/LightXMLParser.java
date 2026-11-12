@@ -41,7 +41,7 @@ public class LightXMLParser {
 		this.children = new ArrayList<>();
 	}
 
-	public ArrayList getChildrens() {
+	public ArrayList<LightXMLParser> getChildrens() {
 		return this.children;
 	}
 
@@ -410,7 +410,7 @@ public class LightXMLParser {
 	}
 
 	private void mapEntity(StringBuffer buf) throws Exception {
-		char c = this.NULL_CHAR;
+		char c = LightXMLParser.NULL_CHAR;
 		StringBuilder keyBuf = new StringBuilder();
 		while (true) {
 			c = this.getNextChar();
