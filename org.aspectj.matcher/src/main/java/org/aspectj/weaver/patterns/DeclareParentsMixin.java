@@ -26,7 +26,7 @@ import org.aspectj.weaver.VersionedDataInputStream;
 public class DeclareParentsMixin extends DeclareParents {
 	private int bitflags = 0x0000; // for future expansion
 
-	public DeclareParentsMixin(TypePattern child, List parents) {
+	public DeclareParentsMixin(TypePattern child, List<TypePattern> parents) {
 		super(child, parents, true);
 	}
 

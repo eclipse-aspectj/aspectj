@@ -19,7 +19,7 @@ public abstract class TraceFactory {
     protected static boolean debug = getBoolean(DEBUG_PROPERTY,false);
     private static TraceFactory instance;
 
-    public Trace getTrace (Class clazz) {
+    public Trace getTrace (Class<?> clazz) {
     	return instance.getTrace(clazz);
     }
 

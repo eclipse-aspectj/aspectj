@@ -1041,11 +1041,11 @@ public class InstructionList implements Serializable {
 	/**
 	 * @return Enumeration that lists all instructions (handles)
 	 */
-	public Iterator iterator() {
-		return new Iterator() {
+	public Iterator<InstructionHandle> iterator() {
+		return new Iterator<InstructionHandle>() {
 			private InstructionHandle ih = start;
 
-			public Object next() {
+			public InstructionHandle next() {
 				InstructionHandle i = ih;
 				ih = ih.next;
 				return i;

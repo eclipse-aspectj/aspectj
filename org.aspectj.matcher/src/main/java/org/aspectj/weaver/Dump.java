@@ -446,7 +446,7 @@ public class Dump {
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unused" })
 	private void println(List list) {
 		if (list == null || list.isEmpty()) {
 			println(NULL_OR_EMPTY);
@@ -461,8 +461,8 @@ public class Dump {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private static Object formatObj(Object obj) {
-
 		/* These classes have a safe implementation of toString() */
 		if (obj == null || obj instanceof String || obj instanceof Number || obj instanceof Boolean || obj instanceof Exception
 				|| obj instanceof Character || obj instanceof Class || obj instanceof File || obj instanceof StringBuffer
@@ -505,7 +505,7 @@ public class Dump {
 
 	public interface INode {
 
-		void accept(IVisitor visior);
+		void accept(IVisitor visitor);
 
 	}
 
@@ -513,7 +513,7 @@ public class Dump {
 
 		void visitObject(Object s);
 
-		void visitList(List list);
+		void visitList(List<?> list);
 	}
 
 }

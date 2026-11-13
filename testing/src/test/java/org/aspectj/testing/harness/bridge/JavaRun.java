@@ -852,6 +852,7 @@ public class JavaRun implements IAjcRun {
 				this.exitCode = exitCode;
 			}
 		}
+		@SuppressWarnings("serial")
 		public static class AwtUsedException extends SecurityException {
 			public AwtUsedException() { }
 		}

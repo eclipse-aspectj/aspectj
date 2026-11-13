@@ -9,13 +9,9 @@
  * Contributors:
  *     PARC     initial implementation
  * ******************************************************************/
-
-
 package org.aspectj.weaver.patterns;
 
 import org.aspectj.weaver.*;
-import org.aspectj.weaver.patterns.FormalBinding;
-import org.aspectj.weaver.patterns.SimpleScope;
 
 public class TestScope extends SimpleScope {
 

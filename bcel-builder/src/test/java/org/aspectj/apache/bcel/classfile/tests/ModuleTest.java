@@ -45,6 +45,7 @@ public class ModuleTest extends BcelTestCase {
 		assertEquals(0,javaClass.getMethods().length);
 		Attribute[] attrs = javaClass.getAttributes();
 		assertEquals(2,attrs.length);
+		@SuppressWarnings("unused")
 		SourceFile sourceFile = (SourceFile) getAttribute(attrs,Constants.ATTR_SOURCE_FILE);
 		Module moduleAttr = (Module) getAttribute(attrs, Constants.ATTR_MODULE);
 		byte[] originalData = moduleAttr.getBytes();

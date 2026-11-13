@@ -48,6 +48,7 @@ public class MethodAnnotationsTest extends BcelTestCase {
 		clazz.dump(tfile);
 
 		SyntheticRepository repos2 = createRepos(".");
+		@SuppressWarnings("unused")
 		JavaClass           clazz2 = repos2.loadClass("AnnotatedMethods");
 
 		checkAnnotatedMethod(clazz,"method1","SimpleAnnotation","id","1");

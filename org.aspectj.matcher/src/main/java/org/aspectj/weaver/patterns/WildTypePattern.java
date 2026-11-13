@@ -14,7 +14,6 @@ package org.aspectj.weaver.patterns;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -41,7 +40,6 @@ import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.UnresolvedTypeVariableReferenceType;
 import org.aspectj.weaver.VersionedDataInputStream;
 import org.aspectj.weaver.WeaverMessages;
-import org.aspectj.weaver.WildcardedUnresolvedType;
 import org.aspectj.weaver.World;
 
 /**

@@ -13,6 +13,7 @@ package org.aspectj.ajdt.internal.core.builder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
@@ -31,8 +32,8 @@ import org.aspectj.ajdt.internal.compiler.lookup.EclipseFactory;
 import org.aspectj.ajdt.internal.compiler.problem.AjProblemReporter;
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
-import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.IMessage.Kind;
+import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.org.eclipse.jdt.core.IJavaModelMarker;
 import org.aspectj.org.eclipse.jdt.core.JavaCore;
 import org.aspectj.org.eclipse.jdt.core.JavaModelException;
@@ -47,6 +48,7 @@ import org.aspectj.org.eclipse.jdt.internal.core.builder.JavaBuilder;
 import org.aspectj.weaver.Lint;
 import org.aspectj.weaver.bcel.BcelWeaver;
 import org.aspectj.weaver.bcel.BcelWorld;
+import org.aspectj.weaver.bcel.UnwovenClassFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -75,7 +77,7 @@ public class AspectJBuilder extends JavaBuilder implements ICompilerAdapterFacto
 	 *
 	 * @see org.eclipse.core.internal.events.InternalBuilder#build(int, java.util.Map, org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	protected IProject[] build(int kind, Map ignored, IProgressMonitor monitor) throws CoreException {
+	protected IProject[] build(int kind, Map<String,String> ignored, IProgressMonitor monitor) throws CoreException {
 		// super method always causes construction of a new XXXImageBuilder, which
 		// causes construction of a new Compiler, so we will be detected as the
 		// adapter.
@@ -290,6 +292,7 @@ public class AspectJBuilder extends JavaBuilder implements ICompilerAdapterFacto
 	}
 
 	// default impl class until the implementation is extended to cope with inpath, injars
+	@SuppressWarnings("unused")
 	private static class NullBinarySourceProvider implements IBinarySourceProvider {
 
 		/*
@@ -297,8 +300,8 @@ public class AspectJBuilder extends JavaBuilder implements ICompilerAdapterFacto
 		 *
 		 * @see org.aspectj.ajdt.internal.compiler.IBinarySourceProvider#getBinarySourcesForThisWeave()
 		 */
-		public Map getBinarySourcesForThisWeave() {
-			return new HashMap();
+		public Map<String,List<UnwovenClassFile>> getBinarySourcesForThisWeave() {
+			return new HashMap<>();
 		}
 
 	}

@@ -18,7 +18,7 @@ public class CommonsTrace extends AbstractTrace {
 	private Log log;
 	private String className;
 
-	public CommonsTrace (Class clazz) {
+	public CommonsTrace (Class<?> clazz) {
 		super(clazz);
 		this.log = LogFactory.getLog(clazz);
 		this.className = tracedClass.getName();

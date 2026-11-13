@@ -23,8 +23,6 @@ import junit.framework.TestCase;
 
 public class AnnotationAccessFlagTest extends TestCase {
 
-	private boolean verbose = false;
-
 	protected void setUp() throws Exception {
 		super.setUp();
 	}
@@ -38,6 +36,7 @@ public class AnnotationAccessFlagTest extends TestCase {
 			new ClassPath("testdata"+File.separator+"testcode.jar"+File.pathSeparator+System.getProperty("java.class.path"));
 		SyntheticRepository repos = SyntheticRepository.getInstance(cp);
 		JavaClass clazz = repos.loadClass("SimpleAnnotation");
+		@SuppressWarnings("unused")
 		ConstantPool pool = clazz.getConstantPool();
 		assertTrue("Expected SimpleAnnotation class to say it was an annotation - but it didn't !",
 				clazz.isAnnotation());

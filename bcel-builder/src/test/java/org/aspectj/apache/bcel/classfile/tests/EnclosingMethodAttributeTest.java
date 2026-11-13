@@ -80,6 +80,7 @@ public class EnclosingMethodAttributeTest extends BcelTestCase {
 
 		// Read in the new version and check it is OK
 		SyntheticRepository repos2 = createRepos(".");
+		@SuppressWarnings("unused")
 		JavaClass clazz2 = repos2.loadClass("AttributeTestClassEM02$1");
 		EnclosingMethod em = (EnclosingMethod) encMethodAttrs[0];
 		String enclosingClassName = em.getEnclosingClass().getClassname(pool);

@@ -82,7 +82,7 @@ public class StandardShadow extends Shadow {
 				withinCode, withContext);
 	}
 
-	public static Shadow makeCallShadow(World inWorld, java.lang.reflect.Member aMember, Class thisClass,
+	public static Shadow makeCallShadow(World inWorld, java.lang.reflect.Member aMember, Class<?> thisClass,
 			MatchingContext withContext) {
 		Shadow enclosingShadow = makeStaticInitializationShadow(inWorld, thisClass, withContext);
 		Member signature = ReflectionBasedReferenceTypeDelegateFactory.createResolvedMember(aMember, inWorld);
@@ -92,7 +92,7 @@ public class StandardShadow extends Shadow {
 		return new StandardShadow(inWorld, kind, signature, enclosingShadow, enclosingType, enclosingMember, withContext);
 	}
 
-	public static Shadow makeStaticInitializationShadow(World inWorld, Class forType, MatchingContext withContext) {
+	public static Shadow makeStaticInitializationShadow(World inWorld, Class<?> forType, MatchingContext withContext) {
 		Member signature = ReflectionBasedReferenceTypeDelegateFactory.createStaticInitMember(forType, inWorld);
 		ResolvedType enclosingType = signature.getDeclaringType().resolve(inWorld);
 		Kind kind = Shadow.StaticInitialization;
@@ -118,21 +118,21 @@ public class StandardShadow extends Shadow {
 		}
 	}
 
-	public static Shadow makePreInitializationShadow(World inWorld, Constructor forConstructor, MatchingContext withContext) {
+	public static Shadow makePreInitializationShadow(World inWorld, Constructor<?> forConstructor, MatchingContext withContext) {
 		Kind kind = Shadow.PreInitialization;
 		Member signature = ReflectionBasedReferenceTypeDelegateFactory.createResolvedMember(forConstructor, inWorld);
 		ResolvedType enclosingType = signature.getDeclaringType().resolve(inWorld);
 		return new StandardShadow(inWorld, kind, signature, null, enclosingType, null, withContext);
 	}
 
-	public static Shadow makeInitializationShadow(World inWorld, Constructor forConstructor, MatchingContext withContext) {
+	public static Shadow makeInitializationShadow(World inWorld, Constructor<?> forConstructor, MatchingContext withContext) {
 		Kind kind = Shadow.Initialization;
 		Member signature = ReflectionBasedReferenceTypeDelegateFactory.createResolvedMember(forConstructor, inWorld);
 		ResolvedType enclosingType = signature.getDeclaringType().resolve(inWorld);
 		return new StandardShadow(inWorld, kind, signature, null, enclosingType, null, withContext);
 	}
 
-	public static Shadow makeHandlerShadow(World inWorld, Class exceptionType, Class withinType, MatchingContext withContext) {
+	public static Shadow makeHandlerShadow(World inWorld, Class<?> exceptionType, Class<?> withinType, MatchingContext withContext) {
 		Kind kind = Shadow.ExceptionHandler;
 		Shadow enclosingShadow = makeStaticInitializationShadow(inWorld, withinType, withContext);
 		Member signature = ReflectionBasedReferenceTypeDelegateFactory.createHandlerMember(exceptionType, withinType, inWorld);
@@ -141,7 +141,7 @@ public class StandardShadow extends Shadow {
 		return new StandardShadow(inWorld, kind, signature, enclosingShadow, enclosingType, enclosingMember, withContext);
 	}
 
-	public static Shadow makeHandlerShadow(World inWorld, Class exceptionType, java.lang.reflect.Member withinCode,
+	public static Shadow makeHandlerShadow(World inWorld, Class<?> exceptionType, java.lang.reflect.Member withinCode,
 			MatchingContext withContext) {
 		Kind kind = Shadow.ExceptionHandler;
 		Shadow enclosingShadow = makeExecutionShadow(inWorld, withinCode, withContext);
@@ -152,7 +152,7 @@ public class StandardShadow extends Shadow {
 		return new StandardShadow(inWorld, kind, signature, enclosingShadow, enclosingType, enclosingMember, withContext);
 	}
 
-	public static Shadow makeFieldGetShadow(World inWorld, Field forField, Class callerType, MatchingContext withContext) {
+	public static Shadow makeFieldGetShadow(World inWorld, Field forField, Class<?> callerType, MatchingContext withContext) {
 		Shadow enclosingShadow = makeStaticInitializationShadow(inWorld, callerType, withContext);
 		Member signature = ReflectionBasedReferenceTypeDelegateFactory.createResolvedField(forField, inWorld);
 		ResolvedMember enclosingMember = ReflectionBasedReferenceTypeDelegateFactory.createStaticInitMember(callerType, inWorld);
@@ -171,7 +171,7 @@ public class StandardShadow extends Shadow {
 		return new StandardShadow(inWorld, kind, signature, enclosingShadow, enclosingType, enclosingMember, withContext);
 	}
 
-	public static Shadow makeFieldSetShadow(World inWorld, Field forField, Class callerType, MatchingContext withContext) {
+	public static Shadow makeFieldSetShadow(World inWorld, Field forField, Class<?> callerType, MatchingContext withContext) {
 		Shadow enclosingShadow = makeStaticInitializationShadow(inWorld, callerType, withContext);
 		Member signature = ReflectionBasedReferenceTypeDelegateFactory.createResolvedField(forField, inWorld);
 		ResolvedMember enclosingMember = ReflectionBasedReferenceTypeDelegateFactory.createStaticInitMember(callerType, inWorld);

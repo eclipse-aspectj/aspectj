@@ -75,7 +75,7 @@ public class StandardPointcutExpressionImpl implements StandardPointcutExpressio
 		this.matchContext = aMatchContext;
 	}
 
-	public boolean couldMatchJoinPointsInType(Class aClass) {
+	public boolean couldMatchJoinPointsInType(Class<?> aClass) {
 		ResolvedType matchType = world.resolve(aClass.getName());
 		ReflectionFastMatchInfo info = new ReflectionFastMatchInfo(matchType, null, this.matchContext, world);
 		return pointcut.fastMatch(info).maybeTrue();
@@ -99,7 +99,7 @@ public class StandardPointcutExpressionImpl implements StandardPointcutExpressio
 		return matchesExecution(aMethod);
 	}
 
-	public ShadowMatch matchesConstructorExecution(Constructor aConstructor) {
+	public ShadowMatch matchesConstructorExecution(Constructor<?> aConstructor) {
 		return null;
 		// return matchesExecution(aConstructor);
 	}
@@ -357,7 +357,7 @@ public class StandardPointcutExpressionImpl implements StandardPointcutExpressio
 		private Class<?> decClass;
 		private Class<?> exType;
 
-		public Handler(Class decClass, Class exType) {
+		public Handler(Class<?> decClass, Class<?> exType) {
 			this.decClass = decClass;
 			this.exType = exType;
 		}
@@ -366,7 +366,7 @@ public class StandardPointcutExpressionImpl implements StandardPointcutExpressio
 			return 0;
 		}
 
-		public Class getDeclaringClass() {
+		public Class<?> getDeclaringClass() {
 			return decClass;
 		}
 
@@ -374,7 +374,7 @@ public class StandardPointcutExpressionImpl implements StandardPointcutExpressio
 			return null;
 		}
 
-		public Class getHandledExceptionType() {
+		public Class<?> getHandledExceptionType() {
 			return exType;
 		}
 

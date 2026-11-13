@@ -32,7 +32,7 @@ public interface StandardPointcutExpression {
 	 * @param aClass the candidate class
 	 * @return true iff this pointcut <i>may</i> match a join point within(aClass), and false otherwise
 	 */
-	boolean couldMatchJoinPointsInType(Class aClass);
+	boolean couldMatchJoinPointsInType(Class<?> aClass);
 
 	/**
 	 * Returns true iff this pointcut contains any expression that might necessitate a dynamic test at some join point (e.g. args)

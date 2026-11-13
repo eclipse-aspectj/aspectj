@@ -29,7 +29,7 @@ public class DeclarePrecedence extends Declare {
 	private TypePatternList patterns;
 	private IScope scope = null; // non-null means it has not yet been resolved (used by annotation style lazy resolution)
 
-	public DeclarePrecedence(List patterns) {
+	public DeclarePrecedence(List<TypePattern> patterns) {
 		this(new TypePatternList(patterns));
 	}
 

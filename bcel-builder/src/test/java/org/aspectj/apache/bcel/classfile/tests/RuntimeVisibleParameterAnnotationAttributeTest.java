@@ -34,6 +34,7 @@ public class RuntimeVisibleParameterAnnotationAttributeTest extends BcelTestCase
 
 	public void testAccessingRuntimeVisibleParameterAnnotations() throws ClassNotFoundException {
 		JavaClass clazz = getClassFromJar("AnnotatedParameters");
+		@SuppressWarnings("unused")
 		Attribute[] rvaAttr = findAttribute("RuntimeVisibleParameterAnnotations",clazz);
 		Method[] methods = clazz.getMethods();
 
@@ -66,8 +67,8 @@ public class RuntimeVisibleParameterAnnotationAttributeTest extends BcelTestCase
 
 	public void testAccessingParameterAnnotationsThroughGetAnnotations() throws ClassNotFoundException {
 		JavaClass clazz = getClassFromJar("AnnotatedParameters");
+		@SuppressWarnings("unused")
 		Attribute[] rvaAttr = findAttribute("RuntimeVisibleParameterAnnotations",clazz);
-
 		checkFooMethod(clazz);
 	}
 
@@ -81,6 +82,7 @@ public class RuntimeVisibleParameterAnnotationAttributeTest extends BcelTestCase
 		clazz.dump(tfile);
 
 		SyntheticRepository repos2 = createRepos(".");
+		@SuppressWarnings("unused")
 		JavaClass           clazz2 = repos2.loadClass("AnnotatedParameters");
 
 		checkFooMethod(clazz);

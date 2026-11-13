@@ -164,7 +164,7 @@ public class ReflectionBasedReferenceTypeDelegateFactory {
 				UnresolvedType.NONE);
 	}
 
-	public static ResolvedMember createResolvedConstructor(Constructor aConstructor, World inWorld) {
+	public static ResolvedMember createResolvedConstructor(Constructor<?> aConstructor, World inWorld) {
 		ReflectionBasedResolvedMemberImpl ret = new ReflectionBasedResolvedMemberImpl(org.aspectj.weaver.Member.CONSTRUCTOR,
 				toResolvedType(aConstructor.getDeclaringClass(), (IReflectionWorld) inWorld), aConstructor.getModifiers(),
 				// to return what BCEL returns, the return type for ctor is void

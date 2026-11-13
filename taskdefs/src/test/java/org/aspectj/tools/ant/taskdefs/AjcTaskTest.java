@@ -56,7 +56,7 @@ import static org.junit.Assert.assertNotEquals;
  */
 public class AjcTaskTest extends TestCase {
 
-  private static final Class NO_EXCEPTION = null;
+  private static final Class<?> NO_EXCEPTION = null;
   private static final String NOFILE = "NOFILE";
 
   private static final File tempDir;
@@ -827,7 +827,7 @@ public class AjcTaskTest extends TestCase {
   // ------------------------------------------------------
 
   protected void runTest(
-    AjcTask task, Class exceptionType, MessageHolderChecker checker, String messageHolderClass
+    AjcTask task, Class<?> exceptionType, MessageHolderChecker checker, String messageHolderClass
   )
   {
     task.setMessageHolderClass(messageHolderClass);

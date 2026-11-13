@@ -418,7 +418,6 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		// Compile with -preserveAllLocals
 		runTest("debugging before advice - 3");
 		Method method = getMethodFromClass(getClassFrom(ajc.getSandboxDirectory(), "Foo3"), "foo");
-		System.out.println(stringify(method.getLocalVariableTable()));
 		assertEquals("LFoo3; this(0) start=0 len=35", stringify(method.getLocalVariableTable(), 0));
 		assertEquals("LBar; bar(1) start=0 len=35", stringify(method.getLocalVariableTable(), 1));
 		assertEquals("Ljava/lang/Exception; e(2) start=30 len=4", stringify(method.getLocalVariableTable(), 2));

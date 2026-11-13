@@ -29,7 +29,7 @@ public interface ContextBasedMatcher {
 	 * a join point in the given type
 	 * @deprecated use couldMatchJoinPointsInType(Class,MatchingContext) instead
 	 */
-	boolean couldMatchJoinPointsInType(Class aClass);
+	boolean couldMatchJoinPointsInType(Class<?> aClass);
 
 	/**
 	 * return true iff this matcher could ever match
@@ -37,7 +37,7 @@ public interface ContextBasedMatcher {
 	 * match context information available
 	 * @since 1.5.1
 	 */
-	boolean couldMatchJoinPointsInType(Class aClass, MatchingContext matchContext);
+	boolean couldMatchJoinPointsInType(Class<?> aClass, MatchingContext matchContext);
 
 	/**
 	 * return true if matchesStatically can ever return

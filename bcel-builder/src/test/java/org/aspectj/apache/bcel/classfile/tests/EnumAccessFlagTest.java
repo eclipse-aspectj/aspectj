@@ -23,8 +23,6 @@ import junit.framework.TestCase;
 
 public class EnumAccessFlagTest extends TestCase {
 
-	private boolean verbose = false;
-
 	protected void setUp() throws Exception {
 		super.setUp();
 	}
@@ -39,6 +37,7 @@ public class EnumAccessFlagTest extends TestCase {
 			new ClassPath("testdata"+File.separator+"testcode.jar"+File.pathSeparator+System.getProperty("java.class.path"));
 		SyntheticRepository repos = SyntheticRepository.getInstance(cp);
 		JavaClass clazz = repos.loadClass("SimpleEnum");
+		@SuppressWarnings("unused")
 		ConstantPool pool = clazz.getConstantPool();
 		assertTrue("Expected SimpleEnum class to say it was an enum - but it didn't !",
 				clazz.isEnum());

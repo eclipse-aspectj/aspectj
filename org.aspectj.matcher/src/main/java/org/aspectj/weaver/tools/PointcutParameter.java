@@ -27,7 +27,7 @@ public interface PointcutParameter {
 	/**
 	 * The type of the parameter
 	 */
-	Class getType();
+	Class<?> getType();
 
 	/**
 	 * At a matched join point, the parameter binding.

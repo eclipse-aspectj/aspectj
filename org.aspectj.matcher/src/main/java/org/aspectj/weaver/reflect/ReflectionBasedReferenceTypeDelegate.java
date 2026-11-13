@@ -48,7 +48,7 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 	private static final ClassLoader bootClassLoader = new URLClassLoader(new URL[0]);// ReflectionBasedReferenceTypeDelegate.class.
 	// getClassLoader();
 
-	protected Class myClass = null;
+	protected Class<?> myClass = null;
 	protected WeakClassLoaderReference classLoaderReference = null;
 	protected World world;
 	private ReferenceType resolvedType;
@@ -56,7 +56,7 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 	private ResolvedMember[] methods = null;
 	private ResolvedType[] interfaces = null;
 
-	public ReflectionBasedReferenceTypeDelegate(Class forClass, ClassLoader aClassLoader, World inWorld, ReferenceType resolvedType) {
+	public ReflectionBasedReferenceTypeDelegate(Class<?> forClass, ClassLoader aClassLoader, World inWorld, ReferenceType resolvedType) {
 		initialize(resolvedType, forClass, aClassLoader, inWorld);
 	}
 
@@ -75,7 +75,7 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 		return this.myClass;
 	}
 
-	protected Class getBaseClass() {
+	protected Class<?> getBaseClass() {
 		return this.myClass;
 	}
 
@@ -239,7 +239,7 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 	 */
 	public ResolvedType[] getDeclaredInterfaces() {
 		if (interfaces == null) {
-			Class[] reflectInterfaces = this.myClass.getInterfaces();
+			Class<?>[] reflectInterfaces = this.myClass.getInterfaces();
 			ResolvedType[] rInterfaces = new ResolvedType[reflectInterfaces.length];
 			for (int i = 0; i < reflectInterfaces.length; i++) {
 				rInterfaces[i] = ReflectionBasedReferenceTypeDelegateFactory.resolveTypeInWorld(reflectInterfaces[i], world);
@@ -261,7 +261,7 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 	public ResolvedMember[] getDeclaredMethods() {
 		if (methods == null) {
 			Method[] reflectMethods = this.myClass.getDeclaredMethods();
-			Constructor[] reflectCons = this.myClass.getDeclaredConstructors();
+			Constructor<?>[] reflectCons = this.myClass.getDeclaredConstructors();
 			ResolvedMember[] rMethods = new ResolvedMember[reflectMethods.length + reflectCons.length];
 			for (int i = 0; i < reflectMethods.length; i++) {
 				rMethods[i] = ReflectionBasedReferenceTypeDelegateFactory.createResolvedMember(reflectMethods[i], world);
@@ -317,9 +317,9 @@ public class ReflectionBasedReferenceTypeDelegate implements ReferenceTypeDelega
 	 *
 	 * @see org.aspectj.weaver.ReferenceTypeDelegate#getPrivilegedAccesses()
 	 */
-	public Collection getPrivilegedAccesses() {
+	public Collection<ResolvedMember> getPrivilegedAccesses() {
 		// no aspect members..., not used for weaving
-		return Collections.EMPTY_SET;
+		return Collections.emptySet();
 	}
 
 	/*

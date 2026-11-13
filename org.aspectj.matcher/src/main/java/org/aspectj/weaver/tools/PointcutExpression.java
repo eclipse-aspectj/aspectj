@@ -34,7 +34,7 @@ public interface PointcutExpression {
 	 * @param aClass  the candidate class
 	 * @return true iff this pointcut <i>may</i> match a join point within(aClass), and false otherwise
 	 */
-	boolean couldMatchJoinPointsInType(Class aClass);
+	boolean couldMatchJoinPointsInType(Class<?> aClass);
 
 	/**
 	 * Returns true iff this pointcut contains any expression that might necessitate a dynamic test
@@ -56,7 +56,7 @@ public interface PointcutExpression {
 	 * @return a ShadowMatch indicating whether the pointcut always, sometimes, or never
 	 * matches join points representing the execution of the constructor.
 	 */
-	ShadowMatch matchesConstructorExecution(Constructor aConstructor);
+	ShadowMatch matchesConstructorExecution(Constructor<?> aConstructor);
 
 	/**
 	 * Determine whether or not this pointcut matches the static initialization
@@ -65,7 +65,7 @@ public interface PointcutExpression {
 	 * @return a ShadowMatch indicating whether the pointcut always, sometimes, or never
 	 * matchs join points representing the static initialization of the given type
 	 */
-	ShadowMatch matchesStaticInitialization(Class aClass);
+	ShadowMatch matchesStaticInitialization(Class<?> aClass);
 
 	/**
 	 * Determine whether or not this pointcut matches the execution of a given piece of advice.
@@ -82,7 +82,7 @@ public interface PointcutExpression {
 	 * @return a ShadowMatch indicating whether the pointcut always, sometimes, or never
 	 * matches join points representing initialization via the given constructor.
 	 */
-	ShadowMatch matchesInitialization(Constructor aConstructor);
+	ShadowMatch matchesInitialization(Constructor<?> aConstructor);
 
 	/**
 	 * Determine whether or not this pointcut matches the pre-initialization of an
@@ -91,7 +91,7 @@ public interface PointcutExpression {
 	 * @return a ShadowMatch indicating whether the pointcut always, sometimes, or never
 	 * matches join points representing pre-initialization via the given constructor.
 	 */
-	ShadowMatch matchesPreInitialization(Constructor aConstructor);
+	ShadowMatch matchesPreInitialization(Constructor<?> aConstructor);
 
 	/**
 	 * Determine whether or not this pointcut matches a method call to the given method, made during
@@ -112,7 +112,7 @@ public interface PointcutExpression {
 	 * @return a ShadowMatch indicating whether the pointcut always, sometimes, or never
 	 * matches join points representing a call to this method during the execution of the given member.
 	 */
-	ShadowMatch matchesMethodCall(Method aMethod, Class callerType);
+	ShadowMatch matchesMethodCall(Method aMethod, Class<?> callerType);
 
 	/**
 	 * Determine whether or not this pointcut matches a method call to the given constructor, made during
@@ -122,7 +122,7 @@ public interface PointcutExpression {
 	 * @return a ShadowMatch indicating whether the pointcut always, sometimes, or never
 	 * matches join points representing a call to this constructor during the execution of the given member.
 	 */
-	ShadowMatch matchesConstructorCall(Constructor aConstructor, Member withinCode);
+	ShadowMatch matchesConstructorCall(Constructor<?> aConstructor, Member withinCode);
 
 	/**
 	 * Determine whether or not this pointcut matches a method call to the given constructor, made outside
@@ -132,7 +132,7 @@ public interface PointcutExpression {
 	 * @return a ShadowMatch indicating whether the pointcut always, sometimes, or never
 	 * matches join points representing a call to this constructor during the execution of the given member.
 	 */
-	ShadowMatch matchesConstructorCall(Constructor aConstructor, Class callerType);
+	ShadowMatch matchesConstructorCall(Constructor<?> aConstructor, Class<?> callerType);
 
 	/**
 	 * Determine whether or not this pointcut matches the execution of a given exception
@@ -142,7 +142,7 @@ public interface PointcutExpression {
 	 * @return a ShadowMatch indicating whether the pointcut always, sometimes, or
 	 * never matches join points representing the handling of the given exception
 	 */
-	ShadowMatch matchesHandler(Class exceptionType, Member withinCode);
+	ShadowMatch matchesHandler(Class<?> exceptionType, Member withinCode);
 
 	/**
 	 * Determine whether or not this pointcut matches the execution of a given exception
@@ -152,7 +152,7 @@ public interface PointcutExpression {
 	 * @return a ShadowMatch indicating whether the pointcut always, sometimes, or
 	 * never matches join points representing the handling of the given exception
 	 */
-	ShadowMatch matchesHandler(Class exceptionType, Class handlingType);
+	ShadowMatch matchesHandler(Class<?> exceptionType, Class<?> handlingType);
 
 	/**
 	 * Determine whether or not this pointcut matches a set of the given field from within the given
@@ -173,7 +173,7 @@ public interface PointcutExpression {
 	 * @return a ShadowMatch indicating whether the pointcut always, sometimes, or
 	 * never matches field set join points for the given field and call site.
 	 */
-	ShadowMatch matchesFieldSet(Field aField, Class withinType);
+	ShadowMatch matchesFieldSet(Field aField, Class<?> withinType);
 
 	/**
 	 * Determine whether or not this pointcut matches a get of the given field from within the given
@@ -194,7 +194,7 @@ public interface PointcutExpression {
 	 * @return a ShadowMatch indicating whether the pointcut always, sometimes, or
 	 * never matches field get join points for the given field and call site.
 	 */
-	ShadowMatch matchesFieldGet(Field aField, Class withinType);
+	ShadowMatch matchesFieldGet(Field aField, Class<?> withinType);
 
 	/**
 	 * Return a string representation of this pointcut expression.

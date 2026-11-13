@@ -16,10 +16,10 @@ import org.aspectj.weaver.tools.PointcutParameter;
 public class PointcutParameterImpl implements PointcutParameter {
 
 	String name;
-	Class type;
+	Class<?> type;
 	Object binding;
 
-	public PointcutParameterImpl(String name, Class type) {
+	public PointcutParameterImpl(String name, Class<?> type) {
 		this.name = name;
 		this.type = type;
 	}
@@ -28,7 +28,7 @@ public class PointcutParameterImpl implements PointcutParameter {
 		return name;
 	}
 
-	public Class getType() {
+	public Class<?> getType() {
 		return type;
 	}
 

@@ -97,6 +97,7 @@ public class NonCachingClassLoaderRepositoryTest extends TestCase {
 	class Loader extends DoneChecker implements Runnable {
 		public void run() {
 			try {
+				@SuppressWarnings("unused")
 				JavaClass javaClass = nonCachingClassLoaderRepository.loadClass(NonCachingClassLoaderRepositoryTest.class
 						.getCanonicalName());
 				nonCachingClassLoaderRepository.clear();

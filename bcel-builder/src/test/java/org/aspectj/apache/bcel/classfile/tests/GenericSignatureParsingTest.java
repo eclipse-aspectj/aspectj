@@ -143,13 +143,44 @@ public class GenericSignatureParsingTest extends BcelTestCase {
 	  checkMethodSignatureReturnType("([Ljava/lang/String;)Z","boolean");
 	}
 
+	/**
+	 * Loads a class compiled from testdata/PossibleGenericsSigs.java and checks the generic signature that is recorded for each of
+	 * its methods.
+	 */
 	public void testLoadingGenerics() throws ClassNotFoundException {
 		JavaClass clazz = getClassFromJar("PossibleGenericsSigs");
-		// J5TODO asc fill this bit in...
+
+		// parameterized types, with wildcards
+		checkMethodSignature(clazz, "a", "(Ljava/util/List<Ljava/lang/String;>;)V");
+		checkMethodSignature(clazz, "b", "(Ljava/util/List<Ljava/lang/Double;>;)V");
+		checkMethodSignature(clazz, "c", "(Ljava/util/List<+Ljava/lang/Number;>;)V");
+		checkMethodSignature(clazz, "d", "(Ljava/util/List<-Ljava/lang/Number;>;)V");
+		checkMethodSignature(clazz, "e", "(Ljava/util/List<*>;)V");
+		checkMethodSignature(clazz, "f", "(Ljava/util/Map<*-Ljava/lang/Number;>;)V");
+
+		// type variables, and their bounds
+		checkMethodSignature(clazz, "r", "<T:Ljava/lang/Object;:Ljava/lang/Comparable<-TT;>;>(Ljava/util/List<TT;>;)V");
+		checkMethodSignature(clazz, "s", "<T:Ljava/lang/Object;:Ljava/lang/Comparable<-TT;>;>(Ljava/util/Collection<TT;>;)TT;");
+		checkMethodSignature(clazz, "t", "<T::Ljava/lang/Comparable<-Ljava/lang/Number;>;>(Ljava/util/Collection<TT;>;)TT;");
+		checkMethodSignature(clazz, "u", "<T::Ljava/lang/Comparable<TT;>;>(Ljava/util/Collection<TT;>;)TT;");
+		checkMethodSignature(clazz, "v", "<X:Ljava/lang/Object;>(Ljava/util/Collection<TX;>;)TX;");
+		checkMethodSignature(clazz, "x", "<T:Ljava/lang/Object;>(Ljava/util/List<TT;>;Ljava/util/List<+TT;>;)V");
+		checkMethodSignature(clazz, "y", "<T:Ljava/lang/Number;>(Ljava/util/Map<TT;-Ljava/lang/Number;>;)V");
+		checkMethodSignature(clazz, "z", "<T:Ljava/lang/Object;>([TT;Ljava/util/Collection<TT;>;)V");
+
+		// nesting
+		checkMethodSignature(clazz, "w",
+				"(Ljava/util/List<Ljava/util/List<Ljava/util/List<Ljava/util/List<Ljava/util/List<+Ljava/util/List;>;>;>;>;>;)V");
+
+		// the constructor has nothing generic in it
+		assertNull(getSignatureAttribute(clazz, "<init>"));
 	}
 
-
-	// helper methods below
+	private void checkMethodSignature(JavaClass clazz, String methodName, String expected) {
+		Signature signature = getSignatureAttribute(clazz, methodName);
+		assertNotNull("No Signature attribute on method " + methodName, signature);
+		assertEquals("Signature of method " + methodName, expected, signature.getSignature());
+	}
 
 	// These routines call BCEL to determine if it can correctly translate from one form to the other.
 	private void checkClassTypeSignature(String sig, String expected) {

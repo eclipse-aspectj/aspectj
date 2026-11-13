@@ -103,6 +103,7 @@ public abstract class CommonPointcutExpressionTests extends TestCase {
 	public void testConstructorExecutionMatching03() {
 
 		ResolvedType jlArrayList = world.resolve("java.util.ArrayList");
+		@SuppressWarnings("unused")
 		ResolvedType juList = world.resolve("java.util.List");
 
 		StandardPointcutExpression ex = pointcutParser.parsePointcutExpression("execution(java.util.ArrayList.new(..))");

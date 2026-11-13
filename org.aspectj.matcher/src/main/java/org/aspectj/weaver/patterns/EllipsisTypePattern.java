@@ -106,7 +106,7 @@ public class EllipsisTypePattern extends TypePattern {
 	}
 
 	@Override
-	public TypePattern parameterizeWith(Map typeVariableMap, World w) {
+	public TypePattern parameterizeWith(Map<String,UnresolvedType> typeVariableMap, World w) {
 		return this;
 	}
 

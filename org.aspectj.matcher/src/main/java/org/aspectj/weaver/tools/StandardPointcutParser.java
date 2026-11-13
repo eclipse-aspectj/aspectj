@@ -116,7 +116,7 @@ public class StandardPointcutParser {
 	 * @param supportedPointcutKinds a set of PointcutPrimitives this parser should support
 	 * @throws UnsupportedOperationException if the set contains if, cflow, or cflow below
 	 */
-	public static StandardPointcutParser getPointcutParserSupportingSpecifiedPrimitives(Set supportedPointcutKinds, World world) {
+	public static StandardPointcutParser getPointcutParserSupportingSpecifiedPrimitives(Set<PointcutPrimitive> supportedPointcutKinds, World world) {
 		StandardPointcutParser p = new StandardPointcutParser(supportedPointcutKinds, world);
 		return p;
 	}
@@ -199,7 +199,7 @@ public class StandardPointcutParser {
 	 * @param type
 	 * @return
 	 */
-	public PointcutParameter createPointcutParameter(String name, Class type) {
+	public PointcutParameter createPointcutParameter(String name, Class<?> type) {
 		return new PointcutParameterImpl(name, type);
 	}
 
@@ -225,7 +225,7 @@ public class StandardPointcutParser {
 	 *         supported by this PointcutParser.
 	 * @throws IllegalArgumentException if the expression is not a well-formed pointcut expression
 	 */
-	public StandardPointcutExpression parsePointcutExpression(String expression, Class inScope, PointcutParameter[] formalParameters)
+	public StandardPointcutExpression parsePointcutExpression(String expression, Class<?> inScope, PointcutParameter[] formalParameters)
 			throws UnsupportedPointcutPrimitiveException, IllegalArgumentException {
 		StandardPointcutExpressionImpl pcExpr = null;
 		try {
@@ -294,7 +294,7 @@ public class StandardPointcutParser {
 	}
 
 	/* for testing */
-	Set getSupportedPrimitives() {
+	Set<PointcutPrimitive> getSupportedPrimitives() {
 		return supportedPrimitives;
 	}
 

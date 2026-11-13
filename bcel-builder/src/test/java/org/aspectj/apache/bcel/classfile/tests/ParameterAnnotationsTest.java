@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.aspectj.apache.bcel.Constants;
-import org.aspectj.apache.bcel.classfile.Attribute;
 import org.aspectj.apache.bcel.classfile.ConstantPool;
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.Method;
@@ -260,7 +259,6 @@ public class ParameterAnnotationsTest extends BcelTestCase {
 		//    attributes vanish !
 		clg = new ClassGen(jc2);
 		mg = new MethodGen(m,clg.getClassName(),clg.getConstantPool());
-		List<Attribute> as = mg.getAttributes();
 		assertTrue("Should be 2 (RIPA and RVPA) but there are "+mg.getAttributes().size(),mg.getAttributes().size()==2);
 		List<AnnotationGen> l = mg.getAnnotationsOnParameter(0);
 		assertTrue("Should be 2 annotations on first parameter but there is only "+l.size()+":"+l.toString(),

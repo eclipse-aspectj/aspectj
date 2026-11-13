@@ -66,7 +66,7 @@ public class BindingAnnotationFieldTypePattern extends ExactAnnotationTypePatter
 	}
 
 	@Override
-	public AnnotationTypePattern parameterizeWith(Map typeVariableMap, World w) {
+	public AnnotationTypePattern parameterizeWith(Map<String,UnresolvedType> typeVariableMap, World w) {
 		throw new BCException("Parameterization not implemented for annotation field binding construct (compiler limitation)");
 		// UnresolvedType newAnnotationType = annotationType;
 		// if (annotationType.isTypeVariableReference()) {

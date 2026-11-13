@@ -25,7 +25,7 @@ public class TemporaryTypeMunger extends ConcreteTypeMunger {
 	}
 
 	@Override
-	public ConcreteTypeMunger parameterizeWith(Map parameterizationMap, World world) {
+	public ConcreteTypeMunger parameterizeWith(Map<String,UnresolvedType> parameterizationMap, World world) {
 		throw new UnsupportedOperationException("Cannot be called on a TemporaryTypeMunger");
 	}
 

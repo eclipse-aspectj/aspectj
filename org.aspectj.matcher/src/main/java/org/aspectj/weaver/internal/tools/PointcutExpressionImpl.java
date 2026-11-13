@@ -79,7 +79,8 @@ public class PointcutExpressionImpl implements PointcutExpression {
 		this.matchContext = aMatchContext;
 	}
 
-	public boolean couldMatchJoinPointsInType(Class aClass) {
+	@Override
+	public boolean couldMatchJoinPointsInType(Class<?> aClass) {
 		ResolvedType matchType = world.resolve(aClass.getName());
 		if (matchType.isMissing() && (world instanceof ReflectionWorld)) {
 			// Class is a generated class that cannot be 'looked up' via getResource.
@@ -159,7 +160,7 @@ public class PointcutExpressionImpl implements PointcutExpression {
 		return sm;
 	}
 
-	public ShadowMatch matchesInitialization(Constructor aConstructor) {
+	public ShadowMatch matchesInitialization(Constructor<?> aConstructor) {
 		Shadow s = ReflectionShadow.makeInitializationShadow(world, aConstructor, this.matchContext);
 		ShadowMatchImpl sm = getShadowMatch(s);
 		sm.setSubject(aConstructor);
@@ -172,7 +173,7 @@ public class PointcutExpressionImpl implements PointcutExpression {
 		return sm;
 	}
 
-	public ShadowMatch matchesPreInitialization(Constructor aConstructor) {
+	public ShadowMatch matchesPreInitialization(Constructor<?> aConstructor) {
 		Shadow s = ReflectionShadow.makePreInitializationShadow(world, aConstructor, this.matchContext);
 		ShadowMatchImpl sm = getShadowMatch(s);
 		sm.setSubject(aConstructor);
@@ -211,7 +212,7 @@ public class PointcutExpressionImpl implements PointcutExpression {
 		return sm;
 	}
 
-	public ShadowMatch matchesConstructorCall(Constructor aConstructor, Class callerType) {
+	public ShadowMatch matchesConstructorCall(Constructor<?> aConstructor, Class<?> callerType) {
 		Shadow s = ReflectionShadow.makeCallShadow(world, aConstructor, callerType, this.matchContext);
 		ShadowMatchImpl sm = getShadowMatch(s);
 		sm.setSubject(aConstructor);
@@ -224,7 +225,7 @@ public class PointcutExpressionImpl implements PointcutExpression {
 		return sm;
 	}
 
-	public ShadowMatch matchesConstructorCall(Constructor aConstructor, Member withinCode) {
+	public ShadowMatch matchesConstructorCall(Constructor<?> aConstructor, Member withinCode) {
 		Shadow s = ReflectionShadow.makeCallShadow(world, aConstructor, withinCode, this.matchContext);
 		ShadowMatchImpl sm = getShadowMatch(s);
 		sm.setSubject(aConstructor);
@@ -237,7 +238,7 @@ public class PointcutExpressionImpl implements PointcutExpression {
 		return sm;
 	}
 
-	public ShadowMatch matchesHandler(Class exceptionType, Class handlingType) {
+	public ShadowMatch matchesHandler(Class<?> exceptionType, Class<?> handlingType) {
 		Shadow s = ReflectionShadow.makeHandlerShadow(world, exceptionType, handlingType, this.matchContext);
 		ShadowMatchImpl sm = getShadowMatch(s);
 		sm.setSubject(null);
@@ -250,7 +251,7 @@ public class PointcutExpressionImpl implements PointcutExpression {
 		return sm;
 	}
 
-	public ShadowMatch matchesHandler(Class exceptionType, Member withinCode) {
+	public ShadowMatch matchesHandler(Class<?> exceptionType, Member withinCode) {
 		Shadow s = ReflectionShadow.makeHandlerShadow(world, exceptionType, withinCode, this.matchContext);
 		ShadowMatchImpl sm = getShadowMatch(s);
 		sm.setSubject(null);
@@ -263,7 +264,7 @@ public class PointcutExpressionImpl implements PointcutExpression {
 		return sm;
 	}
 
-	public ShadowMatch matchesFieldGet(Field aField, Class withinType) {
+	public ShadowMatch matchesFieldGet(Field aField, Class<?> withinType) {
 		Shadow s = ReflectionShadow.makeFieldGetShadow(world, aField, withinType, this.matchContext);
 		ShadowMatchImpl sm = getShadowMatch(s);
 		sm.setSubject(aField);
@@ -289,7 +290,8 @@ public class PointcutExpressionImpl implements PointcutExpression {
 		return sm;
 	}
 
-	public ShadowMatch matchesFieldSet(Field aField, Class withinType) {
+	@Override
+	public ShadowMatch matchesFieldSet(Field aField, Class<?> withinType) {
 		Shadow s = ReflectionShadow.makeFieldSetShadow(world, aField, withinType, this.matchContext);
 		ShadowMatchImpl sm = getShadowMatch(s);
 		sm.setSubject(aField);
@@ -414,7 +416,7 @@ public class PointcutExpressionImpl implements PointcutExpression {
 		private Class<?> decClass;
 		private Class<?> exType;
 
-		public Handler(Class decClass, Class exType) {
+		public Handler(Class<?> decClass, Class<?> exType) {
 			this.decClass = decClass;
 			this.exType = exType;
 		}
@@ -423,7 +425,7 @@ public class PointcutExpressionImpl implements PointcutExpression {
 			return 0;
 		}
 
-		public Class getDeclaringClass() {
+		public Class<?> getDeclaringClass() {
 			return decClass;
 		}
 
@@ -431,7 +433,7 @@ public class PointcutExpressionImpl implements PointcutExpression {
 			return null;
 		}
 
-		public Class getHandledExceptionType() {
+		public Class<?> getHandledExceptionType() {
 			return exType;
 		}
 

@@ -472,7 +472,7 @@ public class IfPointcut extends Pointcut {
 
 	// we can't touch "if" methods
 	@Override
-	public Pointcut parameterizeWith(Map typeVariableMap, World w) {
+	public Pointcut parameterizeWith(Map<String,UnresolvedType> typeVariableMap, World w) {
 		return this;
 	}
 

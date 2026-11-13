@@ -19,7 +19,6 @@ import java.util.List;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.util.GenericSignature;
 import org.aspectj.util.GenericSignature.ClassSignature;
-import org.aspectj.util.GenericSignature.FormalTypeParameter;
 import org.aspectj.util.GenericSignatureParser;
 import org.aspectj.weaver.AjAttribute.WeaverVersionInfo;
 

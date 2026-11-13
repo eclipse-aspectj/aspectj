@@ -134,7 +134,6 @@ public class AnnotationGenTest extends BcelTestCase {
 	private void checkSerialize(AnnotationGen a, ConstantPool cpg) {
 		try {
 			String beforeName = a.getTypeName();
-			List<NameValuePair> beforeValues = a.getValues();
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			DataOutputStream dos = new DataOutputStream(baos);
 			a.dump(dos);
@@ -150,7 +149,6 @@ public class AnnotationGenTest extends BcelTestCase {
 			dis.close();
 
 			String afterName = annAfter.getTypeName();
-			List<NameValuePair> afterValues = annAfter.getValues();
 
 			if (!beforeName.equals(afterName)) {
 				fail("Deserialization failed: before type='" + beforeName + "' after type='" + afterName + "'");

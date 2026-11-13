@@ -469,11 +469,11 @@ public class AjcTask extends MatchingTask {
 	// ---------------------- option values
 
 	// used by entries with internal commas
-	protected String validCommaList(String list, List valid, String label) {
+	protected String validCommaList(String list, List<String> valid, String label) {
 		return validCommaList(list, valid, label, valid.size());
 	}
 
-	protected String validCommaList(String list, List valid, String label, int max) {
+	protected String validCommaList(String list, List<String> valid, String label, int max) {
 		StringBuilder result = new StringBuilder();
 		StringTokenizer st = new StringTokenizer(list, ",");
 		int num = 0;

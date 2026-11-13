@@ -655,7 +655,7 @@ public class LangUtil {
 				try {
 					values[i] = field.get(o);
 					if (field.getType().isArray()) {
-						List list = org.aspectj.util.LangUtil.arrayAsList((Object[]) values[i]);
+						List<?> list = org.aspectj.util.LangUtil.arrayAsList((Object[]) values[i]);
 						values[i] = list.toString();
 					}
 				} catch (IllegalAccessException e) {
@@ -783,7 +783,7 @@ public class LangUtil {
 	 * @param suffix    the String to delimit the end of the name/value instances
 	 *                  used only if classname exists
 	 */
-	public static String debugStr(Class source, String prefix, String[] names, String infix, Object[] items,
+	public static String debugStr(Class<?> source, String prefix, String[] names, String infix, Object[] items,
 			String delimiter, String suffix) {
 
 		if (null == delimiter) {

@@ -197,7 +197,7 @@ public class MissingResolvedTypeWithKnownSignature extends ResolvedType {
 	}
 
 	@Override
-	protected void collectInterTypeMungers(List collector) {
+	protected void collectInterTypeMungers(List<ConcreteTypeMunger> collector) {
 		return;
 	}
 

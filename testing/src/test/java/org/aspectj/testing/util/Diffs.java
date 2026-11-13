@@ -25,7 +25,6 @@ import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.ISourceLocation;
 import org.aspectj.bridge.MessageUtil;
-import org.aspectj.testing.util.TestDiffs.TestResult;
 import org.aspectj.util.FileUtil;
 import org.aspectj.util.LangUtil;
 

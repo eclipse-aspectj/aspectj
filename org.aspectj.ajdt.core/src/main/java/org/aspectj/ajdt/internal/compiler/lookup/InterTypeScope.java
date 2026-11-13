@@ -29,7 +29,7 @@ import org.aspectj.weaver.BCException;
 
 public class InterTypeScope extends ClassScope {
 	ReferenceBinding onType;
-	List aliases;
+	List<String> aliases;
 	Map<TypeVariableBinding, String> /* real type variable > alias letter */usedAliases; // Used later when reconstructing the
 																						// resolved member
 
@@ -40,7 +40,7 @@ public class InterTypeScope extends ClassScope {
 		this.onType = onType;
 	}
 
-	public InterTypeScope(Scope parent, ReferenceBinding rb, List list) {
+	public InterTypeScope(Scope parent, ReferenceBinding rb, List<String> list) {
 		this(parent, rb);
 		this.aliases = list;
 	}

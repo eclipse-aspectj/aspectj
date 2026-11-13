@@ -50,6 +50,7 @@ public class VarargsTest extends BcelTestCase {
 		clazz.dump(tfile);
 
 		SyntheticRepository repos2 = createRepos(".");
+		@SuppressWarnings("unused")
 		JavaClass           clazz2 = repos2.loadClass("VarargsClass");
 
 		checkMarkedVarargs(clazz,"foo",true);

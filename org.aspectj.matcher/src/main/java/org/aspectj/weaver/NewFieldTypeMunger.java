@@ -33,7 +33,7 @@ public class NewFieldTypeMunger extends ResolvedTypeMunger {
 
 	public int version = VersionOne;
 
-	public NewFieldTypeMunger(ResolvedMember signature, Set superMethodsCalled, List typeVariableAliases) {
+	public NewFieldTypeMunger(ResolvedMember signature, Set<ResolvedMember> superMethodsCalled, List<String> typeVariableAliases) {
 		super(Field, signature);
 		this.version = VersionTwo;
 		this.typeVariableAliases = typeVariableAliases;

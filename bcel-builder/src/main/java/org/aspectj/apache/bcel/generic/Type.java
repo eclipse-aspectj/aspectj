@@ -470,9 +470,9 @@ public abstract class Type {
 
 	public static String getSignature(java.lang.reflect.Method meth) {
 		StringBuilder sb = new StringBuilder("(");
-		Class[] params = meth.getParameterTypes(); // avoid clone
+		Class<?>[] params = meth.getParameterTypes(); // avoid clone
 
-		for (Class param : params) {
+		for (Class<?> param : params) {
 			sb.append(getType(param).getSignature());
 		}
 

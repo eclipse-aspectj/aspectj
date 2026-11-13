@@ -204,7 +204,7 @@ public class ExactAnnotationFieldTypePattern extends ExactAnnotationTypePattern 
 	}
 
 	@Override
-	public Map getAnnotationValues() {
+	public Map<String,String> getAnnotationValues() {
 		throw new BCException("unimplemented");
 	}
 
@@ -229,7 +229,7 @@ public class ExactAnnotationFieldTypePattern extends ExactAnnotationTypePattern 
 	}
 
 	@Override
-	public AnnotationTypePattern parameterizeWith(Map typeVariableMap, World w) {
+	public AnnotationTypePattern parameterizeWith(Map<String,UnresolvedType> typeVariableMap, World w) {
 		throw new BCException("unimplemented");
 	}
 

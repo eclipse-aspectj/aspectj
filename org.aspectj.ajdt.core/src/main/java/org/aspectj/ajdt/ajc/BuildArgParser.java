@@ -48,7 +48,6 @@ import org.aspectj.weaver.Constants;
 import org.aspectj.weaver.Dump;
 import org.aspectj.weaver.WeaverMessages;
 
-@SuppressWarnings("unchecked")
 public class BuildArgParser extends Main {
 
 	/** to initialize super's PrintWriter but refer to underlying StringWriter */

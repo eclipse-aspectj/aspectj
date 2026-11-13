@@ -19,7 +19,6 @@ import org.aspectj.util.FileUtil;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -29,17 +28,16 @@ import junit.framework.TestCase;
  */
 public class Ajc11CompilerAdapterTest extends TestCase {
     public static boolean LOGGING = false;
-    List tempFiles = new ArrayList();
+    List<File> tempFiles = new ArrayList<>();
 
     public Ajc11CompilerAdapterTest(String name) {
         super(name);
     }
 
     public void tearDown() {
-		for (Object tempFile : tempFiles) {
-			File file = (File) tempFile;
-			FileUtil.deleteContents(file);
-			file.delete();
+		for (File tempFile : tempFiles) {
+			FileUtil.deleteContents(tempFile);
+			tempFile.delete();
 		}
     }
 

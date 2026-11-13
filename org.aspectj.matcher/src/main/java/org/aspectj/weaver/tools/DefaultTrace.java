@@ -17,7 +17,7 @@ public class DefaultTrace extends AbstractTrace {
 	private boolean traceEnabled = false;
 	private PrintStream print = System.err;
 
-	public DefaultTrace(Class clazz) {
+	public DefaultTrace(Class<?> clazz) {
 		super(clazz);
 	}
 

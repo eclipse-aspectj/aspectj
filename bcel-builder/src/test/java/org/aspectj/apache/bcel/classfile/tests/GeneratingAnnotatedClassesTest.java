@@ -71,8 +71,6 @@ public class GeneratingAnnotatedClassesTest extends BcelTestCase {
 
 		AnnotationGen[] as = jc.getAnnotations();
 		assertTrue("Should be two annotations but found " + as.length, as.length == 2);
-		AnnotationGen one = as[0];
-		AnnotationGen two = as[1];
 		assertTrue("Name of annotation 1 should be SimpleAnnotation but it is " + as[0].getTypeName(), as[0].getTypeName().equals(
 				"SimpleAnnotation"));
 		assertTrue("Name of annotation 2 should be SimpleAnnotation but it is " + as[1].getTypeName(), as[1].getTypeName().equals(

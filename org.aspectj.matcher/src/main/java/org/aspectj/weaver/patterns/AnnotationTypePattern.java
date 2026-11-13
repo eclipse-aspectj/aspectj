@@ -147,7 +147,7 @@ class EllipsisAnnotationTypePattern extends AnnotationTypePattern {
 	}
 
 	@Override
-	public AnnotationTypePattern parameterizeWith(Map arg0, World w) {
+	public AnnotationTypePattern parameterizeWith(Map<String,UnresolvedType> arg0, World w) {
 		return this;
 	}
 

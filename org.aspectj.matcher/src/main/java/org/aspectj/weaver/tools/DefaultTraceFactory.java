@@ -40,7 +40,7 @@ public class DefaultTraceFactory extends TraceFactory {
 		return tracingEnabled;
 	}
 
-    public Trace getTrace (Class clazz) {
+    public Trace getTrace (Class<?> clazz) {
     	DefaultTrace trace = new DefaultTrace(clazz);
     	trace.setTraceEnabled(tracingEnabled);
     	if (print != null) trace.setPrintStream(print);
