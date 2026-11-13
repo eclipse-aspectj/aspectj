@@ -2824,9 +2824,30 @@ class BcelClassWeaver implements IClassWeaver {
 		return ret;
 	}
 
+	/**
+	 * Match the shadow made for one exception range. In a Java 7 multi-catch, such as {@code catch (Exception | LinkageError e)}, several
+	 * exception ranges share one handler and each gets its own shadow, whose advice code is woven in front of the handler. A range whose
+	 * shadow has no advice must skip the advice code that is woven for the other ranges, or an exception it catches would run advice that
+	 * is not meant for it, and the verifier would see the handler entry as the common supertype of the catch types. The shadows are made in
+	 * the iteration order of a set of identity hashed objects, so without this it depended on that order whether a range came before or
+	 * after the advice code.
+	 */
+	private void matchExceptionHandler(BcelShadow handlerShadow, ExceptionRange er, InstructionHandle startOfHandler, LazyMethodGen mg,
+			List<BcelShadow> shadowAccumulator) {
+		// makeExceptionHandler aimed this range at a marker placed in front of the
+		// handler, which is where the advice code for this shadow would be woven.
+		// If there is no advice for the shadow, that marker is just an entry point 
+		// in front of whatever advice is woven for the other ranges sharing the handler,
+		// and the range would fall into it. So aim the range back at the original handler,
+		// which is after all of that advice code, and the range skips the advice that
+		// is not meant for its catch type.
+		if (!match(handlerShadow, shadowAccumulator)) {
+			er.updateTarget(er.getHandler(), startOfHandler, mg.getBody());
+		}
+	}
+
 	private void match(LazyMethodGen mg, InstructionHandle ih, BcelShadow enclosingShadow, List<BcelShadow> shadowAccumulator) {
 		Instruction i = ih.getInstruction();
-
 		// Exception handlers (pr230817)
 		if (canMatch(Shadow.ExceptionHandler) && !Range.isRangeHandle(ih)) {
 			Set<InstructionTargeter> targeters = ih.getTargetersCopy();
@@ -2860,9 +2881,11 @@ class BcelClassWeaver implements IClassWeaver {
 							newNOP.addTargeter(t2);
 						}
 						ih.removeAllTargeters();
-						match(BcelShadow.makeExceptionHandler(world, er, mg, newNOP, enclosingShadow), shadowAccumulator);
+						matchExceptionHandler(BcelShadow.makeExceptionHandler(world, er, mg, newNOP, enclosingShadow), er, ih, mg,
+								shadowAccumulator);
 					} else {
-						match(BcelShadow.makeExceptionHandler(world, er, mg, ih, enclosingShadow), shadowAccumulator);
+						matchExceptionHandler(BcelShadow.makeExceptionHandler(world, er, mg, ih, enclosingShadow), er, ih, mg,
+								shadowAccumulator);
 					}
 				}
 			}

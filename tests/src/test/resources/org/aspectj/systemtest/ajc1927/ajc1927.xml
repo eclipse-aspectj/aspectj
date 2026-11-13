@@ -160,4 +160,51 @@ JDK 27 (https://openjdk.org/projects/jdk/27/):
 		</run>
 	</ajc-test>
 
+	<!--
+	https://github.com/eclipse-aspectj/aspectj/issues/368
+	The catch types of a multi-catch share one handler. Advice for one of them must run only when that type was caught, and not for the
+	others, and the woven class must pass verification. The advice for the Exception comes in two catch orders and with three catch types.
+	-->
+	<ajc-test dir="bugs1927/gh368" title="advice for Exception in multi-catch clauses">
+		<compile files="MultiCatch.java ExceptionAdvice.java" options="-1.8"/>
+		<run class="MultiCatch">
+			<stdout>
+				<line text="  advice for Exception: exception"/>
+				<line text="exceptionFirst caught exception"/>
+				<line text="  advice for Exception: exception"/>
+				<line text="linkageErrorFirst caught exception"/>
+				<line text="  advice for Exception: exception"/>
+				<line text="unusedParameter caught 0"/>
+				<line text="exceptionFirst caught linkage error"/>
+				<line text="linkageErrorFirst caught linkage error"/>
+				<line text="unusedParameter caught 1"/>
+				<line text="  advice for Exception: exception"/>
+				<line text="threeTypes caught exception"/>
+				<line text="threeTypes caught linkage error"/>
+				<line text="threeTypes caught assertion error"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
+	<ajc-test dir="bugs1927/gh368" title="advice for LinkageError in multi-catch clauses">
+		<compile files="MultiCatch.java LinkageErrorAdvice.java" options="-1.8"/>
+		<run class="MultiCatch">
+			<stdout>
+				<line text="exceptionFirst caught exception"/>
+				<line text="linkageErrorFirst caught exception"/>
+				<line text="unusedParameter caught 0"/>
+				<line text="  advice for LinkageError: linkage error"/>
+				<line text="exceptionFirst caught linkage error"/>
+				<line text="  advice for LinkageError: linkage error"/>
+				<line text="linkageErrorFirst caught linkage error"/>
+				<line text="  advice for LinkageError: linkage error"/>
+				<line text="unusedParameter caught 1"/>
+				<line text="threeTypes caught exception"/>
+				<line text="  advice for LinkageError: linkage error"/>
+				<line text="threeTypes caught linkage error"/>
+				<line text="threeTypes caught assertion error"/>
+			</stdout>
+		</run>
+	</ajc-test>
+
 </suite>

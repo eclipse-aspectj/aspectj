@@ -160,6 +160,18 @@ public class Bugs1927Tests extends XMLBasedAjcTestCase {
 		assertTrue("The shared cache should have been used", new File(ajc.getSandboxDirectory(), "sharedcache/panenka.cache").exists());
 	}
 
+	/**
+	 * The catch types of a multi-catch share one handler. Where the advice code woven for one of them was put in relation to the entry
+	 * points of the others depended on the identity hash codes of the exception ranges: about one weave in two failed verification, and
+	 * advice could run for a catch type it was not meant for. So weave a number of times, and check which exceptions the advice sees.
+	 */
+	public void testGh368_AdviceOnOneCatchTypeOfAMultiCatch() {
+		for (int i = 0; i < 20; i++) {
+			runTest("advice for Exception in multi-catch clauses");
+			runTest("advice for LinkageError in multi-catch clauses");
+		}
+	}
+
 	@Override
 	protected java.net.URL getSpecFile() {
 		return getClassResource("ajc1927.xml");
