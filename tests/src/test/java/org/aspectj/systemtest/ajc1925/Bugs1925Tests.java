@@ -51,6 +51,10 @@ public class Bugs1925Tests extends XMLBasedAjcTestCase {
 	  runTest("perthis aspect in module");
   }
 
+  public void testGh368_HandlerAdviceMultiCatchExceptionLinkageError() {
+	  runTest("handler advice woven into multi-catch(Exception|LinkageError)");
+  }
+
   @Override
   protected java.net.URL getSpecFile() {
     return getClassResource("ajc1925.xml");
