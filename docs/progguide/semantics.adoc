@@ -597,11 +597,16 @@ nested types, and that type's default constructor, if there is one.
 
 The `withincode` pointcuts picks out each join point where the code
 executing is defined in the declaration of a particular method or
-constructor. This includes the method or constructor execution join
-point as well as any join points associated with the statements and
-expressions of the method or constructor. It also includes any join
-points that are associated with code in a method or constructor's local
-or anonymous types.
+constructor. This includes the constructor execution join point, as well as any join
+points associated with the statements and expressions of the method or
+constructor. It also includes any join points that are associated with code
+in a method or constructor's local or anonymous types.
+
+NOTE: `withincode` does not pick out the execution join point of a *method*,
+although it does pick out that of a constructor. This is a historical
+inconsistency that is kept for compatibility. To pick out a method's execution
+together with the join points in its code, use
+`execution(MethodPattern) || withincode(MethodPattern)`.
 
 ==== Expression-based pointcuts
 

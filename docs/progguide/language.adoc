@@ -321,8 +321,23 @@ the call site. This means that `call(void m()) && withincode(void m())`
 will only capture directly recursive
 calls, for example. At an execution join point, however, the program is
 already executing the method, so the enclosing code is the method
-itself: `execution(void m()) && withincode(void m())` is the same as
-`execution(void m())`.
+itself. Even so, `withincode` does not pick out method execution join
+points, so `execution(void m()) && withincode(void m())` matches nothing.
+It does pick out constructor execution join points, so
+`execution(new()) && withincode(new())` is the same as `execution(new())`.
+To pick out a method's execution together with everything that happens in
+its code, use `execution(void m()) || withincode(void m())`, and to exclude
+all of that, use `!(execution(void m()) || withincode(void m()))`.
+
+NOTE: That method and constructor execution differ here is a historical
+inconsistency, not a deliberate design. Early versions of the weaver did match
+method execution join points with `withincode`. The weaver was later changed to
+test `withincode` against fewer kinds of join points, in order to save work, and
+method execution was left out of that set. Constructor execution and
+initialization were kept in, because field initializers are inlined into
+constructors. The behaviour has since been relied on, for example by aspects that
+use `!withincode(..)` to exclude code, so changing it would silently change what
+existing aspects match. It is therefore kept for compatibility.
 
 Secondly, the call join point does not capture super calls to non-static
 methods. This is because such super calls are different in Java, since
