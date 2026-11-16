@@ -190,6 +190,20 @@ JDK 27 (https://openjdk.org/projects/jdk/27/):
 	</ajc-test>
 
 	<!--
+	https://github.com/eclipse-aspectj/aspectj/issues/332
+	A record component whose type is not imported used to make the compiler abort with a NullPointerException ("this.binding is
+	null" in MessageSend.analyseCode) in a class calling a method of that type through the record's accessor. It must be reported
+	as two ordinary errors, and the compiler must not abort. Fixed by a later JDT, this test is here to catch a regression.
+	-->
+	<ajc-test dir="bugs1927/gh332" title="record component with missing import, used through its accessor">
+		<compile files="a/Inner.java b/Outer.java b/FailsToCompile.java" options="-17">
+			<message kind="error" file="Outer.java" line="11" text="Inner cannot be resolved to a type"/>
+			<message kind="error" file="FailsToCompile.java" line="12"
+				text="The method inner() from the type Outer refers to the missing type Inner"/>
+		</compile>
+	</ajc-test>
+
+	<!--
 	https://github.com/eclipse-aspectj/aspectj/issues/368
 	The catch types of a multi-catch share one handler. Advice for one of them must run only when that type was caught, and not for the
 	others, and the woven class must pass verification. The advice for the Exception comes in two catch orders and with three catch types.
