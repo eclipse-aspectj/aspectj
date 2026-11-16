@@ -2465,7 +2465,11 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 				}
 				if (conflictingSignature(existing, toAdd)) {
 					if (isOverriding) {
-						checkLegalOverride(existing, toAdd, 0x00, null);
+						// A binary @AspectJ aspect written by ajc has each pointcut twice, from its PointcutDeclaration attribute (always
+						// void) and from its @Pointcut annotation (the real return type, boolean for if()). That is not an override.
+						if (!isVoidAndBooleanViewOfSamePointcut(existing, toAdd)) {
+							checkLegalOverride(existing, toAdd, 0x00, null);
+						}
 						j.remove();
 					} else {
 						getWorld().showMessage(
@@ -2479,6 +2483,16 @@ public abstract class ResolvedType extends UnresolvedType implements AnnotatedEl
 			}
 			acc.add(toAdd);
 		}
+	}
+
+	private static boolean isVoidAndBooleanViewOfSamePointcut(ResolvedMember first, ResolvedMember second) {
+		if (!first.getDeclaringType().equals(second.getDeclaringType())) {
+			return false;
+		}
+		UnresolvedType firstReturnType = first.getReturnType();
+		UnresolvedType secondReturnType = second.getReturnType();
+		return (UnresolvedType.VOID.equals(firstReturnType) && UnresolvedType.BOOLEAN.equals(secondReturnType))
+				|| (UnresolvedType.BOOLEAN.equals(firstReturnType) && UnresolvedType.VOID.equals(secondReturnType));
 	}
 
 	public ISourceLocation getSourceLocation() {

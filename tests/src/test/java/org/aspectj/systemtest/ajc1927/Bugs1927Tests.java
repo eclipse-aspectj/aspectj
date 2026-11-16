@@ -160,6 +160,14 @@ public class Bugs1927Tests extends XMLBasedAjcTestCase {
 		assertTrue("The shared cache should have been used", new File(ajc.getSandboxDirectory(), "sharedcache/panenka.cache").exists());
 	}
 
+	public void testGh338_ExtendingBinaryAspectWithIfPointcut() {
+		runTest("extending a binary @AspectJ aspect that has an if() pointcut");
+	}
+
+	public void testGh338_ExtendingAbstractBinaryAspectWithIfPointcutAndAdvice() {
+		runTest("extending an abstract binary @AspectJ aspect that has an if() pointcut and advice");
+	}
+
 	/**
 	 * The catch types of a multi-catch share one handler. Where the advice code woven for one of them was put in relation to the entry
 	 * points of the others depended on the identity hash codes of the exception ranges: about one weave in two failed verification, and
