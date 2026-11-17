@@ -10,7 +10,6 @@
  *******************************************************************/
 package org.aspectj.org.eclipse.jdt.core.dom;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,13 +34,12 @@ public class DefaultTypePattern extends AbstractTypePattern {
 		this.detail = d;
 	}
 
-	public static List propertyDescriptors(int apiLevel) {
-		List propertyList = new ArrayList(0);
-		createPropertyList(DefaultTypePattern.class, propertyList);
-		return reapPropertyList(propertyList);
+	public static List<StructuralPropertyDescriptor> propertyDescriptors(int apiLevel) {
+		StructuralPropertyList propertyList = new StructuralPropertyList(DefaultTypePattern.class, 0);
+		return propertyList.reap();
 	}
 
-	final List internalStructuralPropertiesForType(int apiLevel) {
+	final List<StructuralPropertyDescriptor> internalStructuralPropertiesForType(int apiLevel) {
 		return propertyDescriptors(apiLevel);
 	}
 

@@ -10,7 +10,6 @@
  *******************************************************************/
 package org.aspectj.org.eclipse.jdt.core.dom;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -28,21 +27,19 @@ public class DeclarePrecedenceDeclaration extends DeclareDeclaration {
 	public static final ChildListPropertyDescriptor TYPE_PATTERNS_LIST_PROPERTY =
 		new ChildListPropertyDescriptor(DeclarePrecedenceDeclaration.class, "parentTypePatterns", AbstractTypePattern.class, NO_CYCLE_RISK); //$NON-NLS-1$
 
-	private static final List PROPERTY_DESCRIPTORS_2_0;
-	private static final List PROPERTY_DESCRIPTORS_3_0;
+	private static final List<StructuralPropertyDescriptor> PROPERTY_DESCRIPTORS_2_0;
+	private static final List<StructuralPropertyDescriptor> PROPERTY_DESCRIPTORS_3_0;
 
 	static {
-		List propertyList = new ArrayList(2);
-		createPropertyList(DeclarePrecedenceDeclaration.class, propertyList);
-		addProperty(JAVADOC_PROPERTY, propertyList);
-		addProperty(TYPE_PATTERNS_LIST_PROPERTY, propertyList);
-		PROPERTY_DESCRIPTORS_2_0 = reapPropertyList(propertyList);
+		StructuralPropertyList propertyList = new StructuralPropertyList(DeclarePrecedenceDeclaration.class, 2);
+		propertyList.add(JAVADOC_PROPERTY);
+		propertyList.add(TYPE_PATTERNS_LIST_PROPERTY);
+		PROPERTY_DESCRIPTORS_2_0 = propertyList.reap();
 
-		propertyList = new ArrayList(2);
-		createPropertyList(DeclarePrecedenceDeclaration.class, propertyList);
-		addProperty(JAVADOC_PROPERTY, propertyList);
-		addProperty(TYPE_PATTERNS_LIST_PROPERTY, propertyList);
-		PROPERTY_DESCRIPTORS_3_0 = reapPropertyList(propertyList);
+		propertyList = new StructuralPropertyList(DeclarePrecedenceDeclaration.class, 2);
+		propertyList.add(JAVADOC_PROPERTY);
+		propertyList.add(TYPE_PATTERNS_LIST_PROPERTY);
+		PROPERTY_DESCRIPTORS_3_0 = propertyList.reap();
 	}
 
 	protected ASTNode.NodeList typePatterns =new ASTNode.NodeList(TYPE_PATTERNS_LIST_PROPERTY);
@@ -124,7 +121,7 @@ public class DeclarePrecedenceDeclaration extends DeclareDeclaration {
 	 * {@link StructuralPropertyDescriptor})
 	 * @since 3.0
 	 */
-	public static List propertyDescriptors(int apiLevel) {
+	public static List<StructuralPropertyDescriptor> propertyDescriptors(int apiLevel) {
 		if (apiLevel == AST.JLS2_INTERNAL) {
 			return PROPERTY_DESCRIPTORS_2_0;
 		} else {
@@ -135,7 +132,7 @@ public class DeclarePrecedenceDeclaration extends DeclareDeclaration {
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
-	final List internalStructuralPropertiesForType(int apiLevel) {
+	final List<StructuralPropertyDescriptor> internalStructuralPropertiesForType(int apiLevel) {
 		return propertyDescriptors(apiLevel);
 	}
 

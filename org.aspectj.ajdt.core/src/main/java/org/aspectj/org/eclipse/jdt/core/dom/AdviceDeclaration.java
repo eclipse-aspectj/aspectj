@@ -11,7 +11,6 @@
 
 package org.aspectj.org.eclipse.jdt.core.dom;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -61,7 +60,7 @@ public abstract class AdviceDeclaration extends BodyDeclaration {
 	 * or null if uninitialized.
 	 * @since 3.0
 	 */
-	protected static List PROPERTY_DESCRIPTORS_2_0;
+	protected static List<StructuralPropertyDescriptor> PROPERTY_DESCRIPTORS_2_0;
 
 	/**
 	 * A list of property descriptors (element type:
@@ -69,26 +68,24 @@ public abstract class AdviceDeclaration extends BodyDeclaration {
 	 * or null if uninitialized.
 	 * @since 3.1
 	 */
-	protected static List PROPERTY_DESCRIPTORS_3_0;
+	protected static List<StructuralPropertyDescriptor> PROPERTY_DESCRIPTORS_3_0;
 
 	static {
-		List propertyList = new ArrayList(5);
-		createPropertyList(AdviceDeclaration.class, propertyList);
-		addProperty(JAVADOC_PROPERTY, propertyList);
-		addProperty(PARAMETERS_PROPERTY, propertyList);
-		addProperty(THROWN_EXCEPTIONS_PROPERTY, propertyList);
-		addProperty(POINTCUT_PROPERTY, propertyList);
-		addProperty(BODY_PROPERTY, propertyList);
-		PROPERTY_DESCRIPTORS_2_0 = reapPropertyList(propertyList);
+		StructuralPropertyList propertyList = new StructuralPropertyList(AdviceDeclaration.class, 5);
+		propertyList.add(JAVADOC_PROPERTY);
+		propertyList.add(PARAMETERS_PROPERTY);
+		propertyList.add(THROWN_EXCEPTIONS_PROPERTY);
+		propertyList.add(POINTCUT_PROPERTY);
+		propertyList.add(BODY_PROPERTY);
+		PROPERTY_DESCRIPTORS_2_0 = propertyList.reap();
 
-		propertyList = new ArrayList(5);
-		createPropertyList(AdviceDeclaration.class, propertyList);
-		addProperty(JAVADOC_PROPERTY, propertyList);
-		addProperty(PARAMETERS_PROPERTY, propertyList);
-		addProperty(THROWN_EXCEPTIONS_PROPERTY, propertyList);
-		addProperty(POINTCUT_PROPERTY, propertyList);
-		addProperty(BODY_PROPERTY, propertyList);
-		PROPERTY_DESCRIPTORS_3_0 = reapPropertyList(propertyList);
+		propertyList = new StructuralPropertyList(AdviceDeclaration.class, 5);
+		propertyList.add(JAVADOC_PROPERTY);
+		propertyList.add(PARAMETERS_PROPERTY);
+		propertyList.add(THROWN_EXCEPTIONS_PROPERTY);
+		propertyList.add(POINTCUT_PROPERTY);
+		propertyList.add(BODY_PROPERTY);
+		PROPERTY_DESCRIPTORS_3_0 = propertyList.reap();
 	}
 
 	/**
@@ -100,7 +97,7 @@ public abstract class AdviceDeclaration extends BodyDeclaration {
 	 * {@link StructuralPropertyDescriptor})
 	 * @since 3.0
 	 */
-	public static List propertyDescriptors(int apiLevel) {
+	public static List<StructuralPropertyDescriptor> propertyDescriptors(int apiLevel) {
 		if (apiLevel == AST.JLS2_INTERNAL) {
 			return PROPERTY_DESCRIPTORS_2_0;
 		} else {
@@ -154,7 +151,7 @@ public abstract class AdviceDeclaration extends BodyDeclaration {
 	 * Method declared on ASTNode.
 	 * @since 3.0
 	 */
-	final List internalStructuralPropertiesForType(int apiLevel) {
+	final List<StructuralPropertyDescriptor> internalStructuralPropertiesForType(int apiLevel) {
 		return propertyDescriptors(apiLevel);
 	}
 

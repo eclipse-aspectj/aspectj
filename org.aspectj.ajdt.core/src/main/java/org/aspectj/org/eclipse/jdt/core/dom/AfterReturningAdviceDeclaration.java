@@ -11,7 +11,6 @@
 
 package org.aspectj.org.eclipse.jdt.core.dom;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -47,14 +46,14 @@ public class AfterReturningAdviceDeclaration extends AfterAdviceDeclaration {
 	public static final ChildPropertyDescriptor returningBODY_PROPERTY =
 		new ChildPropertyDescriptor(AfterReturningAdviceDeclaration.class, "body", Block.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
 
-	protected static List returningPROPERTY_DESCRIPTORS_2_0;
+	protected static List<StructuralPropertyDescriptor> returningPROPERTY_DESCRIPTORS_2_0;
 
-	protected static List returningPROPERTY_DESCRIPTORS_3_0;
+	protected static List<StructuralPropertyDescriptor> returningPROPERTY_DESCRIPTORS_3_0;
 
 	public static final ChildPropertyDescriptor returningRETURNING_PROPERTY =
 		new ChildPropertyDescriptor(AfterReturningAdviceDeclaration.class, "returning", SingleVariableDeclaration.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
 
-	public static List propertyDescriptors(int apiLevel) {
+	public static List<StructuralPropertyDescriptor> propertyDescriptors(int apiLevel) {
 		if (apiLevel == AST.JLS2_INTERNAL) {
 			return returningPROPERTY_DESCRIPTORS_2_0;
 		} else {
@@ -63,25 +62,23 @@ public class AfterReturningAdviceDeclaration extends AfterAdviceDeclaration {
 	}
 
 	static {
-		List propertyList = new ArrayList(6);
-		createPropertyList(AfterReturningAdviceDeclaration.class, propertyList);
-		addProperty(returningJAVADOC_PROPERTY, propertyList);
-		addProperty(returningPARAMETERS_PROPERTY, propertyList);
-		addProperty(returningTHROWN_EXCEPTIONS_PROPERTY, propertyList);
-		addProperty(returningPOINTCUT_PROPERTY, propertyList);
-		addProperty(returningRETURNING_PROPERTY, propertyList);
-		addProperty(returningBODY_PROPERTY, propertyList);
-		returningPROPERTY_DESCRIPTORS_2_0 = reapPropertyList(propertyList);
+		StructuralPropertyList propertyList = new StructuralPropertyList(AfterReturningAdviceDeclaration.class, 6);
+		propertyList.add(returningJAVADOC_PROPERTY);
+		propertyList.add(returningPARAMETERS_PROPERTY);
+		propertyList.add(returningTHROWN_EXCEPTIONS_PROPERTY);
+		propertyList.add(returningPOINTCUT_PROPERTY);
+		propertyList.add(returningRETURNING_PROPERTY);
+		propertyList.add(returningBODY_PROPERTY);
+		returningPROPERTY_DESCRIPTORS_2_0 = propertyList.reap();
 
-		propertyList = new ArrayList(6);
-		createPropertyList(AfterReturningAdviceDeclaration.class, propertyList);
-		addProperty(returningJAVADOC_PROPERTY, propertyList);
-		addProperty(returningPARAMETERS_PROPERTY, propertyList);
-		addProperty(returningTHROWN_EXCEPTIONS_PROPERTY, propertyList);
-		addProperty(returningPOINTCUT_PROPERTY, propertyList);
-		addProperty(returningRETURNING_PROPERTY, propertyList);
-		addProperty(returningBODY_PROPERTY, propertyList);
-		returningPROPERTY_DESCRIPTORS_3_0 = reapPropertyList(propertyList);
+		propertyList = new StructuralPropertyList(AfterReturningAdviceDeclaration.class, 6);
+		propertyList.add(returningJAVADOC_PROPERTY);
+		propertyList.add(returningPARAMETERS_PROPERTY);
+		propertyList.add(returningTHROWN_EXCEPTIONS_PROPERTY);
+		propertyList.add(returningPOINTCUT_PROPERTY);
+		propertyList.add(returningRETURNING_PROPERTY);
+		propertyList.add(returningBODY_PROPERTY);
+		returningPROPERTY_DESCRIPTORS_3_0 = propertyList.reap();
 	}
 
 	private SingleVariableDeclaration returning = null;

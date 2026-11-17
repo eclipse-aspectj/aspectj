@@ -12,7 +12,6 @@
 package org.aspectj.org.eclipse.jdt.core.dom;
 
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,24 +29,22 @@ public class AjTypeDeclaration extends TypeDeclaration {
 	public static final SimplePropertyDescriptor ASPECT_PROPERTY =
 		new SimplePropertyDescriptor(TypeDeclaration.class, "aspect", boolean.class, MANDATORY); //$NON-NLS-1$
 
-	protected static List ajPROPERTY_DESCRIPTORS_2_0;
-	protected static List ajPROPERTY_DESCRIPTORS_3_0;
+	protected static List<StructuralPropertyDescriptor> ajPROPERTY_DESCRIPTORS_2_0;
+	protected static List<StructuralPropertyDescriptor> ajPROPERTY_DESCRIPTORS_3_0;
 
 
 	// Need to fix up the property lists created during the super's static initializer
 	static {
 		// Need to fix up the property lists created during the super's static initializer
-		List temporary = new ArrayList();
-		createPropertyList(TypeDeclaration.class, temporary);
+		StructuralPropertyList temporary = new StructuralPropertyList(TypeDeclaration.class, 0);
 		temporary.addAll(PROPERTY_DESCRIPTORS_2_0);
-		addProperty(ASPECT_PROPERTY, temporary);
-		ajPROPERTY_DESCRIPTORS_2_0 = reapPropertyList(temporary);
+		temporary.add(ASPECT_PROPERTY);
+		ajPROPERTY_DESCRIPTORS_2_0 = temporary.reap();
 
-		temporary.clear();
-		createPropertyList(TypeDeclaration.class, temporary);
+		temporary = new StructuralPropertyList(TypeDeclaration.class, 0);
 		temporary.addAll(PROPERTY_DESCRIPTORS_3_0);
-		addProperty(ASPECT_PROPERTY, temporary);
-		ajPROPERTY_DESCRIPTORS_3_0 = reapPropertyList(temporary);
+		temporary.add(ASPECT_PROPERTY);
+		ajPROPERTY_DESCRIPTORS_3_0 = temporary.reap();
 	}
 
 	/**
@@ -134,7 +131,7 @@ public class AjTypeDeclaration extends TypeDeclaration {
  	 * {@link StructuralPropertyDescriptor})
  	 * @since 3.0
  	 */
- 	public static List propertyDescriptors(int apiLevel) {
+ 	public static List<StructuralPropertyDescriptor> propertyDescriptors(int apiLevel) {
  		if (apiLevel == AST.JLS2_INTERNAL) {
  			return ajPROPERTY_DESCRIPTORS_2_0;
  		} else {

@@ -13,7 +13,6 @@ package org.aspectj.weaver;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -46,14 +45,14 @@ public class JoinPointSignatureIteratorTest extends TestCase {
 		// and one is not. The aim of the test here is that the join point signatures generated for both
 		// should be the same because of the use of a proxy.
 
-		List l = proxy.getMethodsWithoutIterator(false, false, false);
+		List<ResolvedMember> l = proxy.getMethodsWithoutIterator(false, false, false);
 		for (Object object : l) {
 			ResolvedMember rm = (ResolvedMember) object;
 			if (expectedResults.containsKey(rm.toString())) {
 				System.out.println("\nChecking: " + rm);
 				int i = 0;
 				List<String> sigs = expectedResults.get(rm.toString());
-				Iterator jpsi = rm.getJoinPointSignatures(w);
+				JoinPointSignatureIterator jpsi = rm.getJoinPointSignatures(w);
 				while (jpsi.hasNext()) {
 					ResolvedMember sig = (ResolvedMember) jpsi.next();
 					assertEquals(sigs.get(i).toString(), sig.toString());

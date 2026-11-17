@@ -59,7 +59,7 @@ public class FakeAnnotation extends AnnotationGen {
 		return 0;
 	}
 
-	public List getValues() {
+	public List<NameValuePair> getValues() {
 		return null;
 	}
 

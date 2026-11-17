@@ -11,7 +11,6 @@
 
 package org.aspectj.org.eclipse.jdt.core.dom;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -46,14 +45,14 @@ public class AfterThrowingAdviceDeclaration extends AfterAdviceDeclaration {
 	public static final ChildPropertyDescriptor throwingBODY_PROPERTY =
 		new ChildPropertyDescriptor(AfterThrowingAdviceDeclaration.class, "body", Block.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
 
-	protected static List throwingPROPERTY_DESCRIPTORS_2_0;
+	protected static List<StructuralPropertyDescriptor> throwingPROPERTY_DESCRIPTORS_2_0;
 
-	protected static List throwingPROPERTY_DESCRIPTORS_3_0;
+	protected static List<StructuralPropertyDescriptor> throwingPROPERTY_DESCRIPTORS_3_0;
 
 	public static final ChildPropertyDescriptor throwingTHROWING_PROPERTY =
 		new ChildPropertyDescriptor(AfterThrowingAdviceDeclaration.class, "throwing", SingleVariableDeclaration.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
 
-	public static List propertyDescriptors(int apiLevel) {
+	public static List<StructuralPropertyDescriptor> propertyDescriptors(int apiLevel) {
 		if (apiLevel == AST.JLS2_INTERNAL) {
 			return throwingPROPERTY_DESCRIPTORS_2_0;
 		} else {
@@ -62,25 +61,23 @@ public class AfterThrowingAdviceDeclaration extends AfterAdviceDeclaration {
 	}
 
 	static {
-		List propertyList = new ArrayList(6);
-		createPropertyList(AfterThrowingAdviceDeclaration.class, propertyList);
-		addProperty(throwingJAVADOC_PROPERTY, propertyList);
-		addProperty(throwingPARAMETERS_PROPERTY, propertyList);
-		addProperty(throwingTHROWN_EXCEPTIONS_PROPERTY, propertyList);
-		addProperty(throwingPOINTCUT_PROPERTY, propertyList);
-		addProperty(throwingTHROWING_PROPERTY, propertyList);
-		addProperty(throwingBODY_PROPERTY, propertyList);
-		throwingPROPERTY_DESCRIPTORS_2_0 = reapPropertyList(propertyList);
+		StructuralPropertyList propertyList = new StructuralPropertyList(AfterThrowingAdviceDeclaration.class, 6);
+		propertyList.add(throwingJAVADOC_PROPERTY);
+		propertyList.add(throwingPARAMETERS_PROPERTY);
+		propertyList.add(throwingTHROWN_EXCEPTIONS_PROPERTY);
+		propertyList.add(throwingPOINTCUT_PROPERTY);
+		propertyList.add(throwingTHROWING_PROPERTY);
+		propertyList.add(throwingBODY_PROPERTY);
+		throwingPROPERTY_DESCRIPTORS_2_0 = propertyList.reap();
 
-		propertyList = new ArrayList(6);
-		createPropertyList(AfterThrowingAdviceDeclaration.class, propertyList);
-		addProperty(throwingJAVADOC_PROPERTY, propertyList);
-		addProperty(throwingPARAMETERS_PROPERTY, propertyList);
-		addProperty(throwingTHROWN_EXCEPTIONS_PROPERTY, propertyList);
-		addProperty(throwingPOINTCUT_PROPERTY, propertyList);
-		addProperty(throwingTHROWING_PROPERTY, propertyList);
-		addProperty(throwingBODY_PROPERTY, propertyList);
-		throwingPROPERTY_DESCRIPTORS_3_0 = reapPropertyList(propertyList);
+		propertyList = new StructuralPropertyList(AfterThrowingAdviceDeclaration.class, 6);
+		propertyList.add(throwingJAVADOC_PROPERTY);
+		propertyList.add(throwingPARAMETERS_PROPERTY);
+		propertyList.add(throwingTHROWN_EXCEPTIONS_PROPERTY);
+		propertyList.add(throwingPOINTCUT_PROPERTY);
+		propertyList.add(throwingTHROWING_PROPERTY);
+		propertyList.add(throwingBODY_PROPERTY);
+		throwingPROPERTY_DESCRIPTORS_3_0 = propertyList.reap();
 	}
 
 	private SingleVariableDeclaration throwing = null;

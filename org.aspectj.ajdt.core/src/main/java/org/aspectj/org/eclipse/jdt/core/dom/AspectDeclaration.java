@@ -29,23 +29,21 @@ public class AspectDeclaration extends AjTypeDeclaration {
 	public static final SimplePropertyDescriptor PRIVILEGED_PROPERTY = new SimplePropertyDescriptor(AspectDeclaration.class,
 			"privileged", boolean.class, MANDATORY); //$NON-NLS-1$
 
-	protected static List aspectPROPERTY_DESCRIPTORS_2_0;
-	protected static List aspectPROPERTY_DESCRIPTORS_3_0;
+	protected static List<StructuralPropertyDescriptor> aspectPROPERTY_DESCRIPTORS_2_0;
+	protected static List<StructuralPropertyDescriptor> aspectPROPERTY_DESCRIPTORS_3_0;
 
 	static {
-		List temporary = new ArrayList();
-		createPropertyList(AspectDeclaration.class, temporary);
+		StructuralPropertyList temporary = new StructuralPropertyList(AspectDeclaration.class, 0);
 		temporary.addAll(ajPROPERTY_DESCRIPTORS_2_0);
-		addProperty(PERCLAUSE_PROPERTY, temporary);
-		addProperty(PRIVILEGED_PROPERTY, temporary);
-		aspectPROPERTY_DESCRIPTORS_2_0 = reapPropertyList(temporary);
+		temporary.add(PERCLAUSE_PROPERTY);
+		temporary.add(PRIVILEGED_PROPERTY);
+		aspectPROPERTY_DESCRIPTORS_2_0 = temporary.reap();
 
-		temporary.clear();
-		createPropertyList(AspectDeclaration.class, temporary);
+		temporary = new StructuralPropertyList(AspectDeclaration.class, 0);
 		temporary.addAll(ajPROPERTY_DESCRIPTORS_3_0);
-		addProperty(PERCLAUSE_PROPERTY, temporary);
-		addProperty(PRIVILEGED_PROPERTY, temporary);
-		aspectPROPERTY_DESCRIPTORS_3_0 = reapPropertyList(temporary);
+		temporary.add(PERCLAUSE_PROPERTY);
+		temporary.add(PRIVILEGED_PROPERTY);
+		aspectPROPERTY_DESCRIPTORS_3_0 = temporary.reap();
 	}
 
 	protected ASTNode perClause = null; // stays null if the aspect is an _implicit_ persingleton()
@@ -164,7 +162,7 @@ public class AspectDeclaration extends AjTypeDeclaration {
 	 * @return a list of property descriptors (element type: {@link StructuralPropertyDescriptor})
 	 * @since 3.0
 	 */
-	public static List propertyDescriptors(int apiLevel) {
+	public static List<StructuralPropertyDescriptor> propertyDescriptors(int apiLevel) {
 		if (apiLevel == AST.JLS2_INTERNAL) {
 			return aspectPROPERTY_DESCRIPTORS_2_0;
 		} else {

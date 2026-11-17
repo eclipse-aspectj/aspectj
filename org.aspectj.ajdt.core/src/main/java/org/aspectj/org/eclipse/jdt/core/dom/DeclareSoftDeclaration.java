@@ -10,7 +10,6 @@
  *******************************************************************/
 package org.aspectj.org.eclipse.jdt.core.dom;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,23 +31,21 @@ public class DeclareSoftDeclaration extends DeclareDeclaration {
 		new ChildPropertyDescriptor(DeclareSoftDeclaration.class, "pointcut", PointcutDesignator.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
 
 
-	private static final List PROPERTY_DESCRIPTORS_2_0;
-	private static final List PROPERTY_DESCRIPTORS_3_0;
+	private static final List<StructuralPropertyDescriptor> PROPERTY_DESCRIPTORS_2_0;
+	private static final List<StructuralPropertyDescriptor> PROPERTY_DESCRIPTORS_3_0;
 
 	static {
-		List propertyList = new ArrayList(3);
-		createPropertyList(DeclareSoftDeclaration.class, propertyList);
-		addProperty(JAVADOC_PROPERTY, propertyList);
-		addProperty(POINTCUT_PROPERTY, propertyList);
-		addProperty(TYPE_PATTERN_PROPERTY, propertyList);
-		PROPERTY_DESCRIPTORS_2_0 = reapPropertyList(propertyList);
+		StructuralPropertyList propertyList = new StructuralPropertyList(DeclareSoftDeclaration.class, 3);
+		propertyList.add(JAVADOC_PROPERTY);
+		propertyList.add(POINTCUT_PROPERTY);
+		propertyList.add(TYPE_PATTERN_PROPERTY);
+		PROPERTY_DESCRIPTORS_2_0 = propertyList.reap();
 
-		propertyList = new ArrayList(3);
-		createPropertyList(DeclareSoftDeclaration.class, propertyList);
-		addProperty(JAVADOC_PROPERTY, propertyList);
-		addProperty(POINTCUT_PROPERTY, propertyList);
-		addProperty(TYPE_PATTERN_PROPERTY, propertyList);
-		PROPERTY_DESCRIPTORS_3_0 = reapPropertyList(propertyList);
+		propertyList = new StructuralPropertyList(DeclareSoftDeclaration.class, 3);
+		propertyList.add(JAVADOC_PROPERTY);
+		propertyList.add(POINTCUT_PROPERTY);
+		propertyList.add(TYPE_PATTERN_PROPERTY);
+		PROPERTY_DESCRIPTORS_3_0 = propertyList.reap();
 	}
 
 	private AbstractTypePattern typePattern;
@@ -127,7 +124,7 @@ public class DeclareSoftDeclaration extends DeclareDeclaration {
 	 * {@link StructuralPropertyDescriptor})
 	 * @since 3.0
 	 */
-	public static List propertyDescriptors(int apiLevel) {
+	public static List<StructuralPropertyDescriptor> propertyDescriptors(int apiLevel) {
 		if (apiLevel == AST.JLS2_INTERNAL) {
 			return PROPERTY_DESCRIPTORS_2_0;
 		} else {
@@ -138,7 +135,7 @@ public class DeclareSoftDeclaration extends DeclareDeclaration {
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
-	final List internalStructuralPropertiesForType(int apiLevel) {
+	final List<StructuralPropertyDescriptor> internalStructuralPropertiesForType(int apiLevel) {
 		return propertyDescriptors(apiLevel);
 	}
 

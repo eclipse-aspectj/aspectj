@@ -2936,7 +2936,7 @@ public class BcelShadow extends Shadow {
 				&& munger.getDeclaringAspect() != null && munger.getDeclaringAspect().resolve(world).isAnnotationStyleAspect()) {
 
 			aroundClosureInstance = genTempVar(AjcMemberMaker.AROUND_CLOSURE_TYPE);
-			closureInstantiation.append(fact.createDup(1));
+			closureInstantiation.append(InstructionFactory.createDup(1));
 			aroundClosureInstance.appendStore(closureInstantiation, fact);
 
 			// stick the bitflags on the stack and call the variant of linkClosureAndJoinPoint that takes an int

@@ -11,7 +11,6 @@
 
 package org.aspectj.org.eclipse.jdt.core.dom;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -56,34 +55,32 @@ public class AroundAdviceDeclaration extends AdviceDeclaration {
 	public static final ChildPropertyDescriptor aroundBODY_PROPERTY =
 		new ChildPropertyDescriptor(AroundAdviceDeclaration.class, "body", Block.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
 
-	protected static List aroundPROPERTY_DESCRIPTORS_2_0;
-	protected static List aroundPROPERTY_DESCRIPTORS_3_0;
+	protected static List<StructuralPropertyDescriptor> aroundPROPERTY_DESCRIPTORS_2_0;
+	protected static List<StructuralPropertyDescriptor> aroundPROPERTY_DESCRIPTORS_3_0;
 
 	static {
-		List propertyList = new ArrayList(6);
-		createPropertyList(AroundAdviceDeclaration.class, propertyList);
-		addProperty(aroundJAVADOC_PROPERTY, propertyList);
-		addProperty(aroundRETURN_TYPE_PROPERTY, propertyList);
-		addProperty(aroundPARAMETERS_PROPERTY, propertyList);
-		addProperty(aroundTHROWN_EXCEPTIONS_PROPERTY, propertyList);
-		addProperty(aroundPOINTCUT_PROPERTY, propertyList);
-		addProperty(aroundBODY_PROPERTY, propertyList);
-		aroundPROPERTY_DESCRIPTORS_2_0 = reapPropertyList(propertyList);
+		StructuralPropertyList propertyList = new StructuralPropertyList(AroundAdviceDeclaration.class, 6);
+		propertyList.add(aroundJAVADOC_PROPERTY);
+		propertyList.add(aroundRETURN_TYPE_PROPERTY);
+		propertyList.add(aroundPARAMETERS_PROPERTY);
+		propertyList.add(aroundTHROWN_EXCEPTIONS_PROPERTY);
+		propertyList.add(aroundPOINTCUT_PROPERTY);
+		propertyList.add(aroundBODY_PROPERTY);
+		aroundPROPERTY_DESCRIPTORS_2_0 = propertyList.reap();
 
-		propertyList = new ArrayList(7);
-		createPropertyList(AroundAdviceDeclaration.class, propertyList);
-		addProperty(aroundJAVADOC_PROPERTY, propertyList);
-		addProperty(aroundTYPE_PARAMETERS_PROPERTY, propertyList);
-		addProperty(aroundRETURN_TYPE2_PROPERTY, propertyList);
-		addProperty(aroundPARAMETERS_PROPERTY, propertyList);
-		addProperty(aroundTHROWN_EXCEPTIONS_PROPERTY, propertyList);
-		addProperty(aroundPOINTCUT_PROPERTY, propertyList);
-		addProperty(aroundBODY_PROPERTY, propertyList);
-		aroundPROPERTY_DESCRIPTORS_3_0 = reapPropertyList(propertyList);
+		propertyList = new StructuralPropertyList(AroundAdviceDeclaration.class, 7);
+		propertyList.add(aroundJAVADOC_PROPERTY);
+		propertyList.add(aroundTYPE_PARAMETERS_PROPERTY);
+		propertyList.add(aroundRETURN_TYPE2_PROPERTY);
+		propertyList.add(aroundPARAMETERS_PROPERTY);
+		propertyList.add(aroundTHROWN_EXCEPTIONS_PROPERTY);
+		propertyList.add(aroundPOINTCUT_PROPERTY);
+		propertyList.add(aroundBODY_PROPERTY);
+		aroundPROPERTY_DESCRIPTORS_3_0 = propertyList.reap();
 	}
 
 
-	public static List propertyDescriptors(int apiLevel) {
+	public static List<StructuralPropertyDescriptor> propertyDescriptors(int apiLevel) {
 		if (apiLevel == AST.JLS2_INTERNAL) {
 			return aroundPROPERTY_DESCRIPTORS_2_0;
 		} else {

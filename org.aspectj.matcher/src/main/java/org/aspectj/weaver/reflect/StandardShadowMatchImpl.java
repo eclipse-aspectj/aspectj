@@ -36,6 +36,7 @@ import org.aspectj.weaver.tools.ShadowMatch;
 /**
  * @author colyer Implementation of ShadowMatch for reflection based worlds.
  */
+@SuppressWarnings("unused")
 public class StandardShadowMatchImpl implements ShadowMatch {
 
 	private FuzzyBoolean match;

@@ -38,7 +38,7 @@ public abstract class AbstractTraceTest extends TestCase {
 	}
 
 	public void testEnterWithThisAndCollection() {
-		Object arg1 = new ArrayList();
+		Object arg1 = new ArrayList<>();
 		trace.enter(getName(),this,new Object[] { arg1 });
 	}
 

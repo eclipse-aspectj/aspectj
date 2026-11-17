@@ -11,7 +11,6 @@
 package org.aspectj.org.eclipse.jdt.core.dom;
 
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -106,7 +105,7 @@ public class PointcutDeclaration extends BodyDeclaration {
 	 * or null if uninitialized.
 	 * @since 3.0
 	 */
-	private static final List PROPERTY_DESCRIPTORS_2_0;
+	private static final List<StructuralPropertyDescriptor> PROPERTY_DESCRIPTORS_2_0;
 
 	/**
 	 * A list of property descriptors (element type:
@@ -114,28 +113,26 @@ public class PointcutDeclaration extends BodyDeclaration {
 	 * or null if uninitialized.
 	 * @since 3.1
 	 */
-	private static final List PROPERTY_DESCRIPTORS_3_0;
+	private static final List<StructuralPropertyDescriptor> PROPERTY_DESCRIPTORS_3_0;
 
 	static {
-		List propertyList = new ArrayList(6);
-		createPropertyList(PointcutDeclaration.class, propertyList);
-		addProperty(JAVADOC_PROPERTY, propertyList);
-		addProperty(MODIFIERS_PROPERTY, propertyList);
-		addProperty(NAME_PROPERTY, propertyList);
-		addProperty(DESIGNATOR_PROPERTY, propertyList);
-		addProperty(PARAMETERS_PROPERTY, propertyList);
+		StructuralPropertyList propertyList = new StructuralPropertyList(PointcutDeclaration.class, 6);
+		propertyList.add(JAVADOC_PROPERTY);
+		propertyList.add(MODIFIERS_PROPERTY);
+		propertyList.add(NAME_PROPERTY);
+		propertyList.add(DESIGNATOR_PROPERTY);
+		propertyList.add(PARAMETERS_PROPERTY);
 
-		PROPERTY_DESCRIPTORS_2_0 = reapPropertyList(propertyList);
+		PROPERTY_DESCRIPTORS_2_0 = propertyList.reap();
 
-		propertyList = new ArrayList(6);
-		createPropertyList(PointcutDeclaration.class, propertyList);
-		addProperty(JAVADOC_PROPERTY, propertyList);
-		addProperty(MODIFIERS2_PROPERTY, propertyList);
-		addProperty(NAME_PROPERTY, propertyList);
-		addProperty(DESIGNATOR_PROPERTY, propertyList);
-		addProperty(PARAMETERS_PROPERTY, propertyList);
+		propertyList = new StructuralPropertyList(PointcutDeclaration.class, 6);
+		propertyList.add(JAVADOC_PROPERTY);
+		propertyList.add(MODIFIERS2_PROPERTY);
+		propertyList.add(NAME_PROPERTY);
+		propertyList.add(DESIGNATOR_PROPERTY);
+		propertyList.add(PARAMETERS_PROPERTY);
 
-		PROPERTY_DESCRIPTORS_3_0 = reapPropertyList(propertyList);
+		PROPERTY_DESCRIPTORS_3_0 = propertyList.reap();
 	}
 
 	/**
@@ -149,7 +146,7 @@ public class PointcutDeclaration extends BodyDeclaration {
 	 * {@link StructuralPropertyDescriptor})
 	 * @since 3.0
 	 */
-	public static List propertyDescriptors(int apiLevel) {
+	public static List<StructuralPropertyDescriptor> propertyDescriptors(int apiLevel) {
 		if (apiLevel == AST.JLS2_INTERNAL) {
 			return PROPERTY_DESCRIPTORS_2_0;
 		} else {
@@ -179,7 +176,7 @@ public class PointcutDeclaration extends BodyDeclaration {
 	 * Method declared on ASTNode.
 	 * @since 3.0
 	 */
-	final List internalStructuralPropertiesForType(int apiLevel) {
+	final List<StructuralPropertyDescriptor> internalStructuralPropertiesForType(int apiLevel) {
 		return propertyDescriptors(apiLevel);
 	}
 

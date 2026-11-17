@@ -10,7 +10,6 @@
  *******************************************************************/
 package org.aspectj.org.eclipse.jdt.core.dom;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,15 +30,14 @@ public class DeclareAtMethodDeclaration extends DeclareAnnotationDeclaration {
 	public static final ChildPropertyDescriptor ANNOTATION_NAME_PROPERTY =
 		internalAnnotationNamePropertyFactory(DeclareAtMethodDeclaration.class);
 
-	private static final List PROPERTY_DESCRIPTORS;
+	private static final List<StructuralPropertyDescriptor> PROPERTY_DESCRIPTORS;
 
 	static {
-		List propertyList = new ArrayList(3);
-		createPropertyList(DeclareAtMethodDeclaration.class, propertyList);
-		addProperty(JAVADOC_PROPERTY, propertyList);
-		addProperty(PATTERN_PROPERTY, propertyList);
-		addProperty(ANNOTATION_NAME_PROPERTY, propertyList);
-		PROPERTY_DESCRIPTORS = reapPropertyList(propertyList);
+		StructuralPropertyList propertyList = new StructuralPropertyList(DeclareAtMethodDeclaration.class, 3);
+		propertyList.add(JAVADOC_PROPERTY);
+		propertyList.add(PATTERN_PROPERTY);
+		propertyList.add(ANNOTATION_NAME_PROPERTY);
+		PROPERTY_DESCRIPTORS = propertyList.reap();
 	}
 
 	DeclareAtMethodDeclaration(AST ast) {
@@ -122,14 +120,14 @@ public class DeclareAtMethodDeclaration extends DeclareAnnotationDeclaration {
 	 *         {@link StructuralPropertyDescriptor})
 	 * @since 3.0
 	 */
-	public static List propertyDescriptors(int apiLevel) {
+	public static List<StructuralPropertyDescriptor> propertyDescriptors(int apiLevel) {
 		return PROPERTY_DESCRIPTORS;
 	}
 
 	/*
 	 * (omit javadoc for this method) Method declared on ASTNode.
 	 */
-	final List internalStructuralPropertiesForType(int apiLevel) {
+	final List<StructuralPropertyDescriptor> internalStructuralPropertiesForType(int apiLevel) {
 		return propertyDescriptors(apiLevel);
 	}
 

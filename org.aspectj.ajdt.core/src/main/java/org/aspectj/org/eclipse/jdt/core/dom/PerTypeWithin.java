@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.aspectj.org.eclipse.jdt.core.dom;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.aspectj.org.eclipse.jdt.core.dom.AST;
@@ -30,13 +29,12 @@ public class PerTypeWithin extends PointcutDesignator {
 	PerTypeWithin(AST ast) {
 		super(ast);
 	}
-	public static List propertyDescriptors(int apiLevel) {
-		List propertyList = new ArrayList(1);
-		createPropertyList(ReferencePointcut.class, propertyList);
+	public static List<StructuralPropertyDescriptor> propertyDescriptors(int apiLevel) {
+		StructuralPropertyList propertyList = new StructuralPropertyList(ReferencePointcut.class, 1);
 		// add the type thingy here
-		return reapPropertyList(propertyList);
+		return propertyList.reap();
 	}
-	final List internalStructuralPropertiesForType(int apiLevel) {
+	final List<StructuralPropertyDescriptor> internalStructuralPropertiesForType(int apiLevel) {
 		return propertyDescriptors(apiLevel);
 	}
 	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {

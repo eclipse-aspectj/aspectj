@@ -19,13 +19,11 @@ import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
-import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.aspectj.apache.bcel.util.ClassLoaderRepository;
 import org.aspectj.apache.bcel.util.ClassLoaderRepository.SoftHashMap;
-import org.aspectj.weaver.bcel.ClassPathManager.ZipFileEntry;
 
 import junit.framework.TestCase;
 

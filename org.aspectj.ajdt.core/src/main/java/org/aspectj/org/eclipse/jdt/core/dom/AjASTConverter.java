@@ -3602,6 +3602,7 @@ public class AjASTConverter extends ASTConverter {
 	// }
 	// }
 
+	@SuppressWarnings("incomplete-switch")
 	protected int retrieveEndingSemiColonPosition(int start, int end) {
 		int count = 0;
 		this.scanner.resetTo(start, end);

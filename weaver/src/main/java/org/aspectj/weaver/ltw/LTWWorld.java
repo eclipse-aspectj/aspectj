@@ -11,12 +11,8 @@
  * ******************************************************************/
 package org.aspectj.weaver.ltw;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.bridge.IMessageHandler;
@@ -53,20 +49,6 @@ public class LTWWorld extends BcelWorld implements IReflectionWorld {
 
 	private String classLoaderParentString;
 
-	protected final static Class concurrentMapClass;
-
-	private static final boolean ShareBootstrapTypes = false;
-	protected static Map/* <String, WeakReference<ReflectionBasedReferenceTypeDelegate>> */bootstrapTypes;
-
-	static {
-		if (ShareBootstrapTypes) {
-			concurrentMapClass = makeConcurrentMapClass();
-			bootstrapTypes = makeConcurrentMap();
-		} else {
-			concurrentMapClass = null;
-		}
-	}
-
 	/**
 	 * Build a World from a ClassLoader, for LTW support
 	 */
@@ -98,54 +80,6 @@ public class LTWWorld extends BcelWorld implements IReflectionWorld {
 	// }
 
 	/**
-	 * Override
-	 */
-	@Override
-	protected ReferenceTypeDelegate resolveDelegate(ReferenceType ty) {
-
-		// use reflection delegates for all bootstrap types
-		ReferenceTypeDelegate bootstrapLoaderDelegate = resolveIfBootstrapDelegate(ty);
-		if (bootstrapLoaderDelegate != null) {
-			return bootstrapLoaderDelegate;
-		}
-
-		return super.resolveDelegate(ty);
-	}
-
-	protected ReferenceTypeDelegate resolveIfBootstrapDelegate(ReferenceType ty) {
-		// first check for anything available in the bootstrap loader: these types are just defined from that without allowing
-		// nondelegation
-		// if (!ShareBootstrapTypes) return null;
-		// String name = ty.getName();
-		// Reference bootRef = (Reference) bootstrapTypes.get(name);
-		// if (bootRef != null) {
-		// ReferenceTypeDelegate rtd = (ReferenceTypeDelegate) bootRef.get();
-		// if (rtd != null) {
-		// return rtd;
-		// }
-		// }
-		//
-		// char fc = name.charAt(0);
-		// if (fc == 'j' || fc == 'c' || fc == 'o' || fc == 's') { // cheaper than imminent string startsWith tests
-		// if (name.startsWith("java") || name.startsWith("com.sun.") || name.startsWith("org.w3c") ||
-		// name.startsWith("sun.") || name.startsWith("org.omg")) {
-		// ReferenceTypeDelegate bootstrapLoaderDelegate = resolveReflectionTypeDelegate(ty, null);
-		// if (bootstrapLoaderDelegate != null) {
-		// // it's always fine to load these bytes: there's no weaving into them
-		// // and since the class isn't initialized, all we are doing at this point is loading the bytes
-		// // processedRefTypes.put(ty, this); // has no effect - and probably too aggressive if we did store
-		// // these in the type map
-		//
-		// // should we share these, like we do the BCEL delegates?
-		// bootstrapTypes.put(ty.getName(), new WeakReference(bootstrapLoaderDelegate));
-		// }
-		// return bootstrapLoaderDelegate;
-		// }
-		// }
-		return null;
-	}
-
-	/**
 	 * Helper method to resolve the delegate from the reflection delegate factory.
 	 */
 	private ReferenceTypeDelegate resolveReflectionTypeDelegate(ReferenceType ty, ClassLoader resolutionLoader) {
@@ -175,33 +109,6 @@ public class LTWWorld extends BcelWorld implements IReflectionWorld {
 	 */
 	public ResolvedType resolve(Class aClass) {
 		return ReflectionWorld.resolve(this, aClass);
-	}
-
-	private static Map<?, ?> makeConcurrentMap() {
-		if (concurrentMapClass != null) {
-			try {
-				return (Map) concurrentMapClass.getDeclaredConstructor().newInstance();
-			} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException ignored) {}
-			// fall through if exceptions
-		}
-		return Collections.synchronizedMap(new HashMap<>());
-	}
-
-	private static Class<?> makeConcurrentMapClass() {
-		String betterChoices[] = { "java.util.concurrent.ConcurrentHashMap",
-				"edu.emory.mathcs.backport.java.util.concurrent.ConcurrentHashMap",
-				"EDU.oswego.cs.dl.util.concurrent.ConcurrentHashMap" };
-		for (String betterChoice : betterChoices) {
-			try {
-				return Class.forName(betterChoice);
-			} catch (ClassNotFoundException cnfe) {
-				// try the next one
-			} catch (SecurityException se) {
-				// you get one of these if you dare to try to load an undefined class in a
-				// package starting with java like java.util.concurrent
-			}
-		}
-		return null;
 	}
 
 	@Override

@@ -296,7 +296,7 @@ public class BcelWorld extends World implements Repository {
 		return ret;
 	}
 
-	public BcelWorld(List classPath, IMessageHandler handler, ICrossReferenceHandler xrefHandler) {
+	public BcelWorld(List<String> classPath, IMessageHandler handler, ICrossReferenceHandler xrefHandler) {
 		// this.aspectPath = new ClassPathManager(aspectPath, handler);
 		this.classPath = new ClassPathManager(classPath, handler);
 		setMessageHandler(handler);

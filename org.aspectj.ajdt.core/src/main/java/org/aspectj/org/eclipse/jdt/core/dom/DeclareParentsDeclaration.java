@@ -10,7 +10,6 @@
  *******************************************************************/
 package org.aspectj.org.eclipse.jdt.core.dom;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,25 +34,23 @@ public class DeclareParentsDeclaration extends DeclareDeclaration {
 	public static final ChildListPropertyDescriptor PARENTS_TYPE_PATTERNS_LIST_PROPERTY =
 		new ChildListPropertyDescriptor(DeclareParentsDeclaration.class, "typePatternsList", AbstractTypePattern.class, NO_CYCLE_RISK); //$NON-NLS-1$
 
-	private static final List PROPERTY_DESCRIPTORS_2_0;
-	private static final List PROPERTY_DESCRIPTORS_3_0;
+	private static final List<StructuralPropertyDescriptor> PROPERTY_DESCRIPTORS_2_0;
+	private static final List<StructuralPropertyDescriptor> PROPERTY_DESCRIPTORS_3_0;
 
 	static {
-		List propertyList = new ArrayList(4);
-		createPropertyList(DeclareParentsDeclaration.class, propertyList);
-		addProperty(JAVADOC_PROPERTY, propertyList);
-		addProperty(CHILD_TYPE_PATTERN_PROPERTY, propertyList);
-		addProperty(IS_EXTENDS_PROPERTY, propertyList);
-		addProperty(PARENTS_TYPE_PATTERNS_LIST_PROPERTY, propertyList);
-		PROPERTY_DESCRIPTORS_2_0 = reapPropertyList(propertyList);
+		StructuralPropertyList propertyList = new StructuralPropertyList(DeclareParentsDeclaration.class, 4);
+		propertyList.add(JAVADOC_PROPERTY);
+		propertyList.add(CHILD_TYPE_PATTERN_PROPERTY);
+		propertyList.add(IS_EXTENDS_PROPERTY);
+		propertyList.add(PARENTS_TYPE_PATTERNS_LIST_PROPERTY);
+		PROPERTY_DESCRIPTORS_2_0 = propertyList.reap();
 
-		propertyList = new ArrayList(4);
-		createPropertyList(DeclareParentsDeclaration.class, propertyList);
-		addProperty(JAVADOC_PROPERTY, propertyList);
-		addProperty(CHILD_TYPE_PATTERN_PROPERTY, propertyList);
-		addProperty(IS_EXTENDS_PROPERTY, propertyList);
-		addProperty(PARENTS_TYPE_PATTERNS_LIST_PROPERTY, propertyList);
-		PROPERTY_DESCRIPTORS_3_0 = reapPropertyList(propertyList);
+		propertyList = new StructuralPropertyList(DeclareParentsDeclaration.class, 4);
+		propertyList.add(JAVADOC_PROPERTY);
+		propertyList.add(CHILD_TYPE_PATTERN_PROPERTY);
+		propertyList.add(IS_EXTENDS_PROPERTY);
+		propertyList.add(PARENTS_TYPE_PATTERNS_LIST_PROPERTY);
+		PROPERTY_DESCRIPTORS_3_0 = propertyList.reap();
 	}
 
 	private boolean isExtends;
@@ -141,7 +138,7 @@ public class DeclareParentsDeclaration extends DeclareDeclaration {
 	 * {@link StructuralPropertyDescriptor})
 	 * @since 3.0
 	 */
-	public static List propertyDescriptors(int apiLevel) {
+	public static List<StructuralPropertyDescriptor> propertyDescriptors(int apiLevel) {
 		if (apiLevel == AST.JLS2_INTERNAL) {
 			return PROPERTY_DESCRIPTORS_2_0;
 		} else {
@@ -152,7 +149,7 @@ public class DeclareParentsDeclaration extends DeclareDeclaration {
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
-	final List internalStructuralPropertiesForType(int apiLevel) {
+	final List<StructuralPropertyDescriptor> internalStructuralPropertiesForType(int apiLevel) {
 		return propertyDescriptors(apiLevel);
 	}
 
