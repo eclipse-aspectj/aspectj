@@ -9,6 +9,7 @@
 package org.aspectj.weaver.bcel;
 
 import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
@@ -16,6 +17,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -29,13 +31,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.Attributes;
 import java.util.jar.Attributes.Name;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 import org.aspectj.apache.bcel.classfile.ClassParser;
@@ -244,39 +247,106 @@ public class BcelWeaver {
 		}
 	}
 
-	private List<ResolvedType> addAspectsFromJarFile(File inFile) throws FileNotFoundException, IOException {
-		ZipInputStream inStream = new ZipInputStream(new FileInputStream(inFile)); // ??? buffered
-		List<ResolvedType> addedAspects = new ArrayList<>();
-		try {
-			while (true) {
-				ZipEntry entry = inStream.getNextEntry();
-				if (entry == null) {
-					break;
-				}
+	// The class file of an aspect always has one of these in its constant pool: the attribute ajc writes for a code style
+	// aspect, or the @Aspect annotation for an annotation style one. A class with neither cannot be an aspect.
+	private static final String CODE_STYLE_ASPECT_MARKER = "org.aspectj.weaver.Aspect";
+	private static final String ANNOTATION_STYLE_ASPECT_MARKER = "Lorg/aspectj/lang/annotation/Aspect;";
 
+	// The entries of each aspect path jar that might be aspects, keyed by the path of the jar, so a JVM that weaves many
+	// inputs against the same aspect path scans each jar once. A jar that has changed since it was scanned is scanned again
+	// and the new candidates replace the old.
+	private static final Map<String, AspectCandidates> aspectCandidatesByLibrary = new ConcurrentHashMap<>();
+
+	private static final class AspectCandidates {
+		private final long libraryLength;
+		private final long libraryLastModified;
+		private final List<String> entryNames;
+
+		AspectCandidates(long libraryLength, long libraryLastModified, List<String> entryNames) {
+			this.libraryLength = libraryLength;
+			this.libraryLastModified = libraryLastModified;
+			this.entryNames = entryNames;
+		}
+
+		/**
+		 * @return the candidate entries, or null if the jar is not the one that was scanned or no longer has all of them
+		 */
+		List<ZipEntry> findIn(ZipFile zipFile, long length, long lastModified) {
+			if (length != libraryLength || lastModified != libraryLastModified) {
+				return null;
+			}
+			List<ZipEntry> entries = new ArrayList<>();
+			for (String entryName : entryNames) {
+				ZipEntry entry = zipFile.getEntry(entryName);
+				if (entry == null) {
+					return null;
+				}
+				entries.add(entry);
+			}
+			return entries;
+		}
+	}
+
+	private List<ResolvedType> addAspectsFromJarFile(File inFile) throws FileNotFoundException, IOException {
+		String libraryPath = inFile.getAbsolutePath();
+		long length = inFile.length();
+		long lastModified = inFile.lastModified();
+		List<ResolvedType> addedAspects = new ArrayList<>();
+		try (ZipFile zipFile = new ZipFile(inFile)) {
+			AspectCandidates known = aspectCandidatesByLibrary.get(libraryPath);
+			List<ZipEntry> knownCandidates = known == null ? null : known.findIn(zipFile, length, lastModified);
+			if (knownCandidates != null) {
+				for (ZipEntry entry : knownCandidates) {
+					addAspectCandidate(inFile, entry.getName(), readEntry(zipFile, entry), addedAspects);
+				}
+				return addedAspects;
+			}
+
+			List<String> candidateNames = new ArrayList<>();
+			Enumeration<? extends ZipEntry> entries = zipFile.entries();
+			while (entries.hasMoreElements()) {
+				ZipEntry entry = entries.nextElement();
 				if (entry.isDirectory() || !entry.getName().endsWith(".class")) {
 					continue;
 				}
 
-				// FIXME ASC performance? of this alternative soln.
-				int size = (int) entry.getSize();
-				ClassParser parser = new ClassParser(new ByteArrayInputStream(FileUtil.readAsByteArray(inStream)), entry.getName());
-				JavaClass jc = parser.parse();
-				inStream.closeEntry();
-
-				ResolvedType type = world.addSourceObjectType(jc, false).getResolvedTypeX();
-				type.setBinaryPath(inFile.getAbsolutePath());
-				if (type.isAspect()) {
-					addedAspects.add(type);
-				} else {
-					world.demote(type);
+				byte[] classBytes = readEntry(zipFile, entry);
+				if (mightBeAspect(classBytes)) {
+					candidateNames.add(entry.getName());
+					addAspectCandidate(inFile, entry.getName(), classBytes, addedAspects);
 				}
-
 			}
-		} finally {
-			inStream.close();
+			aspectCandidatesByLibrary.put(libraryPath, new AspectCandidates(length, lastModified, candidateNames));
 		}
 		return addedAspects;
+	}
+
+	private static byte[] readEntry(ZipFile zipFile, ZipEntry entry) throws IOException {
+		byte[] bytes = new byte[(int) entry.getSize()];
+		try (InputStream in = zipFile.getInputStream(entry)) {
+			new DataInputStream(in).readFully(bytes);
+		}
+		return bytes;
+	}
+
+	private void addAspectCandidate(File inFile, String entryName, byte[] classBytes, List<ResolvedType> addedAspects)
+			throws IOException {
+		ClassParser parser = new ClassParser(new ByteArrayInputStream(classBytes), entryName);
+		JavaClass jc = parser.parse();
+
+		ResolvedType type = world.addSourceObjectType(jc, false).getResolvedTypeX();
+		type.setBinaryPath(inFile.getAbsolutePath());
+		if (type.isAspect()) {
+			addedAspects.add(type);
+		} else {
+			world.demote(type);
+		}
+	}
+
+	private static boolean mightBeAspect(byte[] classBytes) {
+		// ISO-8859-1 maps every byte to one char and the markers are ASCII, so this matches exactly their byte sequences
+		String text = new String(classBytes, StandardCharsets.ISO_8859_1);
+		return text.contains(CODE_STYLE_ASPECT_MARKER) || text.contains(ANNOTATION_STYLE_ASPECT_MARKER);
 	}
 
 	/**
