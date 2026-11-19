@@ -129,6 +129,7 @@
 						<argLine>
 							${jvm.arg.addOpens}
 							${jvm.arg.allowSecurityManager}
+							${jvm.arg.fileEncoding}
 						</argLine>
 						<includes>
 							<include>**/TestsModuleTests*</include>

@@ -62,6 +62,7 @@
           <argLine>
             ${jvm.arg.addOpens}
             ${jvm.arg.allowSecurityManager}
+            ${jvm.arg.fileEncoding}
           </argLine>
           <excludes>
             <exclude>**/*AjcTestSpecAsTest*</exclude>

@@ -186,6 +186,7 @@
 							<argLine>
 								${jvm.arg.addOpens}
 								${jvm.arg.allowSecurityManager}
+								${jvm.arg.fileEncoding}
 							</argLine>
 						</configuration>
 						<executions>
@@ -210,7 +211,11 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<testFailureIgnore>true</testFailureIgnore>
-					<argLine>${jvm.arg.addOpens}</argLine>
+					<argLine>
+						${jvm.arg.addOpens}
+						${jvm.arg.allowSecurityManager}
+						${jvm.arg.fileEncoding}
+					</argLine>
 				</configuration>
 				<executions>
 					<execution>
