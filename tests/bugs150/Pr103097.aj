@@ -3,7 +3,7 @@ import java.io.IOException;
 public aspect Pr103097 {
     declare soft: IOException: 
     		within(Pr103097) && 
-    		!withincode(* *(..)) &&
+    		(!withincode(* *(..)) || execution(* *(..))) &&
     		!call(* *(..));
 
     before() : execution(* main(..)) {

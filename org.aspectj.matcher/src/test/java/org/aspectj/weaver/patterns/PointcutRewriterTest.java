@@ -337,7 +337,8 @@ public class PointcutRewriterTest extends TestCase {
 		Set<Shadow.Kind> matches = Shadow.toSet(p.couldMatchKinds());
 		for (Shadow.Kind o : matches) {
 			assertFalse("No kinds that are themselves enclosing",
-					(o.isEnclosingKind() && o != Shadow.ConstructorExecution && o != Shadow.Initialization));
+					(o.isEnclosingKind() && o != Shadow.ConstructorExecution && o != Shadow.Initialization
+							&& o != Shadow.MethodExecution));
 		}
 		for (int i = 0; i < Shadow.SHADOW_KINDS.length; i++) {
 			if (!Shadow.SHADOW_KINDS[i].isEnclosingKind()) {
@@ -346,6 +347,7 @@ public class PointcutRewriterTest extends TestCase {
 		}
 		assertTrue("Need cons-exe for inlined field inits", matches.contains(Shadow.ConstructorExecution));
 		assertTrue("Need init for inlined field inits", matches.contains(Shadow.Initialization));
+		assertTrue("Needs method-exe to comply with the docs", matches.contains(Shadow.MethodExecution));
 		// + @
 		p = getPointcut("@withincode(Foo)");
 		matches = Shadow.toSet(p.couldMatchKinds());
