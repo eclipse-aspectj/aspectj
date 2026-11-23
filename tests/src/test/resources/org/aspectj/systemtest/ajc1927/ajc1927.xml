@@ -267,4 +267,9 @@ JDK 27 (https://openjdk.org/projects/jdk/27/):
 		</compile>
 	</ajc-test>
 
+	<!-- Without the running JDK's jmods, the JDK modules of release N still come from ct.sym -->
+	<ajc-test dir="bugs1927/gh388/module" vm="11" title="--release compiles a module that requires a JDK module">
+		<compile files="module-info.java gh388/Drivers.java" options="--release 11"/>
+	</ajc-test>
+
 </suite>

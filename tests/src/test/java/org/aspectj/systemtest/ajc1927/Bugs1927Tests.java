@@ -184,13 +184,17 @@ public class Bugs1927Tests extends XMLBasedAjcTestCase {
 		}
 	}
 
-	// With --release, the API of that release must be used, not the one of the running JDK. Extends CompileWithReleaseTests.
+	// With --release, the API of that release must be used, not the one of the running JDK. Adds coverage beyond CompileWithReleaseTests.
 	public void testGh388_ReleaseRejectsMethodFromLaterJdk() {
 		runTest("--release does not see a method added in a later JDK");
 	}
 
 	public void testGh388_ReleaseRejectsTypeFromLaterJdk() {
 		runTest("--release does not see a type added in a later JDK");
+	}
+
+	public void testGh388_ReleaseCompilesModuleRequiringJdkModule() {
+		runTest("--release compiles a module that requires a JDK module");
 	}
 
 	@Override
