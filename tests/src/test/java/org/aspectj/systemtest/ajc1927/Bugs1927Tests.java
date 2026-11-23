@@ -184,6 +184,15 @@ public class Bugs1927Tests extends XMLBasedAjcTestCase {
 		}
 	}
 
+	// With --release, the API of that release must be used, not the one of the running JDK. Extends CompileWithReleaseTests.
+	public void testGh388_ReleaseRejectsMethodFromLaterJdk() {
+		runTest("--release does not see a method added in a later JDK");
+	}
+
+	public void testGh388_ReleaseRejectsTypeFromLaterJdk() {
+		runTest("--release does not see a type added in a later JDK");
+	}
+
 	@Override
 	protected java.net.URL getSpecFile() {
 		return getClassResource("ajc1927.xml");

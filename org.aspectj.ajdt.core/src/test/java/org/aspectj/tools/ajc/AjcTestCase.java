@@ -1002,7 +1002,8 @@ public abstract class AjcTestCase extends TestCase {
 				args = newargs;
 			}
 		}
-		boolean needsJRTFS = LangUtil.isVMGreaterOrEqual(9);
+		// With --release, JDK classes must come from ct.sym only, not from the running JDK
+		boolean needsJRTFS = LangUtil.isVMGreaterOrEqual(9) && !Arrays.asList(args).contains("--release");
 		if (needsJRTFS) {
 			if (!args[cpIndex].contains(LangUtil.JRT_FS)) {
 				String jrtfsPath = LangUtil.getJrtFsFilePath();
