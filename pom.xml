@@ -143,7 +143,6 @@
 		<module>ajdoc</module>
 		<module>taskdefs</module>
 		<module>testing</module>
-		<module>testing-drivers</module>
 		<module>tests</module>
 		<module>run-all-junit-tests</module>
 		<module>docs</module>

@@ -204,6 +204,13 @@
         </compile>
     </ajc-test>
 
+    <ajc-test dir="harness/xlintfile"
+        title="xlintfile promotes typeNotExposedToWeaver to error">
+        <compile files="TypeNotExposed.java" xlintfile="tneError.properties">
+        	<message kind="error" line="4" text="xpose"/>
+        </compile>
+    </ajc-test>
+
     <ajc-test dir="bugs" pr="49250"
       title="alias getCause for getWrappedThrowable in SoftException">
         <compile files="GetCauseOnSoftException.java" options="-Xlint:warning">

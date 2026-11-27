@@ -89,6 +89,10 @@ public class XLintTests extends org.aspectj.testing.XMLBasedAjcTestCase {
     runTest("XLint:error promotes XLint warnings to error");
   }
 
+  public void testXlintfilePromotesToError(){
+    runTest("xlintfile promotes typeNotExposedToWeaver to error");
+  }
+
   public void test017(){
     runTest("alias getCause for getWrappedThrowable in SoftException");
   }

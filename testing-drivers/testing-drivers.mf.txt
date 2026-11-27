@@ -1,3 +1,0 @@
-Manifest-Version: 1.0
-Main-Class: org.aspectj.testing.drivers.Harness
-Class-Path: ../../lib/ant/lib/ant.jar

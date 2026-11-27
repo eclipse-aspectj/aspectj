@@ -17,7 +17,6 @@ import org.aspectj.matcher.MatcherModuleTests;
 import org.aspectj.runtime.RuntimeModuleTests;
 import org.aspectj.testing.TestingClientModuleTests;
 import org.aspectj.testing.TestingModuleTests;
-import org.aspectj.testing.drivers.TestingDriversModuleTests;
 import org.aspectj.testingutil.TestingUtilModuleTests;
 import org.aspectj.tests.TestsModuleTests;
 import org.aspectj.tools.ajdoc.AjdocModuleTests;
