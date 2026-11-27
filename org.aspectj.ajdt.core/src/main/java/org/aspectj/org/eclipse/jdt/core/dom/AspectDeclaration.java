@@ -71,26 +71,21 @@ public class AspectDeclaration extends AjTypeDeclaration {
 	 * (omit javadoc for this method) Method declared on ASTNode.
 	 */
 	ASTNode clone0(AST target) {
-		AspectDeclaration result = new AspectDeclaration(target, perClause);
+		AspectDeclaration result = new AspectDeclaration(target, null);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.setJavadoc((Javadoc) ASTNode.copySubtree(target, getJavadoc()));
-		if (this.ast.apiLevel == AST.JLS2_INTERNAL) {
-			result.internalSetModifiers(getModifiers());
-			result.setSuperclass((Name) ASTNode.copySubtree(target, getSuperclass()));
-			result.superInterfaces().addAll(ASTNode.copySubtrees(target, superInterfaces()));
-		}
 		result.setInterface(isInterface());
 		result.setAspect(isAspect());
 		result.setPrivileged(isPrivileged());
 		result.setName((SimpleName) getName().clone(target));
-		if (this.ast.apiLevel >= AST.JLS3) {
-			result.modifiers().addAll(ASTNode.copySubtrees(target, modifiers()));
-			result.typeParameters().addAll(ASTNode.copySubtrees(target, typeParameters()));
-			result.setSuperclassType((Type) ASTNode.copySubtree(target, getSuperclassType()));
-			result.superInterfaceTypes().addAll(ASTNode.copySubtrees(target, superInterfaceTypes()));
-		}
+		result.modifiers().addAll(ASTNode.copySubtrees(target, modifiers()));
+		result.typeParameters().addAll(ASTNode.copySubtrees(target, typeParameters()));
+		result.setSuperclassType((Type) ASTNode.copySubtree(target, getSuperclassType()));
+		result.superInterfaceTypes().addAll(ASTNode.copySubtrees(target, superInterfaceTypes()));
 		result.bodyDeclarations().addAll(ASTNode.copySubtrees(target, bodyDeclarations()));
-		result.setPerClause(getPerClause().clone(target));
+		if (getPerClause() != null) {
+			result.setPerClause(getPerClause().clone(target));
+		}
 		return result;
 	}
 
@@ -101,24 +96,14 @@ public class AspectDeclaration extends AjTypeDeclaration {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			if (this.ast.apiLevel == AST.JLS2_INTERNAL) {
-				acceptChild(visitor, getJavadoc());
-				acceptChild(visitor, getName());
-				acceptChild(visitor, getSuperclass());
-				acceptChildren(visitor, this.superInterfaceNames);
-				acceptChild(visitor, this.perClause);
-				acceptChildren(visitor, this.bodyDeclarations);
-			}
-			if (this.ast.apiLevel >= AST.JLS3) {
-				acceptChild(visitor, getJavadoc());
-				acceptChildren(visitor, this.modifiers);
-				acceptChild(visitor, getName());
-				acceptChildren(visitor, this.typeParameters);
-				acceptChild(visitor, getSuperclassType());
-				acceptChildren(visitor, this.superInterfaceTypes);
-				acceptChild(visitor, this.perClause);
-				acceptChildren(visitor, this.bodyDeclarations);
-			}
+			acceptChild(visitor, getJavadoc());
+			acceptChildren(visitor, this.modifiers);
+			acceptChild(visitor, getName());
+			acceptChildren(visitor, this.typeParameters);
+			acceptChild(visitor, getSuperclassType());
+			acceptChildren(visitor, this.superInterfaceTypes);
+			acceptChild(visitor, this.perClause);
+			acceptChildren(visitor, this.bodyDeclarations);
 		}
 		visitor.endVisit(this);
 	}

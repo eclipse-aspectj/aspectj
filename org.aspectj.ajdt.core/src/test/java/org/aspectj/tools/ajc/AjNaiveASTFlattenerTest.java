@@ -176,6 +176,41 @@ public class AjNaiveASTFlattenerTest extends TestCase {
 				"public aspect A {\n  declare precedence: X, Y, Z;\n}\n");
 	}
 
+	public void testThrowsClauses() {
+		check("class C { C() throws Exception {} void m() throws java.io.IOException, Exception {} }",
+				"class C {\n  C() throws Exception {\n    super();\n  }\n  void m() throws java.io.IOException, Exception {\n  }\n}\n");
+	}
+
+	public void testReturnTypeAndParameterizedField() {
+		check("class C { int m() { return 1; } java.util.List<String> f; }",
+				"class C {\n  int m(){\n    return 1;\n  }\n  java.util.List<String> f;\n}\n");
+	}
+
+	public void testArrayFields() {
+		check("class C { int[][] a; int b[][]; int[] c[]; }",
+				"class C {\n  int[][] a;\n  int b[][];\n  int[] c[];\n}\n");
+	}
+
+	public void testArrayParametersAndLocals() {
+		check("class C { void m(int[][] p, String q[][]) { String[][] x = null; int y[][] = null; } }",
+				"class C {\n  void m(  int[][] p,  String q[][]){\n    String[][] x=null;\n    int y[][]=null;\n  }\n}\n");
+	}
+
+	public void testArrayReturnTypes() {
+		check("class C { int[][] m() { return null; } int[] n()[] { return null; } }",
+				"class C {\n  int[][] m(){\n    return null;\n  }\n  int[] n()[]{\n    return null;\n  }\n}\n");
+	}
+
+	public void testEnhancedFor() {
+		check("class C { void m(int[] a) { for (int x : a) { } } }",
+				"class C {\n  void m(  int[] a){\n    for (    int x : a) {\n    }\n  }\n}\n");
+	}
+
+	public void testSwitchCaseLabels() {
+		check("class C { void m(int x) { switch (x) { case 1, 2: break; default: break; } } }",
+				"class C {\n  void m(  int x){\nswitch (x) {\ncase 1, 2:\n      break;\ndefault :\n    break;\n}\n}\n}\n");
+	}
+
 	private void check(String source, String expectedOutput) {
 		ASTParser parser = ASTParser.newParser(AST.JLS20);
 		parser.setCompilerOptions(new HashMap<>());

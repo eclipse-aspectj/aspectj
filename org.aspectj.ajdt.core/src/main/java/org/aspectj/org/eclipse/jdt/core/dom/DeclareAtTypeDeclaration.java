@@ -53,8 +53,7 @@ public class DeclareAtTypeDeclaration extends DeclareAnnotationDeclaration {
 		result.setJavadoc((Javadoc) ASTNode.copySubtree(target, getJavadoc()));
 		result.setPatternNode((PatternNode) ASTNode.copySubtree(target,
 				getPatternNode()));
-		result.setAnnotationName((SimpleName) ASTNode.copySubtree(target,
-				getAnnotationName()));
+		result.setAnnotationName(cloneAnnotationName(target));
 		return result;
 	}
 
@@ -88,8 +87,9 @@ public class DeclareAtTypeDeclaration extends DeclareAnnotationDeclaration {
 	 * There are no modifiers declared for DeclareErrorDeclaration - therefore
 	 * we don't do anything with this
 	 */
+	@SuppressWarnings("deprecation") // JLS2 API, required by BodyDeclaration
 	SimplePropertyDescriptor internalModifiersProperty() {
-		return internalModifiersPropertyFactory(DeclareErrorDeclaration.class);
+		return internalModifiersPropertyFactory(DeclareAtTypeDeclaration.class);
 	}
 
 	/*
@@ -99,7 +99,7 @@ public class DeclareAtTypeDeclaration extends DeclareAnnotationDeclaration {
 	 * we don't do anything with this
 	 */
 	ChildListPropertyDescriptor internalModifiers2Property() {
-		return internalModifiers2PropertyFactory(DeclareErrorDeclaration.class);
+		return internalModifiers2PropertyFactory(DeclareAtTypeDeclaration.class);
 	}
 
 	/*

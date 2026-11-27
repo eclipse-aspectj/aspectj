@@ -64,10 +64,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 /**
  * Internal class for converting internal compiler ASTs into public ASTs.
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked","incomplete-switch"})
 public class AjASTConverter extends ASTConverter {
 
-	public AjASTConverter(Map options, boolean resolveBindings, IProgressMonitor monitor) {
+	public AjASTConverter(Map<String,String> options, boolean resolveBindings, IProgressMonitor monitor) {
 		super(options, resolveBindings, monitor);
 	}
 
@@ -105,7 +105,8 @@ public class AjASTConverter extends ASTConverter {
 				case AST.JLS2_INTERNAL:
 					adviceDecl.setFlags(adviceDecl.getFlags() | ASTNode.MALFORMED);
 					break;
-				case AST.JLS3:
+				case AST.JLS3_INTERNAL:
+				default:
 					for (org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeParameter typeParameter : typeParameters) {
 						((AroundAdviceDeclaration) adviceDecl).typeParameters().add(convert(typeParameter));
 					}
@@ -117,14 +118,12 @@ public class AjASTConverter extends ASTConverter {
 		adviceDecl.setPointcut(convert(pointcut));
 		org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeReference[] thrownExceptions = adviceDeclaration.thrownExceptions;
 		if (thrownExceptions != null) {
-			int thrownExceptionsLength = thrownExceptions.length;
 			for (TypeReference thrownException : thrownExceptions) {
 				adviceDecl.thrownExceptions().add(convert(thrownException));
 			}
 		}
 		org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument[] parameters = adviceDeclaration.arguments;
 		if (parameters != null) {
-			int parametersLength = parameters.length;
 			for (Argument parameter : parameters) {
 				adviceDecl.parameters().add(convert(parameter));
 			}
@@ -258,13 +257,13 @@ public class AjASTConverter extends ASTConverter {
 			int methodHeaderEnd = methodDeclaration.sourceEnd;
 			int thrownExceptionsLength = thrownExceptions == null ? 0 : thrownExceptions.length;
 			if (thrownExceptionsLength > 0) {
-				Name thrownException;
+				Type thrownExceptionType;
 				int i = 0;
 				do {
-					thrownException = convert(thrownExceptions[i++]);
-					methodDecl.thrownExceptions().add(thrownException);
+					thrownExceptionType = convertType(thrownExceptions[i++]);
+					methodDecl.thrownExceptionTypes().add(thrownExceptionType);
 				} while (i < thrownExceptionsLength);
-				methodHeaderEnd = thrownException.getStartPosition() + thrownException.getLength();
+				methodHeaderEnd = thrownExceptionType.getStartPosition() + thrownExceptionType.getLength();
 			}
 			org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument[] parameters = methodDeclaration.arguments;
 			int parametersLength = parameters == null ? 0 : parameters.length;
@@ -496,7 +495,7 @@ public class AjASTConverter extends ASTConverter {
 //				returnType.setSourceRange(methodDeclaration.sourceStart, 0);
 //				methodDecl.internalSetReturnType(returnType);
 //				break;
-//			case AST.JLS3:
+//			case AST.JLS3_INTERNAL:
 //				methodDecl.setReturnType2(null);
 //			}
 //		} else if (methodDeclaration instanceof org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration) {
@@ -586,7 +585,7 @@ public class AjASTConverter extends ASTConverter {
 //			case AST.JLS2_INTERNAL:
 //				methodDecl.setFlags(methodDecl.getFlags() | ASTNode.MALFORMED);
 //				break;
-//			case AST.JLS3:
+//			case AST.JLS3_INTERNAL:
 //				for (int i = 0, max = typeParameters.length; i < max; i++) {
 //					methodDecl.typeParameters().add(convert(typeParameters[i]));
 //				}
@@ -749,7 +748,6 @@ public class AjASTConverter extends ASTConverter {
 		}
 		org.aspectj.org.eclipse.jdt.internal.compiler.ast.Argument[] parameters = pointcutDeclaration.arguments;
 		if (parameters != null) {
-			int parametersLength = parameters.length;
 			for (Argument parameter : parameters) {
 				pointcutDecl.parameters().add(convert(parameter));
 			}
@@ -1052,7 +1050,8 @@ public class AjASTConverter extends ASTConverter {
 			case AST.JLS2_INTERNAL:
 				variableDecl.setFlags(variableDecl.getFlags() | ASTNode.MALFORMED);
 				break;
-			case AST.JLS3:
+			case AST.JLS3_INTERNAL:
+			default:
 				variableDecl.setVarargs(true);
 			}
 		}
@@ -1161,7 +1160,6 @@ public class AjASTConverter extends ASTConverter {
 		arrayInitializer.setSourceRange(expression.sourceStart, expression.sourceEnd - expression.sourceStart + 1);
 		org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression[] expressions = expression.expressions;
 		if (expressions != null) {
-			int length = expressions.length;
 			for (org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression value : expressions) {
 				Expression expr = super.convert(value);
 				if (this.resolveBindings) {
@@ -1525,7 +1523,6 @@ public class AjASTConverter extends ASTConverter {
 		}
 		org.aspectj.org.eclipse.jdt.internal.compiler.ast.ImportReference[] imports = unit.imports;
 		if (imports != null) {
-			int importLength = imports.length;
 			for (org.aspectj.org.eclipse.jdt.internal.compiler.ast.ImportReference anImport : imports) {
 				compilationUnit.imports().add(convertImport(anImport));
 			}
@@ -1533,7 +1530,6 @@ public class AjASTConverter extends ASTConverter {
 
 		org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration[] types = unit.types;
 		if (types != null) {
-			int typesLength = types.length;
 			for (org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration declaration : types) {
 				if (CharOperation.equals(declaration.name, TypeConstants.PACKAGE_INFO_NAME)) {
 					continue;
@@ -1652,7 +1648,7 @@ public class AjASTConverter extends ASTConverter {
 	// case AST.JLS2_INTERNAL :
 	// superConstructorInvocation.setFlags(superConstructorInvocation.getFlags() | ASTNode.MALFORMED);
 	// break;
-	// case AST.JLS3 :
+	// case AST.JLS3_INTERNAL :
 	// for (int i = 0, max = statement.typeArguments.length; i < max; i++) {
 	// superConstructorInvocation.typeArguments().add(convertType(statement.typeArguments[i]));
 	// }
@@ -1677,7 +1673,7 @@ public class AjASTConverter extends ASTConverter {
 	// case AST.JLS2_INTERNAL :
 	// constructorInvocation.setFlags(constructorInvocation.getFlags() | ASTNode.MALFORMED);
 	// break;
-	// case AST.JLS3 :
+	// case AST.JLS3_INTERNAL :
 	// for (int i = 0, max = statement.typeArguments.length; i < max; i++) {
 	// constructorInvocation.typeArguments().add(convertType(statement.typeArguments[i]));
 	// }
@@ -1889,21 +1885,14 @@ public class AjASTConverter extends ASTConverter {
 	}
 
 	public Statement convert(ForeachStatement statement) {
-		switch (this.ast.apiLevel) {
-		case AST.JLS2_INTERNAL:
-			return createFakeEmptyStatement(statement);
-		case AST.JLS3:
-			EnhancedForStatement enhancedForStatement = new EnhancedForStatement(this.ast);
-			enhancedForStatement.setParameter(convertToSingleVariableDeclaration(statement.elementVariable));
-			enhancedForStatement.setExpression(super.convert(statement.collection));
-			enhancedForStatement.setBody(convert(statement.action));
-			int start = statement.sourceStart;
-			int end = statement.sourceEnd;
-			enhancedForStatement.setSourceRange(start, end - start + 1);
-			return enhancedForStatement;
-		default:
-			return createFakeEmptyStatement(statement);
-		}
+		EnhancedForStatement enhancedForStatement = new EnhancedForStatement(this.ast);
+		enhancedForStatement.setParameter(convertToSingleVariableDeclaration(statement.elementVariable));
+		enhancedForStatement.setExpression(super.convert(statement.collection));
+		enhancedForStatement.setBody(convert(statement.action));
+		int start = statement.sourceStart;
+		int end = statement.sourceEnd;
+		enhancedForStatement.setSourceRange(start, end - start + 1);
+		return enhancedForStatement;
 	}
 
 	public ForStatement convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.ForStatement statement) {
@@ -1927,7 +1916,6 @@ public class AjASTConverter extends ASTConverter {
 				}
 				forStatement.initializers().add(variableDeclarationExpression);
 			} else {
-				int initializationsLength = initializations.length;
 				for (org.aspectj.org.eclipse.jdt.internal.compiler.ast.Statement initialization : initializations) {
 					Expression initializer = convertToExpression(initialization);
 					if (initializer != null) {
@@ -1943,7 +1931,6 @@ public class AjASTConverter extends ASTConverter {
 		}
 		org.aspectj.org.eclipse.jdt.internal.compiler.ast.Statement[] increments = statement.increments;
 		if (increments != null) {
-			int incrementsLength = increments.length;
 			for (org.aspectj.org.eclipse.jdt.internal.compiler.ast.Statement increment : increments) {
 				forStatement.updaters().add(convertToExpression(increment));
 			}
@@ -2025,7 +2012,7 @@ public class AjASTConverter extends ASTConverter {
 	}
 
 	public void convert(org.aspectj.org.eclipse.jdt.internal.compiler.ast.Javadoc javadoc, PackageDeclaration packageDeclaration) {
-		if (ast.apiLevel == AST.JLS3 && packageDeclaration.getJavadoc() == null) {
+		if (ast.apiLevel == AST.JLS3_INTERNAL && packageDeclaration.getJavadoc() == null) {
 			if (javadoc != null) {
 				if (this.commentMapper == null || !this.commentMapper.hasSameTable(this.commentsTable)) {
 					this.commentMapper = new DefaultCommentMapper(this.commentsTable);
@@ -2162,12 +2149,12 @@ public class AjASTConverter extends ASTConverter {
 		case AST.JLS2_INTERNAL:
 			classInstanceCreation.internalSetName(convert(allocation.type));
 			break;
-		case AST.JLS3:
+		case AST.JLS3_INTERNAL:
+		default:
 			classInstanceCreation.setType(convertType(allocation.type));
 		}
 		org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression[] arguments = allocation.arguments;
 		if (arguments != null) {
-			int length = arguments.length;
 			for (org.aspectj.org.eclipse.jdt.internal.compiler.ast.Expression expression : arguments) {
 				Expression argument = super.convert(expression);
 				if (this.resolveBindings) {
@@ -2181,7 +2168,8 @@ public class AjASTConverter extends ASTConverter {
 			case AST.JLS2_INTERNAL:
 				classInstanceCreation.setFlags(classInstanceCreation.getFlags() | ASTNode.MALFORMED);
 				break;
-			case AST.JLS3:
+			case AST.JLS3_INTERNAL:
+			default:
 				for (int i = 0, max = allocation.typeArguments.length; i < max; i++) {
 					classInstanceCreation.typeArguments().add(convertType(allocation.typeArguments[i]));
 				}
@@ -2346,26 +2334,26 @@ public class AjASTConverter extends ASTConverter {
 				switch (this.ast.apiLevel) {
 				case AST.JLS2_INTERNAL:
 					return createFakeEmptyStatement(statement);
-				case AST.JLS3:
+				case AST.JLS3_INTERNAL:
+				default:
 					final TypeDeclarationStatement typeDeclarationStatement = new TypeDeclarationStatement(this.ast);
 					typeDeclarationStatement.setDeclaration((EnumDeclaration) result);
 					AbstractTypeDeclaration typeDecl = typeDeclarationStatement.getDeclaration();
 					typeDeclarationStatement.setSourceRange(typeDecl.getStartPosition(), typeDecl.getLength());
 					return typeDeclarationStatement;
 				}
-				break;
 			case ASTNode.ANNOTATION_TYPE_DECLARATION:
 				switch (this.ast.apiLevel) {
 				case AST.JLS2_INTERNAL:
 					return createFakeEmptyStatement(statement);
-				case AST.JLS3:
+				case AST.JLS3_INTERNAL:
+				default:
 					TypeDeclarationStatement typeDeclarationStatement = new TypeDeclarationStatement(this.ast);
 					typeDeclarationStatement.setDeclaration((AnnotationTypeDeclaration) result);
 					AbstractTypeDeclaration typeDecl = typeDeclarationStatement.getDeclaration();
 					typeDeclarationStatement.setSourceRange(typeDecl.getStartPosition(), typeDecl.getLength());
 					return typeDeclarationStatement;
 				}
-				break;
 			default:
 				TypeDeclaration typeDeclaration = (TypeDeclaration) result;
 				if (typeDeclaration == null) {
@@ -2378,7 +2366,8 @@ public class AjASTConverter extends ASTConverter {
 						TypeDeclaration typeDecl = typeDeclarationStatement.internalGetTypeDeclaration();
 						typeDeclarationStatement.setSourceRange(typeDecl.getStartPosition(), typeDecl.getLength());
 						break;
-					case AST.JLS3:
+					case AST.JLS3_INTERNAL:
+					default:
 						AbstractTypeDeclaration typeDeclAST3 = typeDeclarationStatement.getDeclaration();
 						typeDeclarationStatement.setSourceRange(typeDeclAST3.getStartPosition(), typeDeclAST3.getLength());
 						break;
@@ -2422,7 +2411,6 @@ public class AjASTConverter extends ASTConverter {
 		switchStatement.setExpression(super.convert(statement.expression));
 		org.aspectj.org.eclipse.jdt.internal.compiler.ast.Statement[] statements = statement.statements;
 		if (statements != null) {
-			int statementsLength = statements.length;
 			for (org.aspectj.org.eclipse.jdt.internal.compiler.ast.Statement value : statements) {
 				switchStatement.statements().add(convert(value));
 			}
@@ -2724,7 +2712,9 @@ public class AjASTConverter extends ASTConverter {
 		name.setSourceRange(start, nameEnd - start + 1);
 		variableDecl.setName(name);
 		final int extraDimensions = retrieveExtraDimension(nameEnd + 1, localDeclaration.type.sourceEnd);
-		variableDecl.setExtraDimensions(extraDimensions);
+		for (int i = 0; i < extraDimensions; i++) {
+			variableDecl.extraDimensions().add(this.ast.newDimension());
+		}
 		Type type = convertType(localDeclaration.type);
 		int typeEnd = type.getStartPosition() + type.getLength() - 1;
 		int rightEnd = Math.max(typeEnd, localDeclaration.declarationSourceEnd);
@@ -2949,7 +2939,8 @@ public class AjASTConverter extends ASTConverter {
 						this.recordNodes(simpleName, typeReference);
 					}
 					break;
-				case AST.JLS3:
+				case AST.JLS3_INTERNAL:
+				default:
 					simpleType = new SimpleType(this.ast);
 					simpleType.setName(simpleName);
 					simpleType.setSourceRange(simpleName.getStartPosition(), simpleName.getLength());
@@ -2996,14 +2987,6 @@ public class AjASTConverter extends ASTConverter {
 			if (dimensions != 0) {
 				type = this.ast.newArrayType(type, dimensions);
 				type.setSourceRange(sourceStart, length);
-				ArrayType subarrayType = (ArrayType) type;
-				int index = dimensions - 1;
-				while (index > 0) {
-					subarrayType = (ArrayType) subarrayType.getComponentType();
-					int end = retrieveProperRightBracketPosition(index, sourceStart);
-					subarrayType.setSourceRange(sourceStart, end - sourceStart + 1);
-					index--;
-				}
 				if (this.resolveBindings) {
 					// store keys for inner types
 					completeRecord((ArrayType) type, typeReference);
@@ -3030,7 +3013,8 @@ public class AjASTConverter extends ASTConverter {
 					type = simpleType;
 				}
 					break;
-				case AST.JLS3:
+				case AST.JLS3_INTERNAL:
+				default:
 					if (typeArguments != null) {
 						int numberOfEnclosingType = 0;
 						int startingIndex = 0;
@@ -3156,14 +3140,6 @@ public class AjASTConverter extends ASTConverter {
 					type.setSourceRange(sourceStart, end - sourceStart + 1);
 				} else {
 					type.setSourceRange(sourceStart, length);
-				}
-				ArrayType subarrayType = (ArrayType) type;
-				int index = dimensions - 1;
-				while (index > 0) {
-					subarrayType = (ArrayType) subarrayType.getComponentType();
-					end = retrieveProperRightBracketPosition(index, sourceStart);
-					subarrayType.setSourceRange(sourceStart, end - sourceStart + 1);
-					index--;
 				}
 			}
 		}
@@ -3513,7 +3489,7 @@ public class AjASTConverter extends ASTConverter {
 						if (expression instanceof JavadocArgumentExpression) {
 							JavadocArgumentExpression argExpr = (JavadocArgumentExpression) expression;
 							TypeReference typeRef = argExpr.argument.type;
-							if (this.ast.apiLevel >= AST.JLS3) {
+							if (this.ast.apiLevel >= AST.JLS3_INTERNAL) {
 								param.setVarargs(argExpr.argument.isVarArgs());
 							}
 							recordNodes(param.getType(), typeRef);
@@ -3542,14 +3518,14 @@ public class AjASTConverter extends ASTConverter {
 
 	protected void recordPendingNameScopeResolution(Name name) {
 		if (this.pendingNameScopeResolution == null) {
-			this.pendingNameScopeResolution = new HashSet();
+			this.pendingNameScopeResolution = new HashSet<>();
 		}
 		this.pendingNameScopeResolution.add(name);
 	}
 
 	protected void recordPendingThisExpressionScopeResolution(ThisExpression thisExpression) {
 		if (this.pendingThisExpressionScopeResolution == null) {
-			this.pendingThisExpressionScopeResolution = new HashSet();
+			this.pendingThisExpressionScopeResolution = new HashSet<>();
 		}
 		this.pendingThisExpressionScopeResolution.add(thisExpression);
 	}
@@ -3676,6 +3652,7 @@ public class AjASTConverter extends ASTConverter {
 	 *
 	 * @return int[] a single dimensional array, with two elements, for the start and end positions of the name respectively
 	 */
+	@SuppressWarnings("incomplete-switch")
 	protected int[] retrieveEndOfElementTypeNamePosition(int start, int end) {
 		this.scanner.resetTo(start, end);
 		boolean isAnnotation = false;
@@ -3714,6 +3691,7 @@ public class AjASTConverter extends ASTConverter {
 	 *
 	 * @return int the position found
 	 */
+	@SuppressWarnings("incomplete-switch")
 	protected int retrieveEndOfRightParenthesisPosition(int start, int end) {
 		this.scanner.resetTo(start, end);
 		try {
@@ -3783,6 +3761,7 @@ public class AjASTConverter extends ASTConverter {
 	 *
 	 * @return int the dimension found, -1 if none
 	 */
+	@SuppressWarnings("incomplete-switch")
 	protected int retrieveIdentifierEndPosition(int start, int end) {
 		this.scanner.resetTo(start, end);
 		try {
@@ -3804,6 +3783,7 @@ public class AjASTConverter extends ASTConverter {
 	 *
 	 * @return int the position found.
 	 */
+	@SuppressWarnings("incomplete-switch")
 	protected int retrievePositionBeforeNextCommaOrSemiColon(int start, int end) {
 		this.scanner.resetTo(start, end);
 		int braceCounter = 0;
@@ -3842,6 +3822,7 @@ public class AjASTConverter extends ASTConverter {
 		return -1;
 	}
 
+	@SuppressWarnings("incomplete-switch")
 	protected int retrieveProperRightBracketPosition(int bracketNumber, int start) {
 		this.scanner.resetTo(start, this.compilationUnitSourceLength);
 		try {
@@ -3867,6 +3848,7 @@ public class AjASTConverter extends ASTConverter {
 	 *
 	 * @return int the position found.
 	 */
+	@SuppressWarnings("incomplete-switch")
 	protected int retrieveRightBraceOrSemiColonPosition(int start, int end) {
 		this.scanner.resetTo(start, end);
 		try {
@@ -3890,6 +3872,7 @@ public class AjASTConverter extends ASTConverter {
 	 *
 	 * @return int the position found.
 	 */
+	@SuppressWarnings("incomplete-switch")
 	protected int retrieveRightBrace(int start, int end) {
 		this.scanner.resetTo(start, end);
 		try {
@@ -3911,6 +3894,7 @@ public class AjASTConverter extends ASTConverter {
 	 *
 	 * @return int the dimension found, -1 if none
 	 */
+	@SuppressWarnings("incomplete-switch")
 	protected int retrieveRightBracketPosition(int start, int end) {
 		this.scanner.resetTo(start, end);
 		try {
@@ -3931,6 +3915,7 @@ public class AjASTConverter extends ASTConverter {
 	 * This method is used to set the right end position for expression statement. The actual AST nodes don't include the trailing
 	 * semicolon. This method fixes the length of the corresponding node.
 	 */
+	@SuppressWarnings("incomplete-switch")
 	protected void retrieveSemiColonPosition(ASTNode node) {
 		int start = node.getStartPosition();
 		int length = node.getLength();
@@ -3976,6 +3961,7 @@ public class AjASTConverter extends ASTConverter {
 	 *
 	 * @return int the dimension found, -1 if none
 	 */
+	@SuppressWarnings("incomplete-switch")
 	protected int retrieveStartBlockPosition(int start, int end) {
 		this.scanner.resetTo(start, end);
 		try {
@@ -4701,30 +4687,14 @@ public class AjASTConverter extends ASTConverter {
 					this.ast.getBindingResolver().updateKey(type, elementType);
 					fieldDeclaration.setType(elementType);
 				} else {
-					int start = type.getStartPosition();
-					ArrayType subarrayType = arrayType;
-					int index = extraDimension;
-					while (index > 0) {
-						subarrayType = (ArrayType) subarrayType.getComponentType();
-						index--;
-					}
-					int end = retrieveProperRightBracketPosition(remainingDimensions, start);
-					subarrayType.setSourceRange(start, end - start + 1);
-					// cut the child loose from its parent (without creating garbage)
-					subarrayType.setParent(null, null);
+					ArrayType subarrayType = extractSubArrayType(arrayType, remainingDimensions, extraDimension);
 					fieldDeclaration.setType(subarrayType);
-					updateInnerPositions(subarrayType, remainingDimensions);
 					this.ast.getBindingResolver().updateKey(type, subarrayType);
 				}
 			} else {
 				fieldDeclaration.setType(type);
 			}
 		} else {
-			if (type.isArrayType()) {
-				// update positions of the component types of the array type
-				int dimensions = ((ArrayType) type).getDimensions();
-				updateInnerPositions(type, dimensions);
-			}
 			fieldDeclaration.setType(type);
 		}
 	}
@@ -4735,7 +4705,8 @@ public class AjASTConverter extends ASTConverter {
 		case AST.JLS2_INTERNAL:
 			adviceDeclaration.internalSetReturnType(type);
 			break;
-		case AST.JLS3:
+		case AST.JLS3_INTERNAL:
+		default:
 			adviceDeclaration.setReturnType2(type);
 			break;
 		}
@@ -4756,28 +4727,19 @@ public class AjASTConverter extends ASTConverter {
 					case AST.JLS2_INTERNAL:
 						methodDeclaration.internalSetReturnType(elementType);
 						break;
-					case AST.JLS3:
+					case AST.JLS3_INTERNAL:
+					default:
 						methodDeclaration.setReturnType2(elementType);
 						break;
 					}
 				} else {
-					int start = type.getStartPosition();
-					ArrayType subarrayType = arrayType;
-					int index = extraDimension;
-					while (index > 0) {
-						subarrayType = (ArrayType) subarrayType.getComponentType();
-						index--;
-					}
-					int end = retrieveProperRightBracketPosition(remainingDimensions, start);
-					subarrayType.setSourceRange(start, end - start + 1);
-					// cut the child loose from its parent (without creating garbage)
-					subarrayType.setParent(null, null);
-					updateInnerPositions(subarrayType, remainingDimensions);
+					ArrayType subarrayType = extractSubArrayType(arrayType, remainingDimensions, extraDimension);
 					switch (this.ast.apiLevel) {
 					case AST.JLS2_INTERNAL:
 						methodDeclaration.internalSetReturnType(subarrayType);
 						break;
-					case AST.JLS3:
+					case AST.JLS3_INTERNAL:
+					default:
 						methodDeclaration.setReturnType2(subarrayType);
 						break;
 					}
@@ -4788,7 +4750,8 @@ public class AjASTConverter extends ASTConverter {
 				case AST.JLS2_INTERNAL:
 					methodDeclaration.internalSetReturnType(type);
 					break;
-				case AST.JLS3:
+				case AST.JLS3_INTERNAL:
+				default:
 					methodDeclaration.setReturnType2(type);
 					break;
 				}
@@ -4798,7 +4761,8 @@ public class AjASTConverter extends ASTConverter {
 			case AST.JLS2_INTERNAL:
 				methodDeclaration.internalSetReturnType(type);
 				break;
-			case AST.JLS3:
+			case AST.JLS3_INTERNAL:
+			default:
 				methodDeclaration.setReturnType2(type);
 				break;
 			}
@@ -4824,18 +4788,7 @@ public class AjASTConverter extends ASTConverter {
 					this.ast.getBindingResolver().updateKey(type, elementType);
 					singleVariableDeclaration.setType(elementType);
 				} else {
-					int start = type.getStartPosition();
-					ArrayType subarrayType = arrayType;
-					int index = extraDimension;
-					while (index > 0) {
-						subarrayType = (ArrayType) subarrayType.getComponentType();
-						index--;
-					}
-					int end = retrieveProperRightBracketPosition(remainingDimensions, start);
-					subarrayType.setSourceRange(start, end - start + 1);
-					// cut the child loose from its parent (without creating garbage)
-					subarrayType.setParent(null, null);
-					updateInnerPositions(subarrayType, remainingDimensions);
+					ArrayType subarrayType = extractSubArrayType(arrayType, remainingDimensions, extraDimension);
 					singleVariableDeclaration.setType(subarrayType);
 					this.ast.getBindingResolver().updateKey(type, subarrayType);
 				}
@@ -4861,18 +4814,7 @@ public class AjASTConverter extends ASTConverter {
 					this.ast.getBindingResolver().updateKey(type, elementType);
 					variableDeclarationExpression.setType(elementType);
 				} else {
-					int start = type.getStartPosition();
-					ArrayType subarrayType = arrayType;
-					int index = extraDimension;
-					while (index > 0) {
-						subarrayType = (ArrayType) subarrayType.getComponentType();
-						index--;
-					}
-					int end = retrieveProperRightBracketPosition(remainingDimensions, start);
-					subarrayType.setSourceRange(start, end - start + 1);
-					// cut the child loose from its parent (without creating garbage)
-					subarrayType.setParent(null, null);
-					updateInnerPositions(subarrayType, remainingDimensions);
+					ArrayType subarrayType = extractSubArrayType(arrayType, remainingDimensions, extraDimension);
 					variableDeclarationExpression.setType(subarrayType);
 					this.ast.getBindingResolver().updateKey(type, subarrayType);
 				}
@@ -4898,18 +4840,7 @@ public class AjASTConverter extends ASTConverter {
 					this.ast.getBindingResolver().updateKey(type, elementType);
 					variableDeclarationStatement.setType(elementType);
 				} else {
-					int start = type.getStartPosition();
-					ArrayType subarrayType = arrayType;
-					int index = extraDimension;
-					while (index > 0) {
-						subarrayType = (ArrayType) subarrayType.getComponentType();
-						index--;
-					}
-					int end = retrieveProperRightBracketPosition(remainingDimensions, start);
-					subarrayType.setSourceRange(start, end - start + 1);
-					// cut the child loose from its parent (without creating garbage)
-					subarrayType.setParent(null, null);
-					updateInnerPositions(subarrayType, remainingDimensions);
+					ArrayType subarrayType = extractSubArrayType(arrayType, remainingDimensions, extraDimension);
 					variableDeclarationStatement.setType(subarrayType);
 					this.ast.getBindingResolver().updateKey(type, subarrayType);
 				}
@@ -4921,19 +4852,21 @@ public class AjASTConverter extends ASTConverter {
 		}
 	}
 
-	protected void updateInnerPositions(Type type, int dimensions) {
-		if (dimensions > 1) {
-			// need to set positions for intermediate array type see 42839
-			int start = type.getStartPosition();
-			Type currentComponentType = ((ArrayType) type).getComponentType();
-			int searchedDimension = dimensions - 1;
-			int rightBracketEndPosition = start;
-			while (currentComponentType.isArrayType()) {
-				rightBracketEndPosition = retrieveProperRightBracketPosition(searchedDimension, start);
-				currentComponentType.setSourceRange(start, rightBracketEndPosition - start + 1);
-				currentComponentType = ((ArrayType) currentComponentType).getComponentType();
-				searchedDimension--;
-			}
+	/**
+	 * Extracts the type remaining once {@code dimensionsToRemove} dimensions (declared after the variable name) have been removed
+	 * from {@code arrayType}, detaching it from its parent.
+	 */
+	private ArrayType extractSubArrayType(ArrayType arrayType, int remainingDimensions, int dimensionsToRemove) {
+		int start = arrayType.getStartPosition();
+		List dimensions = arrayType.dimensions();
+		while (dimensionsToRemove > 0) {
+			dimensions.remove(dimensions.size() - 1);
+			dimensionsToRemove--;
 		}
+		int end = retrieveProperRightBracketPosition(remainingDimensions, start);
+		arrayType.setSourceRange(start, end - start + 1);
+		// cut the child loose from its parent (without creating garbage)
+		arrayType.setParent(null, null);
+		return arrayType;
 	}
 }

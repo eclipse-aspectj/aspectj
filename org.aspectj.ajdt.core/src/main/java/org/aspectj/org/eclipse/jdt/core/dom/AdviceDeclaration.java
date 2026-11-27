@@ -313,6 +313,7 @@ public abstract class AdviceDeclaration extends BodyDeclaration {
 			+ (this.optionalBody == null ? 0 : getBody().treeSize());
 	}
 
+	@SuppressWarnings("deprecation") // JLS2 API, required by BodyDeclaration
 	final SimplePropertyDescriptor internalModifiersProperty() {
 		return internalModifiersPropertyFactory(AdviceDeclaration.class); // ajh02: stub method. I don't know what this does
 	}

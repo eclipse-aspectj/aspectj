@@ -248,7 +248,21 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 	 * @see ASTVisitor#visit(ArrayType)
 	 */
 	public boolean visit(ArrayType node) {
-		node.getComponentType().accept(this);
+		node.getElementType().accept(this);
+		for (Object dimension : node.dimensions()) {
+			((Dimension) dimension).accept(this);
+		}
+		return false;
+	}
+
+	/*
+	 * @see ASTVisitor#visit(Dimension)
+	 */
+	public boolean visit(Dimension node) {
+		for (Object annotation : node.annotations()) {
+			((ASTNode) annotation).accept(this);
+			this.buffer.append(' ');
+		}
 		this.buffer.append("[]");//$NON-NLS-1$
 		return false;
 	}
@@ -372,7 +386,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		if (node.getAST().apiLevel() == AST.JLS2_INTERNAL) {
 			node.internalGetName().accept(this);
 		}
-		if (node.getAST().apiLevel() >= AST.JLS3) {
+		if (node.getAST().apiLevel() >= AST.JLS3_INTERNAL) {
 			if (!node.typeArguments().isEmpty()) {
 				this.buffer.append("<");//$NON-NLS-1$
 				for (Iterator it = node.typeArguments().iterator(); it.hasNext(); ) {
@@ -436,7 +450,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 	 */
 	public boolean visit(ConstructorInvocation node) {
 		printIndent();
-		if (node.getAST().apiLevel() >= AST.JLS3) {
+		if (node.getAST().apiLevel() >= AST.JLS3_INTERNAL) {
 			if (!node.typeArguments().isEmpty()) {
 				this.buffer.append("<");//$NON-NLS-1$
 				for (Iterator it = node.typeArguments().iterator(); it.hasNext(); ) {
@@ -635,7 +649,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		if (node.getAST().apiLevel() == AST.JLS2_INTERNAL) {
 			printModifiers(node.getModifiers());
 		}
-		if (node.getAST().apiLevel() >= AST.JLS3) {
+		if (node.getAST().apiLevel() >= AST.JLS3_INTERNAL) {
 			printModifiers(node.modifiers());
 		}
 		node.getType().accept(this);
@@ -699,7 +713,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 	public boolean visit(ImportDeclaration node) {
 		printIndent();
 		this.buffer.append("import ");//$NON-NLS-1$
-		if (node.getAST().apiLevel() >= AST.JLS3) {
+		if (node.getAST().apiLevel() >= AST.JLS3_INTERNAL) {
 			if (node.isStatic()) {
 				this.buffer.append("static ");//$NON-NLS-1$
 			}
@@ -753,7 +767,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		if (node.getAST().apiLevel() == AST.JLS2_INTERNAL) {
 			printModifiers(node.getModifiers());
 		}
-		if (node.getAST().apiLevel() >= AST.JLS3) {
+		if (node.getAST().apiLevel() >= AST.JLS3_INTERNAL) {
 			printModifiers(node.modifiers());
 		}
 		node.getBody().accept(this);
@@ -856,7 +870,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 	 */
 	public boolean visit(MethodRefParameter node) {
 		node.getType().accept(this);
-		if (node.getAST().apiLevel() >= AST.JLS3) {
+		if (node.getAST().apiLevel() >= AST.JLS3_INTERNAL) {
 			if (node.isVarargs()) {
 				this.buffer.append("...");//$NON-NLS-1$
 			}
@@ -879,7 +893,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		if (node.getAST().apiLevel() == AST.JLS2_INTERNAL) {
 			printModifiers(node.getModifiers());
 		}
-		if (node.getAST().apiLevel() >= AST.JLS3) {
+		if (node.getAST().apiLevel() >= AST.JLS3_INTERNAL) {
 			printModifiers(node.modifiers());
 			if (!node.typeParameters().isEmpty()) {
 				this.buffer.append("<");//$NON-NLS-1$
@@ -919,10 +933,10 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		for (int i = 0; i < node.getExtraDimensions(); i++) {
 			this.buffer.append("[]"); //$NON-NLS-1$
 		}
-		if (!node.thrownExceptions().isEmpty()) {
+		if (!node.thrownExceptionTypes().isEmpty()) {
 			this.buffer.append(" throws ");//$NON-NLS-1$
-			for (Iterator it = node.thrownExceptions().iterator(); it.hasNext(); ) {
-				Name n = (Name) it.next();
+			for (Iterator it = node.thrownExceptionTypes().iterator(); it.hasNext(); ) {
+				Type n = (Type) it.next();
 				n.accept(this);
 				if (it.hasNext()) {
 					this.buffer.append(", ");//$NON-NLS-1$
@@ -946,7 +960,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 			node.getExpression().accept(this);
 			this.buffer.append(".");//$NON-NLS-1$
 		}
-		if (node.getAST().apiLevel() >= AST.JLS3) {
+		if (node.getAST().apiLevel() >= AST.JLS3_INTERNAL) {
 			if (!node.typeArguments().isEmpty()) {
 				this.buffer.append("<");//$NON-NLS-1$
 				for (Iterator it = node.typeArguments().iterator(); it.hasNext(); ) {
@@ -1020,7 +1034,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 	 * @see ASTVisitor#visit(PackageDeclaration)
 	 */
 	public boolean visit(PackageDeclaration node) {
-		if (node.getAST().apiLevel() >= AST.JLS3) {
+		if (node.getAST().apiLevel() >= AST.JLS3_INTERNAL) {
 			if (node.getJavadoc() != null) {
 				node.getJavadoc().accept(this);
 			}
@@ -1162,11 +1176,11 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		if (node.getAST().apiLevel() == AST.JLS2_INTERNAL) {
 			printModifiers(node.getModifiers());
 		}
-		if (node.getAST().apiLevel() >= AST.JLS3) {
+		if (node.getAST().apiLevel() >= AST.JLS3_INTERNAL) {
 			printModifiers(node.modifiers());
 		}
 		node.getType().accept(this);
-		if (node.getAST().apiLevel() >= AST.JLS3) {
+		if (node.getAST().apiLevel() >= AST.JLS3_INTERNAL) {
 			if (node.isVarargs()) {
 				this.buffer.append("...");//$NON-NLS-1$
 			}
@@ -1200,7 +1214,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 			node.getExpression().accept(this);
 			this.buffer.append(".");//$NON-NLS-1$
 		}
-		if (node.getAST().apiLevel() >= AST.JLS3) {
+		if (node.getAST().apiLevel() >= AST.JLS3_INTERNAL) {
 			if (!node.typeArguments().isEmpty()) {
 				this.buffer.append("<");//$NON-NLS-1$
 				for (Iterator it = node.typeArguments().iterator(); it.hasNext(); ) {
@@ -1247,7 +1261,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 			this.buffer.append(".");//$NON-NLS-1$
 		}
 		this.buffer.append("super.");//$NON-NLS-1$
-		if (node.getAST().apiLevel() >= AST.JLS3) {
+		if (node.getAST().apiLevel() >= AST.JLS3_INTERNAL) {
 			if (!node.typeArguments().isEmpty()) {
 				this.buffer.append("<");//$NON-NLS-1$
 				for (Iterator it = node.typeArguments().iterator(); it.hasNext(); ) {
@@ -1277,15 +1291,40 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 	 * @see ASTVisitor#visit(SwitchCase)
 	 */
 	public boolean visit(SwitchCase node) {
-		if (node.isDefault()) {
-			this.buffer.append("default :\n");//$NON-NLS-1$
+		if (node.getAST().apiLevel() >= AST.JLS14_INTERNAL) {
+			if (node.isDefault() && !isCaseDefaultExpression(node)) {
+				this.buffer.append(node.isSwitchLabeledRule() ? "default ->\n" : "default :\n");//$NON-NLS-1$ //$NON-NLS-2$
+			} else {
+				this.buffer.append("case ");//$NON-NLS-1$
+				for (Iterator it = node.expressions().iterator(); it.hasNext(); ) {
+					((Expression) it.next()).accept(this);
+					if (it.hasNext()) {
+						this.buffer.append(", ");//$NON-NLS-1$
+					}
+				}
+				this.buffer.append(node.isSwitchLabeledRule() ? " ->\n" : ":\n");//$NON-NLS-1$ //$NON-NLS-2$
+			}
 		} else {
-			this.buffer.append("case ");//$NON-NLS-1$
-			node.getExpression().accept(this);
-			this.buffer.append(":\n");//$NON-NLS-1$
+			if (node.isDefault()) {
+				this.buffer.append("default :\n");//$NON-NLS-1$
+			} else {
+				this.buffer.append("case ");//$NON-NLS-1$
+				getSwitchExpression(node).accept(this);
+				this.buffer.append(":\n");//$NON-NLS-1$
+			}
 		}
 		this.indent++; //decremented in visit(SwitchStatement)
 		return false;
+	}
+
+	private boolean isCaseDefaultExpression(SwitchCase node) {
+		return node.expressions().size() == 1 && node.expressions().get(0) instanceof CaseDefaultExpression;
+	}
+
+	// Before JLS14 a case has a single expression, which the (then deprecated) getExpression() returns
+	@SuppressWarnings("deprecation")
+	private Expression getSwitchExpression(SwitchCase node) {
+		return node.getExpression();
 	}
 
 	/*
@@ -1420,7 +1459,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		if (node.getAST().apiLevel() == AST.JLS2_INTERNAL) {
 			printModifiers(node.getModifiers());
 		}
-		if (node.getAST().apiLevel() >= AST.JLS3) {
+		if (node.getAST().apiLevel() >= AST.JLS3_INTERNAL) {
 			printModifiers(node.modifiers());
 		}
 //		this.buffer.append(node.isInterface() ? "interface " : "class");//$NON-NLS-2$//$NON-NLS-1$
@@ -1432,7 +1471,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 			this.buffer.append("class ");//$NON-NLS-1$
 		}
 		node.getName().accept(this);
-		if (node.getAST().apiLevel() >= AST.JLS3) {
+		if (node.getAST().apiLevel() >= AST.JLS3_INTERNAL) {
 			if (!node.typeParameters().isEmpty()) {
 				this.buffer.append("<");//$NON-NLS-1$
 				for (Iterator it = node.typeParameters().iterator(); it.hasNext(); ) {
@@ -1469,7 +1508,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 				this.buffer.append(" ");//$NON-NLS-1$
 			}
 		}
-		if (node.getAST().apiLevel() >= AST.JLS3) {
+		if (node.getAST().apiLevel() >= AST.JLS3_INTERNAL) {
 			if (node.getSuperclassType() != null) {
 				this.buffer.append("extends ");//$NON-NLS-1$
 				node.getSuperclassType().accept(this);
@@ -1523,7 +1562,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		if (node.getAST().apiLevel() == AST.JLS2_INTERNAL) {
 			node.internalGetTypeDeclaration().accept(this);
 		}
-		if (node.getAST().apiLevel() >= AST.JLS3) {
+		if (node.getAST().apiLevel() >= AST.JLS3_INTERNAL) {
 			node.getDeclaration().accept(this);
 		}
 		return false;
@@ -1564,7 +1603,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		if (node.getAST().apiLevel() == AST.JLS2_INTERNAL) {
 			printModifiers(node.getModifiers());
 		}
-		if (node.getAST().apiLevel() >= AST.JLS3) {
+		if (node.getAST().apiLevel() >= AST.JLS3_INTERNAL) {
 			printModifiers(node.modifiers());
 		}
 		node.getType().accept(this);
@@ -1602,7 +1641,7 @@ public class AjNaiveASTFlattener extends AjASTVisitor {
 		if (node.getAST().apiLevel() == AST.JLS2_INTERNAL) {
 			printModifiers(node.getModifiers());
 		}
-		if (node.getAST().apiLevel() >= AST.JLS3) {
+		if (node.getAST().apiLevel() >= AST.JLS3_INTERNAL) {
 			printModifiers(node.modifiers());
 		}
 		node.getType().accept(this);

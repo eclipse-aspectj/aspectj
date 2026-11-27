@@ -113,8 +113,10 @@ public class AfterThrowingAdviceDeclaration extends AfterAdviceDeclaration {
 			(Javadoc) ASTNode.copySubtree(target, getJavadoc()));
 		result.parameters().addAll(
 			ASTNode.copySubtrees(target, parameters()));
-		result.setPointcut(getPointcut());
-		result.setThrowing(throwing);
+		if (getPointcut() != null) {
+			result.setPointcut((PointcutDesignator) ASTNode.copySubtree(target, getPointcut()));
+		}
+		result.setThrowing((SingleVariableDeclaration) ASTNode.copySubtree(target, getThrowing()));
 		result.thrownExceptions().addAll(
 			ASTNode.copySubtrees(target, thrownExceptions()));
 		result.setBody(

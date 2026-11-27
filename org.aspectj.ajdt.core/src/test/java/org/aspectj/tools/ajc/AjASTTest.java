@@ -12,6 +12,7 @@ package org.aspectj.tools.ajc;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import org.aspectj.org.eclipse.jdt.core.SourceRange;
@@ -24,6 +25,7 @@ import org.aspectj.org.eclipse.jdt.core.dom.AfterAdviceDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.AfterReturningAdviceDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.AfterThrowingAdviceDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.AjAST;
+import org.aspectj.org.eclipse.jdt.core.dom.AjASTMatcher;
 import org.aspectj.org.eclipse.jdt.core.dom.AjASTVisitor;
 import org.aspectj.org.eclipse.jdt.core.dom.AjTypeDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.AndPointcut;
@@ -40,6 +42,7 @@ import org.aspectj.org.eclipse.jdt.core.dom.CompilationUnit;
 import org.aspectj.org.eclipse.jdt.core.dom.DeclareAtConstructorDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.DeclareAtFieldDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.DeclareAtMethodDeclaration;
+import org.aspectj.org.eclipse.jdt.core.dom.DeclareAnnotationDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.DeclareAtTypeDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.DeclareErrorDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.DeclareParentsDeclaration;
@@ -71,6 +74,7 @@ import org.aspectj.org.eclipse.jdt.core.dom.SimplePropertyDescriptor;
 import org.aspectj.org.eclipse.jdt.core.dom.SimpleType;
 import org.aspectj.org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.StringLiteral;
+import org.aspectj.org.eclipse.jdt.core.dom.StructuralPropertyDescriptor;
 import org.aspectj.org.eclipse.jdt.core.dom.Type;
 import org.aspectj.org.eclipse.jdt.core.dom.TypeCategoryTypePattern;
 import org.aspectj.org.eclipse.jdt.core.dom.TypeDeclaration;
@@ -295,7 +299,7 @@ public class AjASTTest extends AjASTTestCase {
 		AjAST ajast = createAjAST();
 		// DefaultTypePattern d =
 		ajast.newDefaultTypePattern();
-		List props = DefaultTypePattern.propertyDescriptors(AST.JLS3);
+		List props = DefaultTypePattern.propertyDescriptors(AST.getJLSLatest());
 		assertEquals("there should be no properties for the DefaultTypePattern", 0, props.size());
 	}
 
@@ -327,7 +331,7 @@ public class AjASTTest extends AjASTTestCase {
 		AjAST ajast = createAjAST();
 		// SignaturePattern p =
 		ajast.newSignaturePattern();
-		List props = SignaturePattern.propertyDescriptors(AST.JLS3);
+		List props = SignaturePattern.propertyDescriptors(AST.getJLSLatest());
 		assertEquals("there should be no properties for the DefaultTypePattern", 0, props.size());
 	}
 
@@ -386,7 +390,7 @@ public class AjASTTest extends AjASTTestCase {
 		AjAST ajast = createAjAST();
 		// PointcutDeclaration d =
 		ajast.newPointcutDeclaration();
-		List props = PointcutDeclaration.propertyDescriptors(AST.JLS3);
+		List props = PointcutDeclaration.propertyDescriptors(AST.getJLSLatest());
 		boolean foundJavadoc = false;
 		boolean foundModifiers = false;
 		boolean foundName = false;
@@ -436,7 +440,7 @@ public class AjASTTest extends AjASTTestCase {
 	public void testInternalPointcutDeclaration() {
 		AjAST ajast = createAjAST();
 		PointcutDeclaration d = ajast.newPointcutDeclaration();
-		List props = PointcutDeclaration.propertyDescriptors(AST.JLS3);
+		List props = PointcutDeclaration.propertyDescriptors(AST.getJLSLatest());
 		for (Object o : props) {
 			if (o instanceof ChildPropertyDescriptor) {
 				ChildPropertyDescriptor element = (ChildPropertyDescriptor) o;
@@ -496,7 +500,7 @@ public class AjASTTest extends AjASTTestCase {
 		AjAST ajast = createAjAST();
 		// AspectDeclaration d =
 		ajast.newAspectDeclaration();
-		List props = AspectDeclaration.propertyDescriptors(AST.JLS3);
+		List props = AspectDeclaration.propertyDescriptors(AST.getJLSLatest());
 		boolean foundJavadoc = false;
 		boolean foundPerClause = false;
 		boolean foundIsPrivileged = false;
@@ -536,6 +540,23 @@ public class AjASTTest extends AjASTTestCase {
 		assertTrue("the AspectDeclaration clone should be a 'privileged'", copy.isPrivileged());
 	}
 
+	public void testCloneAspectDeclarationWithoutPerClause() {
+		AjAST ajast = createAjAST();
+		AspectDeclaration d = ajast.newAspectDeclaration();
+		AspectDeclaration copy = (AspectDeclaration) ASTNode.copySubtree(ajast, d);
+		assertNull("an implicit persingleton aspect has no perClause, and neither should its clone", copy.getPerClause());
+	}
+
+	public void testCloneAspectDeclarationLeavesOriginalPerClauseAttached() {
+		AjAST ajast = createAjAST();
+		AspectDeclaration d = ajast.newAspectDeclaration();
+		PerTypeWithin perClause = ajast.newPerTypeWithin();
+		d.setPerClause(perClause);
+		AspectDeclaration copy = (AspectDeclaration) ASTNode.copySubtree(ajast, d);
+		assertNotSame("the clone should have its own perClause node", perClause, copy.getPerClause());
+		assertSame("cloning must not detach the original's perClause", d, perClause.getParent());
+	}
+
 	/**
 	 * AsepctDeclarations's have a perClause property - test the getting and setting of this property
 	 */
@@ -557,6 +578,52 @@ public class AjASTTest extends AjASTTestCase {
 		assertFalse("by default the aspect should not be privileged", ad.isPrivileged());
 		ad.setPrivileged(true);
 		assertTrue("the aspect should now privileged", ad.isPrivileged());
+	}
+
+	private ReferencePointcut newReferencePointcut(AjAST ajast, String name) {
+		ReferencePointcut pointcut = ajast.newReferencePointcut();
+		pointcut.setName(ajast.newSimpleName(name));
+		return pointcut;
+	}
+
+	public void testCloneBeforeAdviceDeclaration() {
+		AjAST ajast = createAjAST();
+		BeforeAdviceDeclaration d = ajast.newBeforeAdviceDeclaration();
+		ReferencePointcut pointcut = newReferencePointcut(ajast, "p");
+		d.setPointcut(pointcut);
+		BeforeAdviceDeclaration copy = (BeforeAdviceDeclaration) ASTNode.copySubtree(ajast, d);
+		assertNotSame("the clone should have its own pointcut node", pointcut, copy.getPointcut());
+		assertTrue("the cloned pointcut should match", pointcut.subtreeMatch(new AjASTMatcher(), copy.getPointcut()));
+		assertSame("cloning must not detach the original's pointcut", d, pointcut.getParent());
+	}
+
+	public void testCloneAroundAdviceDeclarationKeepsReturnType() {
+		AjAST ajast = createAjAST();
+		AroundAdviceDeclaration d = ajast.newAroundAdviceDeclaration();
+		d.setPointcut(newReferencePointcut(ajast, "p"));
+		d.setReturnType2(ajast.newPrimitiveType(PrimitiveType.INT));
+		AroundAdviceDeclaration copy = (AroundAdviceDeclaration) ASTNode.copySubtree(ajast, d);
+		assertEquals(PrimitiveType.INT, ((PrimitiveType) copy.getReturnType2()).getPrimitiveTypeCode());
+	}
+
+	public void testCloneAfterReturningAndAfterThrowingAdviceDeclarations() {
+		AjAST ajast = createAjAST();
+		SingleVariableDeclaration variable = ajast.newSingleVariableDeclaration();
+		variable.setName(ajast.newSimpleName("x"));
+		variable.setType(ajast.newPrimitiveType(PrimitiveType.INT));
+		AfterReturningAdviceDeclaration returning = ajast.newAfterReturningAdviceDeclaration();
+		returning.setPointcut(newReferencePointcut(ajast, "p"));
+		returning.setReturning(variable);
+		AfterReturningAdviceDeclaration returningCopy = (AfterReturningAdviceDeclaration) ASTNode.copySubtree(ajast, returning);
+		assertNotSame("the clone should have its own returning variable", variable, returningCopy.getReturning());
+		assertEquals("x", returningCopy.getReturning().getName().getIdentifier());
+
+		AfterThrowingAdviceDeclaration throwing = ajast.newAfterThrowingAdviceDeclaration();
+		throwing.setPointcut(newReferencePointcut(ajast, "p"));
+		throwing.setThrowing(variable);
+		AfterThrowingAdviceDeclaration throwingCopy = (AfterThrowingAdviceDeclaration) ASTNode.copySubtree(ajast, throwing);
+		assertNotSame("the clone should have its own throwing variable", variable, throwingCopy.getThrowing());
+		assertEquals("x", throwingCopy.getThrowing().getName().getIdentifier());
 	}
 
 	// -------------- AfterAdviceDeclaration tests ---------------
@@ -703,6 +770,37 @@ public class AjASTTest extends AjASTTestCase {
 		assertNotNull("should have created an InterTypeMethodDeclaration", d);
 	}
 
+	public void testCloneAndMatchITDMethodDeclaration() {
+		AjAST ajast = createAjAST();
+		InterTypeMethodDeclaration d = ajast.newInterTypeMethodDeclaration();
+		d.setOnType("C");
+		d.setName(ajast.newSimpleName("m"));
+		d.setReturnType2(ajast.newPrimitiveType(PrimitiveType.INT));
+		d.extraDimensions().add(ajast.newDimension());
+		d.thrownExceptionTypes().add(ajast.newSimpleType(ajast.newSimpleName("Exception")));
+		InterTypeMethodDeclaration copy = (InterTypeMethodDeclaration) ASTNode.copySubtree(ajast, d);
+		assertEquals("C", copy.getOnType());
+		assertEquals(1, copy.extraDimensions().size());
+		assertEquals(1, copy.thrownExceptionTypes().size());
+		assertTrue("the clone should match the original", d.subtreeMatch(new AjASTMatcher(), copy));
+		copy.thrownExceptionTypes().clear();
+		assertFalse("a clone without the thrown exception should not match", d.subtreeMatch(new AjASTMatcher(), copy));
+	}
+
+	public void testCloneDeclareAtDeclarationsKeepsAnnotationText() {
+		ASTParser parser = ASTParser.newParser(AST.getJLSLatest());
+		parser.setCompilerOptions(new HashMap<>());
+		parser.setSource(("aspect A { declare @type : C : @Deprecated; declare @method : * C.*(..) : @Deprecated;"
+				+ " declare @field : * C.* : @Deprecated; declare @constructor : C.new(..) : @Deprecated; }").toCharArray());
+		CompilationUnit cu = (CompilationUnit) parser.createAST(null);
+		CompilationUnit copy = (CompilationUnit) ASTNode.copySubtree(cu.getAST(), cu);
+		List body = ((AspectDeclaration) copy.types().get(0)).bodyDeclarations();
+		assertEquals(4, body.size());
+		for (Object declaration : body) {
+			assertEquals("@Deprecated", ((DeclareAnnotationDeclaration) declaration).getAnnotationName().getIdentifier());
+		}
+	}
+
 	// -------------- AjTypeDeclaration tests ---------------
 
 	public void testNewAjTypeDeclaration() {
@@ -728,7 +826,7 @@ public class AjASTTest extends AjASTTestCase {
 		AjAST ajast = createAjAST();
 		// AjTypeDeclaration d =
 		ajast.newAjTypeDeclaration();
-		List props = AjTypeDeclaration.propertyDescriptors(AST.JLS3);
+		List props = AjTypeDeclaration.propertyDescriptors(AST.getJLSLatest());
 		boolean foundAspect = false;
 		for (Object o : props) {
 			if (o instanceof SimplePropertyDescriptor) {
@@ -757,10 +855,10 @@ public class AjASTTest extends AjASTTestCase {
 		AjAST ajast = createAjAST();
 		// AspectDeclaration ad =
 		ajast.newAspectDeclaration();
-		// List aspectProps = AspectDeclaration.propertyDescriptors(AST.JLS3);
+		// List aspectProps = AspectDeclaration.propertyDescriptors(AST.getJLSLatest());
 		// AjTypeDeclaration d =
 		ajast.newAjTypeDeclaration();
-		List props = AjTypeDeclaration.propertyDescriptors(AST.JLS3);
+		List props = AjTypeDeclaration.propertyDescriptors(AST.getJLSLatest());
 		boolean foundPrivileged = false;
 		boolean foundPerClause = false;
 		// boolean foundAspect = false;
@@ -790,10 +888,10 @@ public class AjASTTest extends AjASTTestCase {
 		// AjTypeDeclaration d =
 		ajast.newAjTypeDeclaration();
 		// List ajProps =
-		AjTypeDeclaration.propertyDescriptors(AST.JLS3);
+		AjTypeDeclaration.propertyDescriptors(AST.getJLSLatest());
 		// TypeDeclaration td =
 		ajast.newTypeDeclaration();
-		List props = TypeDeclaration.propertyDescriptors(AST.JLS3);
+		List props = TypeDeclaration.propertyDescriptors(AST.getJLSLatest());
 		boolean foundAspect = false;
 		for (Object o : props) {
 			if (o instanceof SimplePropertyDescriptor) {
@@ -819,7 +917,7 @@ public class AjASTTest extends AjASTTestCase {
 		AjAST ajast = createAjAST();
 		// DeclareAtFieldDeclaration d =
 		ajast.newDeclareAtFieldDeclaration();
-		List props = DeclareAtFieldDeclaration.propertyDescriptors(AST.JLS3);
+		List props = DeclareAtFieldDeclaration.propertyDescriptors(AST.getJLSLatest());
 		boolean foundJavadoc = false;
 		boolean foundPattern = false;
 		boolean foundAnnotationName = false;
@@ -874,7 +972,7 @@ public class AjASTTest extends AjASTTestCase {
 	public void testInternalDeclareAtField() {
 		AjAST ajast = createAjAST();
 		DeclareAtFieldDeclaration d = ajast.newDeclareAtFieldDeclaration();
-		List props = DeclareAtFieldDeclaration.propertyDescriptors(AST.JLS3);
+		List props = DeclareAtFieldDeclaration.propertyDescriptors(AST.getJLSLatest());
 		for (Object o : props) {
 			ChildPropertyDescriptor element = (ChildPropertyDescriptor) o;
 			if (element.getId().equals("annotationName")) {
@@ -917,7 +1015,7 @@ public class AjASTTest extends AjASTTestCase {
 		AjAST ajast = createAjAST();
 		// DeclareAtMethodDeclaration d =
 		ajast.newDeclareAtMethodDeclaration();
-		List props = DeclareAtMethodDeclaration.propertyDescriptors(AST.JLS3);
+		List props = DeclareAtMethodDeclaration.propertyDescriptors(AST.getJLSLatest());
 		boolean foundJavadoc = false;
 		boolean foundPattern = false;
 		boolean foundAnnotationName = false;
@@ -972,7 +1070,7 @@ public class AjASTTest extends AjASTTestCase {
 	public void testInternalDeclareAtMethod() {
 		AjAST ajast = createAjAST();
 		DeclareAtMethodDeclaration d = ajast.newDeclareAtMethodDeclaration();
-		List props = DeclareAtMethodDeclaration.propertyDescriptors(AST.JLS3);
+		List props = DeclareAtMethodDeclaration.propertyDescriptors(AST.getJLSLatest());
 		for (Object o : props) {
 			ChildPropertyDescriptor element = (ChildPropertyDescriptor) o;
 			if (element.getId().equals("annotationName")) {
@@ -1015,7 +1113,7 @@ public class AjASTTest extends AjASTTestCase {
 		AjAST ajast = createAjAST();
 		// DeclareAtConstructorDeclaration d =
 		ajast.newDeclareAtConstructorDeclaration();
-		List props = DeclareAtConstructorDeclaration.propertyDescriptors(AST.JLS3);
+		List props = DeclareAtConstructorDeclaration.propertyDescriptors(AST.getJLSLatest());
 		boolean foundJavadoc = false;
 		boolean foundPattern = false;
 		boolean foundAnnotationName = false;
@@ -1070,7 +1168,7 @@ public class AjASTTest extends AjASTTestCase {
 	public void testInternalDeclareAtConstructor() {
 		AjAST ajast = createAjAST();
 		DeclareAtConstructorDeclaration d = ajast.newDeclareAtConstructorDeclaration();
-		List props = DeclareAtConstructorDeclaration.propertyDescriptors(AST.JLS3);
+		List<StructuralPropertyDescriptor> props = DeclareAtConstructorDeclaration.propertyDescriptors(AST.getJLSLatest());
 		for (Object o : props) {
 			ChildPropertyDescriptor element = (ChildPropertyDescriptor) o;
 			if (element.getId().equals("annotationName")) {
@@ -1113,7 +1211,7 @@ public class AjASTTest extends AjASTTestCase {
 		AjAST ajast = createAjAST();
 		// DeclareAtTypeDeclaration d =
 		ajast.newDeclareAtTypeDeclaration();
-		List props = DeclareAtTypeDeclaration.propertyDescriptors(AST.JLS3);
+		List props = DeclareAtTypeDeclaration.propertyDescriptors(AST.getJLSLatest());
 		boolean foundJavadoc = false;
 		boolean foundPattern = false;
 		boolean foundAnnotationName = false;
@@ -1168,7 +1266,7 @@ public class AjASTTest extends AjASTTestCase {
 	public void testInternalDeclareAtType() {
 		AjAST ajast = createAjAST();
 		DeclareAtTypeDeclaration d = ajast.newDeclareAtTypeDeclaration();
-		List props = DeclareAtTypeDeclaration.propertyDescriptors(AST.JLS3);
+		List props = DeclareAtTypeDeclaration.propertyDescriptors(AST.getJLSLatest());
 		for (Object o : props) {
 			ChildPropertyDescriptor element = (ChildPropertyDescriptor) o;
 			if (element.getId().equals("annotationName")) {
@@ -1211,7 +1309,7 @@ public class AjASTTest extends AjASTTestCase {
 		AjAST ajast = createAjAST();
 		// DeclareErrorDeclaration d =
 		ajast.newDeclareErrorDeclaration();
-		List props = DeclareErrorDeclaration.propertyDescriptors(AST.JLS3);
+		List props = DeclareErrorDeclaration.propertyDescriptors(AST.getJLSLatest());
 		boolean foundJavadoc = false;
 		boolean foundPointcut = false;
 		boolean foundMessage = false;
@@ -1264,7 +1362,7 @@ public class AjASTTest extends AjASTTestCase {
 	public void testInternalDeclareErrorDeclaration() {
 		AjAST ajast = createAjAST();
 		DeclareErrorDeclaration d = ajast.newDeclareErrorDeclaration();
-		List props = DeclareErrorDeclaration.propertyDescriptors(AST.JLS3);
+		List props = DeclareErrorDeclaration.propertyDescriptors(AST.getJLSLatest());
 		for (Object o : props) {
 			ChildPropertyDescriptor element = (ChildPropertyDescriptor) o;
 			assertNull("DeclareErrorDeclaration's " + element.getId() + " property" + "should be null since we haven't set it yet",
@@ -1302,7 +1400,7 @@ public class AjASTTest extends AjASTTestCase {
 		AjAST ajast = createAjAST();
 		// DeclareParentsDeclaration d =
 		ajast.newDeclareParentsDeclaration();
-		List props = DeclareParentsDeclaration.propertyDescriptors(AST.JLS3);
+		List props = DeclareParentsDeclaration.propertyDescriptors(AST.getJLSLatest());
 		boolean foundJavadoc = false;
 		boolean foundTypePattern = false;
 		boolean foundIsExtends = false;
@@ -1388,7 +1486,7 @@ public class AjASTTest extends AjASTTestCase {
 		AjAST ajast = createAjAST();
 		// DeclarePrecedenceDeclaration d =
 		ajast.newDeclarePrecedenceDeclaration();
-		List props = DeclarePrecedenceDeclaration.propertyDescriptors(AST.JLS3);
+		List props = DeclarePrecedenceDeclaration.propertyDescriptors(AST.getJLSLatest());
 		boolean foundJavadoc = false;
 		boolean foundTypePatterns = false;
 		for (Object o : props) {
@@ -1429,7 +1527,7 @@ public class AjASTTest extends AjASTTestCase {
 	public void testInternalDeclarePrecedenceDeclaration() {
 		AjAST ajast = createAjAST();
 		DeclarePrecedenceDeclaration d = ajast.newDeclarePrecedenceDeclaration();
-		List props = DeclarePrecedenceDeclaration.propertyDescriptors(AST.JLS3);
+		List props = DeclarePrecedenceDeclaration.propertyDescriptors(AST.getJLSLatest());
 		for (Object o : props) {
 			if (o instanceof ChildPropertyDescriptor) {
 				ChildPropertyDescriptor element = (ChildPropertyDescriptor) o;
@@ -1458,7 +1556,7 @@ public class AjASTTest extends AjASTTestCase {
 		AjAST ajast = createAjAST();
 		// DeclareSoftDeclaration d =
 		ajast.newDeclareSoftDeclaration();
-		List props = DeclareSoftDeclaration.propertyDescriptors(AST.JLS3);
+		List<StructuralPropertyDescriptor> props = DeclareSoftDeclaration.propertyDescriptors(AST.getJLSLatest());
 		boolean foundJavadoc = false;
 		boolean foundPointcut = false;
 		boolean foundTypePattern = false;
@@ -1511,7 +1609,7 @@ public class AjASTTest extends AjASTTestCase {
 	public void testInternalDeclareSoftDeclaration() {
 		AjAST ajast = createAjAST();
 		DeclareSoftDeclaration d = ajast.newDeclareSoftDeclaration();
-		List props = DeclareSoftDeclaration.propertyDescriptors(AST.JLS3);
+		List props = DeclareSoftDeclaration.propertyDescriptors(AST.getJLSLatest());
 		for (Object o : props) {
 			ChildPropertyDescriptor element = (ChildPropertyDescriptor) o;
 			assertNull("DeclareSoftDeclaration's " + element.getId() + " property" + "should be null since we haven't set it yet",
@@ -1549,7 +1647,7 @@ public class AjASTTest extends AjASTTestCase {
 		AjAST ajast = createAjAST();
 		// DeclareWarningDeclaration d =
 		ajast.newDeclareWarningDeclaration();
-		List props = DeclareWarningDeclaration.propertyDescriptors(AST.JLS3);
+		List props = DeclareWarningDeclaration.propertyDescriptors(AST.getJLSLatest());
 		boolean foundJavadoc = false;
 		boolean foundPointcut = false;
 		boolean foundMessage = false;
@@ -1602,7 +1700,7 @@ public class AjASTTest extends AjASTTestCase {
 	public void testInternalDeclareWarningDeclaration() {
 		AjAST ajast = createAjAST();
 		DeclareWarningDeclaration d = ajast.newDeclareWarningDeclaration();
-		List props = DeclareWarningDeclaration.propertyDescriptors(AST.JLS3);
+		List props = DeclareWarningDeclaration.propertyDescriptors(AST.getJLSLatest());
 		for (Object o : props) {
 			ChildPropertyDescriptor element = (ChildPropertyDescriptor) o;
 			assertNull("DeclareWarningDeclaration's " + element.getId() + " property"
@@ -1805,7 +1903,7 @@ public class AjASTTest extends AjASTTestCase {
 	// --------- tests for bugs ----------
 
 	public void testJavadocCommentForDeclareExists_pr150467() {
-		ASTParser parser = ASTParser.newParser(AST.JLS3);
+		ASTParser parser = ASTParser.newParser(AST.getJLSLatest());
 		parser.setSource("aspect X {/** I have a doc comment */declare parents : Y implements Z;}".toCharArray());
 		//parser.setSource("aspect X {/** I have a doc comment */public  void foo() {}}".toCharArray());
 		parser.setCompilerOptions(Collections.emptyMap());

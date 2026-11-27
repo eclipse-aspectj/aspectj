@@ -89,6 +89,7 @@ public class PointcutDeclaration extends BodyDeclaration {
 	 * The "modifiers" structural property of this node type (JLS2 API only).
 	 * @since 3.0
 	 */
+	@SuppressWarnings("deprecation") // JLS2 API
 	public static final SimplePropertyDescriptor MODIFIERS_PROPERTY =
 		internalModifiersPropertyFactory(PointcutDeclaration.class);
 
@@ -252,6 +253,7 @@ public class PointcutDeclaration extends BodyDeclaration {
 	/* (omit javadoc for this method)
 	 * Method declared on BodyDeclaration.
 	 */
+	@SuppressWarnings("deprecation") // JLS2 API, required by BodyDeclaration
 	final SimplePropertyDescriptor internalModifiersProperty() {
 		return MODIFIERS_PROPERTY;
 	}
@@ -281,7 +283,7 @@ public class PointcutDeclaration extends BodyDeclaration {
 		if (this.ast.apiLevel == AST.JLS2_INTERNAL) {
 			result.internalSetModifiers(getModifiers());
 		}
-		if (this.ast.apiLevel >= AST.JLS3) {
+		if (this.ast.apiLevel >= AST.JLS3_INTERNAL) {
 			result.modifiers().addAll(ASTNode.copySubtrees(target, modifiers()));
 		}
 		result.setName((SimpleName) getName().clone(target));
@@ -311,7 +313,7 @@ public class PointcutDeclaration extends BodyDeclaration {
 			if (visitChildren) {
 				// visit children in normal left to right reading order
 				acceptChild(ajvis, getJavadoc());
-				if (this.ast.apiLevel >= AST.JLS3) {
+				if (this.ast.apiLevel >= AST.JLS3_INTERNAL) {
 					acceptChildren(ajvis, this.modifiers);
 				}
 				acceptChild(ajvis, getName());

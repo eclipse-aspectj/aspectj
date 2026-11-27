@@ -10,12 +10,6 @@
  *******************************************************************************/
 package org.aspectj.org.eclipse.jdt.core.dom;
 
-import org.aspectj.org.eclipse.jdt.core.dom.AST;
-import org.aspectj.org.eclipse.jdt.core.dom.ASTNode;
-import org.aspectj.org.eclipse.jdt.core.dom.ASTVisitor;
-import org.aspectj.org.eclipse.jdt.core.dom.Block;
-import org.aspectj.org.eclipse.jdt.core.dom.Javadoc;
-import org.aspectj.org.eclipse.jdt.core.dom.Type;
 
 /**
  * InterTypeMethodDeclaration DOM AST node.
@@ -50,25 +44,19 @@ public class InterTypeMethodDeclaration extends MethodDeclaration {
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.setJavadoc(
 			(Javadoc) ASTNode.copySubtree(target, getJavadoc()));
-		if (this.ast.apiLevel == AST.JLS2_INTERNAL) {
-			result.internalSetModifiers(getModifiers());
-			result.setReturnType(
-					(Type) ASTNode.copySubtree(target, getReturnType()));
-		}
-		if (this.ast.apiLevel >= AST.JLS3) {
-			result.modifiers().addAll(ASTNode.copySubtrees(target, modifiers()));
-			result.typeParameters().addAll(
-					ASTNode.copySubtrees(target, typeParameters()));
-			result.setReturnType2(
-					(Type) ASTNode.copySubtree(target, getReturnType2()));
-		}
+		result.modifiers().addAll(ASTNode.copySubtrees(target, modifiers()));
+		result.typeParameters().addAll(
+				ASTNode.copySubtrees(target, typeParameters()));
+		result.setReturnType2(
+				(Type) ASTNode.copySubtree(target, getReturnType2()));
 		result.setConstructor(isConstructor());
-		result.setExtraDimensions(getExtraDimensions());
 		result.setName((SimpleName) getName().clone(target));
 		result.parameters().addAll(
 			ASTNode.copySubtrees(target, parameters()));
-		result.thrownExceptions().addAll(
-			ASTNode.copySubtrees(target, thrownExceptions()));
+		result.extraDimensions().addAll(ASTNode.copySubtrees(target, extraDimensions()));
+		result.thrownExceptionTypes().addAll(
+			ASTNode.copySubtrees(target, thrownExceptionTypes()));
+		result.setOnType(getOnType());
 		result.setBody(
 			(Block) ASTNode.copySubtree(target, getBody()));
 		return result;
@@ -86,22 +74,14 @@ public class InterTypeMethodDeclaration extends MethodDeclaration {
 			if (visitChildren) {
 				// visit children in normal left to right reading order
 				acceptChild(ajvis, getJavadoc());
-				if (this.ast.apiLevel == AST.JLS2_INTERNAL) {
-					acceptChild(ajvis, getReturnType());
-				} else {
-					acceptChildren(ajvis, this.modifiers);
-					acceptChildren(ajvis, (NodeList)this.typeParameters());
-					acceptChild(ajvis, getReturnType2());
-				}
+				acceptChildren(ajvis, this.modifiers);
+				acceptChildren(ajvis, (NodeList)this.typeParameters());
+				acceptChild(ajvis, getReturnType2());
 				// n.b. visit return type even for constructors
 				acceptChild(ajvis, getName());
 				acceptChildren(ajvis, this.parameters);
-				if (this.ast.apiLevel() >= AST.JLS8_INTERNAL) {
-					acceptChildren(visitor, (NodeList)this.extraDimensions());
-					acceptChildren(visitor, (NodeList)this.thrownExceptionTypes());
-				} else {
-					acceptChildren(visitor, (NodeList)this.thrownExceptions());
-				}
+				acceptChildren(visitor, (NodeList)this.extraDimensions());
+				acceptChildren(visitor, (NodeList)this.thrownExceptionTypes());
 				acceptChild(ajvis, getBody());
 			}
 			ajvis.endVisit(this);

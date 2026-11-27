@@ -49,7 +49,7 @@ public class InterTypeFieldDeclaration extends FieldDeclaration {
 		if (this.ast.apiLevel == AST.JLS2_INTERNAL) {
 			result.internalSetModifiers(getModifiers());
 		}
-		if (this.ast.apiLevel >= AST.JLS3) {
+		if (this.ast.apiLevel >= AST.JLS3_INTERNAL) {
 			result.modifiers().addAll(ASTNode.copySubtrees(target, modifiers()));
 		}
 		result.setType((Type) getType().clone(target));
@@ -64,7 +64,7 @@ public class InterTypeFieldDeclaration extends FieldDeclaration {
 			if (visitChildren) {
 				// visit children in normal left to right reading order
 				acceptChild(visitor, getJavadoc());
-				if (this.ast.apiLevel >= AST.JLS3) {
+				if (this.ast.apiLevel >= AST.JLS3_INTERNAL) {
 					acceptChildren(visitor, this.modifiers);
 				}
 				acceptChild(visitor, getType());

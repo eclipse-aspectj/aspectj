@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.aspectj.org.eclipse.jdt.core.dom;
 
-import org.aspectj.org.eclipse.jdt.core.dom.AST;
-import org.aspectj.org.eclipse.jdt.core.dom.ASTNode;
 
 /**
  * abstract PointcutDesignator DOM AST node.

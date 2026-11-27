@@ -93,8 +93,9 @@ public class DeclareSoftDeclaration extends DeclareDeclaration {
 	 * There are no modifiers declared for DeclareErrorDeclaration -
 	 * therefore we don't do anything with this
 	 */
+	@SuppressWarnings("deprecation") // JLS2 API, required by BodyDeclaration
 	SimplePropertyDescriptor internalModifiersProperty() {
-		return internalModifiersPropertyFactory(DeclareErrorDeclaration.class);
+		return internalModifiersPropertyFactory(DeclareSoftDeclaration.class);
 	}
 
 	/* (omit javadoc for this method)
@@ -104,7 +105,7 @@ public class DeclareSoftDeclaration extends DeclareDeclaration {
 	 * therefore we don't do anything with this
 	 */
 	ChildListPropertyDescriptor internalModifiers2Property() {
-		return internalModifiers2PropertyFactory(DeclareErrorDeclaration.class);
+		return internalModifiers2PropertyFactory(DeclareSoftDeclaration.class);
 	}
 
 	/* (omit javadoc for this method)

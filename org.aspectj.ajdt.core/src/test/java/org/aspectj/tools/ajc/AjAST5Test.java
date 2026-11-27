@@ -24,13 +24,14 @@ import org.aspectj.org.eclipse.jdt.core.dom.DeclareParentsDeclaration;
 import org.aspectj.org.eclipse.jdt.core.dom.DefaultTypePattern;
 import org.aspectj.org.eclipse.jdt.core.dom.PerTypeWithin;
 import org.aspectj.org.eclipse.jdt.core.dom.SimplePropertyDescriptor;
+import org.aspectj.org.eclipse.jdt.core.dom.StructuralPropertyDescriptor;
 
 public class AjAST5Test extends AjASTTestCase {
 
 	public void testInternalAspectDeclaration() {
 		AjAST ajast = createAjAST();
 		AspectDeclaration d = ajast.newAspectDeclaration();
-		List props = AspectDeclaration.propertyDescriptors(AST.JLS3);
+		List<StructuralPropertyDescriptor> props = AspectDeclaration.propertyDescriptors(AST.getJLSLatest());
 		for (Object o : props) {
 			if (o instanceof ChildPropertyDescriptor) {
 				ChildPropertyDescriptor element = (ChildPropertyDescriptor) o;
@@ -72,7 +73,7 @@ public class AjAST5Test extends AjASTTestCase {
 	public void testInternalAjTypeDeclaration() {
 		AjAST ajast = createAjAST();
 		AjTypeDeclaration d = ajast.newAjTypeDeclaration();
-		List props = AjTypeDeclaration.propertyDescriptors(AST.JLS3);
+		List<StructuralPropertyDescriptor> props = AjTypeDeclaration.propertyDescriptors(AST.getJLSLatest());
 		for (Object o : props) {
 			if (o instanceof SimplePropertyDescriptor) {
 				SimplePropertyDescriptor element = (SimplePropertyDescriptor) o;
@@ -99,7 +100,7 @@ public class AjAST5Test extends AjASTTestCase {
 	public void testInternalDeclareParentsDeclaration() {
 		AjAST ajast = createAjAST();
 		DeclareParentsDeclaration d = ajast.newDeclareParentsDeclaration();
-		List props = DeclareParentsDeclaration.propertyDescriptors(AST.JLS3);
+		List<StructuralPropertyDescriptor> props = DeclareParentsDeclaration.propertyDescriptors(AST.getJLSLatest());
 		for (Object o : props) {
 			if (o instanceof ChildPropertyDescriptor) {
 				ChildPropertyDescriptor element = (ChildPropertyDescriptor) o;

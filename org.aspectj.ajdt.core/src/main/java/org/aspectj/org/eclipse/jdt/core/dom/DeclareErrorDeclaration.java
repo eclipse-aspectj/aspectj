@@ -98,6 +98,7 @@ public class DeclareErrorDeclaration extends DeclareDeclaration {
 	 * There are no modifiers declared for DeclareErrorDeclaration -
 	 * therefore we don't do anything with this
 	 */
+	@SuppressWarnings("deprecation") // JLS2 API, required by BodyDeclaration
 	SimplePropertyDescriptor internalModifiersProperty() {
 		return internalModifiersPropertyFactory(DeclareErrorDeclaration.class);
 	}

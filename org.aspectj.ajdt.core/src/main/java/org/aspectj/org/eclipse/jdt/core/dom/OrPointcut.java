@@ -12,9 +12,6 @@ package org.aspectj.org.eclipse.jdt.core.dom;
 
 import java.util.List;
 
-import org.aspectj.org.eclipse.jdt.core.dom.AST;
-import org.aspectj.org.eclipse.jdt.core.dom.ASTNode;
-
 /**
  * OrPointcut DOM AST node.
  * has:

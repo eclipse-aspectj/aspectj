@@ -114,8 +114,10 @@ public class AfterReturningAdviceDeclaration extends AfterAdviceDeclaration {
 			(Javadoc) ASTNode.copySubtree(target, getJavadoc()));
 		result.parameters().addAll(
 			ASTNode.copySubtrees(target, parameters()));
-		result.setPointcut(getPointcut());
-		result.setReturning(returning);
+		if (getPointcut() != null) {
+			result.setPointcut((PointcutDesignator) ASTNode.copySubtree(target, getPointcut()));
+		}
+		result.setReturning((SingleVariableDeclaration) ASTNode.copySubtree(target, getReturning()));
 		result.thrownExceptions().addAll(
 			ASTNode.copySubtrees(target, thrownExceptions()));
 		result.setBody(

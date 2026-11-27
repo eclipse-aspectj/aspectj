@@ -47,7 +47,7 @@ public class AjASTMatcher extends ASTMatcher {
 				return false;
 			}
 		}
-		if (level >= AST.JLS3) {
+		if (level >= AST.JLS3_INTERNAL) {
 			if (!safeSubtreeListMatch(node.modifiers(), o.modifiers())) {
 				return false;
 			}
@@ -166,7 +166,7 @@ public class AjASTMatcher extends ASTMatcher {
 				return false;
 			}
 		}
-		if (level >= AST.JLS3) {
+		if (level >= AST.JLS3_INTERNAL) {
 			if (!safeSubtreeMatch(node.getReturnType2(), o.getReturnType2())) {
 				return false;
 			}
@@ -202,7 +202,7 @@ public class AjASTMatcher extends ASTMatcher {
 				return false;
 			}
 		}
-		if (level >= AST.JLS3) {
+		if (level >= AST.JLS3_INTERNAL) {
 			if (!safeSubtreeListMatch(node.modifiers(), o.modifiers())) {
 				return false;
 			}
@@ -217,33 +217,17 @@ public class AjASTMatcher extends ASTMatcher {
 			return false;
 		}
 		InterTypeMethodDeclaration o = (InterTypeMethodDeclaration) other;
-		int level = node.getAST().apiLevel;
-		if (level == AST.JLS2_INTERNAL) {
-			if (node.getModifiers() != o.getModifiers()) {
-				return false;
-			}
-			if (!safeSubtreeMatch(node.internalGetReturnType(), o.internalGetReturnType())) {
-				return false;
-			}
-		}
-		if (level >= AST.JLS3) {
-			if (!safeSubtreeListMatch(node.modifiers(), o.modifiers())) {
-				return false;
-			}
-			if (!safeSubtreeMatch(node.getReturnType2(), o.getReturnType2())) {
-				return false;
-			}
-			// n.b. compare type parameters even for constructors
-			if (!safeSubtreeListMatch(node.typeParameters(), o.typeParameters())) {
-				return false;
-			}
-		}
-		return ((node.isConstructor() == o.isConstructor()) && safeSubtreeMatch(node.getJavadoc(), o.getJavadoc())
-				&& safeSubtreeMatch(node.getName(), o.getName())
+		return node.isConstructor() == o.isConstructor()
+				&& safeSubtreeMatch(node.getJavadoc(), o.getJavadoc())
+				&& safeSubtreeListMatch(node.modifiers(), o.modifiers())
+				&& safeSubtreeListMatch(node.typeParameters(), o.typeParameters())
 				// n.b. compare return type even for constructors
-				&& safeSubtreeListMatch(node.parameters(), o.parameters()) && node.getExtraDimensions() == o.getExtraDimensions()
-				&& safeSubtreeListMatch(node.thrownExceptions(), o.thrownExceptions()) && safeSubtreeMatch(node.getBody(), o
-				.getBody()));
+				&& safeSubtreeMatch(node.getReturnType2(), o.getReturnType2())
+				&& safeSubtreeMatch(node.getName(), o.getName())
+				&& safeSubtreeListMatch(node.parameters(), o.parameters())
+				&& safeSubtreeListMatch(node.extraDimensions(), o.extraDimensions())
+				&& safeSubtreeListMatch(node.thrownExceptionTypes(), o.thrownExceptionTypes())
+				&& safeSubtreeMatch(node.getBody(), o.getBody());
 	}
 
 	public boolean match(DefaultTypePattern node, Object other) {

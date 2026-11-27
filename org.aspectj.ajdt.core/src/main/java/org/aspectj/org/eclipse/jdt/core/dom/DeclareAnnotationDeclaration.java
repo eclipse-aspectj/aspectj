@@ -87,6 +87,18 @@ public abstract class DeclareAnnotationDeclaration extends DeclareDeclaration {
 	}
 
 	/**
+	 * Clones the annotation name. The name holds the whole annotation text (for example "@Deprecated"), which is not a valid
+	 * identifier, so it cannot be cloned using {@link SimpleName#clone0(AST)}, which validates the identifier.
+	 */
+	final SimpleName cloneAnnotationName(AST target) {
+		SimpleName annotationName = getAnnotationName();
+		SimpleName copy = new SimpleName(target);
+		copy.internalSetIdentifier(annotationName.getIdentifier());
+		copy.setSourceRange(annotationName.getStartPosition(), annotationName.getLength());
+		return copy;
+	}
+
+	/**
 	 * Sets the name of the annotation type member declared in this declaration to the
 	 * given name.
 	 *

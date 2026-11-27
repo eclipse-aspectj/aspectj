@@ -90,8 +90,9 @@ public class DeclarePrecedenceDeclaration extends DeclareDeclaration {
 	 * There are no modifiers declared for DeclareErrorDeclaration -
 	 * therefore we don't do anything with this
 	 */
+	@SuppressWarnings("deprecation") // JLS2 API, required by BodyDeclaration
 	SimplePropertyDescriptor internalModifiersProperty() {
-		return internalModifiersPropertyFactory(DeclareErrorDeclaration.class);
+		return internalModifiersPropertyFactory(DeclarePrecedenceDeclaration.class);
 	}
 
 	/* (omit javadoc for this method)
@@ -101,7 +102,7 @@ public class DeclarePrecedenceDeclaration extends DeclareDeclaration {
 	 * therefore we don't do anything with this
 	 */
 	ChildListPropertyDescriptor internalModifiers2Property() {
-		return internalModifiers2PropertyFactory(DeclareErrorDeclaration.class);
+		return internalModifiers2PropertyFactory(DeclarePrecedenceDeclaration.class);
 	}
 
 	/* (omit javadoc for this method)

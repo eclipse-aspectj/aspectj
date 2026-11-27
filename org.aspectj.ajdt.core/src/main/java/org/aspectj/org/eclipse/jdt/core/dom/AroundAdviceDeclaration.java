@@ -98,7 +98,7 @@ public class AroundAdviceDeclaration extends AdviceDeclaration {
 
 	AroundAdviceDeclaration(AST ast) {
 		super(ast);
-		if (ast.apiLevel >= AST.JLS3) { // ajh02: move to aroundAdvice
+		if (ast.apiLevel >= AST.JLS3_INTERNAL) { // ajh02: move to aroundAdvice
 			this.typeParameters = new ASTNode.NodeList(aroundTYPE_PARAMETERS_PROPERTY);
 		}
 	}
@@ -210,11 +210,16 @@ public class AroundAdviceDeclaration extends AdviceDeclaration {
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.setJavadoc(
 			(Javadoc) ASTNode.copySubtree(target, getJavadoc()));
+		result.typeParameters().addAll(
+			ASTNode.copySubtrees(target, typeParameters()));
+		result.setReturnType2((Type) ASTNode.copySubtree(target, getReturnType2()));
 		result.parameters().addAll(
 			ASTNode.copySubtrees(target, parameters()));
 		result.thrownExceptions().addAll(
 			ASTNode.copySubtrees(target, thrownExceptions()));
-		result.setPointcut(getPointcut());
+		if (getPointcut() != null) {
+			result.setPointcut((PointcutDesignator) ASTNode.copySubtree(target, getPointcut()));
+		}
 		result.setBody(
 			(Block) ASTNode.copySubtree(target, getBody()));
 		return result;

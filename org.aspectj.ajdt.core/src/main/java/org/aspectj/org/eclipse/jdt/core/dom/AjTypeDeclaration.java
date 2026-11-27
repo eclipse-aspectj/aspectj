@@ -80,25 +80,16 @@ public class AjTypeDeclaration extends TypeDeclaration {
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.setJavadoc(
 			(Javadoc) ASTNode.copySubtree(target, getJavadoc()));
-		if (this.ast.apiLevel == AST.JLS2_INTERNAL) {
-			result.internalSetModifiers(getModifiers());
-			result.setSuperclass(
-					(Name) ASTNode.copySubtree(target, getSuperclass()));
-			result.superInterfaces().addAll(
-					ASTNode.copySubtrees(target, superInterfaces()));
-		}
 		result.setInterface(isInterface());
 		result.setAspect(isAspect());
 		result.setName((SimpleName) getName().clone(target));
-		if (this.ast.apiLevel >= AST.JLS3) {
-			result.modifiers().addAll(ASTNode.copySubtrees(target, modifiers()));
-			result.typeParameters().addAll(
-					ASTNode.copySubtrees(target, typeParameters()));
-			result.setSuperclassType(
-					(Type) ASTNode.copySubtree(target, getSuperclassType()));
-			result.superInterfaceTypes().addAll(
-					ASTNode.copySubtrees(target, superInterfaceTypes()));
-		}
+		result.modifiers().addAll(ASTNode.copySubtrees(target, modifiers()));
+		result.typeParameters().addAll(
+				ASTNode.copySubtrees(target, typeParameters()));
+		result.setSuperclassType(
+				(Type) ASTNode.copySubtree(target, getSuperclassType()));
+		result.superInterfaceTypes().addAll(
+				ASTNode.copySubtrees(target, superInterfaceTypes()));
 		result.bodyDeclarations().addAll(
 			ASTNode.copySubtrees(target, bodyDeclarations()));
 		return result;

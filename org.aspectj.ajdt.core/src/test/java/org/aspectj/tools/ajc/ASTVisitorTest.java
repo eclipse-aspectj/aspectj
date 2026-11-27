@@ -415,13 +415,13 @@ public class ASTVisitorTest extends TestCase {
 		TestVisitor visitor = new TestVisitor();
 		cu2.accept(visitor);
 		String result = visitor.toString();
-		System.err.println("actual:\n" + result);
+//		System.err.println("actual:\n" + result);
 		assertTrue("Expected:\n"+ expectedOutput + "====Actual:\n" + result,
 				expectedOutput.equals(result));
 	}
 
 	private void checkJLS3(String source, String expectedOutput) {
-		ASTParser parser = ASTParser.newParser(AST.JLS3);
+		ASTParser parser = ASTParser.newParser(AST.getJLSLatest());
 		Map<String,String> options = new HashMap<>();
 		options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_8);
 		parser.setCompilerOptions(options);
@@ -430,7 +430,7 @@ public class ASTVisitorTest extends TestCase {
 		TestVisitor visitor = new TestVisitor();
 		cu2.accept(visitor);
 		String result = visitor.toString();
-		System.err.println("actual:\n" + result);
+//		System.err.println("actual:\n" + result);
 		assertTrue("Expected:\n"+ expectedOutput + "====Actual:\n" + result,
 				expectedOutput.equals(result));
 

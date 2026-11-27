@@ -31,7 +31,9 @@ public class BeforeAdviceDeclaration extends AdviceDeclaration {
 			ASTNode.copySubtrees(target, parameters()));
 		result.thrownExceptions().addAll(
 			ASTNode.copySubtrees(target, thrownExceptions()));
-		result.setPointcut(getPointcut());
+		if (getPointcut() != null) {
+			result.setPointcut((PointcutDesignator) ASTNode.copySubtree(target, getPointcut()));
+		}
 		result.setBody(
 			(Block) ASTNode.copySubtree(target, getBody()));
 		return result;
