@@ -219,6 +219,23 @@ public class TypeAnnotationsTest extends BcelTestCase {
 	}
 
 
+	public void testMethodReference() throws Exception {
+		JavaClass jc = getClassFromJava8Jar("TypeAnnoOnMethodReference");
+		TypeAnnotationGen[] tas = getTypeAnnotations(getMethod(jc,"m").getCode().getAttributes(), true);
+		assertEquals(1,tas.length);
+		checkTypeAnnotationMethodReference(tas[0],0, "@Anno(value=1)");
+		checkTypePath(tas[0],TypeAnnotationGen.NO_TYPE_PATH);
+	}
+
+	public void testConstructorReference() throws Exception {
+		JavaClass jc = getClassFromJava8Jar("TypeAnnoOnConstructorReference");
+		TypeAnnotationGen[] tas = getTypeAnnotations(getMethod(jc,"m").getCode().getAttributes(), true);
+		assertEquals(2,tas.length);
+		checkTypeAnnotationConstructorReference(tas[0],0, "@Anno(value=1)");
+		checkTypePath(tas[0],TypeAnnotationGen.NO_TYPE_PATH);
+		checkTypeAnnotationConstructorReference(tas[1],6, "@Anno(value=2)");
+	}
+
 	// ---
 	private TypeAnnotationGen[] getTypeAnnotations(Attribute[] attrs, boolean visible) {
 		RuntimeTypeAnnos rvta = (RuntimeTypeAnnos)getAttribute(attrs, visible?Constants.ATTR_RUNTIME_VISIBLE_TYPE_ANNOTATIONS:Constants.ATTR_RUNTIME_INVISIBLE_TYPE_ANNOTATIONS);
