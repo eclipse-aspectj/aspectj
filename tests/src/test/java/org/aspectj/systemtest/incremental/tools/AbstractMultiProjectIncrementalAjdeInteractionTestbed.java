@@ -31,10 +31,14 @@ import org.aspectj.asm.IProgramElement;
 import org.aspectj.asm.IRelationship;
 import org.aspectj.asm.IRelationshipMap;
 import org.aspectj.testing.util.FileUtil;
+import org.aspectj.tools.ajc.Ajc;
 
 public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends AjdeInteractionTestbed {
 
 	public static void dumptree(IProgramElement node, int indent) {
+		if (!Ajc.verbose) {
+			return;
+		}
 		for (int i = 0; i < indent; i++) {
 			System.out.print(" ");
 		}
@@ -266,7 +270,7 @@ public class AbstractMultiProjectIncrementalAjdeInteractionTestbed extends AjdeI
 
 	/** @return the number of relationship pairs */
 	protected void printModel(String projectName) throws Exception {
-		if (AjdeInteractionTestbed.VERBOSE) {
+		if (AjdeInteractionTestbed.VERBOSE && Ajc.verbose) {
 			dumptree(getModelFor(projectName).getHierarchy().getRoot(), 0);
 			PrintWriter pw = new PrintWriter(System.out);
 			getModelFor(projectName).dumprels(pw);

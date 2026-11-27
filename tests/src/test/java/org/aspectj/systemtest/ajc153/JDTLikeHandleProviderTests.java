@@ -418,8 +418,8 @@ public class JDTLikeHandleProviderTests extends XMLBasedAjcTestCase {
 		String expected1 = "<tjp{Demo.java[Demo|1";
 		String expected2 = "<tjp{Demo.java[Demo|2";
 		boolean b = expected1.equals(handle1);
-		System.err.println("actual: " + handle1);
-		System.err.println("actual: " + handle2);
+//		System.err.println("actual: " + handle1);
+//		System.err.println("actual: " + handle2);
 		if (b) {
 			assertEquals("handleIdentifier - expected " + expected2 + ", but found " + handle2, expected2, handle2);
 		} else {

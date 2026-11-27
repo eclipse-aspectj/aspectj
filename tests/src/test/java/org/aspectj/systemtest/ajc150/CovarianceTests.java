@@ -63,8 +63,6 @@ public class CovarianceTests extends XMLBasedAjcTestCase {
 	  protected java.net.URL getSpecFile() {
 	    return getClassResource("ajc150.xml");
 	  }
-	private boolean verbose = false;
-
 
 	/**
 	 * call(* getCar()) should match both

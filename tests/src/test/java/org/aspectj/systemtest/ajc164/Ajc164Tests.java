@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.aspectj.systemtest.ajc164;
 
-import java.io.PrintWriter;
 import java.util.List;
 
 import org.aspectj.apache.bcel.classfile.LocalVariable;
@@ -116,14 +115,6 @@ public class Ajc164Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		List<char[]> ptypes = itdcpe.getParameterTypes();
 		assertEquals("java.awt.Color", new String(ptypes.get(0)));
 		assertEquals("java.lang.String", new String(ptypes.get(1)));
-	}
-
-	private void printModel(AsmManager model) {
-		try {
-			AsmManager.dumptree(model.getHierarchy().getRoot(), 0);
-			model.dumprels(new PrintWriter(System.out));
-		} catch (Exception e) {
-		}
 	}
 
 	public void testGenericsAopXml_pr266220() {

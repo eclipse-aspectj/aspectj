@@ -13,6 +13,7 @@ package org.aspectj.systemtest.incremental.tools;
 import java.io.IOException;
 
 import org.aspectj.ajde.core.ICompilerConfiguration;
+import org.aspectj.tools.ajc.Ajc;
 
 /**
  * Testing the performance of incremental compilation as it would be in AJDT.
@@ -40,7 +41,7 @@ public class IncrementalPerformanceTests extends AbstractMultiProjectIncremental
 		build(proj);
 		checkWasFullBuild();
 		long fullbuildtime = getTimeTakenForBuild(proj);
-		System.out.println("Full build time: " + fullbuildtime + "ms");
+		if (Ajc.verbose) System.out.println("Full build time: " + fullbuildtime + "ms");
 
 		// An incremental build with no source file changes at all. What should happen?
 		// We need to determine that nothing has to be done as fast as possible, this is all about
@@ -50,7 +51,7 @@ public class IncrementalPerformanceTests extends AbstractMultiProjectIncremental
 		checkWasntFullBuild();
 		checkCompileWeaveCount(proj, 0, 0);
 		long nochangebuild = getTimeTakenForBuild(proj);
-		System.out.println("Incr build time for no changes at all: " + nochangebuild + "ms");
+		if (Ajc.verbose) System.out.println("Incr build time for no changes at all: " + nochangebuild + "ms");
 
 		// An incremental build with no source file changes at all *and* we tell the compiler there are
 		// no source changes (so it doesn't need to check timestamps). super fast
@@ -59,7 +60,7 @@ public class IncrementalPerformanceTests extends AbstractMultiProjectIncremental
 		checkWasntFullBuild();
 		checkCompileWeaveCount(proj, 0, 0);
 		long nochangebuildandDoTellCompiler = getTimeTakenForBuild(proj);
-		System.out.println("Incr build time for no changes at all and telling the compiler that: " + nochangebuildandDoTellCompiler
+		if (Ajc.verbose) System.out.println("Incr build time for no changes at all and telling the compiler that: " + nochangebuildandDoTellCompiler
 				+ "ms");
 
 		// Now we touch a file (C0.java) and call build. What should happen?
@@ -71,7 +72,7 @@ public class IncrementalPerformanceTests extends AbstractMultiProjectIncremental
 		checkWasntFullBuild();
 		checkCompileWeaveCount(proj, 1, 1);
 		long whitespacechangeDontTellCompiler = getTimeTakenForBuild(proj);
-		System.out.println("Incr build time for whitespace change: " + whitespacechangeDontTellCompiler + "ms");
+		if (Ajc.verbose) System.out.println("Incr build time for whitespace change: " + whitespacechangeDontTellCompiler + "ms");
 
 		// Similar to previous test, touch that file, but this time tell the compiler which file has changed. What should happen?
 		// As we are telling the compiler what has changed, it will not jump through hoops checking the last mod time of
@@ -82,7 +83,7 @@ public class IncrementalPerformanceTests extends AbstractMultiProjectIncremental
 		checkWasntFullBuild();
 		checkCompileWeaveCount(proj, 1, 1);
 		long whitespacechangeDoTellCompiler = getTimeTakenForBuild(proj);
-		System.out.println("Incr build time for whitespace change (where we tell the compiler what changed): "
+		if (Ajc.verbose) System.out.println("Incr build time for whitespace change (where we tell the compiler what changed): "
 				+ whitespacechangeDoTellCompiler + "ms");
 
 		// Lets assert what really ought to be true
@@ -133,7 +134,7 @@ public class IncrementalPerformanceTests extends AbstractMultiProjectIncremental
 		// waitFor10();
 		checkWasntFullBuild();
 
-		System.out.println("Without: " + timeTakenWhenFullyAnalysingClasspath + "ms   With: " + timeTakenWhenFullyToldSpecifically
+		if (Ajc.verbose) System.out.println("Without: " + timeTakenWhenFullyAnalysingClasspath + "ms   With: " + timeTakenWhenFullyToldSpecifically
 				+ "ms");
 
 	}

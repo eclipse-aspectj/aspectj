@@ -21,7 +21,7 @@ import org.aspectj.apache.bcel.util.SyntheticRepository;
  */
 public class Utils {
 
-	private final static boolean debugVerification=false;
+//	private final static boolean debugVerification=false;
 
 //	/**
 //	 * Performs verification of a class - the supplied class is expected to exist in the sandbox

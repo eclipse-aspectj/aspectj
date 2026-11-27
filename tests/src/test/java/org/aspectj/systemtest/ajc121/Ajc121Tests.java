@@ -103,17 +103,14 @@ public class Ajc121Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
   public void test017_PrivateMethodCallsInAroundAdvice() {
     runTest("Cannot advise private method call in around advice");
-    System.err.println(getLastRunResult().getStdErr());
   }
 
   public void test018_PrivateFieldSetsInAroundAdvice() {
     runTest("Cannot advise private field sets in around advice");
-    System.err.println(getLastRunResult().getStdErr());
   }
 
   public void test019_PrivateFieldGetsInAroundAdvice() {
     runTest("Cannot advise private field gets in around advice");
-    System.err.println(getLastRunResult().getStdErr());
   }
 
 // test takes over 5 minutes to run, so not included in normal suite run

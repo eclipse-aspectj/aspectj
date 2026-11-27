@@ -337,12 +337,7 @@ public class Ajc10xTests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	}
 
 	public void test079() {
-		try {
-			runTest("privileged aspects");
-		} finally {
-			System.out.println(ajc.getLastCompilationResult().getStandardError());
-			System.out.println(ajc.getLastCompilationResult().getStandardOutput());
-		}
+		runTest("privileged aspects");
 	}
 
 	public void test080() {

@@ -21,6 +21,7 @@ import org.aspectj.ajde.core.internal.AjdeCoreBuildManager;
 import org.aspectj.ajdt.internal.core.builder.AjBuildManager;
 import org.aspectj.asm.IProgramElement;
 import org.aspectj.asm.internal.AspectJElementHierarchy;
+import org.aspectj.tools.ajc.Ajc;
 import org.aspectj.weaver.AnnotationAJ;
 import org.aspectj.weaver.ReferenceType;
 import org.aspectj.weaver.ReferenceTypeDelegate;
@@ -518,7 +519,11 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 		String p = "PR278496_10";
 		TypeMap.useExpendableMap = false;
 		initialiseProject(p);
-		configureNonStandardCompileOptions(p, "-Xset:typeDemotion=true,typeDemotionDebug=true");
+		String options = "-Xset:typeDemotion=true";
+		if (Ajc.verbose) {
+			options+=",typeDemotionDebug=true";
+		}
+		configureNonStandardCompileOptions(p, options);
 		build(p);
 		checkWasFullBuild();
 		AjdeCoreBuildManager buildManager = getCompilerForProjectWithName(p).getBuildManager();
@@ -540,7 +545,11 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 		String p = "PR278496_11";
 		TypeMap.useExpendableMap = false;
 		initialiseProject(p);
-		configureNonStandardCompileOptions(p, "-Xset:typeDemotion=true,typeDemotionDebug=true");
+		String options = "-Xset:typeDemotion=true";
+		if (Ajc.verbose) {
+			options+=",typeDemotionDebug=true";
+		}
+		configureNonStandardCompileOptions(p, options);
 		configureAspectPath(p, getProjectRelativePath(asp, "bin"));
 		build(p);
 		checkWasFullBuild();
@@ -619,7 +628,11 @@ public class IncrementalCompilationTests extends AbstractMultiProjectIncremental
 		// Setting this ensures types are forced out when demoted - we are not at the mercy of weak reference GC
 		TypeMap.useExpendableMap = false;
 		initialiseProject(p);
-		configureNonStandardCompileOptions(p, "-Xset:typeDemotion=true,typeDemotionDebug=true");
+		String options = "-Xset:typeDemotion=true";
+		if (Ajc.verbose) {
+			options+=",typeDemotionDebug=true";
+		}
+		configureNonStandardCompileOptions(p, options);
 		build(p);
 		checkWasFullBuild();
 		alter(p, "inc1");

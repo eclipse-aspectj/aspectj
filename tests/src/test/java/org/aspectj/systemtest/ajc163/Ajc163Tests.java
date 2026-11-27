@@ -14,7 +14,6 @@ import java.util.List;
 
 import org.aspectj.apache.bcel.classfile.JavaClass;
 import org.aspectj.apache.bcel.classfile.LocalVariable;
-import org.aspectj.apache.bcel.classfile.LocalVariableTable;
 import org.aspectj.apache.bcel.classfile.Method;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.asm.IHierarchy;
@@ -271,7 +270,6 @@ public class Ajc163Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		assertEquals(0, lv.getStartPC(), 0);
 		assertEquals(12, lv.getLength(), 12);
 		assertEquals("Ljava/lang/String;", lv.getSignature());
-		// print(m.getLocalVariableTable());
 	}
 
 	public void testTerminateAfterCompilation_pr249710() {
@@ -305,14 +303,4 @@ public class Ajc163Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 	protected java.net.URL getSpecFile() {
 		return getClassResource("ajc163.xml");
 	}
-
-	// ---
-
-	private void print(LocalVariableTable localVariableTable) {
-		LocalVariable[] lvs = localVariableTable.getLocalVariableTable();
-		for (LocalVariable localVariable : lvs) {
-			System.out.println(localVariable);
-		}
-	}
-
 }

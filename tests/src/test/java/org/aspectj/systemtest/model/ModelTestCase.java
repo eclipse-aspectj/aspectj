@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.aspectj.asm.AsmManager;
-import org.aspectj.asm.IElementHandleProvider;
 import org.aspectj.asm.IModelFilter;
 import org.aspectj.testing.XMLBasedAjcTestCase;
 import org.aspectj.util.FileUtil;
@@ -43,8 +42,6 @@ public abstract class ModelTestCase extends XMLBasedAjcTestCase {
 	private String testid;
 
 	private String modelFilename;
-
-	private IElementHandleProvider handleProvider;
 
 	/*
 	 * (non-Javadoc)

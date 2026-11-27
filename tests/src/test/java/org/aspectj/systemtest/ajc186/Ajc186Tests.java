@@ -31,8 +31,6 @@ import junit.framework.Test;
 public class Ajc186Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 
 	private class FooDesignatorHandler implements PointcutDesignatorHandler {
-
-		private String askedToParse;
 		public boolean simulateDynamicTest = false;
 
 		public String getDesignatorName() {
@@ -40,12 +38,7 @@ public class Ajc186Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 		}
 
 		public ContextBasedMatcher parse(String expression) {
-			this.askedToParse = expression;
 			return new FooPointcutExpression(expression, this.simulateDynamicTest);
-		}
-
-		public String getExpressionLastAskedToParse() {
-			return this.askedToParse;
 		}
 	}
 
@@ -60,11 +53,11 @@ public class Ajc186Tests extends org.aspectj.testing.XMLBasedAjcTestCase {
 			this.simulateDynamicTest = simulateDynamicTest;
 		}
 
-		public boolean couldMatchJoinPointsInType(Class aClass) {
+		public boolean couldMatchJoinPointsInType(Class<?> aClass) {
 			return true;
 		}
 
-		public boolean couldMatchJoinPointsInType(Class aClass,
+		public boolean couldMatchJoinPointsInType(Class<?> aClass,
 				MatchingContext context) {
 			if (this.beanNamePattern.equals(context.getBinding("beanName"))) {
 				return true;

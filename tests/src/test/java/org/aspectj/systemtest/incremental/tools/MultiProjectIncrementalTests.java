@@ -681,7 +681,7 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		String p = "pr278255";
 		initialiseProject(p);
 		build(p);
-		if (AjdeInteractionTestbed.VERBOSE) {
+		if (AjdeInteractionTestbed.VERBOSE && Ajc.verbose) {
 			printModelAndRelationships(p);
 		}
 		IRelationshipMap irm = getModelFor(p).getRelationshipMap();
@@ -768,16 +768,18 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		public void reportFileWrite(String outputfile, int filetype) {
 			super.reportFileWrite(outputfile, filetype);
 			writeCount++;
-			System.out.println("Written " + outputfile);
-			// System.out.println("Written " + outputfile + " " + filetype);
+			if (Ajc.verbose) {
+				System.out.println("Written " + outputfile);
+			}
 		}
 
 		@Override
 		public void reportFileRemove(String outputfile, int filetype) {
 			super.reportFileRemove(outputfile, filetype);
 			removeCount++;
-			System.out.println("Removed " + outputfile);
-			// System.out.println("Removed " + outputfile + "  " + filetype);
+			if (Ajc.verbose) {
+				System.out.println("Removed " + outputfile);
+			}
 		}
 
 	}
@@ -3720,7 +3722,6 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 		String inpathDir = inpathTestingDir + File.separator + "binpath";
 
 		// set up the inpath to have the directory on it's path
-		System.out.println(inpathDir);
 		File f = new File(inpathDir);
 		Set<File> s = new HashSet<>();
 		s.add(f);
@@ -3731,12 +3732,14 @@ public class MultiProjectIncrementalTests extends AbstractMultiProjectIncrementa
 
 		// alter(p,"inc1");
 		// build(p);
-		dumptree(root, 0);
-		PrintWriter pw = new PrintWriter(System.out);
-		try {
-			getModelFor(p).dumprels(pw);
-			pw.flush();
-		} catch (Exception e) {
+		if (Ajc.verbose) {
+			dumptree(root, 0);
+			PrintWriter pw = new PrintWriter(System.out);
+			try {
+				getModelFor(p).dumprels(pw);
+				pw.flush();
+			} catch (Exception e) {
+			}
 		}
 		List<IRelationship> l = getModelFor(p).getRelationshipMap().get("=inpathHandles/;<codep(Code.class[Code");
 		assertNotNull(l);

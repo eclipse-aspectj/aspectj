@@ -248,15 +248,6 @@ public class SynchronizationTransformTests extends XMLBasedAjcTestCase {
 		}
 	}
 
-	private String stringify(List<String> l) {
-		StringBuilder result = new StringBuilder();
-		for (String str : l) {
-			result.append(str);
-			result.append("\n");
-		}
-		return result.toString();
-	}
-
 	private void saveMethod(File f, LazyMethodGen m) {
 		System.out.println("Saving method into " + f.getName());
 		try {

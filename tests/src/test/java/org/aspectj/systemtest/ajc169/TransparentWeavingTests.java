@@ -216,8 +216,8 @@ public class TransparentWeavingTests extends org.aspectj.testing.XMLBasedAjcTest
 
 	public void testPrivateClash() throws Exception {
 		runTest("three");
-
-		JavaClass jc = getClassFrom(ajc.getSandboxDirectory(), "Three");
+//		JavaClass jc = 
+		getClassFrom(ajc.getSandboxDirectory(), "Three");
 //		Field[] fs = jc.getFields();
 //		for (Field f : fs) {
 //			System.out.println(f);
