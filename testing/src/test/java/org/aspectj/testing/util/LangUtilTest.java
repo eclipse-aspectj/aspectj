@@ -139,8 +139,8 @@ public class LangUtilTest extends TestCase {
 
 	void checkCombineStrings(String[] one, String[] two, String[] expected) {
 		String[] actual = LangUtil.combine(one, two);
-		String aString = LangUtil.arrayAsList(actual).toString();
-		String eString = LangUtil.arrayAsList(expected).toString();
+		String aString = Arrays.asList(actual).toString();
+		String eString = Arrays.asList(expected).toString();
 		String both = "actual=\"" + aString + "\" expected=\"" + eString + "\"";
 		assertTrue(both, aString.equals(eString));
 	}

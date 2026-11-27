@@ -297,7 +297,12 @@ public abstract class XMLBasedAjcTestCase extends AjcTestCase {
 		super.setUp();
 		if (!suiteLoaded) {
 			testMap = new HashMap<>();
-			System.out.println("Loading suite: " + getSpecFile().getPath());
+			String suiteName = getSpecFile().getPath();
+			int lastPiece = suiteName.lastIndexOf("test-classes/");
+			if (lastPiece != -1) {
+				suiteName = suiteName.substring(lastPiece+"test-classes/".length());
+			}
+			System.out.println("Loading suite: " + suiteName);
 			Digester d = getDigester();
 			try {
 				InputStreamReader isr = new InputStreamReader(getSpecFile().openConnection().getInputStream());

@@ -41,14 +41,14 @@ public class StructureModelUtilTest extends AjdeCoreTestCase {
 	}
 
 	public void testPackageViewUtil() {
-		List packages = StructureModelUtil.getPackagesInModel(getCompiler().getModel());
+		List<Object[]> packages = StructureModelUtil.getPackagesInModel(getCompiler().getModel());
 		assertTrue("packages list not null", packages != null);
 		assertTrue("packages list not empty", !packages.isEmpty());
 
 		IProgramElement packageNode = (IProgramElement) ((Object[]) packages.get(0))[0];
 		assertTrue("package node not null", packageNode != null);
 
-		List files = StructureModelUtil.getFilesInPackage(packageNode);
+		List<IProgramElement> files = StructureModelUtil.getFilesInPackage(packageNode);
 		assertTrue("fle list not null", files != null);
 
 		// TODO: re-enable

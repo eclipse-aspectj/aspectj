@@ -77,7 +77,7 @@ public class MessageUtilTest extends TestCase {
         return messageTexts;
     }
 
-    List getSampleExceptions() {
+    List<Throwable> getSampleExceptions() {
         if (null == exceptions) {
             List<Throwable> result = new ArrayList<>();
             int i = 1;

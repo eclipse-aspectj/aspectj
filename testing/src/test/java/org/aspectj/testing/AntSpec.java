@@ -24,6 +24,7 @@ import org.apache.tools.ant.ProjectHelper;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.Path;
+import org.aspectj.tools.ajc.Ajc;
 import org.aspectj.tools.ajc.AjcTestCase;
 import org.aspectj.util.LangUtil;
 
@@ -207,7 +208,9 @@ public class AntSpec implements ITestStep {
 			};
 			consoleLogger.setErrorPrintStream(System.err);
 			consoleLogger.setOutputPrintStream(System.out);
-			consoleLogger.setMessageOutputLevel(m_verbose ? Project.MSG_VERBOSE : Project.MSG_ERR);
+			// Only echo the Ant -v output when tests are run verbosely (-Daspectj.tests.verbose=true), not for every verbose="true" spec.
+			// Failures still report the collected output in the failure message.
+			consoleLogger.setMessageOutputLevel(m_verbose && Ajc.verbose ? Project.MSG_VERBOSE : Project.MSG_ERR);
 			p.addBuildListener(consoleLogger);
 		} catch (Throwable t) {
 			AjcTestCase.fail(failMessage + "invalid Ant script :" + t.toString());

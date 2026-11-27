@@ -219,7 +219,7 @@ public class LangUtil {
 	 *         <code>"[#] {null || not {superType}"</code>, e.g., "[3] null, [5] not
 	 *         String"
 	 */
-	public static String invalidComponents(Object[] ra, Class superType) {
+	public static String invalidComponents(Object[] ra, Class<?> superType) {
 		if (null == ra) {
 			return "null input array";
 		} else if (0 == ra.length) {
@@ -418,10 +418,6 @@ public class LangUtil {
 			}
 		}
 		return dest;
-	}
-
-	public static List arrayAsList(Object[] ra) {
-		return org.aspectj.util.LangUtil.arrayAsList(ra);
 	}
 
 	/**
@@ -753,7 +749,7 @@ public class LangUtil {
 	}
 
 	/** <code> debugStr(source, names, items, null, null, null, null)<code> */
-	public static String debugStr(Class source, String[] names, Object[] items) {
+	public static String debugStr(Class<?> source, String[] names, Object[] items) {
 		return debugStr(source, null, names, null, items, null, null);
 	}
 
@@ -838,7 +834,7 @@ public class LangUtil {
 	/**
 	 * @return a String with the unqualified class name of the class (or "null")
 	 */
-	public static String unqualifiedClassName(Class c) {
+	public static String unqualifiedClassName(Class<?> c) {
 		if (null == c) {
 			return "null";
 		}
