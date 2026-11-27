@@ -80,6 +80,7 @@ public final class Method extends FieldOrMethod {
 	private boolean parameterAnnotationsOutOfDate = true;
 	private AnnotationGen[][] unpackedParameterAnnotations;
 
+	@SuppressWarnings("unused")
 	private Method() {
 		parameterAnnotationsOutOfDate = true;
 	}

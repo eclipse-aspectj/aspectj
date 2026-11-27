@@ -438,11 +438,7 @@ public class ClassPath implements Serializable {
 	}
 
 	private static class JImage extends PathEntry {
-
 		private static URI JRT_URI = URI.create("jrt:/"); //$NON-NLS-1$
-		private static String MODULES_PATH = "modules"; //$NON-NLS-1$
-		private static String JAVA_BASE_PATH = "java.base"; //$NON-NLS-1$
-
 		private java.nio.file.FileSystem fs;
 		private final Map<String, Path> fileMap;
 

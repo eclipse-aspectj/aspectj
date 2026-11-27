@@ -99,7 +99,7 @@ public class ThreadLocalAwareRepository implements Repository {
 	}
 
 	@Override
-	public JavaClass loadClass(Class clazz) throws ClassNotFoundException {
+	public JavaClass loadClass(Class<?> clazz) throws ClassNotFoundException {
 		return currentRepository().loadClass(clazz);
 	}
 

@@ -89,7 +89,7 @@ public interface Repository {
 	/**
 	 * Find the JavaClass instance for the given run-time class object
 	 */
-	JavaClass loadClass(Class clazz) throws java.lang.ClassNotFoundException;
+	JavaClass loadClass(Class<?> clazz) throws java.lang.ClassNotFoundException;
 
 	/**
 	 * Clear all entries from cache.

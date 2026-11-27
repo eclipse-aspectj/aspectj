@@ -151,7 +151,7 @@ public class SyntheticRepository implements Repository {
 	 * @see Class
 	 * @return JavaClass object for given runtime class
 	 */
-	public JavaClass loadClass(Class clazz) throws ClassNotFoundException {
+	public JavaClass loadClass(Class<?> clazz) throws ClassNotFoundException {
 		String className = clazz.getName();
 		String name = className;
 		int i = name.lastIndexOf('.');

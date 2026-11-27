@@ -71,6 +71,7 @@ public final class Field extends FieldOrMethod {
 
 	private Type fieldType = null; // lazily initialized
 
+	@SuppressWarnings("unused")
 	private Field() {
 	}
 

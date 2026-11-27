@@ -429,7 +429,7 @@ public abstract class Type {
 	 * @param cl Java class
 	 * @return corresponding Type object
 	 */
-	public static Type getType(java.lang.Class cl) {
+	public static Type getType(java.lang.Class<?> cl) {
 		if (cl == null) {
 			throw new IllegalArgumentException("Class must not be null");
 		}

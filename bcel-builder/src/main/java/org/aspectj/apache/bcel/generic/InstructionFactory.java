@@ -396,8 +396,6 @@ public class InstructionFactory implements InstructionConstants {
 		}
 	}
 
-	private static final char[] shortNames = { 'C', 'F', 'D', 'B', 'S', 'I', 'L' };
-
 	/**
 	 * Create conversion operation for two stack operands, this may be an I2C, instruction, e.g., if the operands are basic types
 	 * and CHECKCAST if they are reference types.
