@@ -69,7 +69,9 @@ public class DocumentParser extends DefaultHandler {
 	private final static String POINTCUT_ELEMENT = "pointcut";
 	private final static String BEFORE_ELEMENT = "before";
 	private final static String AFTER_ELEMENT = "after";
+	@SuppressWarnings("unused")
 	private final static String AFTER_RETURNING_ELEMENT = "after-returning";
+	@SuppressWarnings("unused")
 	private final static String AFTER_THROWING_ELEMENT = "after-throwing";
 	private final static String AROUND_ELEMENT = "around";
 	private final static String WITHIN_ATTRIBUTE = "within";

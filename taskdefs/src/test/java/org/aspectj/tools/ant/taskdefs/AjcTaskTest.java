@@ -451,16 +451,17 @@ public class AjcTaskTest extends TestCase {
     File file = new File(newArgs[1]);
     assertTrue("readable newArgs[1]" + label, file.canRead());
     FileReader fin = null;
-    try {
-      fin = new FileReader(file);
-      BufferedReader reader = new BufferedReader(fin);
-      String line;
-      int i = 0;
-      while (null != (line = reader.readLine()))
-        assertEquals(i + ": ", args[i++], line);
-      assertEquals("num entries", i, args.length);
-    }
-    catch (IOException e) {
+	try {
+		fin = new FileReader(file);
+		try (BufferedReader reader = new BufferedReader(fin)) {
+			int i = 0;
+			String line;
+			while (null != (line = reader.readLine())) {
+				assertEquals(i + ": ", args[i++], line);
+			}
+			assertEquals("num entries", i, args.length);
+		}
+	}    catch (IOException e) {
       fail("IOException " + e.getMessage());
     }
     finally {
@@ -835,7 +836,7 @@ public class AjcTaskTest extends TestCase {
   }
 
   protected void runTest(
-    AjcTask task, Class exceptionType, MessageHolderChecker checker
+    AjcTask task, Class<?> exceptionType, MessageHolderChecker checker
   )
   {
     MessageHandler holder = new MessageHandler();
@@ -844,7 +845,7 @@ public class AjcTaskTest extends TestCase {
   }
 
   protected void runTest(
-    AjcTask task, Class exceptionType, MessageHolderChecker checker, MessageHandler holder
+    AjcTask task, Class<?> exceptionType, MessageHolderChecker checker, MessageHandler holder
   )
   {
     Throwable thrown = null;

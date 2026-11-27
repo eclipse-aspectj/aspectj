@@ -1935,6 +1935,7 @@ public class AtAjAttributes {
 	/**
 	 * A check exception when we cannot read debug info (needed for formal binding)
 	 */
+	@SuppressWarnings("serial")
 	private static class UnreadableDebugInfoException extends Exception {
 	}
 
@@ -2034,6 +2035,7 @@ public class AtAjAttributes {
 		}
 	}
 
+	@SuppressWarnings("serial")
 	static class ThrownFormalNotDeclaredInAdviceSignatureException extends Exception {
 
 		private final String formalName;
@@ -2047,6 +2049,7 @@ public class AtAjAttributes {
 		}
 	}
 
+	@SuppressWarnings("serial")
 	static class ReturningFormalNotDeclaredInAdviceSignatureException extends Exception {
 
 		private final String formalName;

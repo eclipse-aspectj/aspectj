@@ -1213,7 +1213,7 @@ public class AjcTask extends MatchingTask {
 			outjarFixedup = true;
 		}
 
-		ArrayList<String> result = new ArrayList(cmd.extractArguments());
+		ArrayList<String> result = new ArrayList<>(cmd.extractArguments());
 		addListArgs(result);
 
 		String[] command = result.toArray(new String[0]);
@@ -2065,7 +2065,7 @@ public class AjcTask extends MatchingTask {
 		// }
 		// }
 
-		List extractArguments() {
+		List<String> extractArguments() {
 			List<String> result = new ArrayList<>();
 			String[] cmds = command.getArguments();
 			if (!LangUtil.isEmpty(cmds)) {

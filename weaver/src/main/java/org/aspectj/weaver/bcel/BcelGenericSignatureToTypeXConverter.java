@@ -270,6 +270,7 @@ public class BcelGenericSignatureToTypeXConverter {
 		}
 	}
 
+	@SuppressWarnings("serial")
 	public static class GenericSignatureFormatException extends Exception {
 		public GenericSignatureFormatException(String explanation) {
 			super(explanation);

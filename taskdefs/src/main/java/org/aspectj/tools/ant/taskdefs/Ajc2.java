@@ -251,7 +251,7 @@ public class Ajc2 extends Javac {
      *
      * @return the list of argfiles.
      */
-    public List getArgfiles() {
+    public List<Argfile> getArgfiles() {
         return argfiles;
     }
 

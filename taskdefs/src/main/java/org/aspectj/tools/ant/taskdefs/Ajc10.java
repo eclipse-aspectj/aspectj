@@ -53,7 +53,7 @@ public class Ajc10 extends MatchingTask {
     }
     //protected boolean version;
     protected boolean source14;
-    protected Set ignoredOptions;
+    protected Set<String> ignoredOptions;
     protected Commandline cmd;
     protected Commandline vmcmd;
     private int threads = -1;
@@ -375,7 +375,7 @@ public class Ajc10 extends MatchingTask {
     public void reset() {
         //version = false;
         source14 = false;
-        ignoredOptions = new HashSet();
+        ignoredOptions = new HashSet<>();
         cmd = new Commandline();
         vmcmd = new Commandline();
         threads = -1;

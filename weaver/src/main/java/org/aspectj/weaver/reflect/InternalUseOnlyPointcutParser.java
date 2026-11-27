@@ -31,12 +31,12 @@ public class InternalUseOnlyPointcutParser extends PointcutParser {
 
 	public Pointcut resolvePointcutExpression(
 	    		String expression,
-	    		Class inScope,
+	    		Class<?> inScope,
 	    		PointcutParameter[] formalParameters) {
 		return super.resolvePointcutExpression(expression, inScope, formalParameters);
 	}
 
-	public Pointcut concretizePointcutExpression(Pointcut pc, Class inScope, PointcutParameter[] formalParameters) {
+	public Pointcut concretizePointcutExpression(Pointcut pc, Class<?> inScope, PointcutParameter[] formalParameters) {
 		return super.concretizePointcutExpression(pc, inScope, formalParameters);
 	}
 

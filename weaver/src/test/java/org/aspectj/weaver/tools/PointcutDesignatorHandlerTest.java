@@ -204,14 +204,14 @@ public class PointcutDesignatorHandlerTest extends TestCase {
 		}
 
 
-		public boolean couldMatchJoinPointsInType(Class aClass) {
+		public boolean couldMatchJoinPointsInType(Class<?> aClass) {
 			return true;
 		}
 
 		/* (non-Javadoc)
 		 * @see org.aspectj.weaver.tools.ContextBasedMatcher#couldMatchJoinPointsInType(java.lang.Class)
 		 */
-		public boolean couldMatchJoinPointsInType(Class aClass, MatchingContext context) {
+		public boolean couldMatchJoinPointsInType(Class<?> aClass, MatchingContext context) {
 			if (this.beanNamePattern.equals(context.getBinding("beanName"))) {
 				return true;
 			} else {

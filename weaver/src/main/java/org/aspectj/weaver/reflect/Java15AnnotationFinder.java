@@ -110,7 +110,7 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 		return null;
 	}
 
-	public Object getAnnotationFromClass(ResolvedType annotationType, Class aClass) {
+	public Object getAnnotationFromClass(ResolvedType annotationType, Class<?> aClass) {
 		try {
 			Class<? extends Annotation> annotationClass = (Class<? extends Annotation>) Class.forName(annotationType.getName(),
 					false, getClassLoader());
@@ -128,7 +128,7 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 			return null;
 		AccessibleObject ao = (AccessibleObject) aMember;
 		try {
-			Class annotationClass = Class.forName(annotationType.getName(), false, getClassLoader());
+			Class<? extends Annotation> annotationClass = (Class<? extends Annotation>) Class.forName(annotationType.getName(), false, getClassLoader());
 			if (ao.isAnnotationPresent(annotationClass)) {
 				return ao.getAnnotation(annotationClass);
 			}
@@ -268,7 +268,7 @@ public class Java15AnnotationFinder implements AnnotationFinder, ArgNameFinder {
 		return annotationTypes;
 	}
 
-	public ResolvedType[] getAnnotations(Class forClass, World inWorld) {
+	public ResolvedType[] getAnnotations(Class<?> forClass, World inWorld) {
 		// here we really want both the runtime visible AND the class visible
 		// annotations so we bail out to Bcel and then chuck away the JavaClass so that we
 		// don't hog memory.

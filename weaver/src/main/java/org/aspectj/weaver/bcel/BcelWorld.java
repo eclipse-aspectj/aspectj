@@ -804,7 +804,6 @@ public class BcelWorld extends World implements Repository {
 		List<ResolvedType> newParents = p.findMatchingNewParents(onType, true);
 		if (!newParents.isEmpty()) {
 			didSomething = true;
-			BcelObjectType classType = BcelWorld.getBcelObjectType(onType);
 			// System.err.println("need to do declare parents for: " + onType);
 			for (ResolvedType newParent : newParents) {
 				// We set it here so that the imminent matching for ITDs can
