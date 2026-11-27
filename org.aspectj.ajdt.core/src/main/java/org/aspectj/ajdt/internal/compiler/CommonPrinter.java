@@ -168,7 +168,6 @@ public class CommonPrinter {
 	}
 
 	protected StringBuilder printAnnotations(Annotation[] annotations) {
-		int length = annotations.length;
 		for (Annotation annotation : annotations) {
 			printAnnotation(annotation);
 			output.append(" "); //$NON-NLS-1$
@@ -344,7 +343,6 @@ public class CommonPrinter {
 					} else {
 						output.append(snr.token);
 					}
-					int stop = 1;
 				} else {
 					throwit(snr.binding);
 				}

@@ -82,7 +82,7 @@ public class IncrementalStateManager {
 		// AsmManager.getDefault().createNewStructureModel(); // forget what you know...
 	}
 
-	public static Set getConfigFilesKnown() {
+	public static Set<String> getConfigFilesKnown() {
 		return incrementalStates.keySet();
 	}
 

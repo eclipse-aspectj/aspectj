@@ -99,7 +99,7 @@ public class RunWeaveTests {
 
 	/* Compatibility with JDK 1.3.1 */
 	public static String[] split (String s) {
-		List list = new ArrayList();
+		List<String> list = new ArrayList<>();
 		StringTokenizer st = new StringTokenizer(s," ");
 		while (st.hasMoreTokens()) {
 			list.add(st.nextToken());

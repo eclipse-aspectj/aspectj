@@ -147,7 +147,7 @@ public class BasicCommandTestCase extends CommandTestCase {
 	}
 
 	public void testImplicitOutputDir() {
-		List args = new ArrayList();
+		List<String> args = new ArrayList<>();
 
 		args.add("-classpath");
 		args.add(getRuntimeClasspath() + File.pathSeparator +

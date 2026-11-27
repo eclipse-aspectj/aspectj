@@ -74,7 +74,6 @@ import org.aspectj.org.eclipse.jdt.internal.compiler.ClassFile;
 import org.aspectj.org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.aspectj.org.eclipse.jdt.internal.compiler.DefaultErrorHandlingPolicies;
 import org.aspectj.org.eclipse.jdt.internal.compiler.ICompilerRequestor;
-import org.aspectj.org.eclipse.jdt.internal.compiler.IErrorHandlingPolicy;
 import org.aspectj.org.eclipse.jdt.internal.compiler.IProblemFactory;
 import org.aspectj.org.eclipse.jdt.internal.compiler.batch.ClasspathLocation;
 import org.aspectj.org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
@@ -791,7 +790,7 @@ public class AjBuildManager implements IOutputClassFileNameProvider, IBinarySour
 		// return;
 
 		CompilationResultDestinationManager crdm = config.getCompilationResultDestinationManager();
-		AsmManager structureModel = AsmManager.createNewStructureModel(crdm == null ? Collections.EMPTY_MAP : crdm.getInpathMap());
+		AsmManager structureModel = AsmManager.createNewStructureModel(crdm == null ? Collections.emptyMap() : crdm.getInpathMap());
 		// AsmManager.getDefault().getRelationshipMap().clear();
 		IHierarchy model = structureModel.getHierarchy();
 		String rootLabel = "<root>";

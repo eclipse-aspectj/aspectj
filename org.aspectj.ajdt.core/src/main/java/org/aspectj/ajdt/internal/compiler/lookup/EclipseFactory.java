@@ -899,7 +899,7 @@ public class EclipseFactory {
 	 * Creates a method binding for a resolvedmember taking into account type variable aliases - this variant can take an
 	 * aliasTargetType and should be used when the alias target type cannot be retrieved from the resolvedmember.
 	 */
-	public MethodBinding makeMethodBinding(ResolvedMember member, List aliases, UnresolvedType aliasTargetType) {
+	public MethodBinding makeMethodBinding(ResolvedMember member, List<String> aliases, UnresolvedType aliasTargetType) {
 		return internalMakeMethodBinding(member, aliases, aliasTargetType);
 	}
 

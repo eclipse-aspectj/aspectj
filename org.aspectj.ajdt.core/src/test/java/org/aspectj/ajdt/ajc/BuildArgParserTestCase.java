@@ -204,7 +204,7 @@ public class BuildArgParserTestCase extends TestCase {
 
 		assertEquals(getCanonicalPath(new File(SRCROOT_1)), config.getSourceRoots().get(0).getAbsolutePath());
 
-		Collection expectedFiles = Arrays.asList(new File[] {
+		Collection<File> expectedFiles = Arrays.asList(new File[] {
 			new File(SRCROOT_1+File.separator+"A.java").getCanonicalFile(),
 			new File(SRCROOT_1+File.separator+"Foo.java").getCanonicalFile(),
 			new File(SRCROOT_2+File.separator+"A.java").getCanonicalFile(),
@@ -241,7 +241,7 @@ public class BuildArgParserTestCase extends TestCase {
 
 		assertEquals(getCanonicalPath(new File(SRCROOT)), config.getSourceRoots().get(0).getAbsolutePath());
 
-		Collection expectedFiles = Arrays.asList(new File[] {
+		Collection<File> expectedFiles = Arrays.asList(new File[] {
 			new File(SRCROOT+File.separator+"A.java").getCanonicalFile(),
 			new File(SRCROOT+File.separator+"B.java").getCanonicalFile(),
 			new File(SRCROOT+File.separator+"X.aj").getCanonicalFile(),
@@ -363,7 +363,7 @@ public class BuildArgParserTestCase extends TestCase {
 		String ENTRY = "1.jar" + File.pathSeparator + "2.jar";
 		AjBuildConfig config = genBuildConfig(new String[] {  "-classpath", ENTRY }, messageWriter);
 
-   		List cp = config.getClasspath();
+   		List<String> cp = config.getClasspath();
 		boolean jar1Found = false;
 		boolean jar2Found = false;
 		for (Object o : cp) {
@@ -397,7 +397,7 @@ public class BuildArgParserTestCase extends TestCase {
 		String a = new File(TEST_DIR + "../bug-40257/d1/A.java").getCanonicalPath();
 		String b = new File(TEST_DIR + "../bug-40257/d1/d2/B.java").getCanonicalPath();
 		String c = new File(TEST_DIR + "../bug-40257/d3/C.java").getCanonicalPath();
-		List pathList = new ArrayList();
+		List<String> pathList = new ArrayList<>();
 		for (File file : config.getFiles()) {
 			pathList.add(file.getCanonicalPath());
 		}
@@ -506,7 +506,7 @@ public class BuildArgParserTestCase extends TestCase {
 		checkPathSubset(config.getBootclasspath());
 	}
 
-	private void checkPathSubset(List path) throws IOException {
+	private void checkPathSubset(List<String> path) throws IOException {
 		String files[] = { "aspectjJar.file", "jarChild", "parent.zip" };
 		for (String s : files) {
 			File file = new File(NONSTANDARD_JAR_DIR + s);

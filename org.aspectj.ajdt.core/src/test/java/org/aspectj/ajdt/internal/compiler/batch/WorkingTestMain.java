@@ -33,7 +33,7 @@ public class WorkingTestMain {
 
 		//CommandTestCase.checkCompile("src1/ParentsFail.java", CommandTestCase.NO_ERRORS);
 
-		List args = new ArrayList();
+		List<String> args = new ArrayList<>();
 		args.add("-verbose");
 
 		//args.add("-1.3");
@@ -71,7 +71,7 @@ public class WorkingTestMain {
 
 	private static String examplesDir = "../docs/examples/";
 	private static void example(String[] argfiles, String[] classes) {
-		List args = new ArrayList();
+		List<String> args = new ArrayList<>();
 		args.add("-verbose");
 
 		args.add("-d");
@@ -113,12 +113,8 @@ public class WorkingTestMain {
 		example(new String[] {"tracing/tracev3.lst"},
 				new String[] {"tracing.version3.TraceMyClasses"});
 
-
 		example(new String[] {"introduction/files.lst"},
 				new String[] {"introduction.HashablePoint", "introduction.ComparablePoint"});
-
-
-
 
 		example(new String[] {"bean/files.lst"},
 				new String[] {"bean.Demo"});

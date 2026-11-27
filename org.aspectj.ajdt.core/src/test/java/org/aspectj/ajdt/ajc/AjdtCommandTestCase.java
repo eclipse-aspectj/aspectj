@@ -17,13 +17,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
 import junit.framework.TestCase;
 
-import org.aspectj.ajdt.StreamPrintWriter;
 import org.aspectj.bridge.CountingMessageHandler;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.IMessageHolder;
@@ -37,11 +37,35 @@ import org.aspectj.util.FileUtil;
  */
 public class AjdtCommandTestCase extends TestCase {
 
-	private List tempFiles = new ArrayList();
-	private StreamPrintWriter outputWriter = new StreamPrintWriter(new PrintWriter(System.out));
+	private List<File> tempFiles = new ArrayList<>();
+	private OutputWriter outputWriter = new OutputWriter();
 	// private AjdtCommand command = new AjdtCommand();
 	private MessageWriter messageWriter = new MessageWriter(outputWriter, false);
 	private CountingMessageHandler counter = new CountingMessageHandler(messageWriter);
+
+	/** Collects the text written to it, which the tests can read and clear. */
+	private static final class OutputWriter extends PrintWriter {
+		private final StringWriter contents;
+
+		OutputWriter() {
+			this(new StringWriter());
+		}
+
+		private OutputWriter(StringWriter contents) {
+			super(contents);
+			this.contents = contents;
+		}
+
+		String getContents() {
+			flush();
+			return contents.toString();
+		}
+
+		void flushBuffer() {
+			flush();
+			contents.getBuffer().setLength(0);
+		}
+	}
 
 	public AjdtCommandTestCase(String name) {
 		super(name);
@@ -200,8 +224,8 @@ public class AjdtCommandTestCase extends TestCase {
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		outputWriter.flushBuffer();
-		for (ListIterator iter = tempFiles.listIterator(); iter.hasNext();) {
-			File file = (File) iter.next();
+		for (ListIterator<File> iter = tempFiles.listIterator(); iter.hasNext();) {
+			File file = iter.next();
 			if (delete(file)) {
 				iter.remove();
 			}

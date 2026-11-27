@@ -72,7 +72,6 @@ public class EclipseAnnotationConvertor {
 			NormalAnnotation normalAnnotation = (NormalAnnotation) annotation;
 			MemberValuePair[] memberValuePairs = normalAnnotation.memberValuePairs;
 			if (memberValuePairs != null) {
-				int memberValuePairsLength = memberValuePairs.length;
 				for (MemberValuePair memberValuePair : memberValuePairs) {
 					MethodBinding methodBinding = memberValuePair.binding;
 					if (methodBinding == null) {

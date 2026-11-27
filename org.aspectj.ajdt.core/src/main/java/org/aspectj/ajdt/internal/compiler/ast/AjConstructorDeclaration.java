@@ -44,7 +44,7 @@ public class AjConstructorDeclaration extends ConstructorDeclaration {
 		return classFile.generateMethodInfoAttributes(binding,extras);
 	}
 
-	protected void addDeclarationStartLineAttribute(List extraAttributeList, ClassFile classFile) {
+	protected void addDeclarationStartLineAttribute(List<IAttribute> extraAttributeList, ClassFile classFile) {
 		if ((classFile.codeStream.generateAttributes & ClassFileConstants.ATTR_LINES)==0) return;
 
 		int[] separators = compilationResult().lineSeparatorPositions;

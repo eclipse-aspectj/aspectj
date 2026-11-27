@@ -307,8 +307,8 @@ public abstract class AjcTestCase extends TestCase {
 		 * Convenience constant that matches a CompilationResult with any number of information messages, but no others.
 		 */
 		public static final MessageSpec EMPTY_MESSAGE_SET = new MessageSpec(
-			null, Collections.EMPTY_LIST, Collections.EMPTY_LIST, Collections.EMPTY_LIST,
-			Collections.EMPTY_LIST, Collections.EMPTY_LIST
+			null, Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),
+			Collections.emptyList(), Collections.emptyList()
 		);
 
 		boolean ignoreInfos = true;
@@ -922,10 +922,10 @@ public abstract class AjcTestCase extends TestCase {
 		URLClassLoader loader = null;
 
 		try {
-			Class loaderClazz = Class.forName("org.aspectj.weaver.loadtime.WeavingURLClassLoader", false, parent);
-			Class[] parameterTypes = new Class[] { urls.getClass(), ClassLoader.class };
+			Class<?> loaderClazz = Class.forName("org.aspectj.weaver.loadtime.WeavingURLClassLoader", false, parent);
+			Class<?>[] parameterTypes = new Class[] { urls.getClass(), ClassLoader.class };
 			Object[] parameters = new Object[] { urls, parent };
-			Constructor constructor = loaderClazz.getConstructor(parameterTypes);
+			Constructor<?> constructor = loaderClazz.getConstructor(parameterTypes);
 			loader = (URLClassLoader) constructor.newInstance(parameters);
 		} catch (InvocationTargetException ex) {
 			ex.printStackTrace();

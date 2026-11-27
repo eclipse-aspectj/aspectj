@@ -19,11 +19,11 @@ public class DelegatingOutputStream extends OutputStream {
 
 	private boolean verbose = true;
 	private OutputStream target;
-	private List delegates;
+	private List<OutputStream> delegates;
 
 	public DelegatingOutputStream (OutputStream os) {
 		this.target = os;
-		this.delegates = new LinkedList();
+		this.delegates = new LinkedList<>();
 	}
 
 	public void close() throws IOException {
@@ -38,17 +38,14 @@ public class DelegatingOutputStream extends OutputStream {
 	public void flush() throws IOException {
 		target.flush();
 
-		for (Object o : delegates) {
-			OutputStream delegate = (OutputStream) o;
+		for (OutputStream delegate : delegates) {
 			delegate.flush();
 		}
 	}
 
 	public void write(byte[] b, int off, int len) throws IOException {
 		if (verbose) target.write(b, off, len);
-
-		for (Object o : delegates) {
-			OutputStream delegate = (OutputStream) o;
+		for (OutputStream delegate : delegates) {
 			delegate.write(b, off, len);
 		}
 	}
@@ -56,8 +53,7 @@ public class DelegatingOutputStream extends OutputStream {
 	public void write(byte[] b) throws IOException {
 		if (verbose) target.write(b);
 
-		for (Object o : delegates) {
-			OutputStream delegate = (OutputStream) o;
+		for (OutputStream delegate : delegates) {
 			delegate.write(b);
 		}
 	}
@@ -65,8 +61,7 @@ public class DelegatingOutputStream extends OutputStream {
 	public void write(int b) throws IOException {
 		if (verbose) target.write(b);
 
-		for (Object o : delegates) {
-			OutputStream delegate = (OutputStream) o;
+		for (OutputStream delegate : delegates) {
 			delegate.write(b);
 		}
 	}

@@ -201,7 +201,7 @@ public class AspectJBuilder extends JavaBuilder implements ICompilerAdapterFacto
 			results.add(intRes);
 		}
 
-		public Collection getIntermediateResults() {
+		public Collection<InterimCompilationResult> getIntermediateResults() {
 			return results;
 		}
 
