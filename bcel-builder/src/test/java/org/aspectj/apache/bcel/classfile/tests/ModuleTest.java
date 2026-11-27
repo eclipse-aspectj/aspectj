@@ -32,7 +32,7 @@ import org.aspectj.apache.bcel.classfile.SourceFile;
 public class ModuleTest extends BcelTestCase {
 
 	public void testLoadSimpleModuleClass() throws Exception {
-		String moduleFilename = "testdata/modules/one/module-info.class";
+		String moduleFilename = "../bcel-builder/testdata/modules/one/module-info.class";
 		ClassParser classParser = new ClassParser(moduleFilename);
 		JavaClass javaClass = classParser.parse();
 		assertNotNull(javaClass);
@@ -69,7 +69,7 @@ public class ModuleTest extends BcelTestCase {
 
 
 	public void testRequires() throws Exception {
-		Module moduleAttr = getModuleAttribute("testdata/modules/two/d/module-info.class");
+		Module moduleAttr = getModuleAttribute("../bcel-builder/testdata/modules/two/d/module-info.class");
 		Require[] requires = moduleAttr.getRequires();
 		assertEquals(4, requires.length);
 		assertEquals("requires mandated java.base 9",requires[0].toString());
@@ -83,7 +83,7 @@ public class ModuleTest extends BcelTestCase {
 	}
 
 	public void testExports() throws Exception {
-		Module moduleAttr = getModuleAttribute("testdata/modules/two/e/module-info.class");
+		Module moduleAttr = getModuleAttribute("../bcel-builder/testdata/modules/two/e/module-info.class");
 		Export[] exports = moduleAttr.getExports();
 		assertEquals(3, exports.length);
 		assertEquals("exports com.foo1", exports[0].toString());
@@ -98,7 +98,7 @@ public class ModuleTest extends BcelTestCase {
 	}
 
 	public void testOpens() throws Exception {
-		Module moduleAttr = getModuleAttribute("testdata/modules/two/h/module-info.class");
+		Module moduleAttr = getModuleAttribute("../bcel-builder/testdata/modules/two/h/module-info.class");
 		Open[] opens = moduleAttr.getOpens();
 		assertEquals(3, opens.length);
 		assertEquals("opens com.foo1", opens[0].toString());
@@ -107,7 +107,7 @@ public class ModuleTest extends BcelTestCase {
 	}
 
 	public void testUses() throws Exception {
-		Module moduleAttr = getModuleAttribute("testdata/modules/two/f/module-info.class");
+		Module moduleAttr = getModuleAttribute("../bcel-builder/testdata/modules/two/f/module-info.class");
 		Uses[] uses = moduleAttr.getUses();
 		assertEquals(1,uses.length);
 		assertEquals("com/foo1/I1",uses[0].getTypeName());
@@ -115,7 +115,7 @@ public class ModuleTest extends BcelTestCase {
 	}
 
 	public void testProvides() throws Exception {
-		Module moduleAttr = getModuleAttribute("testdata/modules/two/g/module-info.class");
+		Module moduleAttr = getModuleAttribute("../bcel-builder/testdata/modules/two/g/module-info.class");
 		Provide[] provides = moduleAttr.getProvides();
 		assertEquals(2,provides.length);
 		assertEquals("provides com.foo1.I1 with com.foo1.C1",provides[0].toString());

@@ -9,6 +9,7 @@
  * ******************************************************************/
 import org.aspectj.ajde.core.AjdeCoreModuleTests;
 import org.aspectj.ajdt.AjdtCoreModuleTests;
+import org.aspectj.apache.bcel.BcelBuilderModuleTests;
 import org.aspectj.asm.AsmModuleTests;
 import org.aspectj.bridge.BridgeModuleTests;
 import org.aspectj.loadtime.LoadtimeModuleTests;
@@ -38,6 +39,7 @@ public class RunTheseBeforeYouCommitTests {
 
 		// Main modules
 		suite.addTest(UtilModuleTests.suite());
+		suite.addTest(BcelBuilderModuleTests.suite());
 		suite.addTest(AjdeCoreModuleTests.suite());
 		suite.addTest(AsmModuleTests.suite());
 		suite.addTest(BridgeModuleTests.suite());
@@ -53,7 +55,6 @@ public class RunTheseBeforeYouCommitTests {
 		// Support modules
 		suite.addTest(TestingModuleTests.suite());
 		suite.addTest(TestingClientModuleTests.suite());
-		suite.addTest(TestingDriversModuleTests.suite());
 		suite.addTest(TestingUtilModuleTests.suite());
 
 		// Compiler tests

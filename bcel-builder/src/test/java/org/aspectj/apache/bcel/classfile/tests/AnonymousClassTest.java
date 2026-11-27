@@ -53,7 +53,7 @@ public class AnonymousClassTest extends TestCase {
 
 	protected void setUp() throws Exception {
 		ClassPath cp =
-			new ClassPath("testdata"+File.separator+"testcode.jar"+File.pathSeparator+System.getProperty("java.class.path"));
+			new ClassPath("../bcel-builder/testdata"+File.separator+"testcode.jar"+File.pathSeparator+System.getProperty("java.class.path"));
 		repos = SyntheticRepository.getInstance(cp);
 	}
 

@@ -33,7 +33,7 @@ public class AnnotationAccessFlagTest extends TestCase {
 	 */
 	public void testAnnotationClassSaysItIs() throws ClassNotFoundException {
 		ClassPath cp =
-			new ClassPath("testdata"+File.separator+"testcode.jar"+File.pathSeparator+System.getProperty("java.class.path"));
+			new ClassPath("../bcel-builder/testdata"+File.separator+"testcode.jar"+File.pathSeparator+System.getProperty("java.class.path"));
 		SyntheticRepository repos = SyntheticRepository.getInstance(cp);
 		JavaClass clazz = repos.loadClass("SimpleAnnotation");
 		@SuppressWarnings("unused")

@@ -39,7 +39,7 @@ public abstract class BcelTestCase extends TestCase {
 	private boolean verbose = false;
 
 	protected File createTestdataFile(String name) {
-		return new File("testdata" + File.separator + name);
+		return new File("../bcel-builder/testdata" + File.separator + name);
 	}
 
 	protected JavaClass getClassFromJar(String clazzname) throws ClassNotFoundException {
@@ -73,7 +73,7 @@ public abstract class BcelTestCase extends TestCase {
 	}
 
 	protected boolean wipe(String name) {
-		return new File("testdata" + File.separator + name).delete();
+		return new File("../bcel-builder/testdata" + File.separator + name).delete();
 	}
 
 	protected boolean wipe(String dir, String name) {
@@ -86,7 +86,7 @@ public abstract class BcelTestCase extends TestCase {
 	}
 
 	public SyntheticRepository createRepos(String cpentry) {
-		ClassPath cp = new ClassPath("testdata" + File.separator + cpentry + File.pathSeparator
+		ClassPath cp = new ClassPath("../bcel-builder/testdata" + File.separator + cpentry + File.pathSeparator
 				+ System.getProperty("java.class.path"));
 		return SyntheticRepository.getInstance(cp);
 	}
