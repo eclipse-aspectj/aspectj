@@ -21,7 +21,7 @@ public interface DeclareParents {
 	/**
 	 * @return the declaring aspect
 	 */
-	AjType getDeclaringType();
+	AjType<?> getDeclaringType();
 
 	/**
 	 * @return the target type pattern

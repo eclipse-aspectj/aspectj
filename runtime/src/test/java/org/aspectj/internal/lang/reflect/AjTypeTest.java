@@ -48,7 +48,7 @@ public class AjTypeTest extends TestCase {
 	}
 
 	public void testGetInterfaces() {
-		Class[] i1 = String.class.getInterfaces();
+		Class<?>[] i1 = String.class.getInterfaces();
 		AjType<?>[] i2 = stringType.getInterfaces();
 		assertEquals(i1.length,i2.length);
 		for (int i = 0; i < i1.length; i++)
@@ -98,6 +98,7 @@ public class AjTypeTest extends TestCase {
 		assertEquals("org.aspectj.internal.lang.reflect.Foo",t.getDeclaringType().getName());
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void testIsAnnotationPresent() {
 		AjType<Foo> foo = AjTypeSystem.getAjType(Foo.class);
 		AjType<Goo> goo = AjTypeSystem.getAjType(Goo.class);
@@ -105,6 +106,7 @@ public class AjTypeTest extends TestCase {
 		assertFalse(goo.isAnnotationPresent(SomeAnn.class));
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void testGetAnnotation() {
 		AjType<Foo> foo = AjTypeSystem.getAjType(Foo.class);
 		AjType<Goo> goo = AjTypeSystem.getAjType(Goo.class);
@@ -112,6 +114,7 @@ public class AjTypeTest extends TestCase {
 		assertNull(goo.getAnnotation(SomeAnn.class));
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void testGetAnnotations() {
 		AjType<Foo> foo = AjTypeSystem.getAjType(Foo.class);
 		AjType<Goo> goo = AjTypeSystem.getAjType(Goo.class);
@@ -119,6 +122,7 @@ public class AjTypeTest extends TestCase {
 		assertEquals(0,goo.getAnnotations().length);
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void testGetDeclaredAnnotations() {
 		AjType<Foo> foo = AjTypeSystem.getAjType(Foo.class);
 		AjType<Goo> goo = AjTypeSystem.getAjType(Goo.class);
@@ -126,13 +130,15 @@ public class AjTypeTest extends TestCase {
 		assertEquals(1,foo.getDeclaredAnnotations().length);
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void testGetAjTypes() {
 		AjType<Foo> foo = AjTypeSystem.getAjType(Foo.class);
-		AjType[] fooTypes = foo.getAjTypes();
+		AjType<?>[] fooTypes = foo.getAjTypes();
 		assertEquals(1,fooTypes.length);
 		assertEquals("org.aspectj.internal.lang.reflect.Foo$Z",fooTypes[0].getName());
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void testGetDeclaredAjTypes() {
 		AjType<Foo> foo = AjTypeSystem.getAjType(Foo.class);
 		AjType<?>[] fooTypes = foo.getDeclaredAjTypes();
@@ -143,6 +149,7 @@ public class AjTypeTest extends TestCase {
 		assertTrue(s.contains(" org.aspectj.internal.lang.reflect.Foo$XX"));
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void testGetConstructor() throws Exception {
 		Constructor<String> c1 = String.class.getConstructor(String.class);
 		Constructor c2 = stringType.getConstructor(stringType);
@@ -157,6 +164,7 @@ public class AjTypeTest extends TestCase {
 			assertEquals(c1[i],c2[i]);
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void testGetDeclaredConstructor() throws Exception {
 		Constructor<String> c1 = String.class.getDeclaredConstructor(String.class);
 		Constructor c2 = stringType.getDeclaredConstructor(stringType);
@@ -165,7 +173,7 @@ public class AjTypeTest extends TestCase {
 
 	public void testGetDeclaredConstructors() {
 		Constructor<?>[] c1 = String.class.getDeclaredConstructors();
-		Constructor[] c2 = stringType.getDeclaredConstructors();
+		Constructor<?>[] c2 = stringType.getDeclaredConstructors();
 		assertEquals(c1.length,c2.length);
 		for (int i = 0; i < c1.length; i++)
 			assertEquals(c1[i],c2[i]);
@@ -227,11 +235,12 @@ public class AjTypeTest extends TestCase {
 	}
 
 	public void testGetEnumConstants() {
-		AjType e = AjTypeSystem.getAjType(E.class);
+		AjType<?> e = AjTypeSystem.getAjType(E.class);
 		Object[] consts = e.getEnumConstants();
 		assertEquals(3,consts.length);
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void testGetTypeParameters() {
 		AjType<Foo> foo = AjTypeSystem.getAjType(Foo.class);
 		TypeVariable<Class<Foo>>[] tvs = foo.getTypeParameters();
@@ -296,12 +305,15 @@ public class AjTypeTest extends TestCase {
 @SomeAnn
 class Foo<T> {
 
+	@SuppressWarnings("unused")
 	public Foo() {
 		class Y { int y; }
-		AjType t = AjTypeSystem.getAjType(Y.class);
-		Constructor c = t.getEnclosingConstructor();
+		AjType<?> t = AjTypeSystem.getAjType(Y.class);
+		Constructor<?> c = t.getEnclosingConstructor();
 		if (!c.getName().equals("org.aspectj.internal.lang.reflect.Foo")) throw new RuntimeException("should have been Foo");
 	}
+
+	@SuppressWarnings("unused")
 	public void foo() {
 		class X { int x; }
 		AjType<?> t = AjTypeSystem.getAjType(X.class);

@@ -48,7 +48,7 @@ public class DeclareParentsImpl implements DeclareParents {
 		}
 	}
 
-	public AjType getDeclaringType() {
+	public AjType<?> getDeclaringType() {
 		return this.declaringType;
 	}
 

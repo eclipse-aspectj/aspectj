@@ -27,7 +27,7 @@ public class DeclarePrecedenceImpl implements DeclarePrecedence {
 	private TypePattern[] precedenceList;
 	private String precedenceString;
 
-	public DeclarePrecedenceImpl(String precedenceList, AjType declaring) {
+	public DeclarePrecedenceImpl(String precedenceList, AjType<?> declaring) {
 		this.declaringType = declaring;
 		this.precedenceString = precedenceList;
 		String toTokenize = precedenceList;
@@ -41,7 +41,7 @@ public class DeclarePrecedenceImpl implements DeclarePrecedence {
 		}
 	}
 
-	public AjType getDeclaringType() {
+	public AjType<?> getDeclaringType() {
 		return this.declaringType;
 	}
 

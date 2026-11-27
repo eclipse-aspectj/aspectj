@@ -20,7 +20,7 @@ public interface DeclareErrorOrWarning {
 	/**
 	 * @return the type that declared this declare warning or declare error member.
 	 */
-	AjType getDeclaringType();
+	AjType<?> getDeclaringType();
 
 	/**
 	 * @return the pointcut expression associated with the warning or error

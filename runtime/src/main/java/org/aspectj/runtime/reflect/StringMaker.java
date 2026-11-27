@@ -141,14 +141,14 @@ class StringMaker {
         return makeTypeName(type, typeName, shortPrimaryTypeNames);
     }
 
-    public void addTypeNames(StringBuffer buf, Class[] types) {
+    public void addTypeNames(StringBuffer buf, Class<?>[] types) {
         for (int i = 0; i < types.length; i++) {
             if (i > 0) buf.append(", ");
             buf.append(makeTypeName(types[i]));
         }
     }
 
-    public void addSignature(StringBuffer buf, Class[] types) {
+    public void addSignature(StringBuffer buf, Class<?>[] types) {
         if (types == null) return;
         if (!includeArgs) {
             if (types.length == 0) {
@@ -164,7 +164,7 @@ class StringMaker {
         buf.append(")");
     }
 
-    public void addThrows(StringBuffer buf, Class[] types) {
+    public void addThrows(StringBuffer buf, Class<?>[] types) {
         if (!includeThrows || types == null || types.length == 0) return;
 
         buf.append(" throws ");

@@ -18,14 +18,14 @@ import java.util.Hashtable;
 import java.util.Stack;
 
 public class ThreadStackImpl11 implements ThreadStack {
-	private Hashtable<Thread, Stack> stacks = new Hashtable<>();
+	private Hashtable<Thread, Stack<?>> stacks = new Hashtable<>();
 	private Thread cached_thread;
-	private Stack cached_stack;
+	private Stack<?> cached_stack;
 	private int change_count = 0;
 	private static final int COLLECT_AT = 20000;
 	private static final int MIN_COLLECT_AT = 100;
 
-	public synchronized Stack getThreadStack() {
+	public synchronized Stack<?> getThreadStack() {
 		if (Thread.currentThread() != cached_thread) {
 			cached_thread = Thread.currentThread();
 			cached_stack = (Stack<?>)stacks.get(cached_thread);

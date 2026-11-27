@@ -21,7 +21,7 @@ public interface Advice {
 	/**
 	 * @return the declaring aspect
 	 */
-	AjType getDeclaringType();
+	AjType<?> getDeclaringType();
 
 	/**
 	 * @return the kind of advice (before, after-returning, after-throwing, etc.)

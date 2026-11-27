@@ -26,14 +26,14 @@ public class DeclareErrorOrWarningImpl implements DeclareErrorOrWarning {
 	private boolean isError;
 	private AjType<?> declaringType;
 
-	public DeclareErrorOrWarningImpl(String pointcut, String message, boolean isError, AjType decType) {
+	public DeclareErrorOrWarningImpl(String pointcut, String message, boolean isError, AjType<?> decType) {
 		this.pc = new PointcutExpressionImpl(pointcut);
 		this.msg = message;
 		this.isError = isError;
 		this.declaringType = decType;
 	}
 
-	public AjType getDeclaringType() { return this.declaringType; }
+	public AjType<?> getDeclaringType() { return this.declaringType; }
 
 	public PointcutExpression getPointcutExpression() {
 		return pc;

@@ -71,7 +71,7 @@ public interface AjType<T> extends Type, AnnotatedElement {
 	/**
 	 * @return the enclosing Method if this type represents a local or anonymous type declared within a constructor
 	 */
-	Constructor getEnclosingConstructor();
+	Constructor<?> getEnclosingConstructor();
 
 	/**
 	 * @return the immediately enclosing type of this type.
@@ -106,24 +106,24 @@ public interface AjType<T> extends Type, AnnotatedElement {
 	 * @return the constructor object for the specified public constructor of this type
 	 * @throws NoSuchMethodException if constructor not found
 	 */
-	Constructor getConstructor(AjType<?>... parameterTypes) throws NoSuchMethodException;
+	Constructor<?> getConstructor(AjType<?>... parameterTypes) throws NoSuchMethodException;
 
 	/**
 	 * @return all of the public constructors of this type
 	 */
-	Constructor[] getConstructors();
+	Constructor<?>[] getConstructors();
 
 	/**
 	 * @param parameterTypes the types of the constructor parameters
 	 * @return the constructor object for the specified constructor of this type
 	 * @throws NoSuchMethodException if constructor not found
 	 */
-	Constructor getDeclaredConstructor(AjType<?>... parameterTypes) throws NoSuchMethodException;
+	Constructor<?> getDeclaredConstructor(AjType<?>... parameterTypes) throws NoSuchMethodException;
 
 	/**
 	 * @return all the constructors declared in this type
 	 */
-	Constructor[] getDeclaredConstructors();
+	Constructor<?>[] getDeclaredConstructors();
 
 	// fields
 

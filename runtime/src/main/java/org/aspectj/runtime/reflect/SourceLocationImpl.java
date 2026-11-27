@@ -27,7 +27,7 @@ class SourceLocationImpl implements SourceLocation {
         this.line = line;
     }
 
-    public Class getWithinType() { return withinType; }
+    public Class<?> getWithinType() { return withinType; }
     public String getFileName() { return fileName; }
     public int getLine() { return line; }
     public int getColumn() { return -1; }

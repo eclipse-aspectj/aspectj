@@ -23,8 +23,8 @@ class MethodSignatureImpl extends CodeSignatureImpl implements MethodSignature {
 	private Method method;
 	Class<?> returnType;
 
-	MethodSignatureImpl(int modifiers, String name, Class<?> declaringType, Class[] parameterTypes, String[] parameterNames,
-			Class[] exceptionTypes, Class<?> returnType) {
+	MethodSignatureImpl(int modifiers, String name, Class<?> declaringType, Class<?>[] parameterTypes, String[] parameterNames,
+			Class<?>[] exceptionTypes, Class<?> returnType) {
 		super(modifiers, name, declaringType, parameterTypes, parameterNames, exceptionTypes);
 		this.returnType = returnType;
 	}
@@ -34,7 +34,7 @@ class MethodSignatureImpl extends CodeSignatureImpl implements MethodSignature {
 	}
 
 	/* name is consistent with reflection API */
-	public Class getReturnType() {
+	public Class<?> getReturnType() {
 		if (returnType == null)
 			returnType = extractType(6);
 		return returnType;
@@ -84,7 +84,7 @@ class MethodSignatureImpl extends CodeSignatureImpl implements MethodSignature {
 	 * @param searched a set of types already searched to avoid looking at anything twice
 	 * @return the method if found, or null if not found
 	 */
-	private Method search(Class<?> type, String name, Class[] params, Set<Class<?>> searched) {
+	private Method search(Class<?> type, String name, Class<?>[] params, Set<Class<?>> searched) {
 		if (type == null) {
 			return null;
 		}
@@ -100,7 +100,7 @@ class MethodSignatureImpl extends CodeSignatureImpl implements MethodSignature {
 		if (m != null) {
 			return m;
 		}
-		Class[] superinterfaces = type.getInterfaces();
+		Class<?>[] superinterfaces = type.getInterfaces();
 		if (superinterfaces != null) {
 			for (Class<?> superinterface : superinterfaces) {
 				m = search(superinterface, name, params, searched);

@@ -33,7 +33,7 @@ public class FieldSignatureImpl extends MemberSignatureImpl implements FieldSign
         super(stringRep);
     }
 
-    public Class getFieldType() {
+    public Class<?> getFieldType() {
         if (fieldType == null) fieldType = extractType(3);
         return fieldType;
     }

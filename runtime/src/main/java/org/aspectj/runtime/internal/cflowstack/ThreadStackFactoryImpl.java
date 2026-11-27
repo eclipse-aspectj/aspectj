@@ -16,11 +16,11 @@ import java.util.Stack;
 
 public class ThreadStackFactoryImpl implements ThreadStackFactory {
 
-	private static class ThreadStackImpl extends ThreadLocal<Stack> implements ThreadStack {
-		public Stack initialValue() {
-		  return new Stack();
+	private static class ThreadStackImpl extends ThreadLocal<Stack<?>> implements ThreadStack {
+		public Stack<?> initialValue() {
+		  return new Stack<>();
 		}
-		public Stack getThreadStack() {
+		public Stack<?> getThreadStack() {
 			return get();
 		}
 		public void removeThreadStack() {

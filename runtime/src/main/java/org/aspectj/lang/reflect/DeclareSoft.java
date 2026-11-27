@@ -19,13 +19,13 @@ public interface DeclareSoft {
 	/**
 	 * @return the aspect that declared this member
 	 */
-	AjType getDeclaringType();
+	AjType<?> getDeclaringType();
 
 	/**
 	 * @return the softened exception type
 	 * @throws ClassNotFoundException if exception type cannot be found
 	 */
-	AjType getSoftenedExceptionType() throws ClassNotFoundException;
+	AjType<?> getSoftenedExceptionType() throws ClassNotFoundException;
 
 	/**
 	 * @return the pointcut determining the join points at which the exception is to be softened.

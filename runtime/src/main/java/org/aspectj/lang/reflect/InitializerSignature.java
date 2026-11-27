@@ -27,5 +27,5 @@ public interface InitializerSignature extends CodeSignature {
      * or null in the case of interface initializers and
      * static initializers.
      */
-    Constructor getInitializer();
+    Constructor<?> getInitializer();
 }

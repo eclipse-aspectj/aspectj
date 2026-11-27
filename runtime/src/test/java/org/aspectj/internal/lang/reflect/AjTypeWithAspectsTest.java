@@ -84,17 +84,17 @@ public class AjTypeWithAspectsTest extends TestCase {
 	}
 
 	public void testGetDeclaredField() throws Exception{
-		Field f = sa.getDeclaredField("s");
+		sa.getDeclaredField("s");
 		try {
-			Field f2 = sa.getDeclaredField("ajc$xyz$s");
+			sa.getDeclaredField("ajc$xyz$s");
 			fail("Expecting NoSuchFieldException");
 		} catch (NoSuchFieldException nsf) {}
 	}
 
 	public void testGetField() throws Exception {
-		Field f = sa.getField("s");
+		sa.getField("s");
 		try {
-			Field f2 = sa.getField("ajc$xyz$s");
+			sa.getField("ajc$xyz$s");
 			fail("Expecting NoSuchFieldException");
 		} catch (NoSuchFieldException nsf) {}
 	}
@@ -112,25 +112,25 @@ public class AjTypeWithAspectsTest extends TestCase {
 	}
 
 	public void testGetDeclaredMethod() throws Exception {
-		Method m = sa.getDeclaredMethod("aMethod");
+		sa.getDeclaredMethod("aMethod");
 		try {
-			Method m2 = sa.getDeclaredMethod("logEntry");
+			sa.getDeclaredMethod("logEntry");
 			fail("Expecting NoSuchMethodException");
 		} catch(NoSuchMethodException ex) {}
 		try {
-			Method m3 = sa.getDeclaredMethod("ajc$before$123");
+			sa.getDeclaredMethod("ajc$before$123");
 			fail("Expecting NoSuchMethodException");
 		} catch(NoSuchMethodException ex) {}
 	}
 
 	public void testGetMethod() throws Exception {
-		Method m = sa.getMethod("aMethod");
+		sa.getMethod("aMethod");
 		try {
-			Method m2 = sa.getMethod("logEntry");
+			sa.getMethod("logEntry");
 			fail("Expecting NoSuchMethodException");
 		} catch(NoSuchMethodException ex) {}
 		try {
-			Method m3 = sa.getMethod("ajc$before$123");
+			sa.getMethod("ajc$before$123");
 			fail("Expecting NoSuchMethodException");
 		} catch(NoSuchMethodException ex) {}
 	}
@@ -167,7 +167,7 @@ public class AjTypeWithAspectsTest extends TestCase {
 		assertEquals(1,p2.getParameterTypes().length);
 		assertTrue(Modifier.isPrivate(p2.getModifiers()));
 		try {
-			Pointcut p3 = sa.getDeclaredPointcut("sausages");
+			sa.getDeclaredPointcut("sausages");
 			fail("Expecting NoSuchPointcutExcetpion");
 		} catch (NoSuchPointcutException ex) {
 			assertEquals("sausages",ex.getName());
@@ -188,7 +188,7 @@ public class AjTypeWithAspectsTest extends TestCase {
 		assertEquals(1,p2.getParameterTypes().length);
 		assertTrue(Modifier.isPrivate(p2.getModifiers()));
 		try {
-			Pointcut p3 = sa.getPointcut("sausages");
+			sa.getPointcut("sausages");
 			fail("Expecting NoSuchPointcutExcetpion");
 		} catch (NoSuchPointcutException ex) {
 			assertEquals("sausages",ex.getName());

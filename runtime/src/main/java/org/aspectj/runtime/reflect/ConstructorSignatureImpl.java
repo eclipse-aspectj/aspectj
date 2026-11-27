@@ -22,7 +22,7 @@ class ConstructorSignatureImpl extends CodeSignatureImpl implements ConstructorS
     private Constructor<?> constructor;
 
     ConstructorSignatureImpl(int modifiers, Class<?> declaringType,
-        Class[] parameterTypes, String[] parameterNames, Class[] exceptionTypes)
+        Class<?>[] parameterTypes, String[] parameterNames, Class<?>[] exceptionTypes)
     {
         super(modifiers, "<init>", declaringType, parameterTypes, parameterNames, exceptionTypes);
     }
@@ -45,7 +45,7 @@ class ConstructorSignatureImpl extends CodeSignatureImpl implements ConstructorS
     /* (non-Javadoc)
 	 * @see org.aspectj.runtime.reflect.MemberSignatureImpl#createAccessibleObject()
 	 */
-	public Constructor getConstructor() {
+	public Constructor<?> getConstructor() {
 		if (constructor == null) {
 			try {
 				constructor = getDeclaringType().getDeclaredConstructor(getParameterTypes());

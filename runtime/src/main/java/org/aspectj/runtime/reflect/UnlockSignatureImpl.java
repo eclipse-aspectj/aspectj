@@ -33,7 +33,7 @@ class UnlockSignatureImpl extends SignatureImpl implements UnlockSignature {
         return "unlock("+sm.makeTypeName(parameterType)+")";
     }
 
-    public Class getParameterType() {
+    public Class<?> getParameterType() {
         if (parameterType == null) parameterType = extractType(3);
         return parameterType;
     }

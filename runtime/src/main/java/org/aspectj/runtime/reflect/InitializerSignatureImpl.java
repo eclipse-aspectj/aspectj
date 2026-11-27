@@ -47,7 +47,7 @@ class InitializerSignatureImpl extends CodeSignatureImpl implements InitializerS
     /* (non-Javadoc)
 	 * @see org.aspectj.runtime.reflect.MemberSignatureImpl#createAccessibleObject()
 	 */
-	public Constructor getInitializer() {
+	public Constructor<?> getInitializer() {
 		if (constructor == null) {
 			try {
 				constructor = getDeclaringType().getDeclaredConstructor(getParameterTypes());

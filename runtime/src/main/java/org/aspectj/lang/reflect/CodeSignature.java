@@ -15,7 +15,7 @@
 package org.aspectj.lang.reflect;
 
 public interface CodeSignature extends MemberSignature {
-    Class[]  getParameterTypes();
+    Class<?>[]  getParameterTypes();
     String[] getParameterNames();
-    Class[]  getExceptionTypes();
+    Class<?>[]  getExceptionTypes();
 }

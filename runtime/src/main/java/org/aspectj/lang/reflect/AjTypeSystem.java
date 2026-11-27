@@ -25,7 +25,7 @@ import org.aspectj.internal.lang.reflect.AjTypeImpl;
  */
 public class AjTypeSystem {
 
-		private static Map<Class, WeakReference<AjType>> ajTypes =
+		private static Map<Class<?>, WeakReference<AjType<?>>> ajTypes =
 			Collections.synchronizedMap(new WeakHashMap<>());
 
 		/**
@@ -39,9 +39,9 @@ public class AjTypeSystem {
 		 * @return the AjType corresponding to the input class
 		 */
 		public static <T> AjType<T> getAjType(Class<T> fromClass) {
-			WeakReference<AjType> weakRefToAjType =  ajTypes.get(fromClass);
+			WeakReference<AjType<?>> weakRefToAjType =  ajTypes.get(fromClass);
 			if (weakRefToAjType!=null) {
-				AjType<T> theAjType = weakRefToAjType.get();
+				AjType<T> theAjType = (AjType<T>) weakRefToAjType.get();
 				if (theAjType != null) {
 					return theAjType;
 				} else {

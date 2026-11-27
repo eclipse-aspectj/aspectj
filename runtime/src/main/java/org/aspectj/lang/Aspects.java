@@ -27,9 +27,9 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class Aspects {
 
-    private final static Class[] EMPTY_CLASS_ARRAY = new Class[0];
-    private final static Class[] PEROBJECT_CLASS_ARRAY = new Class[]{Object.class};
-    private final static Class[] PERTYPEWITHIN_CLASS_ARRAY = new Class[]{Class.class};
+    private final static Class<?>[] EMPTY_CLASS_ARRAY = new Class[0];
+    private final static Class<?>[] PEROBJECT_CLASS_ARRAY = new Class[]{Object.class};
+    private final static Class<?>[] PERTYPEWITHIN_CLASS_ARRAY = new Class[]{Class.class};
     private final static Object[] EMPTY_OBJECT_ARRAY = new Object[0];
     private final static String ASPECTOF = "aspectOf";
     private final static String HASASPECT = "hasAspect";

@@ -140,7 +140,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getEnclosingConstructor()
 	 */
-	public Constructor getEnclosingConstructor() {
+	public Constructor<?> getEnclosingConstructor() {
 		return clazz.getEnclosingConstructor();
 	}
 
@@ -216,7 +216,7 @@ public class AjTypeImpl<T> implements AjType<T> {
 	 * @see org.aspectj.lang.reflect.AjType#getAspects()
 	 */
 	public AjType<?>[] getAjTypes() {
-		Class[] classes = clazz.getClasses();
+		Class<?>[] classes = clazz.getClasses();
 		return toAjTypeArray(classes);
 	}
 
@@ -224,35 +224,35 @@ public class AjTypeImpl<T> implements AjType<T> {
 	 * @see org.aspectj.lang.reflect.AjType#getDeclaredAspects()
 	 */
 	public AjType<?>[] getDeclaredAjTypes() {
-		Class[] classes = clazz.getDeclaredClasses();
+		Class<?>[] classes = clazz.getDeclaredClasses();
 		return toAjTypeArray(classes);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getConstructor(java.lang.Class...)
 	 */
-	public Constructor getConstructor(AjType<?>... parameterTypes) throws NoSuchMethodException {
+	public Constructor<?> getConstructor(AjType<?>... parameterTypes) throws NoSuchMethodException {
 		return clazz.getConstructor(toClassArray(parameterTypes));
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getConstructors()
 	 */
-	public Constructor[] getConstructors() {
+	public Constructor<?>[] getConstructors() {
 		return clazz.getConstructors();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getDeclaredConstructor(java.lang.Class...)
 	 */
-	public Constructor getDeclaredConstructor(AjType<?>... parameterTypes) throws NoSuchMethodException {
+	public Constructor<?> getDeclaredConstructor(AjType<?>... parameterTypes) throws NoSuchMethodException {
 		return clazz.getDeclaredConstructor(toClassArray(parameterTypes));
 	}
 
 	/* (non-Javadoc)
 	 * @see org.aspectj.lang.reflect.AjType#getDeclaredConstructors()
 	 */
-	public Constructor[] getDeclaredConstructors() {
+	public Constructor<?>[] getDeclaredConstructors() {
 		return clazz.getDeclaredConstructors();
 	}
 

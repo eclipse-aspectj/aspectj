@@ -94,7 +94,7 @@ public interface Signature {
      * @return the class, interface or aspect that declared this member
      * @see java.lang.reflect.Member#getDeclaringClass
      */
-    Class  getDeclaringType();
+    Class<?>  getDeclaringType();
 
     /**
      * This is equivalent to calling getDeclaringType().getName(), but caches

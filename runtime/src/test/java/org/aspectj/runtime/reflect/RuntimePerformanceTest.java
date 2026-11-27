@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.aspectj.runtime.reflect;
 
-import java.lang.reflect.Method;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -28,8 +27,8 @@ public class RuntimePerformanceTest extends TestCase {
 	private static final Factory factory = new Factory("RutimePerformanceTest.java",RuntimePerformanceTest.class);
 
 	private boolean savedUseCaches;
-	private Method method;
-	private Signature signature;
+//	private Method method;
+//	private Signature signature;
 
 	private TimerTask task;
 	private boolean abort;
@@ -107,11 +106,11 @@ public class RuntimePerformanceTest extends TestCase {
 	}
 
 	private Signature makeMethodSig (String methodName) {
-		Class clazz = getClass();
-		Class[] parameterTypes = new Class[] { String.class };
+		Class<?> clazz = getClass();
+		Class<?>[] parameterTypes = new Class[] { String.class };
 		String[] parameterNames = new String[] { "s" };
-		Class[] exceptionTypes = new Class[] {};
-		Class returnType = Void.TYPE;
+		Class<?>[] exceptionTypes = new Class[] {};
+		Class<?> returnType = Void.TYPE;
 		return factory.makeMethodSig(1,methodName,clazz,parameterTypes,parameterNames,exceptionTypes,returnType);
 	}
 }

@@ -25,9 +25,9 @@ import java.lang.reflect.Modifier;
  */
 public class Aspects14 {
 
-    private final static Class[] EMPTY_CLASS_ARRAY = new Class[0];
-    private final static Class[] PEROBJECT_CLASS_ARRAY = new Class[]{Object.class};
-    private final static Class[] PERTYPEWITHIN_CLASS_ARRAY = new Class[]{Class.class};
+    private final static Class<?>[] EMPTY_CLASS_ARRAY = new Class[0];
+    private final static Class<?>[] PEROBJECT_CLASS_ARRAY = new Class[]{Object.class};
+    private final static Class<?>[] PERTYPEWITHIN_CLASS_ARRAY = new Class[]{Class.class};
     private final static Object[] EMPTY_OBJECT_ARRAY = new Object[0];
     private final static String ASPECTOF = "aspectOf";
     private final static String HASASPECT = "hasAspect";
@@ -39,7 +39,7 @@ public class Aspects14 {
      * @return an aspect instance
      * @throws NoAspectBoundException if no such aspect
      */
-    public static Object aspectOf(Class aspectClass) throws NoAspectBoundException {
+    public static Object aspectOf(Class<?> aspectClass) throws NoAspectBoundException {
         try {
             return getSingletonOrThreadAspectOf(aspectClass).invoke(null, EMPTY_OBJECT_ARRAY);
         } catch (InvocationTargetException e) {
@@ -57,7 +57,7 @@ public class Aspects14 {
      * @return an aspect instance
      * @throws NoAspectBoundException if no such aspect, or no aspect bound
      */
-    public static Object aspectOf(Class aspectClass, Object perObject) throws NoAspectBoundException {
+    public static Object aspectOf(Class<?> aspectClass, Object perObject) throws NoAspectBoundException {
         try {
             return getPerObjectAspectOf(aspectClass).invoke(null, new Object[]{perObject});
         } catch (InvocationTargetException e) {
@@ -75,7 +75,7 @@ public class Aspects14 {
      * @return the aspect instance
      * @throws NoAspectBoundException if no such aspect, or no aspect bound
      */
-    public static Object aspectOf(Class aspectClass, Class perTypeWithin) throws NoAspectBoundException {
+    public static Object aspectOf(Class<?> aspectClass, Class<?> perTypeWithin) throws NoAspectBoundException {
         try {
             return getPerTypeWithinAspectOf(aspectClass).invoke(null, new Object[]{perTypeWithin});
         } catch (InvocationTargetException e) {
@@ -93,7 +93,7 @@ public class Aspects14 {
      * @return true if an aspect instance is bound
      * @throws NoAspectBoundException if not bound
      */
-    public static boolean hasAspect(Class aspectClass) throws NoAspectBoundException {
+    public static boolean hasAspect(Class<?> aspectClass) throws NoAspectBoundException {
         try {
             return (Boolean) getSingletonOrThreadHasAspect(aspectClass).invoke(null, EMPTY_OBJECT_ARRAY);
         } catch (Exception e) {
@@ -108,7 +108,7 @@ public class Aspects14 {
      * @return true if aspect instance exists for the class/object combination
      * @throws NoAspectBoundException if not bound
      */
-    public static boolean hasAspect(Class aspectClass, Object perObject) throws NoAspectBoundException {
+    public static boolean hasAspect(Class<?> aspectClass, Object perObject) throws NoAspectBoundException {
         try {
             return (Boolean) getPerObjectHasAspect(aspectClass).invoke(null, new Object[]{perObject});
         } catch (Exception e) {
@@ -123,7 +123,7 @@ public class Aspects14 {
      * @return true if aspect instance exists for this aspect class/pertypewithin class combination
      * @throws NoAspectBoundException if not bound
      */
-    public static boolean hasAspect(Class aspectClass, Class perTypeWithin) throws NoAspectBoundException {
+    public static boolean hasAspect(Class<?> aspectClass, Class<?> perTypeWithin) throws NoAspectBoundException {
         try {
             return (Boolean) getPerTypeWithinHasAspect(aspectClass).invoke(null, new Object[]{perTypeWithin});
         } catch (Exception e) {

@@ -71,7 +71,7 @@ abstract class SignatureImpl implements Signature {
         if (name == null) name = extractString(1);
         return name;
     }
-    public Class getDeclaringType() {
+    public Class<?> getDeclaringType() {
         if (declaringType == null) declaringType = extractType(2);
         return declaringType;
     }
@@ -100,20 +100,20 @@ abstract class SignatureImpl implements Signature {
         return stripPackageName(type.getName()).replace('$', '.');
     }
 
-    void addFullTypeNames(StringBuffer buf, Class[] types) {
+    void addFullTypeNames(StringBuffer buf, Class<?>[] types) {
         for (int i = 0; i < types.length; i++) {
             if (i > 0) buf.append(", ");
             buf.append(fullTypeName(types[i]));
         }
     }
-    void addShortTypeNames(StringBuffer buf, Class[] types) {
+    void addShortTypeNames(StringBuffer buf, Class<?>[] types) {
         for (int i = 0; i < types.length; i++) {
             if (i > 0) buf.append(", ");
             buf.append(shortTypeName(types[i]));
         }
     }
 
-    void addTypeArray(StringBuffer buf, Class[] types) {
+    void addTypeArray(StringBuffer buf, Class<?>[] types) {
         addFullTypeNames(buf, types);
     }
 
@@ -165,7 +165,7 @@ abstract class SignatureImpl implements Signature {
 
 
     static String[] EMPTY_STRING_ARRAY = new String[0];
-    static Class[] EMPTY_CLASS_ARRAY = new Class[0];
+    static Class<?>[] EMPTY_CLASS_ARRAY = new Class[0];
 
     static final String INNER_SEP = ":";
 
@@ -177,11 +177,11 @@ abstract class SignatureImpl implements Signature {
         for (int i = 0; i < N; i++) ret[i]= st.nextToken();
         return ret;
     }
-    Class[] extractTypes(int n) {
+    Class<?>[] extractTypes(int n) {
         String s = extractString(n);
         StringTokenizer st = new StringTokenizer(s, INNER_SEP);
         final int N = st.countTokens();
-        Class[] ret = new Class[N];
+        Class<?>[] ret = new Class[N];
         for (int i = 0; i < N; i++) ret[i]= Factory.makeClass(st.nextToken(),getLookupClassLoader());
         return ret;
     }

@@ -31,7 +31,7 @@ public class PointcutImpl implements Pointcut {
 	private final AjType<?> declaringType;
 	private String[] parameterNames = new String[0];
 
-	protected PointcutImpl(String name, String pc, Method method, AjType declaringType, String pNames) {
+	protected PointcutImpl(String name, String pc, Method method, AjType<?> declaringType, String pNames) {
 		this.name = name;
 		this.pc = new PointcutExpressionImpl(pc);
 		this.baseMethod = method;
@@ -63,7 +63,7 @@ public class PointcutImpl implements Pointcut {
 		return ajParamTypes;
 	}
 
-	public AjType getDeclaringType() {
+	public AjType<?> getDeclaringType() {
 		return declaringType;
 	}
 

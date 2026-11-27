@@ -24,7 +24,7 @@ import org.aspectj.lang.reflect.AjTypeSystem;
  */
 public class StringToType {
 
-	public static Type[] commaSeparatedListToTypeArray(String typeNames, Class classScope)
+	public static Type[] commaSeparatedListToTypeArray(String typeNames, Class<?> classScope)
 	throws ClassNotFoundException {
 		StringTokenizer strTok = new StringTokenizer(typeNames,",");
 		Type[] ret = new Type[strTok.countTokens()];
@@ -37,7 +37,7 @@ public class StringToType {
 		return ret;
 	}
 
-	public static Type stringToType(String typeName, Class classScope)
+	public static Type stringToType(String typeName, Class<?> classScope)
 	throws ClassNotFoundException {
 		try {
 			if (!typeName.contains("<")) {

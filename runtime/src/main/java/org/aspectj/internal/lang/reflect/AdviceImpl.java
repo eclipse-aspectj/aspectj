@@ -34,8 +34,8 @@ public class AdviceImpl implements Advice {
 	private PointcutExpression pointcutExpression;
 	private boolean hasExtraParam = false;
 	private Type[] genericParameterTypes;
-	private AjType[] parameterTypes;
-	private AjType[] exceptionTypes;
+	private AjType<?>[] parameterTypes;
+	private AjType<?>[] exceptionTypes;
 
 	protected AdviceImpl(Method method, String pointcut, AdviceKind type) {
 		this.kind = type;
@@ -48,7 +48,7 @@ public class AdviceImpl implements Advice {
 		this.hasExtraParam = true;
 	}
 
-	public AjType getDeclaringType() {
+	public AjType<?> getDeclaringType() {
 		return AjTypeSystem.getAjType(adviceMethod.getDeclaringClass());
 	}
 

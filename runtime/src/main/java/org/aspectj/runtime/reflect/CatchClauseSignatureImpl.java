@@ -32,7 +32,7 @@ class CatchClauseSignatureImpl extends SignatureImpl implements CatchClauseSigna
         super(stringRep);
     }
 
-    public Class getParameterType() {
+    public Class<?> getParameterType() {
         if (parameterType == null) parameterType = extractType(3);
         return parameterType;
     }

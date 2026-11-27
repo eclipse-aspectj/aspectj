@@ -39,11 +39,11 @@ public class DeclareSoftImpl implements DeclareSoft {
 		}
 	}
 
-	public AjType getDeclaringType() {
+	public AjType<?> getDeclaringType() {
 		return this.declaringType;
 	}
 
-	public AjType getSoftenedExceptionType() throws ClassNotFoundException {
+	public AjType<?> getSoftenedExceptionType() throws ClassNotFoundException {
 		if (this.missingTypeName != null) throw new ClassNotFoundException(this.missingTypeName);
 		return this.exceptionType;
 	}

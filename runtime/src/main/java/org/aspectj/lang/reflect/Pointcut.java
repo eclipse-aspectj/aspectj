@@ -42,7 +42,7 @@ public interface Pointcut {
 	/**
 	 * @return the type that declared this pointcut
 	 */
-	AjType getDeclaringType();
+	AjType<?> getDeclaringType();
 
 	/**
 	 * @return the pointcut expression associated with this pointcut.

@@ -34,6 +34,7 @@ public class PointcutBasedPerClauseImpl extends PerClauseImpl implements
 		return pointcutExpression;
 	}
 
+	@SuppressWarnings("incomplete-switch")
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		switch(getKind()) {

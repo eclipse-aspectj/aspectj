@@ -24,7 +24,7 @@ class AdviceSignatureImpl extends CodeSignatureImpl implements AdviceSignature {
 	private Method adviceMethod = null;
 
     AdviceSignatureImpl(int modifiers, String name, Class<?> declaringType,
-        Class[] parameterTypes, String[] parameterNames, Class[] exceptionTypes,
+        Class<?>[] parameterTypes, String[] parameterNames, Class<?>[] exceptionTypes,
         Class<?> returnType)
     {
         super(modifiers, name, declaringType, parameterTypes, parameterNames,
@@ -38,7 +38,7 @@ class AdviceSignatureImpl extends CodeSignatureImpl implements AdviceSignature {
     /* name is consistent with reflection API
     before and after always return Void.TYPE
     (some around also return Void.Type)      */
-    public Class getReturnType() {
+    public Class<?> getReturnType() {
         if (returnType == null) returnType = extractType(6);
         return returnType;
     }

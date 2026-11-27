@@ -20,7 +20,7 @@ public interface DeclarePrecedence {
 	/**
 	 * @return the declaring aspect
 	 */
-	AjType getDeclaringType();
+	AjType<?> getDeclaringType();
 
 	/**
 	 * @return an ordered set of type patterns. An aspect matching
