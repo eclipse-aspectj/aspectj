@@ -193,7 +193,7 @@ public class BuildArgParser extends Main {
 				// This computed classpaths will be missing aspectpaths, inpaths, add those first
 				buildConfig.setClasspath(getClasspath(parser));
 				// Implicit inclusion of jmods on module path
-				if (checkVMVersion(ClassFileConstants.JDK9)) {
+				if (releaseVersion == null && checkVMVersion(ClassFileConstants.JDK9)) {
 					// Add the default jmods path? javac seems to do this
 					File jmods = new File(getJavaHome(),"jmods");
 					parser.modulepath = (parser.modulepath == null)?jmods.getAbsolutePath():parser.modulepath+File.pathSeparator+jmods.getAbsolutePath();

@@ -250,4 +250,26 @@ JDK 27 (https://openjdk.org/projects/jdk/27/):
 		</run>
 	</ajc-test>
 
+	<!--
+	https://github.com/eclipse-aspectj/aspectj/issues/388
+	With release N, the running JDK's jmods were also put on the module path, so the API of the running JDK was used instead of
+	the one of release N. The API of release N must be used: a method or a type added after N must not compile.
+	-->
+	<ajc-test dir="bugs1927/gh388" vm="11" title="--release does not see a method added in a later JDK">
+		<compile files="StreamToList.java" options="--release 11">
+			<message kind="error" file="StreamToList.java" line="13" text="The method toList() is undefined"/>
+		</compile>
+	</ajc-test>
+
+	<ajc-test dir="bugs1927/gh388" vm="9" title="--release does not see a type added in a later JDK">
+		<compile files="FlowPublisher.java" options="--release 8">
+			<message kind="error" file="FlowPublisher.java" line="10" text="java.util.concurrent.Flow cannot be resolved to a type"/>
+		</compile>
+	</ajc-test>
+
+	<!-- Without the running JDK's jmods, the JDK modules of release N still come from ct.sym -->
+	<ajc-test dir="bugs1927/gh388/module" vm="11" title="--release compiles a module that requires a JDK module">
+		<compile files="module-info.java gh388/Drivers.java" options="--release 11"/>
+	</ajc-test>
+
 </suite>
