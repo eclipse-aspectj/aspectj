@@ -29,11 +29,11 @@ public class InterTypeMethodDeclarationImpl extends InterTypeDeclarationImpl
 	private String name;
 	private Method baseMethod;
 	private int parameterAdjustmentFactor = 1; // no of fake params at start of baseMethod
-	private AjType<?>[] parameterTypes;
-	private Type[] genericParameterTypes;
-	private AjType<?> returnType;
-	private Type genericReturnType;
-	private AjType<?>[] exceptionTypes;
+//	private AjType<?>[] parameterTypes;
+//	private Type[] genericParameterTypes;
+//	private AjType<?> returnType;
+//	private Type genericReturnType;
+//	private AjType<?>[] exceptionTypes;
 
 	public InterTypeMethodDeclarationImpl(AjType<?> decType, String target,
 			int mods, String name, Method itdInterMethod) {
@@ -76,7 +76,7 @@ public class InterTypeMethodDeclarationImpl extends InterTypeDeclarationImpl
 
 	public Type[] getGenericParameterTypes() {
 		Type[] baseTypes = baseMethod.getGenericParameterTypes();
-		Type[] ret = new AjType<?>[baseTypes.length-parameterAdjustmentFactor];
+		Type[] ret = new Type[baseTypes.length-parameterAdjustmentFactor];
 		for (int i = parameterAdjustmentFactor; i < baseTypes.length; i++) {
 			if (baseTypes[i] instanceof Class) {
 				ret[i-parameterAdjustmentFactor] = AjTypeSystem.getAjType((Class<?>)baseTypes[i]);

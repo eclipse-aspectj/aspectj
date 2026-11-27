@@ -12,7 +12,10 @@
 package org.aspectj.internal.lang.reflect;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.util.List;
 
 import org.aspectj.lang.reflect.AjType;
 import org.aspectj.lang.reflect.AjTypeSystem;
@@ -38,6 +41,7 @@ public class InterTypeTest extends TestCase {
 		assertEquals(5, itd.getModifiers());
 	}
 
+	@SuppressWarnings("unused")
 	public void testITDField() throws ClassNotFoundException {
 		AjType<InterTypeTest> thisClass = AjTypeSystem.getAjType(InterTypeTest.class);
 		AjType<Runnable> runnable = AjTypeSystem.getAjType(java.lang.Runnable.class);
@@ -82,7 +86,21 @@ public class InterTypeTest extends TestCase {
 		assertEquals(0,itdm.getExceptionTypes().length);
 	}
 
+	public void testITDMethodWithGenericParameters() throws NoSuchMethodException {
+		AjType<InterTypeTest> thisClass = AjTypeSystem.getAjType(InterTypeTest.class);
+		Method base = InterTypeTest.class.getDeclaredMethod("interGenericMethod",InterTypeTest.class,List.class,Object.class);
+		InterTypeMethodDeclaration itdm = new InterTypeMethodDeclarationImpl(thisClass,"java.lang.Runnable",5,"foo",base);
+		Type[] types = itdm.getGenericParameterTypes();
+		assertEquals(2,types.length);
+		ParameterizedType listOfString = (ParameterizedType) types[0];
+		assertEquals(List.class,listOfString.getRawType());
+		assertEquals(String.class,listOfString.getActualTypeArguments()[0]);
+		assertEquals("T",((TypeVariable<?>) types[1]).getName());
+	}
+
 	public static void interCons(InterTypeTest itt, String s, int i) {  }
 
 	public static int interMethod(InterTypeTest itt, String s, int i) { return 5; }
+
+	public static <T> void interGenericMethod(InterTypeTest itt, List<String> l, T t) {  }
 }
