@@ -39,10 +39,10 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.aspectj.apache.bcel.util.SoftHashMap;
 import org.aspectj.bridge.IMessageHandler;
 import org.aspectj.bridge.MessageUtil;
 import org.aspectj.util.LangUtil;
-import org.aspectj.util.SoftHashMap;
 import org.aspectj.weaver.BCException;
 import org.aspectj.weaver.UnresolvedType;
 import org.aspectj.weaver.WeaverMessages;

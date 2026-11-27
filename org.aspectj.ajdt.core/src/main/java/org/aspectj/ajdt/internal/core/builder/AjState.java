@@ -18,9 +18,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.lang.ref.ReferenceQueue;
-import java.lang.ref.SoftReference;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -37,6 +34,7 @@ import org.aspectj.ajdt.internal.compiler.CompilationResultDestinationManager;
 import org.aspectj.ajdt.internal.compiler.InterimCompilationResult;
 import org.aspectj.ajdt.internal.core.builder.AjBuildConfig.BinarySourceFile;
 import org.aspectj.apache.bcel.classfile.ClassParser;
+import org.aspectj.apache.bcel.util.SoftHashMap;
 import org.aspectj.asm.AsmManager;
 import org.aspectj.bridge.IMessage;
 import org.aspectj.bridge.Message;
@@ -206,7 +204,8 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 	private Set<File> compiledSourceFiles = new HashSet<>();
 	private final Map<String, File> resources = new HashMap<>();
 
-	SoftHashMap/* <baseDir,SoftHashMap<theFile,className>> */fileToClassNameMap = new SoftHashMap();
+	// baseDir -> (file name -> class name)
+	SoftHashMap<String, SoftHashMap<String, char[]>> fileToClassNameMap = new SoftHashMap<>();
 
 	private BcelWeaver weaver;
 	private BcelWorld world;
@@ -624,95 +623,6 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 		return aspectClassFiles.contains(file.getAbsolutePath());
 	}
 
-	@SuppressWarnings("rawtypes")
-	public static class SoftHashMap extends AbstractMap {
-
-		private final Map map;
-
-		private final ReferenceQueue rq = new ReferenceQueue();
-
-		public SoftHashMap(Map map) {
-			this.map = map;
-		}
-
-		public SoftHashMap() {
-			this(new HashMap());
-		}
-
-		public SoftHashMap(Map map, boolean b) {
-			this(map);
-		}
-
-		class SoftReferenceKnownKey extends SoftReference {
-
-			private final Object key;
-
-			@SuppressWarnings("unchecked")
-			SoftReferenceKnownKey(Object k, Object v) {
-				super(v, rq);
-				this.key = k;
-			}
-		}
-
-		private void processQueue() {
-			SoftReferenceKnownKey sv = null;
-			while ((sv = (SoftReferenceKnownKey) rq.poll()) != null) {
-				map.remove(sv.key);
-			}
-		}
-
-		@Override
-		public Object get(Object key) {
-			SoftReferenceKnownKey value = (SoftReferenceKnownKey) map.get(key);
-			if (value == null) {
-				return null;
-			}
-			if (value.get() == null) {
-				// it got GC'd
-				map.remove(value.key);
-				return null;
-			} else {
-				return value.get();
-			}
-		}
-
-		@Override
-		public Object put(Object k, Object v) {
-			processQueue();
-			return map.put(k, new SoftReferenceKnownKey(k, v));
-		}
-
-		@Override
-		public Set entrySet() {
-			return map.entrySet();
-		}
-
-		@Override
-		public void clear() {
-			processQueue();
-			map.clear();
-		}
-
-		@Override
-		public int size() {
-			processQueue();
-			return map.size();
-		}
-
-		@Override
-		public Object remove(Object k) {
-			processQueue();
-			SoftReferenceKnownKey value = (SoftReferenceKnownKey) map.remove(k);
-			if (value == null) {
-				return null;
-			}
-			if (value.get() != null) {
-				return value.get();
-			}
-			return null;
-		}
-	}
-
 	/**
 	 * If a class file has changed in a path on our classpath, it may not be for a type that any of our source files care about.
 	 * This method checks if any of our source files have a dependency on the class in question and if not, we don't consider it an
@@ -723,12 +633,12 @@ public class AjState implements CompilerConfigurationChangeFlags, TypeDelegateRe
 		int finalSeparator = fpath.lastIndexOf(File.separator);
 		String baseDir = fpath.substring(0, finalSeparator);
 		String theFile = fpath.substring(finalSeparator + 1);
-		SoftHashMap classNames = (SoftHashMap) fileToClassNameMap.get(baseDir);
+		SoftHashMap<String, char[]> classNames = fileToClassNameMap.get(baseDir);
 		if (classNames == null) {
-			classNames = new SoftHashMap();
+			classNames = new SoftHashMap<>();
 			fileToClassNameMap.put(baseDir, classNames);
 		}
-		char[] className = (char[]) classNames.get(theFile);
+		char[] className = classNames.get(theFile);
 		if (className == null) {
 			// if (listenerDefined())
 			// getListener().recordDecision("Cache miss, looking up classname for : " + fpath);

@@ -56,16 +56,12 @@ package org.aspectj.apache.bcel.util;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.ref.Reference;
-import java.lang.ref.ReferenceQueue;
 import java.lang.ref.SoftReference;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.AbstractMap;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
@@ -89,10 +85,10 @@ public class ClassLoaderRepository implements Repository {
 
 	// Choice of cache...
 	private WeakHashMap<URL, SoftReference<JavaClass>> localCache = new WeakHashMap<>();
-	private static SoftHashMap /* <URL,JavaClass> */sharedCache = new SoftHashMap(Collections.synchronizedMap(new HashMap<>()));
+	private static SoftHashMap<URL,JavaClass> sharedCache = new SoftHashMap<>(Collections.synchronizedMap(new HashMap<>()));
 
 	// For fast translation of the classname *intentionally not static*
-	private SoftHashMap /* <String,URL> */nameMap = new SoftHashMap(new HashMap(), false);
+	private SoftHashMap<String,URL> nameMap = new SoftHashMap<>(new HashMap<>());
 
 	public static boolean useSharedCache =
 		System.getProperty("org.aspectj.apache.bcel.useSharedCache", "true").equalsIgnoreCase("true");
@@ -108,7 +104,6 @@ public class ClassLoaderRepository implements Repository {
 	private static Set<String> unavailableClasses = Collections.synchronizedSet(new HashSet<String>());
 
 	private static int cacheHitsShared = 0;
-	private static int missSharedEvicted = 0; // Misses in shared cache access due to reference GC
 	private long timeManipulatingURLs = 0L;
 	private long timeSpentLoading = 0L;
 	private int classesLoadedCount = 0;
@@ -132,94 +127,7 @@ public class ClassLoaderRepository implements Repository {
 		return bootClassLoader;
 	}
 
-	// Can track back to its key
-	public static class SoftHashMap extends AbstractMap {
-		private Map<Object, SpecialValue> map;
-		boolean recordMiss = true; // only interested in recording miss stats sometimes
-		private ReferenceQueue rq = new ReferenceQueue();
 
-		public SoftHashMap(Map<Object, SpecialValue> map) {
-			this.map = map;
-		}
-
-		public SoftHashMap() {
-			this(new HashMap());
-		}
-
-		public SoftHashMap(Map map, boolean b) {
-			this(map);
-			this.recordMiss = b;
-		}
-
-		class SpecialValue extends SoftReference {
-			private final Object key;
-
-			SpecialValue(Object k, Object v) {
-				super(v, rq);
-				this.key = k;
-			}
-		}
-
-		private void processQueue() {
-			SpecialValue sv = null;
-			while ((sv = (SpecialValue) rq.poll()) != null) {
-				map.remove(sv.key);
-			}
-		}
-
-		@Override
-		public Object get(Object key) {
-			SpecialValue value = map.get(key);
-			if (value == null)
-				return null;
-			if (value.get() == null) {
-				// it got GC'd
-				map.remove(value.key);
-				if (recordMiss)
-					missSharedEvicted++;
-				return null;
-			} else {
-				return value.get();
-			}
-		}
-
-		@Override
-		public Object put(Object k, Object v) {
-			processQueue();
-			return map.put(k, new SpecialValue(k, v));
-		}
-
-		@Override
-		public Set entrySet() {
-			return map.entrySet();
-		}
-
-		@Override
-		public void clear() {
-			if (!ignoreCacheClearRequests) {
-				processQueue();
-				map.clear();
-			}
-		}
-
-		@Override
-		public int size() {
-			processQueue();
-			return map.size();
-		}
-
-		@Override
-		public Object remove(Object k) {
-			processQueue();
-			SpecialValue value = map.remove(k);
-			if (value == null)
-				return null;
-			if (value.get() != null) {
-				return value.get();
-			}
-			return null;
-		}
-	}
 
 	/**
 	 * Store a new JavaClass into this repository as a soft reference and return the reference
@@ -262,11 +170,11 @@ public class ClassLoaderRepository implements Repository {
 	}
 
 	private JavaClass findClassLocal(URL url) {
-		Object o = localCache.get(url);
-		if (o != null) {
-			o = ((Reference) o).get();
-			if (o != null) {
-				return (JavaClass) o;
+		SoftReference<JavaClass> ref = localCache.get(url);
+		if (ref != null) {
+			JavaClass javaClass = ref.get();
+			if (javaClass != null) {
+				return javaClass;
 			} else {
 				missLocalEvicted++;
 			}
@@ -373,7 +281,7 @@ public class ClassLoaderRepository implements Repository {
 		sb.append(" Classes loaded: " + classesLoadedCount + ".");
 		if (useSharedCache) {
 			sb.append(" Shared cache size: " + sharedCache.size());
-			sb.append(" Shared cache (hits/missDueToEviction): (" + cacheHitsShared + "/" + missSharedEvicted + ").");
+			sb.append(" Shared cache (hits/missDueToEviction): (" + cacheHitsShared + "/" + sharedCache.evictedMisses() + ").");
 		} else {
 			sb.append(" Local cache size: " + localCache.size());
 			sb.append(" Local cache (hits/missDueToEviction): (" + cacheHitsLocal + "/" + missLocalEvicted + ").");
@@ -381,14 +289,33 @@ public class ClassLoaderRepository implements Repository {
 		return sb.toString();
 	}
 
+	// Positions in the array returned by reportStats()
+	public final static int STATS_TIME_SPENT_LOADING = 0;
+	public final static int STATS_TIME_MANIPULATING_URLS = 1;
+	public final static int STATS_CLASSES_LOADED = 2;
+	public final static int STATS_CACHE_HITS_SHARED = 3;
+	public final static int STATS_MISS_SHARED_EVICTED = 4;
+	public final static int STATS_CACHE_HITS_LOCAL = 5;
+	public final static int STATS_MISS_LOCAL_EVICTED = 6;
+	public final static int STATS_SHARED_CACHE_SIZE = 7;
+	public final static int STATS_UNAVAILABLE_CLASSES_CACHE_HITS = 8;
+
 	/**
-	 * Returns an array of the stats, for testing, the order is fixed: 0=time spent loading (static) 1=time spent manipulating URLs
-	 * (static) 2=classes loaded (static) 3=cache hits shared (static) 4=misses in shared due to eviction (static) 5=cache hits
-	 * local 6=misses in local due to eviction 7=shared cache size
+	 * Returns an array of the stats, for testing. Use the STATS_ constants for the positions. The cache hits and misses of the
+	 * shared cache, and the size of the shared cache, are shared by all repositories, the others are for this repository.
 	 */
 	public long[] reportStats() {
-		return new long[] { timeSpentLoading, timeManipulatingURLs, classesLoadedCount, cacheHitsShared, missSharedEvicted,
-				cacheHitsLocal, missLocalEvicted, sharedCache.size(), unavailableClassesCacheHits };
+		long[] stats = new long[STATS_UNAVAILABLE_CLASSES_CACHE_HITS + 1];
+		stats[STATS_TIME_SPENT_LOADING] = timeSpentLoading;
+		stats[STATS_TIME_MANIPULATING_URLS] = timeManipulatingURLs;
+		stats[STATS_CLASSES_LOADED] = classesLoadedCount;
+		stats[STATS_CACHE_HITS_SHARED] = cacheHitsShared;
+		stats[STATS_MISS_SHARED_EVICTED] = sharedCache.evictedMisses(); // misses in shared cache access due to reference GC
+		stats[STATS_CACHE_HITS_LOCAL] = cacheHitsLocal;
+		stats[STATS_MISS_LOCAL_EVICTED] = missLocalEvicted;
+		stats[STATS_SHARED_CACHE_SIZE] = sharedCache.size();
+		stats[STATS_UNAVAILABLE_CLASSES_CACHE_HITS] = unavailableClassesCacheHits;
+		return stats;
 	}
 
 	/**
@@ -400,14 +327,14 @@ public class ClassLoaderRepository implements Repository {
 		classesLoadedCount = 0;
 		cacheHitsLocal = 0;
 		cacheHitsShared = 0;
-		missSharedEvicted = 0;
+		sharedCache.resetEvictedMisses();
 		missLocalEvicted = 0;
 		unavailableClassesCacheHits = 0;
 		misses = 0;
 		clear();
 	}
 
-	public JavaClass loadClass(Class clazz) throws ClassNotFoundException {
+	public JavaClass loadClass(Class<?> clazz) throws ClassNotFoundException {
 		return loadClass(clazz.getName());
 	}
 

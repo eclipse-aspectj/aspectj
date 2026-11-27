@@ -18,8 +18,14 @@ public class ClassloaderRepositoryTest extends TestCase {
 
 	private ClassLoaderRepository rep1,rep2;
 
+	// Some tests change these settings. They are static, and when all the suites run in one JVM they must not leak into the others.
+	private boolean originalUseSharedCache;
+	private boolean originalIgnoreCacheClearRequests;
+
 	public void setUp() throws Exception {
 		super.setUp();
+		originalUseSharedCache = ClassLoaderRepository.useSharedCache;
+		originalIgnoreCacheClearRequests = ClassLoaderRepository.ignoreCacheClearRequests;
 		ClassLoader cl = Thread.currentThread().getContextClassLoader();
 		ClassLoader cl1 = new URLClassLoader(new URL[]{},cl);
 		ClassLoader cl2 = new URLClassLoader(new URL[]{},cl);
@@ -81,11 +87,11 @@ public class ClassloaderRepositoryTest extends TestCase {
 			try {
 				ClassLoaderRepository repository = setupRepository();
 				repository.loadClass("java.lang.String");
-				long localCacheHits = repository.reportStats()[5];
+				long localCacheHits = repository.reportStats()[ClassLoaderRepository.STATS_CACHE_HITS_LOCAL];
 				assertEquals(0, localCacheHits);
 				repository.clear();
 				repository.loadClass("java.lang.String");
-				localCacheHits = repository.reportStats()[5];
+				localCacheHits = repository.reportStats()[ClassLoaderRepository.STATS_CACHE_HITS_LOCAL];
 				assertEquals(0, localCacheHits); // cache was cleared, so no hit
 			} finally {
 				ClassLoaderRepository.ignoreCacheClearRequests = false;
@@ -95,11 +101,11 @@ public class ClassloaderRepositoryTest extends TestCase {
 			try {
 				ClassLoaderRepository repository = setupRepository();
 				repository.loadClass("java.lang.String");
-				long localCacheHits = repository.reportStats()[5];
+				long localCacheHits = repository.reportStats()[ClassLoaderRepository.STATS_CACHE_HITS_LOCAL];
 				assertEquals(0, localCacheHits);
 				repository.clear();
 				repository.loadClass("java.lang.String");
-				localCacheHits = repository.reportStats()[5];
+				localCacheHits = repository.reportStats()[ClassLoaderRepository.STATS_CACHE_HITS_LOCAL];
 				assertEquals(1, localCacheHits);
 			} finally {
 				ClassLoaderRepository.ignoreCacheClearRequests = false;
@@ -118,7 +124,7 @@ public class ClassloaderRepositoryTest extends TestCase {
 			for (int i = 0; i < 1000; i++) {
 				attemptLoadThatWillFail(repository);
 			}
-			assertEquals(0, repository.reportStats()[8]);
+			assertEquals(0, repository.reportStats()[ClassLoaderRepository.STATS_UNAVAILABLE_CLASSES_CACHE_HITS]);
 		} finally {
 			ClassLoaderRepository.useUnavailableClassesCache = false; // back to default
 		}
@@ -131,7 +137,7 @@ public class ClassloaderRepositoryTest extends TestCase {
 			for (int i = 0; i < 1000; i++) {
 				attemptLoadThatWillFail(repository);
 			}
-			assertEquals(1000,repository.reportStats()[8]);
+			assertEquals(1000,repository.reportStats()[ClassLoaderRepository.STATS_UNAVAILABLE_CLASSES_CACHE_HITS]);
 		} finally {
 			ClassLoaderRepository.useUnavailableClassesCache = false;
 		}
@@ -156,18 +162,20 @@ public class ClassloaderRepositoryTest extends TestCase {
 
 	public void tearDown() throws Exception {
 		super.tearDown();
-		System.err.println("Rep1: "+rep1.reportStats());
-		System.err.println("Rep2: "+rep2.reportStats());
-		rep1.reset();
+//		System.err.println("Rep1: "+rep1.reportStats());
+//		System.err.println("Rep2: "+rep2.reportStats());
+		ClassLoaderRepository.useSharedCache = originalUseSharedCache;
+		ClassLoaderRepository.ignoreCacheClearRequests = originalIgnoreCacheClearRequests;
+		rep1.reset(); // with the settings back as they were, this clears the shared cache too
 		rep2.reset();
 	}
 
 	private long reportLocalCacheHits(ClassLoaderRepository rep) {
-		return rep.reportStats()[5];
+		return rep.reportStats()[ClassLoaderRepository.STATS_CACHE_HITS_LOCAL];
 	}
 
 	private long reportSharedCacheHits(ClassLoaderRepository rep) {
-		return rep.reportStats()[3];
+		return rep.reportStats()[ClassLoaderRepository.STATS_CACHE_HITS_SHARED];
 	}
 
 }
